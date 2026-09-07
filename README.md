@@ -75,7 +75,7 @@ and vortexcp; the toolkit discovers them from disk. Domain IDs are globally uniq
 - `_evidence/`: evidence fragments and their icons.
 - `productscapes.json`: toolkit dependency path and commit.
 - `productscapes.py`: launcher that delegates to the toolkit.
-- `docs/`: generated site, ignored by Git; build locally or in a publishing workflow.
+- `docs/`: generated site, build locally or in a publishing workflow.
 
 These examples were copied from the current Productscape working files, including
 the grouped-folder reorganization. They illustrate models of varying maturity.

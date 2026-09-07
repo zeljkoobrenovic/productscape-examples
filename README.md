@@ -2,15 +2,22 @@
 
 50 product-domain examples with source JSON, domain briefs, research references,
 icons, and media. The reusable authoring skills, schemas, templates, and generators
-live in the separate **productscapes** repository.
+live in the separate **productscape** repository.
 
 ## Build the examples
 
-Requires Python 3.10+ and Git. Clone the two repositories beside each other:
+Requires Python 3.10+ and Git. Clone the two public repositories beside each other:
+
+```sh
+git clone https://github.com/zeljkoobrenovic/productscape.git
+git clone https://github.com/zeljkoobrenovic/productscape-examples.git
+```
+
+Their layout should be:
 
 ```text
 workspace/
-  productscapes/
+  productscape/
   productscape-examples/
 ```
 
@@ -18,7 +25,7 @@ From `productscape-examples`, print the required toolkit revision and check it o
 
 ```sh
 python3 -c "import json; print(json.load(open('productscapes.json'))['revision'])"
-git -C ../productscapes checkout <printed-revision>
+git -C ../productscape checkout <printed-revision>
 python3 productscapes.py build --all
 python3 -m http.server 8000 --directory docs
 ```
@@ -48,12 +55,12 @@ python3 productscapes.py skills --target .agents/skills
 
 Ask your coding assistant to use the installed `new-product-domain` skill to research
 and populate the new source tree. For manual authoring, use the toolkit's schemas
-and [model reference](../productscapes/skills/_references/domain-model.md).
+and [model reference](https://github.com/zeljkoobrenovic/productscape/blob/main/skills/_references/domain-model.md).
 `new` creates an empty scaffold; it does not research or complete a domain.
 Run `python3 productscapes.py info` to locate the toolkit resources.
 
 After source edits, validate and build the selected domain. Change shared rendering
-or modeling scripts in `productscapes`, verify them against these examples, then
+or modeling scripts in `productscape`, verify them against these examples, then
 update this repository's pinned toolkit commit. This repository contains only the
 thin command launcher, not copies of the generator or skill implementation.
 

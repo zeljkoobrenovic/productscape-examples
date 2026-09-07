@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Teams (General Listings Marketplace)</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            margin: 8px 28px 28px;
+            color: #202124;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .hero {
+            margin-bottom: 20px;
+        }
+
+        .hero-table {
+            border-collapse: collapse;
+            width: auto;
+        }
+
+        .hero-logo {
+            width: 108px;
+            height: 108px;
+            margin-right: 12px;
+        }
+
+        .hero-logo-cell {
+            border: none;
+            vertical-align: top;
+            padding-top: 12px;
+            padding-right: 12px;
+        }
+
+        .hero-copy-cell {
+            vertical-align: top;
+            border: none;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            margin-bottom: 4px;
+        }
+
+        .hero-note {
+            max-width: 960px;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 0 0 10px 0;
+        }
+
+        .team-search {
+            flex: 1;
+            max-width: 520px;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .team-search:focus {
+            outline: none;
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+        }
+
+        .search-clear {
+            padding: 9px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #4b5563;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .search-clear:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .search-summary {
+            margin: 0 4px 18px 0;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .search-summary strong {
+            color: #1f2937;
+        }
+
+        .search-summary .search-term {
+            color: #1d4ed8;
+        }
+
+        .tab-intro {
+            margin-bottom: 18px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        /* hierarchy */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .group {
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background-color: #fbfbfc;
+            padding: 16px;
+        }
+
+        .group.nested {
+            margin-top: 14px;
+            background-color: #ffffff;
+        }
+
+        .group-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .group-name {
+            font-size: 22px;
+        }
+
+        .group-hc {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group-mission {
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 14px;
+            max-width: 900px;
+        }
+
+        .group-direct {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background-color: #eef2f6;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .group-direct-text {
+            margin-bottom: 6px;
+        }
+
+        .group-direct .hc-dots {
+            margin-bottom: 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .team-card {
+            display: block;
+            color: inherit;
+            border: 1px solid #d1d5db;
+            border-left-width: 4px;
+            border-radius: 10px;
+            padding: 14px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+            transition: 0.15s;
+        }
+
+        .team-card:hover {
+            box-shadow: rgba(0, 0, 0, 0.12) 0 2px 8px;
+            transform: translateY(-1px);
+        }
+
+        .team-type {
+            display: inline-block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            border-radius: 999px;
+            padding: 3px 9px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .team-name {
+            font-size: 19px;
+            color: #1f2937;
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+
+        .team-card:hover .team-name {
+            color: #1d4ed8;
+        }
+
+        .team-desc {
+            color: #4b5563;
+            line-height: 1.45;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        /* dependency icon rows */
+        .link-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .link-group {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .link-sep {
+            color: #cbd5e1;
+            margin: 0 4px;
+            font-weight: bold;
+        }
+
+        .link-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #d7dce1;
+            background-color: white;
+        }
+
+        .link-icon.round {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* headcount dots */
+        .hc-dots {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 3px;
+            margin-bottom: 12px;
+        }
+
+        .hc-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(17, 24, 39, 0.12);
+        }
+
+        .hc-dots-label {
+            margin-left: 6px;
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        /* legend */
+        .type-legend {
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 10px 0 0 0;
+        }
+
+        .legend-pill {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background-color: #f8fafc;
+            font-size: 12px;
+            color: #4b5563;
+            max-width: 320px;
+        }
+
+        .legend-swatch {
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            display: inline-block;
+            border: 1px solid rgba(17, 24, 39, 0.12);
+            margin-top: 2px;
+            flex: none;
+        }
+
+        .legend-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .legend-name {
+            color: #1f2937;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .legend-desc {
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .legend-count {
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: normal;
+        }
+
+        /* dependencies tab */
+        .dependencies-layout {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .dependency-controls {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            padding: 14px;
+        }
+
+        .dependency-control-group {
+            margin-bottom: 16px;
+        }
+
+        .dependency-control-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .dependency-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dependency-action {
+            border: 1px solid #d1d5db;
+            background-color: white;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .dependency-checklist {
+            max-height: 340px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .dependency-check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .dependency-swatch {
+            flex: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 3px;
+            border: 1px solid rgba(17, 24, 39, 0.15);
+        }
+
+        .dependency-check-meta {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .dependency-summary {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .dependency-summary strong {
+            color: #1f2937;
+        }
+
+        .dependency-view {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 6px;
+        }
+
+        .view-toggle-btn {
+            border: 1px solid #d1d5db;
+            background-color: #f8fafc;
+            color: #4b5563;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .view-toggle-btn:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .view-toggle-btn.active {
+            background-color: #202124;
+            border-color: #202124;
+            color: white;
+        }
+
+        .force-label-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 4px;
+            font-size: 13px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .force-label-toggle[hidden] {
+            display: none;
+        }
+
+        .dependency-graph {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: white;
+            padding: 14px;
+            overflow: auto;
+            min-height: 560px;
+        }
+
+        .dependency-graph.force {
+            padding: 0;
+            overflow: hidden;
+            height: 620px;
+        }
+
+        .dependency-empty {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        @media (max-width: 1080px) {
+            .dependencies-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" target="_blank" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/force-graph@1.51.4/dist/force-graph.min.js"></script>
+</head>
+<body onload="initTab('home')" onhashchange="initTab('home')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav"><a href="../start/index.html">Home</a><a href="../customers/index.html">Customers</a><a href="../product-deployments/index.html">Products</a><a href="../product-bricks/index.html">Bricks &amp; Streams</a><a href="../teams/index.html" class="active">Teams</a><a href="../competition/index.html">Competition</a><a href="../residuality/index.html">Stress Test</a></nav>
+<div id="breadcrumbs"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+<div class="hero">
+    <table class="hero-table">
+        <tr>
+            <td class="hero-logo-cell"><img class="hero-logo" src="icons/logo.png" alt="Teams"></td>
+            <td class="hero-copy-cell">
+                <div class="hero-title">Teams</div>
+                <div id="HeroNote" class="hero-note">A lean team index: the group hierarchy with headcount roll-ups, and each team's links to customers, streams, product bricks, and other teams. Click a team to open its page.</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="tab">
+    <button class="tablinks" id="tab_home" onclick="openTab('home')">Team Index</button>
+    <button class="tablinks" id="tab_dependencies" onclick="openTab('dependencies')">Dependencies</button>
+</div>
+
+<div id="tab_content_home" class="tabcontent">
+    <div class="search-bar" style="margin-top: 12px">
+        <input type="search" id="TeamSearch" class="team-search" placeholder="Search teams by name, description, type, or group…" autocomplete="off">
+        <button type="button" id="TeamSearchClear" class="search-clear" onclick="clearTeamSearch()" hidden>Clear</button>
+    </div>
+    <div id="SearchSummary" class="search-summary"></div>
+    <div id="Hierarchy"></div>
+    <div id="TypeLegend" class="type-legend"></div>
+</div>
+
+<div id="tab_content_dependencies" class="tabcontent">
+    <div class="tab-intro">Cross-team dependency graph. Filter by team and by dependency type.</div>
+    <div id="DependenciesContent"></div>
+</div>
+
+<script>
+    const teamsData = {"orgDesign": {"domainId": "general-listings-marketplace", "domainName": "General Listings Marketplace", "companyProfile": "Mid-size EU-centric horizontal classifieds marketplace with broad category coverage, high casual-seller volume, a meaningful professional-merchant business, an ecosystem of integration partners, and shared trust, payments, data, and platform services.", "operatingModel": "Stream-aligned teams own buyer, seller, merchant, and partner value streams; a consolidated set of durable platform families (Identity & Trust, Payments & Transactions, Experience Platform, Marketplace Data & Intelligence, Developer Platform) and a dedicated Partner Platform provide reusable identity, payment, data, experience, and integration foundations. Platform teams are accountable through explicit consuming-team contracts.", "teamTypes": [{"id": "stream-aligned", "name": "Stream-aligned", "color": "#2563eb", "description": "Aligned to a product, service, or customer journey; owns end-to-end delivery and outcomes."}, {"id": "platform", "name": "Platform", "color": "#0891b2", "description": "Provides reusable capabilities, services, or infrastructure to multiple stream-aligned teams."}, {"id": "enabling", "name": "Enabling", "color": "#16a34a", "description": "Helps stream-aligned teams overcome obstacles, adopt technologies, or improve practices."}, {"id": "complicated-subsystem", "name": "Complicated subsystem", "color": "#9333ea", "description": "Owns a complex subsystem that requires specialized knowledge and skills."}, {"id": "other", "name": "Other", "color": "#6b7280", "description": "Does not fit the other categories (e.g. a temporary or cross-functional team)."}], "teamDependencyTypes": [{"id": "collaboration", "name": "Collaboration", "description": "Working closely together with another team."}, {"id": "x-as-a-service", "name": "X-as-a-Service", "description": "Consuming or providing something with minimal collaboration."}, {"id": "facilitating", "name": "Facilitating", "description": "Helping (or being helped by) another team to clear impediments."}, {"id": "other", "name": "Other", "description": "Any other type of dependency not covered above."}]}, "groups": [{"id": "marketplace-growth", "name": "Marketplace Growth", "mission": "Own buyer discovery and casual-seller success: the demand and supply liquidity engine of the marketplace.", "groupDirectHeadcount": {"headcount": 4, "description": "Provide cross-team direction, portfolio tradeoffs, architecture coherence, and talent quality across Marketplace Growth."}, "teams": [{"id": "buyer-growth-discovery", "name": "Buyer Growth - Discovery", "type": "stream-aligned", "description": "Own local search, listing detail conversion, saved alerts, and repeat buyer engagement.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-search-save-and-return", "name": "Search, Save, and Return", "icon": "buyer-search-save-and-return.png", "href": "../product-bricks/stream_pages/buyer-search-save-and-return.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "buyer-contact-sellers-confidently", "name": "Contact Sellers Confidently", "icon": "buyer-contact-sellers-confidently.png", "href": "../product-bricks/stream_pages/buyer-contact-sellers-confidently.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "cdpc", "name": "Classified Details Page (CDP)", "icon": "cdpc.png", "href": "../product-bricks/landing_pages/cdpc.html", "description": ""}, {"brickId": "copo", "name": "Consumer Portal", "icon": "copo.png", "href": "../product-bricks/landing_pages/copo.html", "description": ""}, {"brickId": "ssal", "name": "Saved Search / Alerts", "icon": "ssal.png", "href": "../product-bricks/landing_pages/ssal.html", "description": ""}, {"brickId": "serp", "name": "Search Engine Results Page (SERP)", "icon": "serp.png", "href": "../product-bricks/landing_pages/serp.html", "description": ""}, {"brickId": "clre", "name": "Classifieds Recommendations", "icon": "clre.png", "href": "../product-bricks/landing_pages/clre.html", "description": ""}, {"brickId": "geor", "name": "GeoRef", "icon": "geor.png", "href": "../product-bricks/landing_pages/geor.html", "description": ""}, {"brickId": "acsc", "name": "Actor Scoring", "icon": "acsc.png", "href": "../product-bricks/landing_pages/acsc.html", "description": ""}], "otherTeamDependencies": [{"teamId": "market-intelligence-and-pricing", "name": "Market Intelligence & Pricing", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/market-intelligence-and-pricing.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-data-2", "name": "Geo, Catalog & Tracking Data", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-foundations-data-2.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-frontend-core", "name": "Experience Platform - Frontend Core", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/marketplace-foundations-frontend-core.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}, {"id": "buyer-discovery-intelligence", "name": "Buyer Discovery Intelligence", "type": "stream-aligned", "description": "Own recommendations, ranking sort order, seeker profiles, and buyer decision tools that make discovery relevant.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-browse-interesting-listings", "name": "Browse Interesting Listings", "icon": "buyer-browse-interesting-listings.png", "href": "../product-bricks/stream_pages/buyer-browse-interesting-listings.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "buyer-search-save-and-return", "name": "Search, Save, and Return", "icon": "buyer-search-save-and-return.png", "href": "../product-bricks/stream_pages/buyer-search-save-and-return.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "clre", "name": "Classifieds Recommendations", "icon": "clre.png", "href": "../product-bricks/landing_pages/clre.html", "description": ""}, {"brickId": "csor", "name": "Classifieds Sort Order", "icon": "csor.png", "href": "../product-bricks/landing_pages/csor.html", "description": ""}, {"brickId": "sepr", "name": "Seeker Profile", "icon": "sepr.png", "href": "../product-bricks/landing_pages/sepr.html", "description": ""}, {"brickId": "pdto", "name": "Buyer Decision Tools", "icon": "pdto.png", "href": "../product-bricks/landing_pages/pdto.html", "description": ""}, {"brickId": "serp", "name": "Search Engine Results Page (SERP)", "icon": "serp.png", "href": "../product-bricks/landing_pages/serp.html", "description": ""}, {"brickId": "geor", "name": "GeoRef", "icon": "geor.png", "href": "../product-bricks/landing_pages/geor.html", "description": ""}, {"brickId": "makn", "name": "Category Market Knowledge", "icon": "makn.png", "href": "../product-bricks/landing_pages/makn.html", "description": ""}], "otherTeamDependencies": [{"teamId": "buyer-growth-discovery", "name": "Buyer Growth - Discovery", "type": "stream-aligned", "groupName": "Marketplace Growth", "href": "landing_pages/buyer-growth-discovery.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "market-intelligence-and-pricing", "name": "Market Intelligence & Pricing", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/market-intelligence-and-pricing.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}, {"id": "seller-growth-listing-funnel", "name": "Seller Growth - Listing Funnel", "type": "stream-aligned", "description": "Own the casual-seller listing funnel, listing lifecycle, and listing media so sellers publish good listings fast.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "seller-publish-a-good-listing-fast", "name": "Publish a Good Listing Fast", "icon": "seller-publish-a-good-listing-fast.png", "href": "../product-bricks/stream_pages/seller-publish-a-good-listing-fast.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "esfu", "name": "Seller Listing Funnel", "icon": "esfu.png", "href": "../product-bricks/landing_pages/esfu.html", "description": ""}, {"brickId": "clma", "name": "Classifieds Management", "icon": "clma.png", "href": "../product-bricks/landing_pages/clma.html", "description": ""}, {"brickId": "mema", "name": "Media Management", "icon": "mema.png", "href": "../product-bricks/landing_pages/mema.html", "description": ""}, {"brickId": "serp", "name": "Search Engine Results Page (SERP)", "icon": "serp.png", "href": "../product-bricks/landing_pages/serp.html", "description": ""}, {"brickId": "acsc", "name": "Actor Scoring", "icon": "acsc.png", "href": "../product-bricks/landing_pages/acsc.html", "description": ""}, {"brickId": "coma", "name": "Content Management", "icon": "coma.png", "href": "../product-bricks/landing_pages/coma.html", "description": ""}], "otherTeamDependencies": [{"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-frontend-core", "name": "Experience Platform - Frontend Core", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/marketplace-foundations-frontend-core.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}, {"id": "seller-success-experience", "name": "Seller Success Experience", "type": "stream-aligned", "description": "Own casual-seller success: listing management, recommendations to sell faster, export, experimentation, and acquisition.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "seller-manage-live-listings", "name": "Manage Live Listings", "icon": "seller-manage-live-listings.png", "href": "../product-bricks/stream_pages/seller-manage-live-listings.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "seller-publish-a-good-listing-fast", "name": "Publish a Good Listing Fast", "icon": "seller-publish-a-good-listing-fast.png", "href": "../product-bricks/stream_pages/seller-publish-a-good-listing-fast.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "seller-price-with-confidence", "name": "Price with Confidence", "icon": "seller-price-with-confidence.png", "href": "../product-bricks/stream_pages/seller-price-with-confidence.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "ocex", "name": "Seller Success Experience", "icon": "ocex.png", "href": "../product-bricks/landing_pages/ocex.html", "description": ""}, {"brickId": "ocma", "name": "Seller Listings Management", "icon": "ocma.png", "href": "../product-bricks/landing_pages/ocma.html", "description": ""}, {"brickId": "clex", "name": "Classifieds Export", "icon": "clex.png", "href": "../product-bricks/landing_pages/clex.html", "description": ""}, {"brickId": "abtm", "name": "A/B Testing Management", "icon": "abtm.png", "href": "../product-bricks/landing_pages/abtm.html", "description": ""}, {"brickId": "foca", "name": "FSBO Online Classifieds Acquisition", "icon": "foca.png", "href": "../product-bricks/landing_pages/foca.html", "description": ""}, {"brickId": "clma", "name": "Classifieds Management", "icon": "clma.png", "href": "../product-bricks/landing_pages/clma.html", "description": ""}, {"brickId": "arre", "name": "Seller Ratings & Reviews", "icon": "arre.png", "href": "../product-bricks/landing_pages/arre.html", "description": ""}, {"brickId": "ssal", "name": "Saved Search / Alerts", "icon": "ssal.png", "href": "../product-bricks/landing_pages/ssal.html", "description": ""}], "otherTeamDependencies": [{"teamId": "seller-growth-listing-funnel", "name": "Seller Growth - Listing Funnel", "type": "stream-aligned", "groupName": "Marketplace Growth", "href": "landing_pages/seller-growth-listing-funnel.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}, {"id": "marketplace-growth-casual-seller-household-lister", "name": "Casual Seller Transactions & Reputation", "type": "stream-aligned", "description": "Own casual-seller shipping/handoff preferences, seller ratings and reviews, and consumer contacting for safe completion.", "teamHeadcount": {"headcount": 9, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}, {"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}], "streamDependencies": [{"streamId": "seller-manage-live-listings", "name": "Manage Live Listings", "icon": "seller-manage-live-listings.png", "href": "../product-bricks/stream_pages/seller-manage-live-listings.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "orma", "name": "Fulfillment and Shipping Preferences", "icon": "orma.png", "href": "../product-bricks/landing_pages/orma.html", "description": ""}, {"brickId": "arre", "name": "Seller Ratings & Reviews", "icon": "arre.png", "href": "../product-bricks/landing_pages/arre.html", "description": ""}, {"brickId": "ccnm", "name": "Consumer Contacting Management", "icon": "ccnm.png", "href": "../product-bricks/landing_pages/ccnm.html", "description": ""}, {"brickId": "hpfi", "name": "Buyer Protection & Payments", "icon": "hpfi.png", "href": "../product-bricks/landing_pages/hpfi.html", "description": ""}, {"brickId": "cmse", "name": "Chat Messaging Services", "icon": "cmse.png", "href": "../product-bricks/landing_pages/cmse.html", "description": ""}, {"brickId": "acsc", "name": "Actor Scoring", "icon": "acsc.png", "href": "../product-bricks/landing_pages/acsc.html", "description": ""}], "otherTeamDependencies": [{"teamId": "payments-and-transactions", "name": "Payments & Transactions", "type": "platform", "groupName": "Payments & Transactions", "href": "landing_pages/payments-and-transactions.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}, {"id": "buyer-engagement-comms", "name": "Buyer Engagement & Web Shell", "type": "stream-aligned", "description": "Own SEO, consumer advertising surfacing, and the unified B2C web shell that frames the buyer experience.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-browse-interesting-listings", "name": "Browse Interesting Listings", "icon": "buyer-browse-interesting-listings.png", "href": "../product-bricks/stream_pages/buyer-browse-interesting-listings.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "home", "name": "Homepage", "icon": "home.png", "href": "../product-bricks/landing_pages/home.html", "description": ""}, {"brickId": "sema", "name": "SEO Management", "icon": "sema.png", "href": "../product-bricks/landing_pages/sema.html", "description": ""}, {"brickId": "cama", "name": "Consumer Advertising Management", "icon": "cama.png", "href": "../product-bricks/landing_pages/cama.html", "description": ""}, {"brickId": "ubws", "name": "Unified B2C Web Shell", "icon": "ubws.png", "href": "../product-bricks/landing_pages/ubws.html", "description": ""}, {"brickId": "serp", "name": "Search Engine Results Page (SERP)", "icon": "serp.png", "href": "../product-bricks/landing_pages/serp.html", "description": ""}, {"brickId": "unfr", "name": "Unified Frontend", "icon": "unfr.png", "href": "../product-bricks/landing_pages/unfr.html", "description": ""}, {"brickId": "copo", "name": "Consumer Portal", "icon": "copo.png", "href": "../product-bricks/landing_pages/copo.html", "description": ""}], "otherTeamDependencies": [{"teamId": "buyer-growth-discovery", "name": "Buyer Growth - Discovery", "type": "stream-aligned", "groupName": "Marketplace Growth", "href": "landing_pages/buyer-growth-discovery.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-frontend-core", "name": "Experience Platform - Frontend Core", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/marketplace-foundations-frontend-core.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "marketplace-growth", "groupName": "Marketplace Growth"}], "groups": [], "teamHeadcount": 59, "rollupHeadcount": 63}, {"id": "merchant-platform", "name": "Merchant & Partner Platform", "mission": "Own professional-seller tooling, leads, and the dedicated partner integration platform that monetize professional supply and the ecosystem.", "groupDirectHeadcount": {"headcount": 4, "description": "Provide cross-team direction, portfolio tradeoffs, architecture coherence, and talent quality across Merchant & Partner Platform."}, "teams": [{"id": "merchant-platform-professional-seller-dealer-storefront", "name": "Professional Seller & Storefront Platform", "type": "stream-aligned", "description": "Own the professional-seller master entity, portfolio, performance, visibility management, and storefront acquisition.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-run-a-storefront", "name": "Run a Storefront", "icon": "pro-seller-run-a-storefront.png", "href": "../product-bricks/stream_pages/pro-seller-run-a-storefront.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "pro-seller-manage-demand-and-leads", "name": "Manage Demand and Leads", "icon": "pro-seller-manage-demand-and-leads.png", "href": "../product-bricks/stream_pages/pro-seller-manage-demand-and-leads.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "cpor", "name": "Classifieds Portfolio Management", "icon": "cpor.png", "href": "../product-bricks/landing_pages/cpor.html", "description": ""}, {"brickId": "cpma", "name": "Classifieds Performance Management", "icon": "cpma.png", "href": "../product-bricks/landing_pages/cpma.html", "description": ""}, {"brickId": "cvma", "name": "Classifieds Visibility Management", "icon": "cvma.png", "href": "../product-bricks/landing_pages/cvma.html", "description": ""}, {"brickId": "ocac", "name": "Online Classifieds Acquisition", "icon": "ocac.png", "href": "../product-bricks/landing_pages/ocac.html", "description": ""}, {"brickId": "iess", "name": "Professional Seller Account Source of Truth", "icon": "iess.png", "href": "../product-bricks/landing_pages/iess.html", "description": ""}, {"brickId": "opma", "name": "Seller Inventory Workspace", "icon": "opma.png", "href": "../product-bricks/landing_pages/opma.html", "description": ""}, {"brickId": "inan", "name": "Professional Seller / Dealer / Storefront Analytics", "icon": "inan.png", "href": "../product-bricks/landing_pages/inan.html", "description": ""}, {"brickId": "avma", "name": "Storefront Visibility Management", "icon": "avma.png", "href": "../product-bricks/landing_pages/avma.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-tools-intelligence", "name": "Pro Tools & Seller Intelligence", "type": "platform", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-tools-intelligence.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "merchant-crm-contracts", "name": "Merchant CRM & Contracts", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/merchant-crm-contracts.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "payments-and-transactions", "name": "Payments & Transactions", "type": "platform", "groupName": "Payments & Transactions", "href": "landing_pages/payments-and-transactions.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}, {"id": "merchant-platform-intermediary-management", "name": "Intermediary & Directory Management", "type": "stream-aligned", "description": "Own intermediary member management, professional profile and directory, and storefront visibility presentation.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-run-a-storefront", "name": "Run a Storefront", "icon": "pro-seller-run-a-storefront.png", "href": "../product-bricks/stream_pages/pro-seller-run-a-storefront.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "imma", "name": "Professional Seller Member Management", "icon": "imma.png", "href": "../product-bricks/landing_pages/imma.html", "description": ""}, {"brickId": "ipdi", "name": "Professional Seller Profile & Public Storefront", "icon": "ipdi.png", "href": "../product-bricks/landing_pages/ipdi.html", "description": ""}, {"brickId": "avma", "name": "Storefront Visibility Management", "icon": "avma.png", "href": "../product-bricks/landing_pages/avma.html", "description": ""}, {"brickId": "iess", "name": "Professional Seller Account Source of Truth", "icon": "iess.png", "href": "../product-bricks/landing_pages/iess.html", "description": ""}, {"brickId": "cvma", "name": "Classifieds Visibility Management", "icon": "cvma.png", "href": "../product-bricks/landing_pages/cvma.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-professional-seller-dealer-storefront", "name": "Professional Seller & Storefront Platform", "type": "stream-aligned", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-professional-seller-dealer-storefront.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-frontend-core", "name": "Experience Platform - Frontend Core", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/marketplace-foundations-frontend-core.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}, {"id": "merchant-platform-operations", "name": "Lead Inbox & Seller Operations", "type": "stream-aligned", "description": "Own call tracking, the seeker leads inbox, and seller/seeker lead management for professional lead workflows.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-manage-demand-and-leads", "name": "Manage Demand and Leads", "icon": "pro-seller-manage-demand-and-leads.png", "href": "../product-bricks/stream_pages/pro-seller-manage-demand-and-leads.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "catr", "name": "Call Tracking", "icon": "catr.png", "href": "../product-bricks/landing_pages/catr.html", "description": ""}, {"brickId": "isli", "name": "Professional Seller / Dealer / Storefront Seeker Leads Inbox", "icon": "isli.png", "href": "../product-bricks/landing_pages/isli.html", "description": ""}, {"brickId": "slma", "name": "Seller Lead Management", "icon": "slma.png", "href": "../product-bricks/landing_pages/slma.html", "description": ""}, {"brickId": "sklm", "name": "Seeker Lead Management", "icon": "sklm.png", "href": "../product-bricks/landing_pages/sklm.html", "description": ""}, {"brickId": "lxam", "name": "Lead x Agent Matching", "icon": "lxam.png", "href": "../product-bricks/landing_pages/lxam.html", "description": ""}, {"brickId": "cmse", "name": "Chat Messaging Services", "icon": "cmse.png", "href": "../product-bricks/landing_pages/cmse.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-leads-matching", "name": "Lead Scoring, Matching & Inventory Workspace", "type": "complicated-subsystem", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-leads-matching.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}, {"id": "merchant-platform-leads-matching", "name": "Lead Scoring, Matching & Inventory Workspace", "type": "complicated-subsystem", "description": "Own lead scoring, lead-to-agent matching, and the seller inventory workspace that powers professional operations.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-manage-demand-and-leads", "name": "Manage Demand and Leads", "icon": "pro-seller-manage-demand-and-leads.png", "href": "../product-bricks/stream_pages/pro-seller-manage-demand-and-leads.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "lesc", "name": "Lead Scoring", "icon": "lesc.png", "href": "../product-bricks/landing_pages/lesc.html", "description": ""}, {"brickId": "lxam", "name": "Lead x Agent Matching", "icon": "lxam.png", "href": "../product-bricks/landing_pages/lxam.html", "description": ""}, {"brickId": "opma", "name": "Seller Inventory Workspace", "icon": "opma.png", "href": "../product-bricks/landing_pages/opma.html", "description": ""}, {"brickId": "iess", "name": "Professional Seller Account Source of Truth", "icon": "iess.png", "href": "../product-bricks/landing_pages/iess.html", "description": ""}, {"brickId": "makn", "name": "Category Market Knowledge", "icon": "makn.png", "href": "../product-bricks/landing_pages/makn.html", "description": ""}, {"brickId": "slma", "name": "Seller Lead Management", "icon": "slma.png", "href": "../product-bricks/landing_pages/slma.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-tools-intelligence", "name": "Pro Tools & Seller Intelligence", "type": "platform", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-tools-intelligence.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "market-intelligence-and-pricing", "name": "Market Intelligence & Pricing", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/market-intelligence-and-pricing.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}, {"id": "merchant-platform-tools-intelligence", "name": "Pro Tools & Seller Intelligence", "type": "platform", "description": "Own the demand heatmap, off-platform advertising, pro-tool foundation, and professional-seller analytics.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-run-a-storefront", "name": "Run a Storefront", "icon": "pro-seller-run-a-storefront.png", "href": "../product-bricks/stream_pages/pro-seller-run-a-storefront.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "pro-seller-manage-demand-and-leads", "name": "Manage Demand and Leads", "icon": "pro-seller-manage-demand-and-leads.png", "href": "../product-bricks/stream_pages/pro-seller-manage-demand-and-leads.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "prma", "name": "Demand Heatmap", "icon": "prma.png", "href": "../product-bricks/landing_pages/prma.html", "description": ""}, {"brickId": "opad", "name": "Off-Platform Advertising", "icon": "opad.png", "href": "../product-bricks/landing_pages/opad.html", "description": ""}, {"brickId": "ptfo", "name": "Pro Tool Foundation", "icon": "ptfo.png", "href": "../product-bricks/landing_pages/ptfo.html", "description": ""}, {"brickId": "inan", "name": "Professional Seller / Dealer / Storefront Analytics", "icon": "inan.png", "href": "../product-bricks/landing_pages/inan.html", "description": ""}, {"brickId": "buan", "name": "Business Analytics", "icon": "buan.png", "href": "../product-bricks/landing_pages/buan.html", "description": ""}, {"brickId": "makn", "name": "Category Market Knowledge", "icon": "makn.png", "href": "../product-bricks/landing_pages/makn.html", "description": ""}, {"brickId": "loin", "name": "Location Insights", "icon": "loin.png", "href": "../product-bricks/landing_pages/loin.html", "description": ""}], "otherTeamDependencies": [{"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "market-intelligence-and-pricing", "name": "Market Intelligence & Pricing", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/market-intelligence-and-pricing.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}, {"id": "partner-platform", "name": "Partner Platform", "type": "stream-aligned", "description": "Own partner API reliability, certification, sandbox-to-production, connector templates, feed diagnostics, and partner support for Merchant SaaS / Feed Integration Partners.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg4-p2", "name": "Merchant SaaS / Feed Integration Partner", "icon": "integration.png", "href": "../customers/landing_pages/cg4-p2.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-marketplace-integration-and-operations", "name": "Operate Marketplace Integration and Operations", "icon": "platform-operate-marketplace-integration-and-operations.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-integration-and-operations.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "svih", "name": "Software Vendors Integration Hub", "icon": "svih.png", "href": "../product-bricks/landing_pages/svih.html", "description": ""}, {"brickId": "clim", "name": "Classifieds Import", "icon": "clim.png", "href": "../product-bricks/landing_pages/clim.html", "description": ""}, {"brickId": "ause", "name": "Authentication Service", "icon": "ause.png", "href": "../product-bricks/landing_pages/ause.html", "description": ""}, {"brickId": "prba", "name": "Product Backoffice", "icon": "prba.png", "href": "../product-bricks/landing_pages/prba.html", "description": ""}, {"brickId": "doma", "name": "Document Management", "icon": "doma.png", "href": "../product-bricks/landing_pages/doma.html", "description": ""}, {"brickId": "iess", "name": "Professional Seller Account Source of Truth", "icon": "iess.png", "href": "../product-bricks/landing_pages/iess.html", "description": ""}, {"brickId": "clma", "name": "Classifieds Management", "icon": "clma.png", "href": "../product-bricks/landing_pages/clma.html", "description": ""}, {"brickId": "mema", "name": "Media Management", "icon": "mema.png", "href": "../product-bricks/landing_pages/mema.html", "description": ""}, {"brickId": "cmse", "name": "Chat Messaging Services", "icon": "cmse.png", "href": "../product-bricks/landing_pages/cmse.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-professional-seller-dealer-storefront", "name": "Professional Seller & Storefront Platform", "type": "stream-aligned", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-professional-seller-dealer-storefront.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "seller-growth-listing-funnel", "name": "Seller Growth - Listing Funnel", "type": "stream-aligned", "groupName": "Marketplace Growth", "href": "landing_pages/seller-growth-listing-funnel.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "developer-platform", "name": "Developer Platform", "type": "platform", "groupName": "Developer Platform", "href": "landing_pages/developer-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "merchant-platform", "groupName": "Merchant & Partner Platform"}], "groups": [], "teamHeadcount": 60, "rollupHeadcount": 64}, {"id": "marketplace-foundations", "name": "Marketplace Foundations", "mission": "Provide the consolidated durable platforms: identity & trust, payments, experience, data & intelligence, and developer platform.", "groupDirectHeadcount": {"headcount": 4, "description": "Provide cross-team direction, portfolio tradeoffs, architecture coherence, and talent quality across Marketplace Foundations."}, "teams": [], "groups": [{"id": "identity-and-trust", "name": "Identity & Trust", "mission": "Own the identity, consent, fraud, and verification control plane as one accountable trust function.", "groupDirectHeadcount": {"headcount": 0, "description": "Coordinate the Identity & Trust platform family within Marketplace Foundations."}, "teams": [{"id": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "description": "Own consent/session/credential/audit/access-policy data, fraud detection, and actor trust scoring as the marketplace trust control plane.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-contact-sellers-confidently", "name": "Contact Sellers Confidently", "icon": "buyer-contact-sellers-confidently.png", "href": "../product-bricks/stream_pages/buyer-contact-sellers-confidently.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "users-transact-on-a-trusted-marketplace", "name": "Transact on a Trusted Marketplace", "icon": "users-transact-on-a-trusted-marketplace.png", "href": "../product-bricks/stream_pages/users-transact-on-a-trusted-marketplace.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "ccma", "name": "Cookie Consent Management", "icon": "ccma.png", "href": "../product-bricks/landing_pages/ccma.html", "description": ""}, {"brickId": "frde", "name": "Fraud Detection", "icon": "frde.png", "href": "../product-bricks/landing_pages/frde.html", "description": ""}, {"brickId": "acsc", "name": "Actor Scoring", "icon": "acsc.png", "href": "../product-bricks/landing_pages/acsc.html", "description": ""}, {"brickId": "idve", "name": "Identity Verification", "icon": "idve.png", "href": "../product-bricks/landing_pages/idve.html", "description": ""}, {"brickId": "cmse", "name": "Chat Messaging Services", "icon": "cmse.png", "href": "../product-bricks/landing_pages/cmse.html", "description": ""}, {"brickId": "ause", "name": "Authentication Service", "icon": "ause.png", "href": "../product-bricks/landing_pages/ause.html", "description": ""}], "otherTeamDependencies": [{"teamId": "identity-verification-platform", "name": "Identity Verification & Account Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/identity-verification-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "payments-and-transactions", "name": "Payments & Transactions", "type": "platform", "groupName": "Payments & Transactions", "href": "landing_pages/payments-and-transactions.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "identity-and-trust", "groupName": "Identity & Trust"}, {"id": "identity-verification-platform", "name": "Identity Verification & Account Platform", "type": "platform", "description": "Own identity verification (KYC), privacy services, and user/account management for buyers, sellers, and operators.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-contact-sellers-confidently", "name": "Contact Sellers Confidently", "icon": "buyer-contact-sellers-confidently.png", "href": "../product-bricks/stream_pages/buyer-contact-sellers-confidently.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "users-transact-on-a-trusted-marketplace", "name": "Transact on a Trusted Marketplace", "icon": "users-transact-on-a-trusted-marketplace.png", "href": "../product-bricks/stream_pages/users-transact-on-a-trusted-marketplace.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "platform-operate-marketplace-integration-and-operations", "name": "Operate Marketplace Integration and Operations", "icon": "platform-operate-marketplace-integration-and-operations.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-integration-and-operations.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "idve", "name": "Identity Verification", "icon": "idve.png", "href": "../product-bricks/landing_pages/idve.html", "description": ""}, {"brickId": "prse", "name": "Privacy Services", "icon": "prse.png", "href": "../product-bricks/landing_pages/prse.html", "description": ""}, {"brickId": "usma", "name": "User Management", "icon": "usma.png", "href": "../product-bricks/landing_pages/usma.html", "description": ""}, {"brickId": "ccma", "name": "Cookie Consent Management", "icon": "ccma.png", "href": "../product-bricks/landing_pages/ccma.html", "description": ""}, {"brickId": "copo", "name": "Consumer Portal", "icon": "copo.png", "href": "../product-bricks/landing_pages/copo.html", "description": ""}], "otherTeamDependencies": [{"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "identity-and-trust", "groupName": "Identity & Trust"}], "groups": [], "teamHeadcount": 20, "rollupHeadcount": 20}, {"id": "payments-and-transactions", "name": "Payments & Transactions", "mission": "Own protected payments, the transaction ledger, buyer protection, and order completion as one rail.", "groupDirectHeadcount": {"headcount": 0, "description": "Coordinate the Payments & Transactions platform family within Marketplace Foundations."}, "teams": [{"id": "payments-and-transactions", "name": "Payments & Transactions", "type": "platform", "description": "Own the payment platform and ledger, buyer protection and payment instruments, and completed-transaction/order management for protected commerce.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "users-transact-on-a-trusted-marketplace", "name": "Transact on a Trusted Marketplace", "icon": "users-transact-on-a-trusted-marketplace.png", "href": "../product-bricks/stream_pages/users-transact-on-a-trusted-marketplace.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "seller-manage-live-listings", "name": "Manage Live Listings", "icon": "seller-manage-live-listings.png", "href": "../product-bricks/stream_pages/seller-manage-live-listings.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "papl", "name": "Payment Platform", "icon": "papl.png", "href": "../product-bricks/landing_pages/papl.html", "description": ""}, {"brickId": "hpfi", "name": "Buyer Protection & Payments", "icon": "hpfi.png", "href": "../product-bricks/landing_pages/hpfi.html", "description": ""}, {"brickId": "spma", "name": "Order / Completed Transaction Management", "icon": "spma.png", "href": "../product-bricks/landing_pages/spma.html", "description": ""}, {"brickId": "ccma", "name": "Cookie Consent Management", "icon": "ccma.png", "href": "../product-bricks/landing_pages/ccma.html", "description": ""}, {"brickId": "frde", "name": "Fraud Detection", "icon": "frde.png", "href": "../product-bricks/landing_pages/frde.html", "description": ""}, {"brickId": "orma", "name": "Fulfillment and Shipping Preferences", "icon": "orma.png", "href": "../product-bricks/landing_pages/orma.html", "description": ""}], "otherTeamDependencies": [{"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "developer-platform", "name": "Developer Platform", "type": "platform", "groupName": "Developer Platform", "href": "landing_pages/developer-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "payments-and-transactions", "groupName": "Payments & Transactions"}], "groups": [], "teamHeadcount": 10, "rollupHeadcount": 10}, {"id": "experience-platform", "name": "Experience Platform", "mission": "Own shared frontend, mobile, messaging, content, notifications, CRM, and contracts foundations.", "groupDirectHeadcount": {"headcount": 0, "description": "Coordinate the Experience Platform platform family within Marketplace Foundations."}, "teams": [{"id": "marketplace-foundations-frontend-core", "name": "Experience Platform - Frontend Core", "type": "platform", "description": "Own the design system, unified frontend, and unified mobile apps foundation that all customer experiences build on.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-shared-experience-foundation", "name": "Operate Shared Experience Foundation", "icon": "platform-operate-shared-experience-foundation.png", "href": "../product-bricks/stream_pages/platform-operate-shared-experience-foundation.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "buyer-browse-interesting-listings", "name": "Browse Interesting Listings", "icon": "buyer-browse-interesting-listings.png", "href": "../product-bricks/stream_pages/buyer-browse-interesting-listings.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "desy", "name": "Design System", "icon": "desy.png", "href": "../product-bricks/landing_pages/desy.html", "description": ""}, {"brickId": "unfr", "name": "Unified Frontend", "icon": "unfr.png", "href": "../product-bricks/landing_pages/unfr.html", "description": ""}, {"brickId": "umaf", "name": "Unified Mobile Apps Foundation", "icon": "umaf.png", "href": "../product-bricks/landing_pages/umaf.html", "description": ""}, {"brickId": "ubws", "name": "Unified B2C Web Shell", "icon": "ubws.png", "href": "../product-bricks/landing_pages/ubws.html", "description": ""}, {"brickId": "copo", "name": "Consumer Portal", "icon": "copo.png", "href": "../product-bricks/landing_pages/copo.html", "description": ""}], "otherTeamDependencies": [{"teamId": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "groupName": "Experience Platform", "href": "landing_pages/experience-services-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "developer-platform", "name": "Developer Platform", "type": "platform", "groupName": "Developer Platform", "href": "landing_pages/developer-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "experience-platform", "groupName": "Experience Platform"}, {"id": "experience-services-platform", "name": "Experience Services Platform", "type": "platform", "description": "Own chat messaging services, content management, and the notification service that power cross-journey communication.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "buyer-search-save-and-return", "name": "Search, Save, and Return", "icon": "buyer-search-save-and-return.png", "href": "../product-bricks/stream_pages/buyer-search-save-and-return.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "buyer-contact-sellers-confidently", "name": "Contact Sellers Confidently", "icon": "buyer-contact-sellers-confidently.png", "href": "../product-bricks/stream_pages/buyer-contact-sellers-confidently.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "platform-operate-shared-experience-foundation", "name": "Operate Shared Experience Foundation", "icon": "platform-operate-shared-experience-foundation.png", "href": "../product-bricks/stream_pages/platform-operate-shared-experience-foundation.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "cmse", "name": "Chat Messaging Services", "icon": "cmse.png", "href": "../product-bricks/landing_pages/cmse.html", "description": ""}, {"brickId": "coma", "name": "Content Management", "icon": "coma.png", "href": "../product-bricks/landing_pages/coma.html", "description": ""}, {"brickId": "nose", "name": "Notification Service", "icon": "nose.png", "href": "../product-bricks/landing_pages/nose.html", "description": ""}, {"brickId": "copo", "name": "Consumer Portal", "icon": "copo.png", "href": "../product-bricks/landing_pages/copo.html", "description": ""}, {"brickId": "ccma", "name": "Cookie Consent Management", "icon": "ccma.png", "href": "../product-bricks/landing_pages/ccma.html", "description": ""}, {"brickId": "acsc", "name": "Actor Scoring", "icon": "acsc.png", "href": "../product-bricks/landing_pages/acsc.html", "description": ""}], "otherTeamDependencies": [{"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "developer-platform", "name": "Developer Platform", "type": "platform", "groupName": "Developer Platform", "href": "landing_pages/developer-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "experience-platform", "groupName": "Experience Platform"}, {"id": "merchant-crm-contracts", "name": "Merchant CRM & Contracts", "type": "platform", "description": "Own B2B and B2C CRM and the unified contracts gateway that govern professional-seller relationships and agreements.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "pro-seller-run-a-storefront", "name": "Run a Storefront", "icon": "pro-seller-run-a-storefront.png", "href": "../product-bricks/stream_pages/pro-seller-run-a-storefront.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "platform-operate-marketplace-integration-and-operations", "name": "Operate Marketplace Integration and Operations", "icon": "platform-operate-marketplace-integration-and-operations.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-integration-and-operations.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "b2cr", "name": "B2B CRM", "icon": "b2cr.png", "href": "../product-bricks/landing_pages/b2cr.html", "description": ""}, {"brickId": "b2cc", "name": "B2C CRM", "icon": "b2cc.png", "href": "../product-bricks/landing_pages/b2cc.html", "description": ""}, {"brickId": "ucga", "name": "Unified Contracts Gateway", "icon": "ucga.png", "href": "../product-bricks/landing_pages/ucga.html", "description": ""}, {"brickId": "iess", "name": "Professional Seller Account Source of Truth", "icon": "iess.png", "href": "../product-bricks/landing_pages/iess.html", "description": ""}, {"brickId": "papl", "name": "Payment Platform", "icon": "papl.png", "href": "../product-bricks/landing_pages/papl.html", "description": ""}], "otherTeamDependencies": [{"teamId": "merchant-platform-professional-seller-dealer-storefront", "name": "Professional Seller & Storefront Platform", "type": "stream-aligned", "groupName": "Merchant & Partner Platform", "href": "landing_pages/merchant-platform-professional-seller-dealer-storefront.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "payments-and-transactions", "name": "Payments & Transactions", "type": "platform", "groupName": "Payments & Transactions", "href": "landing_pages/payments-and-transactions.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "experience-platform", "groupName": "Experience Platform"}], "groups": [], "teamHeadcount": 30, "rollupHeadcount": 30}, {"id": "data-and-intelligence", "name": "Marketplace Data & Intelligence", "mission": "Own the data platform, reference data, analytics, pricing intelligence, and gated data monetization.", "groupDirectHeadcount": {"headcount": 0, "description": "Coordinate the Marketplace Data & Intelligence platform family within Marketplace Foundations."}, "teams": [{"id": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "description": "Own the data foundation, data platform, and unstructured data processing that all analytics and intelligence depend on.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-marketplace-data-and-intelligence", "name": "Operate Marketplace Data and Intelligence", "icon": "platform-operate-marketplace-data-and-intelligence.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-data-and-intelligence.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "dafo", "name": "Data Foundation", "icon": "dafo.png", "href": "../product-bricks/landing_pages/dafo.html", "description": ""}, {"brickId": "dapl", "name": "Data Platform", "icon": "dapl.png", "href": "../product-bricks/landing_pages/dapl.html", "description": ""}, {"brickId": "udpr", "name": "Unstructured Data Processing", "icon": "udpr.png", "href": "../product-bricks/landing_pages/udpr.html", "description": ""}, {"brickId": "ustr", "name": "User Tracking", "icon": "ustr.png", "href": "../product-bricks/landing_pages/ustr.html", "description": ""}, {"brickId": "geor", "name": "GeoRef", "icon": "geor.png", "href": "../product-bricks/landing_pages/geor.html", "description": ""}], "otherTeamDependencies": [{"teamId": "developer-platform", "name": "Developer Platform", "type": "platform", "groupName": "Developer Platform", "href": "landing_pages/developer-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence"}, {"id": "marketplace-foundations-data-2", "name": "Geo, Catalog & Tracking Data", "type": "platform", "description": "Own geo reference, listing-attribute knowledge, location insights, and user-tracking data foundations.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "seller-price-with-confidence", "name": "Price with Confidence", "icon": "seller-price-with-confidence.png", "href": "../product-bricks/stream_pages/seller-price-with-confidence.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "platform-operate-shared-experience-foundation", "name": "Operate Shared Experience Foundation", "icon": "platform-operate-shared-experience-foundation.png", "href": "../product-bricks/stream_pages/platform-operate-shared-experience-foundation.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "geor", "name": "GeoRef", "icon": "geor.png", "href": "../product-bricks/landing_pages/geor.html", "description": ""}, {"brickId": "prkn", "name": "Listing Attribute Knowledge", "icon": "prkn.png", "href": "../product-bricks/landing_pages/prkn.html", "description": ""}, {"brickId": "loin", "name": "Location Insights", "icon": "loin.png", "href": "../product-bricks/landing_pages/loin.html", "description": ""}, {"brickId": "ustr", "name": "User Tracking", "icon": "ustr.png", "href": "../product-bricks/landing_pages/ustr.html", "description": ""}, {"brickId": "dafo", "name": "Data Foundation", "icon": "dafo.png", "href": "../product-bricks/landing_pages/dafo.html", "description": ""}, {"brickId": "serp", "name": "Search Engine Results Page (SERP)", "icon": "serp.png", "href": "../product-bricks/landing_pages/serp.html", "description": ""}], "otherTeamDependencies": [{"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence"}, {"id": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "description": "Own business, product, marketing, and classifieds analytics that turn marketplace data into decision support.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-marketplace-data-and-intelligence", "name": "Operate Marketplace Data and Intelligence", "icon": "platform-operate-marketplace-data-and-intelligence.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-data-and-intelligence.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "buan", "name": "Business Analytics", "icon": "buan.png", "href": "../product-bricks/landing_pages/buan.html", "description": ""}, {"brickId": "pran", "name": "Product Analytics", "icon": "pran.png", "href": "../product-bricks/landing_pages/pran.html", "description": ""}, {"brickId": "maan", "name": "Marketing Analytics", "icon": "maan.png", "href": "../product-bricks/landing_pages/maan.html", "description": ""}, {"brickId": "clan", "name": "Classifieds Analytics", "icon": "clan.png", "href": "../product-bricks/landing_pages/clan.html", "description": ""}, {"brickId": "dapl", "name": "Data Platform", "icon": "dapl.png", "href": "../product-bricks/landing_pages/dapl.html", "description": ""}, {"brickId": "ustr", "name": "User Tracking", "icon": "ustr.png", "href": "../product-bricks/landing_pages/ustr.html", "description": ""}], "otherTeamDependencies": [{"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-data-2", "name": "Geo, Catalog & Tracking Data", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-foundations-data-2.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence"}, {"id": "market-intelligence-and-pricing", "name": "Market Intelligence & Pricing", "type": "platform", "description": "Own catalog consolidation, category content/knowledge, price estimation, pricing rules, the pricing engine, and pricing guidance.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}, {"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}], "streamDependencies": [{"streamId": "seller-price-with-confidence", "name": "Price with Confidence", "icon": "seller-price-with-confidence.png", "href": "../product-bricks/stream_pages/seller-price-with-confidence.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}, {"streamId": "buyer-search-save-and-return", "name": "Search, Save, and Return", "icon": "buyer-search-save-and-return.png", "href": "../product-bricks/stream_pages/buyer-search-save-and-return.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "seller-publish-a-good-listing-fast", "name": "Publish a Good Listing Fast", "icon": "seller-publish-a-good-listing-fast.png", "href": "../product-bricks/stream_pages/seller-publish-a-good-listing-fast.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}, {"streamId": "platform-operate-marketplace-data-and-intelligence", "name": "Operate Marketplace Data and Intelligence", "icon": "platform-operate-marketplace-data-and-intelligence.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-data-and-intelligence.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "hdco", "name": "Catalog Data Consolidation", "icon": "hdco.png", "href": "../product-bricks/landing_pages/hdco.html", "description": ""}, {"brickId": "eccr", "name": "Category Content Creation", "icon": "eccr.png", "href": "../product-bricks/landing_pages/eccr.html", "description": ""}, {"brickId": "makn", "name": "Category Market Knowledge", "icon": "makn.png", "href": "../product-bricks/landing_pages/makn.html", "description": ""}, {"brickId": "pres", "name": "Listing Price Estimation", "icon": "pres.png", "href": "../product-bricks/landing_pages/pres.html", "description": ""}, {"brickId": "mpup", "name": "Pricing Rule Updates", "icon": "mpup.png", "href": "../product-bricks/landing_pages/mpup.html", "description": ""}, {"brickId": "pvto", "name": "Pricing Guidance Engine", "icon": "pvto.png", "href": "../product-bricks/landing_pages/pvto.html", "description": ""}, {"brickId": "prpa", "name": "Pricing Guidance Page", "icon": "prpa.png", "href": "../product-bricks/landing_pages/prpa.html", "description": ""}, {"brickId": "dapl", "name": "Data Platform", "icon": "dapl.png", "href": "../product-bricks/landing_pages/dapl.html", "description": ""}, {"brickId": "loin", "name": "Location Insights", "icon": "loin.png", "href": "../product-bricks/landing_pages/loin.html", "description": ""}, {"brickId": "prkn", "name": "Listing Attribute Knowledge", "icon": "prkn.png", "href": "../product-bricks/landing_pages/prkn.html", "description": ""}], "otherTeamDependencies": [{"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-foundations-data-2", "name": "Geo, Catalog & Tracking Data", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-foundations-data-2.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence"}, {"id": "marketplace-data-monetization", "name": "Data Monetization & Marketing Automation", "type": "platform", "description": "Own data monetization products and marketing automation as the later, additive layer on top of governed data.", "teamHeadcount": {"headcount": 9, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg3-p1", "name": "Professional Merchant / Dealer / Storefront Manager", "icon": "storefront.png", "href": "../customers/landing_pages/cg3-p1.html", "description": ""}, {"customerId": "cg4-p2", "name": "Merchant SaaS / Feed Integration Partner", "icon": "integration.png", "href": "../customers/landing_pages/cg4-p2.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-marketplace-data-and-intelligence", "name": "Operate Marketplace Data and Intelligence", "icon": "platform-operate-marketplace-data-and-intelligence.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-data-and-intelligence.html", "description": "Supporting team \u2014 provides bricks/contracts this stream composes."}], "brickDependencies": [{"brickId": "damo", "name": "Data Monetization", "icon": "damo.png", "href": "../product-bricks/landing_pages/damo.html", "description": ""}, {"brickId": "maau", "name": "Marketing Automation", "icon": "maau.png", "href": "../product-bricks/landing_pages/maau.html", "description": ""}, {"brickId": "dapl", "name": "Data Platform", "icon": "dapl.png", "href": "../product-bricks/landing_pages/dapl.html", "description": ""}, {"brickId": "buan", "name": "Business Analytics", "icon": "buan.png", "href": "../product-bricks/landing_pages/buan.html", "description": ""}], "otherTeamDependencies": [{"teamId": "marketplace-data-platform", "name": "Marketplace Data Platform", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-data-platform.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "trust-and-identity", "name": "Identity & Trust Platform", "type": "platform", "groupName": "Identity & Trust", "href": "landing_pages/trust-and-identity.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}, {"teamId": "marketplace-analytics", "name": "Marketplace Analytics", "type": "platform", "groupName": "Marketplace Data & Intelligence", "href": "landing_pages/marketplace-analytics.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": ""}], "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence"}], "groups": [], "teamHeadcount": 49, "rollupHeadcount": 49}, {"id": "developer-platform", "name": "Developer Platform", "mission": "Own the cloud foundation, CI/CD, and QA tooling every team ships on.", "groupDirectHeadcount": {"headcount": 0, "description": "Coordinate the Developer Platform platform family within Marketplace Foundations."}, "teams": [{"id": "developer-platform", "name": "Developer Platform", "type": "platform", "description": "Own the AWS foundation, DevOps tooling, and QA tooling that every delivery team builds, tests, and ships on.", "teamHeadcount": {"headcount": 10, "description": "Cross-functional product team."}, "documentLinks": [], "customerDependencies": [{"customerId": "cg1-p1", "name": "Local Buyer / Seeker", "icon": "seeker.png", "href": "../customers/landing_pages/cg1-p1.html", "description": ""}, {"customerId": "cg2-p1", "name": "Casual Seller / Household Lister", "icon": "seller.png", "href": "../customers/landing_pages/cg2-p1.html", "description": ""}], "streamDependencies": [{"streamId": "platform-operate-marketplace-integration-and-operations", "name": "Operate Marketplace Integration and Operations", "icon": "platform-operate-marketplace-integration-and-operations.png", "href": "../product-bricks/stream_pages/platform-operate-marketplace-integration-and-operations.html", "description": "Lead team \u2014 accountable for this stream\u2019s outcomes, roadmap, and KPI."}], "brickDependencies": [{"brickId": "awfo", "name": "AWS Foundation", "icon": "awfo.png", "href": "../product-bricks/landing_pages/awfo.html", "description": ""}, {"brickId": "deto", "name": "DevOps Tooling", "icon": "deto.png", "href": "../product-bricks/landing_pages/deto.html", "description": ""}, {"brickId": "qato", "name": "QA Tooling", "icon": "qato.png", "href": "../product-bricks/landing_pages/qato.html", "description": ""}], "otherTeamDependencies": [], "groupId": "developer-platform", "groupName": "Developer Platform"}], "groups": [], "teamHeadcount": 10, "rollupHeadcount": 10}], "teamHeadcount": 0, "rollupHeadcount": 123}]};
+    const orgDesign = teamsData.orgDesign || {};
+    const teamTypes = orgDesign.teamTypes || [];
+    const dependencyTypes = orgDesign.teamDependencyTypes || [];
+
+    const typeColorMap = {};
+    teamTypes.forEach(type => { typeColorMap[type.id] = type.color || '#6b7280'; });
+    const typeNameMap = {};
+    teamTypes.forEach(type => { typeNameMap[type.id] = type.name || type.id; });
+
+    const dependencyTypePalette = ['#1d4ed8', '#047857', '#b45309', '#9333ea', '#dc2626', '#0891b2'];
+    const dependencyTypeColorMap = {};
+    dependencyTypes.forEach((type, index) => {
+        dependencyTypeColorMap[type.id] = dependencyTypePalette[index % dependencyTypePalette.length];
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat('en-US').format(value || 0);
+    }
+
+    function typeColor(typeId) {
+        return typeColorMap[typeId] || '#6b7280';
+    }
+
+    // Convert a #rrggbb color to rgba with the given alpha so overlapping
+    // force-graph nodes blend instead of forming a solid color block.
+    function withAlpha(hexColor, alpha) {
+        const hex = String(hexColor || '').replace('#', '');
+        if (hex.length !== 6) {
+            return hexColor;
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
+
+    // flatten teams across the recursive group tree
+    const flatTeams = [];
+    const flatGroups = [];
+    (function walk(groups) {
+        (groups || []).forEach(group => {
+            flatGroups.push(group);
+            (group.teams || []).forEach(team => flatTeams.push(team));
+            walk(group.groups || []);
+        });
+    })(teamsData.groups || []);
+
+    const totalHeadcount = (teamsData.groups || []).reduce((sum, group) => sum + (group.rollupHeadcount || 0), 0);
+    const typeCounts = {};
+    flatTeams.forEach(team => {
+        typeCounts[team.type] = (typeCounts[team.type] || 0) + 1;
+    });
+
+    function renderTypeLegend() {
+        let html = '<div class="section-title">Team Types</div><div class="legend-row">';
+        teamTypes.forEach(type => {
+            const count = typeCounts[type.id] || 0;
+            if (!count) return;
+            html += '<span class="legend-pill">' +
+                '<span class="legend-swatch" style="background-color:' + typeColor(type.id) + '"></span>' +
+                '<span class="legend-text">' +
+                '<span class="legend-name">' + escapeHtml(type.name || type.id) +
+                ' <span class="legend-count">(' + escapeHtml(String(count)) + ')</span></span>' +
+                (type.description ? '<span class="legend-desc">' + escapeHtml(type.description) + '</span>' : '') +
+                '</span></span>';
+        });
+        html += '</div>';
+        document.getElementById('TypeLegend').innerHTML = html;
+    }
+
+    function renderHeadcountDots(count, color, showLabel) {
+        const total = Math.max(Number(count) || 0, 0);
+        let dots = '';
+        for (let i = 0; i < total; i++) {
+            dots += '<span class="hc-dot" style="background-color:' + color + '"></span>';
+        }
+        const label = showLabel === false ? '' : '<span class="hc-dots-label">' + escapeHtml(String(total)) + ' FTE</span>';
+        return '<div class="hc-dots" title="' + escapeHtml(String(total)) + ' FTE">' + dots + label + '</div>';
+    }
+
+    function renderTeamCard(team) {
+        const color = typeColor(team.type);
+        const hc = (team.teamHeadcount || {}).headcount || 0;
+        let html = '<a class="team-card" target="_blank" style="border-left-color:' + color + '" href="landing_pages/' + escapeHtml(team.id) + '.html">';
+        html += '<span class="team-type" style="background-color:' + color + '">' + escapeHtml(typeNameMap[team.type] || team.type || 'team') + '</span>';
+        html += '<div class="team-name">' + escapeHtml(team.name) + '</div>';
+        if (team.description) {
+            html += '<div class="team-desc">' + escapeHtml(team.description) + '</div>';
+        }
+        html += renderHeadcountDots(hc, color);
+        const groups = [
+            renderLinkIconGroup('Customer', team.customerDependencies || [], '../customers/icons/', 'customer.png', 'round'),
+            renderLinkIconGroup('Stream', team.streamDependencies || [], '../product-bricks/icons/', 'brick.png', ''),
+            renderLinkIconGroup('Brick', team.brickDependencies || [], '../product-bricks/icons/', 'brick.png', ''),
+            renderLinkIconGroup('Team', team.otherTeamDependencies || [], 'icons/', 'logo.png', 'round')
+        ].filter(Boolean);
+        if (groups.length) {
+            html += '<div class="link-row">' +
+                groups.join('<span class="link-sep">&middot;</span>') + '</div>';
+        }
+        html += '</a>';
+        return html;
+    }
+
+    function renderLinkIconGroup(label, items, iconBase, defaultIcon, shape) {
+        if (!items || !items.length) {
+            return '';
+        }
+        const fallback = iconBase + defaultIcon;
+        let icons = '';
+        items.forEach(item => {
+            const src = item.icon ? iconBase + item.icon : fallback;
+            const cls = 'link-icon' + (shape === 'round' ? ' round' : '');
+            const title = label + ': ' + (item.name || '');
+            icons += '<img class="' + cls + '" src="' + escapeHtml(src) + '" alt="" title="' + escapeHtml(title) + '" ' +
+                'onerror="this.onerror=null;this.src=\'' + fallback + '\'">';
+        });
+        return '<span class="link-group">' + icons + '</span>';
+    }
+
+    let searchQuery = '';
+
+    function teamMatchesQuery(team, query) {
+        if (!query) return true;
+        const haystack = [
+            team.name,
+            team.description,
+            typeNameMap[team.type] || team.type,
+            team.groupName
+        ].filter(Boolean).join(' ').toLowerCase();
+        return query.split(/\s+/).filter(Boolean).every(word => haystack.indexOf(word) !== -1);
+    }
+
+    // Returns { html, teams, headcount } for a group, keeping only teams that match
+    // the query (and groups that still contain a match anywhere in their subtree).
+    function renderGroup(group, nested, query) {
+        const matchedTeams = (group.teams || []).filter(team => teamMatchesQuery(team, query));
+        const childResults = (group.groups || []).map(child => renderGroup(child, true, query)).filter(Boolean);
+
+        if (query && !matchedTeams.length && !childResults.length) {
+            return null;
+        }
+
+        const teamCount = matchedTeams.length + childResults.reduce((sum, child) => sum + child.teams, 0);
+        const headcount = matchedTeams.reduce((sum, team) => sum + ((team.teamHeadcount || {}).headcount || 0), 0)
+            + childResults.reduce((sum, child) => sum + child.headcount, 0);
+
+        let html = '<div class="group' + (nested ? ' nested' : '') + '">';
+        html += '<div class="group-head">';
+        html += '<span class="group-name">' + escapeHtml(group.name || group.id) + '</span>';
+        html += '<span class="group-hc">' + formatNumber(group.rollupHeadcount || 0) + ' FTE total</span>';
+        html += '</div>';
+        if (group.mission) {
+            html += '<div class="group-mission">' + escapeHtml(group.mission) + '</div>';
+        }
+        const direct = group.groupDirectHeadcount || {};
+        if (direct.headcount && !query) {
+            html += '<div class="group-direct">' +
+                '<div class="group-direct-text">Group leadership &amp; support: <strong>' + escapeHtml(String(direct.headcount)) + ' FTE</strong>' +
+                (direct.description ? ' &mdash; ' + escapeHtml(direct.description) : '') + '</div>' +
+                renderHeadcountDots(direct.headcount, '#94a3b8', false) +
+                '</div>';
+        }
+        if (matchedTeams.length) {
+            html += '<div class="team-grid">';
+            matchedTeams.forEach(team => { html += renderTeamCard(team); });
+            html += '</div>';
+        }
+        childResults.forEach(child => { html += child.html; });
+        html += '</div>';
+        return {html: html, teams: teamCount, headcount: headcount};
+    }
+
+    function renderHierarchy() {
+        const query = searchQuery;
+        const results = (teamsData.groups || []).map(group => renderGroup(group, false, query)).filter(Boolean);
+        let html = '<div class="hierarchy">';
+        if (!results.length) {
+            html += '<div class="dependency-empty">No teams match &ldquo;' + escapeHtml(query) + '&rdquo;.</div>';
+        } else {
+            results.forEach(result => { html += result.html; });
+        }
+        html += '</div>';
+        document.getElementById('Hierarchy').innerHTML = html;
+
+        const visibleTeams = results.reduce((sum, result) => sum + result.teams, 0);
+        const visibleHeadcount = results.reduce((sum, result) => sum + result.headcount, 0);
+        renderSearchSummary(visibleTeams, visibleHeadcount);
+    }
+
+    function renderSearchSummary(visibleTeams, visibleHeadcount) {
+        const el = document.getElementById('SearchSummary');
+        if (searchQuery) {
+            el.innerHTML = 'showing ' +
+                '<strong>' + formatNumber(visibleTeams) + '</strong> of ' + formatNumber(flatTeams.length) + ' teams' +
+                ' &middot; <strong>' + formatNumber(visibleHeadcount) + '</strong> FTE';
+        } else {
+            el.innerHTML = 'showing all <strong>' + formatNumber(flatTeams.length) + '</strong> teams &middot; <strong>' + formatNumber(totalHeadcount) + '</strong> FTE total';
+        }
+    }
+
+    function onTeamSearch(value) {
+        searchQuery = String(value || '').trim().toLowerCase();
+        document.getElementById('TeamSearchClear').hidden = !searchQuery;
+        renderHierarchy();
+    }
+
+    function clearTeamSearch() {
+        const input = document.getElementById('TeamSearch');
+        input.value = '';
+        onTeamSearch('');
+        input.focus();
+    }
+
+    document.getElementById('TeamSearch').addEventListener('input', event => onTeamSearch(event.target.value));
+
+    renderTypeLegend();
+    renderHierarchy();
+
+    /* ---------- Dependencies tab ---------- */
+    let dependenciesInitialized = false;
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {htmlLabels: false}
+    });
+
+    window.afterOpenTab = function (tabName) {
+        if (tabName === 'dependencies') {
+            renderDependenciesView();
+        }
+    };
+
+    function sanitizeMermaidId(value) {
+        return String(value || 'team').replace(/[^a-zA-Z0-9_]/g, '_').replace(/_+/g, '_');
+    }
+
+    function escapeMermaidLabel(value) {
+        return String(value || '')
+            .replaceAll('&', 'and').replaceAll('"', '').replaceAll("'", '')
+            .replaceAll('<', '').replaceAll('>', '')
+            .replaceAll('[', '(').replaceAll(']', ')')
+            .replaceAll('{', '(').replaceAll('}', ')').replaceAll('|', '/');
+    }
+
+    const teamNameMap = {};
+    flatTeams.forEach(team => { teamNameMap[team.id] = team.name || team.id; });
+
+    function buildEdges() {
+        const edges = [];
+        flatTeams.forEach(team => {
+            (team.otherTeamDependencies || []).forEach(dependency => {
+                if (!teamNameMap[dependency.teamId]) return;
+                edges.push({
+                    source: team.id,
+                    target: dependency.teamId,
+                    type: dependency.dependencyType || 'other',
+                    typeLabel: dependency.dependencyTypeName || dependency.dependencyType || 'depends on'
+                });
+            });
+        });
+        return edges;
+    }
+
+    function teamCatalog() {
+        return flatTeams.slice().sort((left, right) => (left.name || '').localeCompare(right.name || ''));
+    }
+
+    function renderChecklistItems(items, kind) {
+        if (!items.length) {
+            return '<div class="dependency-empty">No items available.</div>';
+        }
+        return items.map(item => {
+            const meta = kind === 'team' ? [item.groupName || '', typeNameMap[item.type] || item.type || ''].filter(Boolean).join(' | ') : (item.description || '');
+            const swatchColor = kind === 'team' ? typeColor(item.type) : (dependencyTypeColorMap[item.id] || '#9ca3af');
+            return '<label class="dependency-check-item">' +
+                '<input type="checkbox" class="dependency-' + kind + '-checkbox" value="' + escapeHtml(item.id) + '" checked onchange="renderDependenciesView()">' +
+                '<span class="dependency-swatch" style="background-color:' + swatchColor + '"></span>' +
+                '<span><span>' + escapeHtml(item.name) + '</span>' +
+                (meta ? '<span class="dependency-check-meta">' + escapeHtml(meta) + '</span>' : '') +
+                '</span></label>';
+        }).join('');
+    }
+
+    function setAllCheckboxes(selector, checked) {
+        document.querySelectorAll(selector).forEach(input => { input.checked = checked; });
+        renderDependenciesView();
+    }
+
+    function selectedValues(selector) {
+        return new Set(Array.from(document.querySelectorAll(selector)).filter(input => input.checked).map(input => input.value));
+    }
+
+    function renderDependenciesControls() {
+        const teams = teamCatalog();
+        const types = dependencyTypes.map(type => ({id: type.id, name: type.name || type.id, description: type.description || ''}));
+        return '<div class="dependency-controls">' +
+            '<div class="dependency-control-group">' +
+            '<div class="dependency-control-title">Teams</div>' +
+            '<div class="dependency-actions">' +
+            '<button class="dependency-action" type="button" onclick="setAllCheckboxes(\'.dependency-team-checkbox\', true)">Show all</button>' +
+            '<button class="dependency-action" type="button" onclick="setAllCheckboxes(\'.dependency-team-checkbox\', false)">Hide all</button>' +
+            '</div><div class="dependency-checklist">' +
+            renderChecklistItems(teams, 'team') +
+            '</div></div>' +
+            '<div class="dependency-control-group">' +
+            '<div class="dependency-control-title">Dependency Types</div>' +
+            '<div class="dependency-checklist">' +
+            renderChecklistItems(types, 'type') +
+            '</div></div>' +
+            '<div id="DependenciesSummary" class="dependency-summary"></div>' +
+            '</div>';
+    }
+
+    let dependencyView = 'force';
+    let forceGraphInstance = null;
+    let forceShowLabels = false;
+
+    function setDependencyView(view) {
+        dependencyView = view;
+        document.querySelectorAll('.view-toggle-btn').forEach(button => {
+            button.classList.toggle('active', button.getAttribute('data-view') === view);
+        });
+        const labelToggle = document.getElementById('ForceLabelToggle');
+        if (labelToggle) {
+            labelToggle.hidden = view !== 'force';
+        }
+        renderDependenciesView();
+    }
+
+    function setForceLabels(show) {
+        forceShowLabels = show;
+        if (forceGraphInstance && dependencyView === 'force') {
+            // trigger a redraw so nodeCanvasObject re-evaluates the flag
+            forceGraphInstance.nodeCanvasObjectMode(() => 'after');
+        }
+    }
+
+    function renderDependenciesView() {
+        const container = document.getElementById('DependenciesContent');
+        if (!container) return;
+
+        if (!dependenciesInitialized) {
+            container.innerHTML = '<div class="dependencies-layout">' +
+                renderDependenciesControls() +
+                '<div class="dependency-view">' +
+                '<div class="view-toggle">' +
+                '<button type="button" class="view-toggle-btn active" data-view="force" onclick="setDependencyView(\'force\')">2D force graph</button>' +
+                '<button type="button" class="view-toggle-btn" data-view="mermaid" onclick="setDependencyView(\'mermaid\')">Flow diagram</button>' +
+                '<label id="ForceLabelToggle" class="force-label-toggle"><input type="checkbox" onchange="setForceLabels(this.checked)"> Show labels</label>' +
+                '</div>' +
+                '<div id="DependenciesGraph" class="dependency-graph"></div>' +
+                '</div></div>';
+            dependenciesInitialized = true;
+        }
+
+        const selectedTeamIds = selectedValues('.dependency-team-checkbox');
+        const selectedTypeIds = selectedValues('.dependency-type-checkbox');
+        const edges = buildEdges().filter(edge =>
+            selectedTeamIds.has(edge.source) && selectedTeamIds.has(edge.target) && selectedTypeIds.has(edge.type));
+        const visibleTeamIds = new Set();
+        edges.forEach(edge => { visibleTeamIds.add(edge.source); visibleTeamIds.add(edge.target); });
+
+        document.getElementById('DependenciesSummary').innerHTML =
+            'Showing <strong>' + formatNumber(visibleTeamIds.size) + '</strong> connected teams &middot; ' +
+            '<strong>' + formatNumber(edges.length) + '</strong> dependencies &middot; ' +
+            '<strong>' + formatNumber(selectedTypeIds.size) + '</strong> of ' + formatNumber(dependencyTypes.length) + ' types active.';
+
+        const graphContainer = document.getElementById('DependenciesGraph');
+        forceGraphInstance = null;
+        graphContainer.classList.toggle('force', dependencyView === 'force');
+
+        if (!edges.length) {
+            graphContainer.innerHTML = '<div class="dependency-empty">Select at least two connected teams and one dependency type.</div>';
+            return;
+        }
+
+        if (dependencyView === 'force') {
+            renderForceGraph(graphContainer, edges, visibleTeamIds);
+        } else {
+            renderMermaidGraph(graphContainer, edges, visibleTeamIds);
+        }
+    }
+
+    function renderMermaidGraph(graphContainer, edges, visibleTeamIds) {
+        let diagram = 'flowchart LR\n';
+        visibleTeamIds.forEach(teamId => {
+            const team = flatTeams.find(candidate => candidate.id === teamId) || {};
+            const color = typeColor(team.type);
+            const id = sanitizeMermaidId(teamId);
+            diagram += id + '["' + escapeMermaidLabel(teamNameMap[teamId] || teamId) + '"]\n';
+            diagram += 'style ' + id + ' fill:#ffffff,stroke:' + color + ',stroke-width:2px\n';
+        });
+        edges.forEach((edge, index) => {
+            const sourceId = sanitizeMermaidId(edge.source);
+            const targetId = sanitizeMermaidId(edge.target);
+            diagram += sourceId + ' -->|' + escapeMermaidLabel(edge.typeLabel) + '| ' + targetId + '\n';
+            const linkColor = dependencyTypeColorMap[edge.type] || '#6b7280';
+            diagram += 'linkStyle ' + index + ' stroke:' + linkColor + ',stroke-width:1.5px\n';
+        });
+
+        const graphId = 'teams-dependency-graph';
+        graphContainer.innerHTML = '<div class="mermaid" id="' + graphId + '">' + diagram + '</div>';
+        mermaid.run({querySelector: '#' + graphId});
+    }
+
+    function renderForceGraph(graphContainer, edges, visibleTeamIds) {
+        if (typeof ForceGraph === 'undefined') {
+            graphContainer.innerHTML = '<div class="dependency-empty">Force graph library failed to load.</div>';
+            return;
+        }
+        graphContainer.innerHTML = '';
+
+        // Node size scales with the number of dependency links touching the team.
+        const degree = {};
+        edges.forEach(edge => {
+            degree[edge.source] = (degree[edge.source] || 0) + 1;
+            degree[edge.target] = (degree[edge.target] || 0) + 1;
+        });
+        const nodes = Array.from(visibleTeamIds).map(teamId => {
+            const team = flatTeams.find(candidate => candidate.id === teamId) || {};
+            return {id: teamId, name: teamNameMap[teamId] || teamId, type: team.type || '', val: (degree[teamId] || 1)};
+        });
+        const links = edges.map(edge => ({source: edge.source, target: edge.target, type: edge.type, typeLabel: edge.typeLabel}));
+
+        const Graph = ForceGraph()(graphContainer)
+            .nodeRelSize(5)
+            .nodeVal(() => 1)
+            .nodeLabel(node => escapeHtml(node.name))
+            .nodeColor(node => withAlpha(typeColor(node.type), 0.65))
+            .nodeCanvasObjectMode(() => 'after')
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                if (!forceShowLabels) return;
+                const label = node.name;
+                const fontSize = 12 / globalScale;
+                ctx.font = fontSize + 'px Ubuntu, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = '#374151';
+                ctx.fillText(label, node.x, node.y + 7);
+            })
+            .linkColor(link => dependencyTypeColorMap[link.type] || '#9ca3af')
+            .linkWidth(1.5)
+            .linkDirectionalArrowLength(4)
+            .linkDirectionalArrowRelPos(1)
+            .linkDirectionalParticles(1)
+            .linkDirectionalParticleSpeed(0.006)
+            .linkLabel(link => escapeHtml(link.typeLabel || link.type))
+            .onNodeClick(node => { window.open('landing_pages/' + node.id + '.html', '_blank'); })
+            .graphData({nodes: nodes, links: links});
+
+        forceGraphInstance = Graph;
+        sizeForceGraph();
+    }
+
+    function sizeForceGraph() {
+        if (!forceGraphInstance) return;
+        const container = document.getElementById('DependenciesGraph');
+        if (!container) return;
+        const w = container.clientWidth || container.offsetWidth;
+        const h = container.clientHeight || container.offsetHeight;
+        if (w > 0 && h > 0) {
+            forceGraphInstance.width(w).height(h);
+            if (typeof forceGraphInstance.d3ReheatSimulation === 'function') {
+                forceGraphInstance.d3ReheatSimulation();
+            }
+        }
+    }
+
+    window.addEventListener('resize', sizeForceGraph);
+</script>
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../start/index.html",
+      "label": "General Listings Marketplace Home"
+    },
+    {
+      "label": "Teams"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,839 @@
+{
+  "metadata": {
+    "domainId": "private-security-services-erp-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams of private-security service operations.",
+    "sources": [
+      "https://www.freematica.com/soluciones/sector-seguridad/",
+      "https://www.prnewswire.com/news-releases/zvoove-expands-global-footprint-with-acquisition-of-freematica-302239419.html"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Steps name the bricks they depend on."
+  },
+  "rootGroups": [
+    {
+      "name": "Commercial",
+      "description": "Contracts.",
+      "streams": [
+        {
+          "id": "win-and-price-security-contracts",
+          "name": "Win and Price Security Contracts",
+          "type": "outcome-based-stream",
+          "description": "Tenders priced from real post hours and convenio costs, turned into contracts with clear posts and post orders.",
+          "outcomes": [
+            "Tenders won above cost",
+            "Clean post definitions"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "squo",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "spay",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "scon",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "quote-flow",
+              "title": "Tender to contract",
+              "description": "Costing and contracting.",
+              "steps": [
+                {
+                  "id": "cost",
+                  "title": "Cost the service",
+                  "keyFacts": [
+                    "Night and holiday share drive cost"
+                  ],
+                  "painPoints": [
+                    "Selling below convenio cost"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "squo",
+                      "name": "Security Service Quote Costing",
+                      "description": "Prices a security service from post hours, night and holiday shares, guard category and convenio wage costs, plus supervision and equipment - so tenders are…",
+                      "how": "Cost engine."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "spay",
+                      "name": "Multi-Convention Security Payroll",
+                      "description": "Payroll that applies the security collective agreement and others (night, holiday, weekend, danger and weapon premiums, annual-hour balancing, rotations)…",
+                      "how": "Convenio tables."
+                    }
+                  ]
+                },
+                {
+                  "id": "contract",
+                  "title": "Define posts and post orders",
+                  "keyFacts": [
+                    "Posts, hours and consignas"
+                  ],
+                  "painPoints": [
+                    "Post orders on paper"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "scon",
+                      "name": "Security Service Contracts and Post Orders",
+                      "description": "Client contracts broken into services and posts (puestos) with hours, guard category, armed/unarmed, required qualifications and post orders (consignas) that…",
+                      "how": "Contracts."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Operations",
+      "description": "Rosters, coverage and field.",
+      "streams": [
+        {
+          "id": "staff-every-post-with-licensed-guards",
+          "name": "Staff Every Post with Licensed Guards",
+          "type": "outcome-based-stream",
+          "description": "Rosters that cover every post with guards who hold valid licences and respect rest rules.",
+          "outcomes": [
+            "Full coverage",
+            "No unlicensed guard on a post",
+            "Less scheduling time"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "cuad",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "lcns",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "gapp",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "roster-flow",
+              "title": "Monthly roster",
+              "description": "Build and publish.",
+              "steps": [
+                {
+                  "id": "generate",
+                  "title": "Generate the roster",
+                  "keyFacts": [
+                    "Licence, rest and annual-hour constraints"
+                  ],
+                  "painPoints": [
+                    "Excel cuadrantes"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cuad",
+                      "name": "Guard Rostering (Cuadrantes)",
+                      "description": "Builds monthly and annual rosters that cover every post 24/7 with guards who hold the right licence and training, respect convenio rest and annual-hour rules…",
+                      "how": "Solver."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "lcns",
+                      "name": "Licences, Qualifications and Training",
+                      "description": "Tracks each guard's professional identity card (TIP) and habilitations, weapon permits, specialisations and mandatory refresher training, and blocks rostering…",
+                      "how": "Eligibility."
+                    }
+                  ]
+                },
+                {
+                  "id": "publish",
+                  "title": "Publish to guards",
+                  "keyFacts": [
+                    "Guards see rosters in the app"
+                  ],
+                  "painPoints": [
+                    "Changes by phone"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "gapp",
+                      "name": "Guard Mobile App",
+                      "description": "App for vigilantes: roster, post orders, clock-in, rounds, incident reporting, payslips and…",
+                      "how": "App."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "cuad",
+                      "name": "Guard Rostering (Cuadrantes)",
+                      "description": "Builds monthly and annual rosters that cover every post 24/7 with guards who hold the right licence and training, respect convenio rest and annual-hour rules…",
+                      "how": "Publication."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "keep-posts-covered-in-real-time",
+          "name": "Keep Posts Covered in Real Time",
+          "type": "outcome-based-stream",
+          "description": "Detect uncovered posts within minutes and send a licensed relief.",
+          "outcomes": [
+            "Near-zero uncovered minutes",
+            "Faster relief"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "covr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ctrl",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "coverage-flow",
+              "title": "Gap to relief",
+              "description": "Live coverage.",
+              "steps": [
+                {
+                  "id": "detect",
+                  "title": "Detect a gap",
+                  "keyFacts": [
+                    "Missing clock-in vs roster"
+                  ],
+                  "painPoints": [
+                    "Client notices first"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "covr",
+                      "name": "Real-Time Post Coverage Monitoring",
+                      "description": "Compares the roster with live clock-ins and raises alerts when a post is uncovered or double-covered, then proposes relief…",
+                      "how": "Gap detection."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pres",
+                      "name": "Time and Presence Control",
+                      "description": "Legally compliant time recording (Spain's mandatory registro de jornada) by app, terminal or phone, with GPS and site…",
+                      "how": "Clock-ins."
+                    }
+                  ]
+                },
+                {
+                  "id": "relieve",
+                  "title": "Send relief",
+                  "keyFacts": [
+                    "Nearest eligible guard"
+                  ],
+                  "painPoints": [
+                    "Overtime limits"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "covr",
+                      "name": "Real-Time Post Coverage Monitoring",
+                      "description": "Compares the roster with live clock-ins and raises alerts when a post is uncovered or double-covered, then proposes relief…",
+                      "how": "Relief finder."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ctrl",
+                      "name": "Control Room Console",
+                      "description": "Central view for supervisors: coverage, rounds, incidents and guard messages across all sites, with task…",
+                      "how": "Console."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "patrol-and-report-on-site",
+          "name": "Patrol and Report On Site",
+          "type": "outcome-based-stream",
+          "description": "Guards follow post orders, complete rounds and report incidents with evidence.",
+          "outcomes": [
+            "Proven rounds",
+            "Fast incident escalation"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "pres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "gapp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rond",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "inci",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ctrl",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "field-flow",
+              "title": "Shift on site",
+              "description": "Guard shift.",
+              "steps": [
+                {
+                  "id": "clock",
+                  "title": "Clock in and read post orders",
+                  "keyFacts": [
+                    "Registro de jornada"
+                  ],
+                  "painPoints": [
+                    "Paper logs"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pres",
+                      "name": "Time and Presence Control",
+                      "description": "Legally compliant time recording (Spain's mandatory registro de jornada) by app, terminal or phone, with GPS and site…",
+                      "how": "Presence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "gapp",
+                      "name": "Guard Mobile App",
+                      "description": "App for vigilantes: roster, post orders, clock-in, rounds, incident reporting, payslips and…",
+                      "how": "Post orders."
+                    }
+                  ]
+                },
+                {
+                  "id": "patrol",
+                  "title": "Patrol checkpoints",
+                  "keyFacts": [
+                    "NFC/QR and GPS"
+                  ],
+                  "painPoints": [
+                    "Skipped checkpoints"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rond",
+                      "name": "Patrol Rounds and Checkpoints",
+                      "description": "Digital rounds with NFC/QR checkpoints and GPS validation, photos and comments, proving that patrols happened as…",
+                      "how": "Rounds."
+                    }
+                  ]
+                },
+                {
+                  "id": "report",
+                  "title": "Report incidents",
+                  "keyFacts": [
+                    "Photos and severity"
+                  ],
+                  "painPoints": [
+                    "Late reports"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "inci",
+                      "name": "Incident and Daily Reports",
+                      "description": "Guards report incidents and daily logs (partes) with photos; supervisors review and escalate; clients receive reports. Freematica claims 70% fewer incidents…",
+                      "how": "Incidents."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ctrl",
+                      "name": "Control Room Console",
+                      "description": "Central view for supervisors: coverage, rounds, incidents and guard messages across all sites, with task…",
+                      "how": "Escalation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Compliance, Pay and Bill",
+      "description": "Regulators, payroll, invoices.",
+      "streams": [
+        {
+          "id": "keep-licences-and-regulators-satisfied",
+          "name": "Keep Licences and Regulators Satisfied",
+          "type": "outcome-based-stream",
+          "description": "Every guard is licensed and trained, and authority audits are answered from system data.",
+          "outcomes": [
+            "No expired licences on duty",
+            "Audit-ready at any time"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "lcns",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sdoc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sreg",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "compliance-flow",
+              "title": "Licence and audit",
+              "description": "Compliance loop.",
+              "steps": [
+                {
+                  "id": "track",
+                  "title": "Track licences and training",
+                  "keyFacts": [
+                    "TIP, habilitations, refresher courses"
+                  ],
+                  "painPoints": [
+                    "Expired licences found by inspectors"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "lcns",
+                      "name": "Licences, Qualifications and Training",
+                      "description": "Tracks each guard's professional identity card (TIP) and habilitations, weapon permits, specialisations and mandatory refresher training, and blocks rostering…",
+                      "how": "Register."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "sdoc",
+                      "name": "Employee Records, Documents and e-Signature",
+                      "description": "Employee master data, contracts, subrogation files when contracts change supplier, documents and digital…",
+                      "how": "Documents."
+                    }
+                  ]
+                },
+                {
+                  "id": "report",
+                  "title": "Produce authority reports",
+                  "keyFacts": [
+                    "Segurpri audits"
+                  ],
+                  "painPoints": [
+                    "Manual compilation"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sreg",
+                      "name": "Regulatory Reporting to Security Authorities",
+                      "description": "Produces the records and reports security authorities audit: Spain's Policía Nacional private-security unit (Segurpri) audits and service communications,…",
+                      "how": "Reports."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "pay-guards-under-the-collective-agreement",
+          "name": "Pay Guards under the Collective Agreement",
+          "type": "outcome-based-stream",
+          "description": "Correct pay with premiums, rotations and annual-hour balancing under one or several conventions.",
+          "outcomes": [
+            "Fewer payroll errors",
+            "On-time pay"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "pres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "spay",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sdoc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "pay-flow",
+              "title": "Hours to pay",
+              "description": "Monthly payroll.",
+              "steps": [
+                {
+                  "id": "hours",
+                  "title": "Approve hours",
+                  "keyFacts": [
+                    "From presence control"
+                  ],
+                  "painPoints": [
+                    "Hours disputes"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pres",
+                      "name": "Time and Presence Control",
+                      "description": "Legally compliant time recording (Spain's mandatory registro de jornada) by app, terminal or phone, with GPS and site…",
+                      "how": "Hours."
+                    }
+                  ]
+                },
+                {
+                  "id": "run",
+                  "title": "Run multi-convention payroll",
+                  "keyFacts": [
+                    "Premiums and rotations"
+                  ],
+                  "painPoints": [
+                    "Convenio updates"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "spay",
+                      "name": "Multi-Convention Security Payroll",
+                      "description": "Payroll that applies the security collective agreement and others (night, holiday, weekend, danger and weapon premiums, annual-hour balancing, rotations)…",
+                      "how": "Engine."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "sdoc",
+                      "name": "Employee Records, Documents and e-Signature",
+                      "description": "Employee master data, contracts, subrogation files when contracts change supplier, documents and digital…",
+                      "how": "Employee data."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "invoice-services-rendered",
+          "name": "Invoice Services Rendered",
+          "type": "outcome-based-stream",
+          "description": "Invoices that match covered hours and contract terms, sent in each country's e-invoice format.",
+          "outcomes": [
+            "Fewer billing errors",
+            "Lower DSO"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "sinv",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "scon",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "bill-flow",
+              "title": "Hours to invoice",
+              "description": "Billing.",
+              "steps": [
+                {
+                  "id": "build",
+                  "title": "Build invoices from covered hours",
+                  "keyFacts": [
+                    "Contract rates and extras"
+                  ],
+                  "painPoints": [
+                    "Uncovered hours billed"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sinv",
+                      "name": "Service-Based Invoicing",
+                      "description": "Invoices from services rendered and covered hours against contract terms, including extras and penalties, with e-invoicing per…",
+                      "how": "Invoice run."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "scon",
+                      "name": "Security Service Contracts and Post Orders",
+                      "description": "Client contracts broken into services and posts (puestos) with hours, guard category, armed/unarmed, required qualifications and post orders (consignas) that…",
+                      "how": "Rates."
+                    }
+                  ]
+                },
+                {
+                  "id": "send",
+                  "title": "Send e-invoices",
+                  "keyFacts": [
+                    "Facturae, CFDI, DIAN"
+                  ],
+                  "painPoints": [
+                    "Rejections"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sinv",
+                      "name": "Service-Based Invoicing",
+                      "description": "Invoices from services rendered and covered hours against contract terms, including extras and penalties, with e-invoicing per…",
+                      "how": "e-invoice."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Clients and Steering",
+      "description": "Proof, profitability, LatAm.",
+      "streams": [
+        {
+          "id": "give-clients-proof-of-service",
+          "name": "Give Clients Proof of Service",
+          "type": "outcome-based-stream",
+          "description": "Client security managers see rounds, incidents and coverage for their sites.",
+          "outcomes": [
+            "Higher client trust",
+            "Fewer disputes"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "sptl",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rond",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "inci",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "proof-flow",
+              "title": "Proof to client",
+              "description": "Transparency.",
+              "steps": [
+                {
+                  "id": "share",
+                  "title": "Share proof in the portal",
+                  "keyFacts": [
+                    "Rounds and incidents"
+                  ],
+                  "painPoints": [
+                    "Monthly PDFs"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sptl",
+                      "name": "Client Security Portal",
+                      "description": "Secure client access to service validations, rounds, incident reports and…",
+                      "how": "Portal."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rond",
+                      "name": "Patrol Rounds and Checkpoints",
+                      "description": "Digital rounds with NFC/QR checkpoints and GPS validation, photos and comments, proving that patrols happened as…",
+                      "how": "Rounds."
+                    }
+                  ]
+                },
+                {
+                  "id": "review",
+                  "title": "Review incidents with client",
+                  "keyFacts": [
+                    "Severity and follow-up"
+                  ],
+                  "painPoints": [
+                    "No shared view"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "inci",
+                      "name": "Incident and Daily Reports",
+                      "description": "Guards report incidents and daily logs (partes) with photos; supervisors review and escalate; clients receive reports. Freematica claims 70% fewer incidents…",
+                      "how": "Incidents."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "steer-security-profitability",
+          "name": "Steer Profitability by Client and Branch",
+          "type": "outcome-based-stream",
+          "description": "Management sees margin per client, service and branch and acts on loss-making posts.",
+          "outcomes": [
+            "Loss-making posts found",
+            "Better renewals"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "sprf",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sint",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "steer-flow",
+              "title": "Measure and act",
+              "description": "Profitability.",
+              "steps": [
+                {
+                  "id": "measure",
+                  "title": "Measure margins",
+                  "keyFacts": [
+                    "Payroll cost vs invoices"
+                  ],
+                  "painPoints": [
+                    "Data in silos"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sprf",
+                      "name": "Profitability by Client, Service and Branch",
+                      "description": "Margin by client, service, post and branch from payroll cost, hours and…",
+                      "how": "Dashboard."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "sint",
+                      "name": "Integration Hub and Open API",
+                      "description": "Open API and event bus connecting HR, access control, accounting, risk prevention and authority…",
+                      "how": "Events."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "run-security-operations-in-latin-america",
+          "name": "Run Security Operations in Latin America",
+          "type": "outcome-based-stream",
+          "description": "Security companies in Mexico and Colombia run the same platform with local labour law, e-invoicing and regulators.",
+          "outcomes": [
+            "Local compliance",
+            "Shared product"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "stnt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sreg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "spay",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "latam-flow",
+              "title": "Country setup",
+              "description": "Country packs.",
+              "steps": [
+                {
+                  "id": "configure",
+                  "title": "Activate the country pack",
+                  "keyFacts": [
+                    "Labour law, CFDI/DIAN, regulator reports"
+                  ],
+                  "painPoints": [
+                    "Local forks"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "stnt",
+                      "name": "Tenant and Country Packs (Spain, Mexico, Colombia)",
+                      "description": "Tenants, roles and country packs for labour law, conventions, e-invoicing and security regulation in Spain, Mexico and…",
+                      "how": "Packs."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "sreg",
+                      "name": "Regulatory Reporting to Security Authorities",
+                      "description": "Produces the records and reports security authorities audit: Spain's Policía Nacional private-security unit (Segurpri) audits and service communications,…",
+                      "how": "Regulator reports."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "spay",
+                      "name": "Multi-Convention Security Payroll",
+                      "description": "Payroll that applies the security collective agreement and others (night, holiday, weekend, danger and weapon premiums, annual-hour balancing, rotations)…",
+                      "how": "Local payroll."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    }
+  ]
+}

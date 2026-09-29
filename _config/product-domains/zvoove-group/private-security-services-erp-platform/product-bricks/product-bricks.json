@@ -1,0 +1,1737 @@
+{
+  "metadata": {
+    "domainId": "private-security-services-erp-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of zvoove's private-security ERP (Freematica e-Satellite) for Spain and Latin America: Quote -> Contract -> Roster -> Cover -> Patrol and report -> Comply -> Pay -> Bill -> Steer.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Contracts and Commercial",
+            "Security Operations"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Workforce and Compliance",
+            "Pay, Bill and Insight"
+          ]
+        },
+        {
+          "row": 3,
+          "rootGroupNames": [
+            "Platform"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Contracts and Commercial",
+      "description": "Pricing and contracting security services.",
+      "subGroups": [
+        {
+          "name": "Quote to Contract",
+          "description": "Costing and post definitions.",
+          "bricks": [
+            {
+              "id": "squo",
+              "name": "Security Service Quote Costing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Prices a security service from post hours, night and holiday shares, guard category and convenio wage costs, plus supervision and equipment - so tenders are won without selling below cost.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-quote-sheet",
+                      "name": "Quote Sheet",
+                      "type": "web-component",
+                      "description": "Hour and cost build-up per post.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-quote-api",
+                            "type": "uses",
+                            "description": "Quotes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-quote-api",
+                      "name": "Quote API",
+                      "type": "api",
+                      "description": "Quotes and versions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-cost-engine",
+                      "name": "Cost Engine",
+                      "type": "stateless-service",
+                      "description": "Applies convenio wage tables and surcharges to hour profiles.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-convention-api",
+                            "type": "uses",
+                            "description": "Wage tables.",
+                            "targetBrickId": "spay"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "spay",
+                  "moduleId": "module-convention-api",
+                  "sourceModuleId": "module-cost-engine",
+                  "type": "uses",
+                  "description": "Collective agreement costs."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "service-quote",
+                  "moduleIds": [
+                    "module-quote-api",
+                    "module-cost-engine"
+                  ],
+                  "role": "own",
+                  "description": "System of record for quotes."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "scon",
+              "name": "Security Service Contracts and Post Orders",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Client contracts broken into services and posts (puestos) with hours, guard category, armed/unarmed, required qualifications and post orders (consignas) that guards must follow.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-contract-editor",
+                      "name": "Contract and Post Editor",
+                      "type": "web-component",
+                      "description": "Services, posts, schedules and post orders per client site.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-service-api",
+                            "type": "uses",
+                            "description": "Saves contracts."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-service-api",
+                      "name": "Service Contract API",
+                      "type": "api",
+                      "description": "Contracts, services, posts and post orders."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-service-store",
+                      "name": "Service Contract Service",
+                      "type": "stateful-service",
+                      "description": "Versioned contracts and posts."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "squo",
+                  "moduleId": "module-quote-api",
+                  "sourceModuleId": "module-service-store",
+                  "type": "context",
+                  "description": "Accepted quotes become contracts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "service-contract",
+                  "moduleIds": [
+                    "module-service-store",
+                    "module-service-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for contracts and posts."
+                },
+                {
+                  "assetId": "post-order",
+                  "moduleIds": [
+                    "module-service-store"
+                  ],
+                  "role": "own",
+                  "description": "System of record for post orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Security Operations",
+      "description": "Rostering, coverage and field work.",
+      "subGroups": [
+        {
+          "name": "Rostering and Coverage",
+          "description": "Cuadrantes and live coverage.",
+          "bricks": [
+            {
+              "id": "cuad",
+              "name": "Guard Rostering (Cuadrantes)",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Builds monthly and annual rosters that cover every post 24/7 with guards who hold the right licence and training, respect convenio rest and annual-hour rules and rotate fairly. Freematica claims 33% less scheduling time.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-roster-grid",
+                      "name": "Roster Grid",
+                      "type": "web-component",
+                      "description": "Posts by day and shift with assigned guards and rule warnings.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-roster-api",
+                            "type": "uses",
+                            "description": "Rosters."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-roster-api",
+                      "name": "Roster API",
+                      "type": "api",
+                      "description": "Rosters, shifts, swaps and publications."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-roster-solver",
+                      "name": "Roster Solver",
+                      "type": "stateless-service",
+                      "description": "Generates rosters under licence, rest, annual-hour and rotation constraints.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-licence-api",
+                            "type": "uses",
+                            "description": "Eligibility.",
+                            "targetBrickId": "lcns"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-roster-store",
+                      "name": "Roster Service",
+                      "type": "stateful-service",
+                      "description": "Published rosters and changes."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "scon",
+                  "moduleId": "module-service-api",
+                  "sourceModuleId": "module-roster-solver",
+                  "type": "context",
+                  "description": "Posts to cover."
+                },
+                {
+                  "targetBrickId": "lcns",
+                  "moduleId": "module-licence-api",
+                  "sourceModuleId": "module-roster-solver",
+                  "type": "uses",
+                  "description": "Only licensed guards."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "security-roster",
+                  "moduleIds": [
+                    "module-roster-store",
+                    "module-roster-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for rosters."
+                },
+                {
+                  "assetId": "guard-licence",
+                  "moduleIds": [
+                    "module-roster-solver"
+                  ],
+                  "role": "read",
+                  "description": "Eligibility."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "covr",
+              "name": "Real-Time Post Coverage Monitoring",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Compares the roster with live clock-ins and raises alerts when a post is uncovered or double-covered, then proposes relief guards.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-coverage-board",
+                      "name": "Coverage Board",
+                      "type": "web-component",
+                      "description": "Live status of every post.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-coverage-api",
+                            "type": "uses",
+                            "description": "Status."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-coverage-api",
+                      "name": "Coverage API",
+                      "type": "api",
+                      "description": "Post status and relief requests."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-gap-detector",
+                      "name": "Gap Detector",
+                      "type": "message-consumer",
+                      "description": "Detects missing clock-ins against the roster."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-relief-finder",
+                      "name": "Relief Finder",
+                      "type": "stateless-service",
+                      "description": "Finds nearby licensed guards within hour limits."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cuad",
+                  "moduleId": "module-roster-api",
+                  "sourceModuleId": "module-gap-detector",
+                  "type": "uses",
+                  "description": "Expected guards."
+                },
+                {
+                  "targetBrickId": "pres",
+                  "moduleId": "module-presence-api",
+                  "sourceModuleId": "module-gap-detector",
+                  "type": "uses",
+                  "description": "Actual clock-ins."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "security-roster",
+                  "moduleIds": [
+                    "module-relief-finder"
+                  ],
+                  "role": "write",
+                  "description": "Relief changes."
+                },
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-gap-detector"
+                  ],
+                  "role": "read",
+                  "description": "Clock-ins."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Field and Control Room",
+          "description": "Rounds, incidents, console and app.",
+          "bricks": [
+            {
+              "id": "rond",
+              "name": "Patrol Rounds and Checkpoints",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Digital rounds with NFC/QR checkpoints and GPS validation, photos and comments, proving that patrols happened as agreed.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-round-designer",
+                      "name": "Round Designer",
+                      "type": "web-component",
+                      "description": "Checkpoints, routes and frequencies per site.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-round-api",
+                            "type": "uses",
+                            "description": "Rounds."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-round-api",
+                      "name": "Round API",
+                      "type": "api",
+                      "description": "Round definitions and executions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-missed-round-alert",
+                      "name": "Missed Round Alert",
+                      "type": "daemon",
+                      "description": "Alerts when a round is late or incomplete."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-round-store",
+                      "name": "Round Execution Service",
+                      "type": "stateful-service",
+                      "description": "Checkpoint scans with time and location."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "scon",
+                  "moduleId": "module-service-api",
+                  "sourceModuleId": "module-round-designer",
+                  "type": "context",
+                  "description": "Rounds belong to posts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "patrol-round",
+                  "moduleIds": [
+                    "module-round-store",
+                    "module-round-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for rounds."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "inci",
+              "name": "Incident and Daily Reports",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Guards report incidents and daily logs (partes) with photos; supervisors review and escalate; clients receive reports. Freematica claims 70% fewer incidents reported by clients or audits.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-incident-review",
+                      "name": "Incident Review",
+                      "type": "web-component",
+                      "description": "Queue of incidents with severity and escalation.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-incident-api",
+                            "type": "uses",
+                            "description": "Incidents."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-incident-api",
+                      "name": "Incident API",
+                      "type": "api",
+                      "description": "Incidents, daily logs and escalations."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-escalation-notifier",
+                      "name": "Escalation Notifier",
+                      "type": "message-consumer",
+                      "description": "Notifies supervisors and client contacts by severity."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-incident-store",
+                      "name": "Incident Service",
+                      "type": "stateful-service",
+                      "description": "Incident records with evidence."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ctrl",
+                  "moduleId": "module-control-bff",
+                  "sourceModuleId": "module-escalation-notifier",
+                  "type": "uses",
+                  "description": "Control room receives escalations."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "incident-report",
+                  "moduleIds": [
+                    "module-incident-store",
+                    "module-incident-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for incidents."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ctrl",
+              "name": "Control Room Console",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Central view for supervisors: coverage, rounds, incidents and guard messages across all sites, with task dispatch.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-control-console",
+                      "name": "Control Console",
+                      "type": "web-component",
+                      "description": "Map and list of posts, alerts and tasks.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-control-bff",
+                            "type": "uses",
+                            "description": "Backend."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-control-bff",
+                      "name": "Control Room BFF",
+                      "type": "bff",
+                      "description": "Aggregates coverage, rounds and incidents."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "covr",
+                  "moduleId": "module-coverage-api",
+                  "sourceModuleId": "module-control-bff",
+                  "type": "uses",
+                  "description": "Coverage."
+                },
+                {
+                  "targetBrickId": "rond",
+                  "moduleId": "module-round-api",
+                  "sourceModuleId": "module-control-bff",
+                  "type": "uses",
+                  "description": "Rounds."
+                },
+                {
+                  "targetBrickId": "inci",
+                  "moduleId": "module-incident-api",
+                  "sourceModuleId": "module-control-bff",
+                  "type": "uses",
+                  "description": "Incidents."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "incident-report",
+                  "moduleIds": [
+                    "module-control-bff"
+                  ],
+                  "role": "read",
+                  "description": "Incidents."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "gapp",
+              "name": "Guard Mobile App",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "App for vigilantes: roster, post orders, clock-in, rounds, incident reporting, payslips and messages.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-guard-app",
+                      "name": "Guard App",
+                      "type": "mobile-component",
+                      "description": "Roster, post orders, rounds and reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-guard-bff",
+                            "type": "uses",
+                            "description": "Backend."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-guard-bff",
+                      "name": "Guard App BFF",
+                      "type": "bff",
+                      "description": "Aggregates roster, rounds, incidents and payslips."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cuad",
+                  "moduleId": "module-roster-api",
+                  "sourceModuleId": "module-guard-bff",
+                  "type": "uses",
+                  "description": "Roster."
+                },
+                {
+                  "targetBrickId": "rond",
+                  "moduleId": "module-round-api",
+                  "sourceModuleId": "module-guard-bff",
+                  "type": "uses",
+                  "description": "Rounds."
+                },
+                {
+                  "targetBrickId": "inci",
+                  "moduleId": "module-incident-api",
+                  "sourceModuleId": "module-guard-bff",
+                  "type": "uses",
+                  "description": "Reports."
+                },
+                {
+                  "targetBrickId": "pres",
+                  "moduleId": "module-presence-api",
+                  "sourceModuleId": "module-guard-bff",
+                  "type": "uses",
+                  "description": "Clock-in."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-guard-bff"
+                  ],
+                  "role": "write",
+                  "description": "Clock-ins."
+                },
+                {
+                  "assetId": "post-order",
+                  "moduleIds": [
+                    "module-guard-bff"
+                  ],
+                  "role": "read",
+                  "description": "Instructions."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Apple App Store and Google Play",
+                  "type": "distribution",
+                  "interface": "App stores",
+                  "description": "Distribution.",
+                  "sourceModuleId": "module-guard-app"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Workforce and Compliance",
+      "description": "Licences, presence, records and authorities.",
+      "subGroups": [
+        {
+          "name": "Compliance",
+          "description": "Licences and regulators.",
+          "bricks": [
+            {
+              "id": "lcns",
+              "name": "Licences, Qualifications and Training",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Tracks each guard's professional identity card (TIP) and habilitations, weapon permits, specialisations and mandatory refresher training, and blocks rostering of guards whose licences are missing or expired.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-licence-register",
+                      "name": "Licence Register",
+                      "type": "web-component",
+                      "description": "Licences, permits and training per guard with expiry.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-licence-api",
+                            "type": "uses",
+                            "description": "Licences."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-licence-api",
+                      "name": "Licence API",
+                      "type": "api",
+                      "description": "Eligibility checks and licence data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-expiry-monitor",
+                      "name": "Expiry Monitor",
+                      "type": "daemon",
+                      "description": "Warns before licences and training expire."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-licence-store",
+                      "name": "Licence Service",
+                      "type": "stateful-service",
+                      "description": "Licence and training records."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "guard-licence",
+                  "moduleIds": [
+                    "module-licence-store",
+                    "module-licence-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for licences."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "sreg",
+              "name": "Regulatory Reporting to Security Authorities",
+              "type": "integration",
+              "status": "invest",
+              "description": "Produces the records and reports security authorities audit: Spain's Policía Nacional private-security unit (Segurpri) audits and service communications, Colombia's Supervigilancia and Mexico's federal private-security registry, via reports and open APIs.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-audit-pack",
+                      "name": "Audit Pack",
+                      "type": "web-component",
+                      "description": "Generates authority audit reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-regulatory-api",
+                            "type": "uses",
+                            "description": "Reports."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-regulatory-api",
+                      "name": "Regulatory API",
+                      "type": "api",
+                      "description": "Report generation and submission status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-report-builder",
+                      "name": "Report Builder",
+                      "type": "message-consumer",
+                      "description": "Builds reports from contracts, rosters and licences."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-authority-connector",
+                      "name": "Authority Connector",
+                      "type": "integration",
+                      "description": "Submission channels and open APIs to authority platforms."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "lcns",
+                  "moduleId": "module-licence-api",
+                  "sourceModuleId": "module-report-builder",
+                  "type": "uses",
+                  "description": "Licence data."
+                },
+                {
+                  "targetBrickId": "scon",
+                  "moduleId": "module-service-api",
+                  "sourceModuleId": "module-report-builder",
+                  "type": "uses",
+                  "description": "Services."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "regulatory-filing",
+                  "moduleIds": [
+                    "module-report-builder",
+                    "module-regulatory-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for filings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Security authorities (Policía Nacional / Segurpri, Supervigilancia, SSPC)",
+                  "type": "regulator",
+                  "interface": "Reports and platforms",
+                  "description": "Mandatory reporting.",
+                  "sourceModuleId": "module-authority-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Workforce Records",
+          "description": "Presence and employee files.",
+          "bricks": [
+            {
+              "id": "pres",
+              "name": "Time and Presence Control",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Legally compliant time recording (Spain's mandatory registro de jornada) by app, terminal or phone, with GPS and site validation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-presence-review",
+                      "name": "Presence Review",
+                      "type": "web-component",
+                      "description": "Hours per guard with anomalies.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-presence-api",
+                            "type": "uses",
+                            "description": "Hours."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-presence-api",
+                      "name": "Presence API",
+                      "type": "api",
+                      "description": "Clock events, corrections and approvals."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-presence-store",
+                      "name": "Presence Service",
+                      "type": "stateful-service",
+                      "description": "Clock events and approved hours."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-terminal-connector",
+                      "name": "Terminal Connector",
+                      "type": "integration",
+                      "description": "Clocking terminals and IVR clock-in."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-presence-store",
+                    "module-presence-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for hours."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Clocking terminals",
+                  "type": "device",
+                  "interface": "Punch data",
+                  "description": "Presence.",
+                  "sourceModuleId": "module-terminal-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "sdoc",
+              "name": "Employee Records, Documents and e-Signature",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Employee master data, contracts, subrogation files when contracts change supplier, documents and digital signature.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-employee-file",
+                      "name": "Employee File",
+                      "type": "web-component",
+                      "description": "Guard records, contracts and documents.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-employee-api",
+                            "type": "uses",
+                            "description": "Employees."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-employee-api",
+                      "name": "Employee API",
+                      "type": "api",
+                      "description": "Employees, documents and signatures."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-employee-store",
+                      "name": "Employee Service",
+                      "type": "stateful-service",
+                      "description": "Employee master and documents."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-esign",
+                      "name": "e-Signature Connector",
+                      "type": "integration",
+                      "description": "Digital contract signing."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "employee-record",
+                  "moduleIds": [
+                    "module-employee-store",
+                    "module-employee-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for employees."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "e-Signature providers",
+                  "type": "service",
+                  "interface": "Signature API",
+                  "description": "Signatures.",
+                  "sourceModuleId": "module-esign"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pay, Bill and Insight",
+      "description": "Payroll, invoices, profitability and client transparency.",
+      "subGroups": [
+        {
+          "name": "Money",
+          "description": "Payroll and invoicing.",
+          "bricks": [
+            {
+              "id": "spay",
+              "name": "Multi-Convention Security Payroll",
+              "type": "service",
+              "status": "invest",
+              "description": "Payroll that applies the security collective agreement and others (night, holiday, weekend, danger and weapon premiums, annual-hour balancing, rotations) across several conventions and countries; Freematica claims 40% fewer payroll and billing errors.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-console",
+                      "name": "Payroll Console",
+                      "type": "web-component",
+                      "description": "Runs and checks.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-payroll-api",
+                            "type": "uses",
+                            "description": "Runs."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-api",
+                      "name": "Payroll API",
+                      "type": "api",
+                      "description": "Runs and payslips."
+                    },
+                    {
+                      "id": "module-convention-api",
+                      "name": "Convention API",
+                      "type": "api",
+                      "description": "Wage tables and premiums by convention."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-batch",
+                      "name": "Payroll Batch",
+                      "type": "daemon",
+                      "description": "Gross-to-net per period."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-convention-store",
+                      "name": "Convention Store",
+                      "type": "stateful-service",
+                      "description": "Versioned conventions."
+                    },
+                    {
+                      "id": "module-gross-net",
+                      "name": "Gross-to-Net Service",
+                      "type": "service",
+                      "description": "ES, MX and CO tax and social security."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pres",
+                  "moduleId": "module-presence-api",
+                  "sourceModuleId": "module-payroll-batch",
+                  "type": "uses",
+                  "description": "Approved hours."
+                },
+                {
+                  "targetBrickId": "sdoc",
+                  "moduleId": "module-employee-api",
+                  "sourceModuleId": "module-payroll-batch",
+                  "type": "uses",
+                  "description": "Employees."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "payroll-result",
+                  "moduleIds": [
+                    "module-gross-net",
+                    "module-payroll-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for payroll."
+                },
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-payroll-batch"
+                  ],
+                  "role": "read",
+                  "description": "Hours."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "sinv",
+              "name": "Service-Based Invoicing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Invoices from services rendered and covered hours against contract terms, including extras and penalties, with e-invoicing per country.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-console",
+                      "name": "Invoice Console",
+                      "type": "web-component",
+                      "description": "Invoice runs and differences.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-invoice-api",
+                            "type": "uses",
+                            "description": "Invoices."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-api",
+                      "name": "Invoice API",
+                      "type": "api",
+                      "description": "Invoices and credit notes."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-run",
+                      "name": "Invoice Run",
+                      "type": "daemon",
+                      "description": "Monthly invoicing from covered hours."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-einvoice",
+                      "name": "e-Invoice Connector",
+                      "type": "integration",
+                      "description": "Spanish Facturae/Verifactu, Mexican CFDI and Colombian electronic invoicing."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "scon",
+                  "moduleId": "module-service-api",
+                  "sourceModuleId": "module-invoice-run",
+                  "type": "uses",
+                  "description": "Rates."
+                },
+                {
+                  "targetBrickId": "pres",
+                  "moduleId": "module-presence-api",
+                  "sourceModuleId": "module-invoice-run",
+                  "type": "uses",
+                  "description": "Covered hours."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "service-invoice",
+                  "moduleIds": [
+                    "module-invoice-api",
+                    "module-invoice-run"
+                  ],
+                  "role": "own",
+                  "description": "System of record for invoices."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Tax authority e-invoicing systems (AEAT, SAT, DIAN)",
+                  "type": "regulator",
+                  "interface": "e-invoice",
+                  "description": "Mandatory e-invoicing.",
+                  "sourceModuleId": "module-einvoice"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Insight and Client",
+          "description": "Profitability and portal.",
+          "bricks": [
+            {
+              "id": "sprf",
+              "name": "Profitability by Client, Service and Branch",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Margin by client, service, post and branch from payroll cost, hours and invoices.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-profit-dashboard",
+                      "name": "Profitability Dashboard",
+                      "type": "web-component",
+                      "description": "Margins and trends.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-profit-api",
+                            "type": "uses",
+                            "description": "Metrics."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-profit-api",
+                      "name": "Profitability API",
+                      "type": "api",
+                      "description": "Metrics."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-elt",
+                      "name": "ELT Pipeline",
+                      "type": "daemon",
+                      "description": "Loads data."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "sint",
+                  "moduleId": "module-event-bus",
+                  "sourceModuleId": "module-elt",
+                  "type": "uses",
+                  "description": "Events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "profitability-dataset",
+                  "moduleIds": [
+                    "module-profit-api",
+                    "module-elt"
+                  ],
+                  "role": "own",
+                  "description": "Curated dataset."
+                },
+                {
+                  "assetId": "payroll-result",
+                  "moduleIds": [
+                    "module-elt"
+                  ],
+                  "role": "read",
+                  "description": "Cost."
+                },
+                {
+                  "assetId": "service-invoice",
+                  "moduleIds": [
+                    "module-elt"
+                  ],
+                  "role": "read",
+                  "description": "Revenue."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "sptl",
+              "name": "Client Security Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Secure client access to service validations, rounds, incident reports and documentation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-client-portal",
+                      "name": "Client Portal",
+                      "type": "web-component",
+                      "description": "Per-site proof and documents.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-client-bff",
+                            "type": "uses",
+                            "description": "Backend."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-client-bff",
+                      "name": "Client Portal BFF",
+                      "type": "bff",
+                      "description": "Aggregates rounds, incidents, coverage and invoices."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rond",
+                  "moduleId": "module-round-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Rounds."
+                },
+                {
+                  "targetBrickId": "inci",
+                  "moduleId": "module-incident-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Incidents."
+                },
+                {
+                  "targetBrickId": "sinv",
+                  "moduleId": "module-invoice-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Invoices."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "patrol-round",
+                  "moduleIds": [
+                    "module-client-bff"
+                  ],
+                  "role": "read",
+                  "description": "Proof."
+                },
+                {
+                  "assetId": "incident-report",
+                  "moduleIds": [
+                    "module-client-bff"
+                  ],
+                  "role": "read",
+                  "description": "Reports."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform",
+      "description": "Integration and tenancy.",
+      "subGroups": [
+        {
+          "name": "Platform Services",
+          "description": "API and country packs.",
+          "bricks": [
+            {
+              "id": "sint",
+              "name": "Integration Hub and Open API",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Open API and event bus connecting HR, access control, accounting, risk prevention and authority platforms.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-public-api",
+                      "name": "Public API",
+                      "type": "api",
+                      "description": "REST API and webhooks."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-event-bus",
+                      "name": "Event Bus",
+                      "type": "message-queue",
+                      "description": "Domain events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-accounting-connector",
+                      "name": "Accounting Connector",
+                      "type": "integration",
+                      "description": "Accounting and risk-prevention systems."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "integration-event-log",
+                  "moduleIds": [
+                    "module-event-bus"
+                  ],
+                  "role": "own",
+                  "description": "Events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Customer HR, access-control and accounting systems",
+                  "type": "integration-consumer",
+                  "interface": "Open API",
+                  "description": "Consume data.",
+                  "moduleId": "module-public-api"
+                }
+              ]
+            },
+            {
+              "id": "stnt",
+              "name": "Tenant and Country Packs (Spain, Mexico, Colombia)",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Tenants, roles and country packs for labour law, conventions, e-invoicing and security regulation in Spain, Mexico and Colombia.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tenant-admin",
+                      "name": "Tenant Admin",
+                      "type": "web-component",
+                      "description": "Users, roles and countries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-country-api",
+                            "type": "uses",
+                            "description": "Config."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-country-api",
+                      "name": "Country Pack API",
+                      "type": "api",
+                      "description": "Active configuration per tenant."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-config-store",
+                      "name": "Configuration Service",
+                      "type": "stateful-service",
+                      "description": "Tenants and packs."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "tenant-configuration",
+                  "moduleIds": [
+                    "module-config-store",
+                    "module-country-api"
+                  ],
+                  "role": "own",
+                  "description": "Tenants."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

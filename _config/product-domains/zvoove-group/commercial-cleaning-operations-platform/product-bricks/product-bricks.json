@@ -1,0 +1,2481 @@
+{
+  "metadata": {
+    "domainId": "commercial-cleaning-operations-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of zvoove Clean's portfolio for commercial cleaning and facility services: fortytools, KleanApp, CleanManager, Leviy, Nocore Clean and adata payroll, organised along Quote -> Specify -> Plan -> Clean -> Prove -> Pay -> Bill -> Steer.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Sales and Contracts",
+            "Operations Planning"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Field Execution and Quality",
+            "People, Pay and Finance"
+          ]
+        },
+        {
+          "row": 3,
+          "rootGroupNames": [
+            "Intelligence and Platform"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Sales and Contracts",
+      "description": "Winning and specifying cleaning contracts.",
+      "subGroups": [
+        {
+          "name": "Quote to Contract",
+          "description": "Calculation, objects and contracts.",
+          "bricks": [
+            {
+              "id": "calc",
+              "name": "Quote Calculation and Performance Figures",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Calculates cleaning quotes from areas, room types, floor coverings, frequencies and performance figures (m² per hour), then prices hours with wage group, surcharges, materials and margin. The core of the quote workflow in fortytools and CleanManager cost calculation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-quote-builder",
+                      "name": "Quote Builder",
+                      "type": "web-component",
+                      "description": "Area-based calculation with performance figures and price scenarios.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-quote-api",
+                            "type": "uses",
+                            "description": "Saves quotes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-quote-api",
+                      "name": "Quote API",
+                      "type": "api",
+                      "description": "Quotes, versions and acceptance."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-price-engine",
+                      "name": "Price Engine",
+                      "type": "stateless-service",
+                      "description": "Turns hours and frequencies into prices with wage costs from the tariff.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tariff-api",
+                            "type": "uses",
+                            "description": "Wage group costs.",
+                            "targetBrickId": "cpyr"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-performance-figures",
+                      "name": "Performance Figure Library",
+                      "type": "stateful-service",
+                      "description": "Default and company-specific m²/h values per room type and covering."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "objr",
+                  "moduleId": "module-object-api",
+                  "sourceModuleId": "module-quote-builder",
+                  "type": "context",
+                  "description": "Quotes use the object's area register."
+                },
+                {
+                  "targetBrickId": "cpyr",
+                  "moduleId": "module-tariff-api",
+                  "sourceModuleId": "module-price-engine",
+                  "type": "uses",
+                  "description": "Wage costs per wage group."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "quote-calculation",
+                  "moduleIds": [
+                    "module-quote-api",
+                    "module-price-engine"
+                  ],
+                  "role": "own",
+                  "description": "System of record for quotes."
+                },
+                {
+                  "assetId": "cleaning-object",
+                  "moduleIds": [
+                    "module-quote-builder"
+                  ],
+                  "role": "read",
+                  "description": "Areas and room types."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "objr",
+              "name": "Cleaning Object and Service Specification Register",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Master data of every cleaning object (site): buildings, floors, rooms, areas, access instructions, keys and the service specification (Leistungsverzeichnis) of what is cleaned how often. Used by planning, checklists, audits and billing.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-object-editor",
+                      "name": "Object Editor",
+                      "type": "web-component",
+                      "description": "Rooms, areas, floor plans and service specification per object.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-object-api",
+                            "type": "uses",
+                            "description": "Edits objects."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-object-api",
+                      "name": "Object API",
+                      "type": "api",
+                      "description": "Objects, rooms, areas, frequencies and access data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-object-service",
+                      "name": "Object Service",
+                      "type": "stateful-service",
+                      "description": "Versioned object and specification data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-cafm-import",
+                      "name": "CAFM and Floor Plan Import",
+                      "type": "integration",
+                      "description": "Imports room books from CAFM systems and floor-plan files."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ccrm",
+                  "moduleId": "module-contract-api",
+                  "sourceModuleId": "module-object-api",
+                  "type": "context",
+                  "description": "Objects belong to client contracts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "cleaning-object",
+                  "moduleIds": [
+                    "module-object-service",
+                    "module-object-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for objects."
+                },
+                {
+                  "assetId": "service-specification",
+                  "moduleIds": [
+                    "module-object-service"
+                  ],
+                  "role": "own",
+                  "description": "System of record for service specifications."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Client CAFM systems",
+                  "type": "data",
+                  "interface": "Room book import",
+                  "description": "Areas and room data from clients.",
+                  "sourceModuleId": "module-cafm-import"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ccrm",
+              "name": "Client and Contract Management",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Client accounts, contacts, contracts with term, price, indexation and notice periods, and the sales pipeline for tenders and renewals.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-contract-workspace",
+                      "name": "Contract Workspace",
+                      "type": "web-component",
+                      "description": "Clients, contracts, renewals and price adjustments.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-contract-api",
+                            "type": "uses",
+                            "description": "Contracts."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-contract-api",
+                      "name": "Contract API",
+                      "type": "api",
+                      "description": "Clients, contracts, price agreements and renewal dates."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-renewal-monitor",
+                      "name": "Renewal and Indexation Monitor",
+                      "type": "daemon",
+                      "description": "Flags notice deadlines and wage-driven price adjustments."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-contract-service",
+                      "name": "Contract Service",
+                      "type": "stateful-service",
+                      "description": "Client and contract records."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "calc",
+                  "moduleId": "module-quote-api",
+                  "sourceModuleId": "module-contract-service",
+                  "type": "context",
+                  "description": "Accepted quotes become contracts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "client-contract",
+                  "moduleIds": [
+                    "module-contract-service",
+                    "module-contract-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for clients and contracts."
+                },
+                {
+                  "assetId": "quote-calculation",
+                  "moduleIds": [
+                    "module-contract-service"
+                  ],
+                  "role": "read",
+                  "description": "Accepted quote."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Operations Planning",
+      "description": "Who cleans what, when.",
+      "subGroups": [
+        {
+          "name": "Recurring and Mobile Planning",
+          "description": "Schedules and tours.",
+          "bricks": [
+            {
+              "id": "schp",
+              "name": "Site Staffing and Recurring Schedule Planning",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Plans who cleans which object when for recurring maintenance cleaning (Unterhaltsreinigung): target hours per object from the specification, staff assignments, part-time and minijob hour limits, and planned-versus-target hours.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-schedule-board",
+                      "name": "Schedule Board",
+                      "type": "web-component",
+                      "description": "Objects by weekday with assigned staff and hour budgets.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-schedule-api",
+                            "type": "uses",
+                            "description": "Plans."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-schedule-api",
+                      "name": "Schedule API",
+                      "type": "api",
+                      "description": "Recurring assignments, hour budgets and plan versions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-plan-checker",
+                      "name": "Plan Checker",
+                      "type": "stateless-service",
+                      "description": "Checks hour budgets, minijob earnings limits and qualifications.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tariff-api",
+                            "type": "uses",
+                            "description": "Earnings limits and wage groups.",
+                            "targetBrickId": "cpyr"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-schedule-service",
+                      "name": "Schedule Service",
+                      "type": "stateful-service",
+                      "description": "Recurring plans and assignments."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "objr",
+                  "moduleId": "module-object-api",
+                  "sourceModuleId": "module-schedule-service",
+                  "type": "context",
+                  "description": "Target hours per object."
+                },
+                {
+                  "targetBrickId": "hrst",
+                  "moduleId": "module-employee-api",
+                  "sourceModuleId": "module-schedule-board",
+                  "type": "uses",
+                  "description": "Employees, contracts and availability."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shift-plan",
+                  "moduleIds": [
+                    "module-schedule-service",
+                    "module-schedule-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for plans."
+                },
+                {
+                  "assetId": "service-specification",
+                  "moduleIds": [
+                    "module-plan-checker"
+                  ],
+                  "role": "read",
+                  "description": "Target hours."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rout",
+              "name": "Mobile Team and Route Planning",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Plans mobile teams for periodic and special cleaning (windows, floors, deep cleaning) across many objects with routes, vehicles and equipment.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-route-planner",
+                      "name": "Route Planner",
+                      "type": "web-component",
+                      "description": "Map-based team tours with time windows.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-route-api",
+                            "type": "uses",
+                            "description": "Routes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-route-api",
+                      "name": "Route API",
+                      "type": "api",
+                      "description": "Tours, stops, vehicles and equipment."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-route-optimizer",
+                      "name": "Route Optimizer",
+                      "type": "stateless-service",
+                      "description": "Sequences stops by time windows and travel time."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-maps-connector",
+                      "name": "Maps Connector",
+                      "type": "integration",
+                      "description": "Geocoding and travel times."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "task",
+                  "moduleId": "module-work-order-api",
+                  "sourceModuleId": "module-route-planner",
+                  "type": "uses",
+                  "description": "Special jobs to schedule."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shift-plan",
+                  "moduleIds": [
+                    "module-route-api"
+                  ],
+                  "role": "write",
+                  "description": "Tour assignments."
+                },
+                {
+                  "assetId": "work-order",
+                  "moduleIds": [
+                    "module-route-optimizer"
+                  ],
+                  "role": "read",
+                  "description": "Jobs to route."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Maps and routing providers",
+                  "type": "data",
+                  "interface": "Routing API",
+                  "description": "Travel times.",
+                  "sourceModuleId": "module-maps-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Exceptions and Extras",
+          "description": "Absences and work orders.",
+          "bricks": [
+            {
+              "id": "absn",
+              "name": "Absence and Same-Day Substitution",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Records sickness and leave, finds qualified substitutes who know the object and are within their hour limits, and notifies them in their language - the daily fire-fight of every cleaning operation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-absence-console",
+                      "name": "Absence Console",
+                      "type": "web-component",
+                      "description": "Today's absences, uncovered objects and suggested substitutes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-absence-api",
+                            "type": "uses",
+                            "description": "Absences."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-absence-api",
+                      "name": "Absence API",
+                      "type": "api",
+                      "description": "Sickness, leave and substitution requests."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-substitute-notifier",
+                      "name": "Substitute Notifier",
+                      "type": "message-consumer",
+                      "description": "Offers uncovered shifts to candidates via the app.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-cleaner-bff",
+                            "type": "uses",
+                            "description": "Push offers.",
+                            "targetBrickId": "capp"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-substitute-ranker",
+                      "name": "Substitute Ranker",
+                      "type": "stateless-service",
+                      "description": "Ranks by object knowledge, distance, hours left and language."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-absence-service",
+                      "name": "Absence Service",
+                      "type": "stateful-service",
+                      "description": "Absences and substitutions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "schp",
+                  "moduleId": "module-schedule-api",
+                  "sourceModuleId": "module-substitute-ranker",
+                  "type": "uses",
+                  "description": "Plans and hour budgets."
+                },
+                {
+                  "targetBrickId": "capp",
+                  "moduleId": "module-cleaner-bff",
+                  "sourceModuleId": "module-substitute-notifier",
+                  "type": "uses",
+                  "description": "Offers substitutes."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "absence-record",
+                  "moduleIds": [
+                    "module-absence-service",
+                    "module-absence-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for absences."
+                },
+                {
+                  "assetId": "shift-plan",
+                  "moduleIds": [
+                    "module-substitute-ranker"
+                  ],
+                  "role": "write",
+                  "description": "Substitutions update the plan."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "task",
+              "name": "Work Orders and Special Cleaning Jobs",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "One-off and periodic work orders beyond the recurring plan - window cleaning, carpet cleaning, construction final cleaning, event cleaning - with scope, materials and sign-off.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-work-order-board",
+                      "name": "Work Order Board",
+                      "type": "web-component",
+                      "description": "Open, scheduled and completed work orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-work-order-api",
+                            "type": "uses",
+                            "description": "Orders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-work-order-api",
+                      "name": "Work Order API",
+                      "type": "api",
+                      "description": "Work orders, scope, assignment and sign-off."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-work-order-service",
+                      "name": "Work Order Service",
+                      "type": "stateful-service",
+                      "description": "Work order records."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "objr",
+                  "moduleId": "module-object-api",
+                  "sourceModuleId": "module-work-order-service",
+                  "type": "context",
+                  "description": "Orders refer to objects."
+                },
+                {
+                  "targetBrickId": "tick",
+                  "moduleId": "module-ticket-api",
+                  "sourceModuleId": "module-work-order-api",
+                  "type": "context",
+                  "description": "Tickets can become work orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "work-order",
+                  "moduleIds": [
+                    "module-work-order-service",
+                    "module-work-order-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for work orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Field Execution and Quality",
+      "description": "Doing the work and proving it.",
+      "subGroups": [
+        {
+          "name": "Frontline",
+          "description": "App, attendance and checklists.",
+          "bricks": [
+            {
+              "id": "capp",
+              "name": "Cleaner Mobile App",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Multilingual app for cleaning staff: today's objects, tasks and checklists, clock-in, substitution offers, messages, payslips and leave requests - built for low-literacy, multilingual and part-time staff.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-cleaner-app",
+                      "name": "Cleaner App",
+                      "type": "mobile-component",
+                      "description": "Pictogram-led, multilingual app with offline mode.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-cleaner-bff",
+                            "type": "uses",
+                            "description": "App backend."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-cleaner-bff",
+                      "name": "Cleaner App BFF",
+                      "type": "bff",
+                      "description": "Aggregates tasks, clock-in, messages and payslips for the app."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-translation-worker",
+                      "name": "Message Translation Worker",
+                      "type": "message-consumer",
+                      "description": "Translates instructions and messages into the cleaner's language.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-llm-gateway",
+                            "type": "uses",
+                            "description": "Translation.",
+                            "targetBrickId": "caia"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "chkl",
+                  "moduleId": "module-checklist-api",
+                  "sourceModuleId": "module-cleaner-bff",
+                  "type": "uses",
+                  "description": "Checklists."
+                },
+                {
+                  "targetBrickId": "tatt",
+                  "moduleId": "module-attendance-api",
+                  "sourceModuleId": "module-cleaner-bff",
+                  "type": "uses",
+                  "description": "Clock-in."
+                },
+                {
+                  "targetBrickId": "caia",
+                  "moduleId": "module-llm-gateway",
+                  "sourceModuleId": "module-translation-worker",
+                  "type": "uses",
+                  "description": "Translation."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-cleaner-bff"
+                  ],
+                  "role": "write",
+                  "description": "Clock events from the app."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Apple App Store and Google Play",
+                  "type": "distribution",
+                  "interface": "App stores",
+                  "description": "Distribution.",
+                  "sourceModuleId": "module-cleaner-app"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "tatt",
+              "name": "Time and Attendance Proof",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Proves presence at the object: NFC tags, QR/barcodes, terminals, GPS and geofence clock-in (KleanApp, Crewmeister-style), with planned-versus-actual comparison feeding payroll and client proof.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-attendance-monitor",
+                      "name": "Attendance Monitor",
+                      "type": "web-component",
+                      "description": "Live presence per object and missing clock-ins.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-attendance-api",
+                            "type": "uses",
+                            "description": "Attendance."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-attendance-api",
+                      "name": "Attendance API",
+                      "type": "api",
+                      "description": "Clock events, corrections and approvals."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-no-show-detector",
+                      "name": "No-Show Detector",
+                      "type": "daemon",
+                      "description": "Alerts when nobody clocked in at a scheduled object."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-attendance-service",
+                      "name": "Attendance Service",
+                      "type": "stateful-service",
+                      "description": "Clock events and approved hours."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-terminal-nfc-connector",
+                      "name": "Terminal and NFC Connector",
+                      "type": "integration",
+                      "description": "Reads NFC tags, barcodes and terminal punches."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "schp",
+                  "moduleId": "module-schedule-api",
+                  "sourceModuleId": "module-no-show-detector",
+                  "type": "uses",
+                  "description": "Expected presence."
+                },
+                {
+                  "targetBrickId": "absn",
+                  "moduleId": "module-absence-api",
+                  "sourceModuleId": "module-no-show-detector",
+                  "type": "uses",
+                  "description": "Triggers substitution."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-attendance-service",
+                    "module-attendance-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for worked hours."
+                },
+                {
+                  "assetId": "shift-plan",
+                  "moduleIds": [
+                    "module-no-show-detector"
+                  ],
+                  "role": "read",
+                  "description": "Expected shifts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Time terminals and NFC tags",
+                  "type": "device",
+                  "interface": "Punch data",
+                  "description": "Presence proof.",
+                  "sourceModuleId": "module-terminal-nfc-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "chkl",
+              "name": "Digital Checklists and Service Proof",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Room-by-room checklists derived from the service specification, completed on the phone with photos and signatures, producing proof of service for the client.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-checklist-editor",
+                      "name": "Checklist Editor",
+                      "type": "web-component",
+                      "description": "Builds checklists from the specification.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-checklist-api",
+                            "type": "uses",
+                            "description": "Checklists."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-checklist-api",
+                      "name": "Checklist API",
+                      "type": "api",
+                      "description": "Checklists, completions, photos and signatures."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-completion-service",
+                      "name": "Completion Service",
+                      "type": "stateful-service",
+                      "description": "Completed tasks with evidence."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "objr",
+                  "moduleId": "module-object-api",
+                  "sourceModuleId": "module-checklist-editor",
+                  "type": "context",
+                  "description": "Rooms and frequencies."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "checklist-completion",
+                  "moduleIds": [
+                    "module-completion-service",
+                    "module-checklist-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for service proof."
+                },
+                {
+                  "assetId": "service-specification",
+                  "moduleIds": [
+                    "module-checklist-editor"
+                  ],
+                  "role": "read",
+                  "description": "What must be done."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "sens",
+              "name": "Sensor-Based and Demand-Driven Cleaning",
+              "type": "integration",
+              "status": "invest",
+              "description": "Connects occupancy, footfall and dispenser sensors so cleaning is triggered by use rather than fixed frequency (Leviy sensor integration).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-sensor-dashboard",
+                      "name": "Sensor Dashboard",
+                      "type": "web-component",
+                      "description": "Levels, occupancy and triggered tasks per object.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-sensor-api",
+                            "type": "uses",
+                            "description": "Readings."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-sensor-api",
+                      "name": "Sensor API",
+                      "type": "api",
+                      "description": "Sensor registry and readings."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-trigger-engine",
+                      "name": "Demand Trigger Engine",
+                      "type": "message-consumer",
+                      "description": "Creates tasks when thresholds are reached.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-work-order-api",
+                            "type": "uses",
+                            "description": "Creates tasks.",
+                            "targetBrickId": "task"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-iot-connector",
+                      "name": "IoT Connector",
+                      "type": "integration",
+                      "description": "Dispenser, people-counter and occupancy sensor platforms."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "task",
+                  "moduleId": "module-work-order-api",
+                  "sourceModuleId": "module-trigger-engine",
+                  "type": "uses",
+                  "description": "Creates demand-driven tasks."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sensor-reading",
+                  "moduleIds": [
+                    "module-sensor-api",
+                    "module-trigger-engine"
+                  ],
+                  "role": "own",
+                  "description": "System of record for readings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Sensor and IoT platforms",
+                  "type": "device",
+                  "interface": "IoT APIs",
+                  "description": "Readings.",
+                  "sourceModuleId": "module-iot-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Quality and Client Transparency",
+          "description": "Audits, tickets and portal.",
+          "bricks": [
+            {
+              "id": "qaud",
+              "name": "Quality Audits and Inspections",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Digital quality inspections by supervisors and clients using standard methods (DIN EN 13549 in DACH, VSR/NEN 2075 in the Netherlands), with scores, photos and corrective actions. The heart of KleanApp, Leviy and CleanManager quality control.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-audit-app",
+                      "name": "Audit App",
+                      "type": "mobile-component",
+                      "description": "Sample-based room inspections with photos.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-audit-api",
+                            "type": "uses",
+                            "description": "Audits."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-audit-reports",
+                      "name": "Audit Reports",
+                      "type": "web-component",
+                      "description": "Scores by object, area and trend.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-audit-api",
+                            "type": "uses",
+                            "description": "Results."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-audit-api",
+                      "name": "Audit API",
+                      "type": "api",
+                      "description": "Audit plans, samples, scores and corrective actions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-sampling-engine",
+                      "name": "Sampling and Scoring Engine",
+                      "type": "stateless-service",
+                      "description": "Draws samples and scores per standard."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-audit-service",
+                      "name": "Audit Service",
+                      "type": "stateful-service",
+                      "description": "Audits and corrective actions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "objr",
+                  "moduleId": "module-object-api",
+                  "sourceModuleId": "module-sampling-engine",
+                  "type": "context",
+                  "description": "Rooms to sample."
+                },
+                {
+                  "targetBrickId": "tick",
+                  "moduleId": "module-ticket-api",
+                  "sourceModuleId": "module-audit-service",
+                  "type": "uses",
+                  "description": "Defects become tickets."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "quality-audit",
+                  "moduleIds": [
+                    "module-audit-service",
+                    "module-audit-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for audits."
+                },
+                {
+                  "assetId": "cleaning-object",
+                  "moduleIds": [
+                    "module-sampling-engine"
+                  ],
+                  "role": "read",
+                  "description": "Rooms."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "tick",
+              "name": "Client Requests and Defect Tickets",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Clients, building users and supervisors report issues (QR code in the room, portal, app); tickets route to the object team with SLAs and photo proof of resolution.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-qr-report",
+                      "name": "QR Issue Report",
+                      "type": "web-component",
+                      "description": "Building users scan a QR code and report an issue without login.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ticket-api",
+                            "type": "uses",
+                            "description": "Creates tickets."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-api",
+                      "name": "Ticket API",
+                      "type": "api",
+                      "description": "Tickets, SLAs, assignment and resolution."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-sla-escalator",
+                      "name": "SLA Escalator",
+                      "type": "daemon",
+                      "description": "Escalates overdue tickets to supervisors."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-service",
+                      "name": "Ticket Service",
+                      "type": "stateful-service",
+                      "description": "Ticket records."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "capp",
+                  "moduleId": "module-cleaner-bff",
+                  "sourceModuleId": "module-ticket-service",
+                  "type": "uses",
+                  "description": "Assigns tickets to cleaners."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "client-ticket",
+                  "moduleIds": [
+                    "module-ticket-service",
+                    "module-ticket-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for tickets."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "cptl",
+              "name": "Client Portal and Service Reports",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Gives facility managers transparency: service proof, attendance, audit scores, tickets and invoices per object, plus monthly service reports.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-client-portal",
+                      "name": "Client Portal",
+                      "type": "web-component",
+                      "description": "Per-object transparency and reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-client-bff",
+                            "type": "uses",
+                            "description": "Backend."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-client-bff",
+                      "name": "Client Portal BFF",
+                      "type": "bff",
+                      "description": "Aggregates proof, audits, tickets and invoices."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-report-generator",
+                      "name": "Service Report Generator",
+                      "type": "daemon",
+                      "description": "Monthly service reports per contract."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "qaud",
+                  "moduleId": "module-audit-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Audit results."
+                },
+                {
+                  "targetBrickId": "chkl",
+                  "moduleId": "module-checklist-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Service proof."
+                },
+                {
+                  "targetBrickId": "tick",
+                  "moduleId": "module-ticket-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Tickets."
+                },
+                {
+                  "targetBrickId": "invc",
+                  "moduleId": "module-invoice-api",
+                  "sourceModuleId": "module-client-bff",
+                  "type": "uses",
+                  "description": "Invoices."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "checklist-completion",
+                  "moduleIds": [
+                    "module-client-bff"
+                  ],
+                  "role": "read",
+                  "description": "Proof."
+                },
+                {
+                  "assetId": "quality-audit",
+                  "moduleIds": [
+                    "module-report-generator"
+                  ],
+                  "role": "read",
+                  "description": "Scores."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "People, Pay and Finance",
+      "description": "Staff, payroll and invoicing.",
+      "subGroups": [
+        {
+          "name": "People and Payroll",
+          "description": "Employees and pay.",
+          "bricks": [
+            {
+              "id": "hrst",
+              "name": "Staff Administration and Onboarding",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Employee records for a large, part-time and multilingual workforce: contracts, minijob status, work permits, documents, qualifications and digital onboarding.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-employee-file",
+                      "name": "Employee File",
+                      "type": "web-component",
+                      "description": "Contracts, permits, qualifications and documents.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-employee-api",
+                            "type": "uses",
+                            "description": "Employees."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-onboarding-form",
+                      "name": "Digital Onboarding Form",
+                      "type": "mobile-component",
+                      "description": "New staff enter personal, tax and bank data on the phone.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-employee-api",
+                            "type": "uses",
+                            "description": "Submits data."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-employee-api",
+                      "name": "Employee API",
+                      "type": "api",
+                      "description": "Employees, contracts and documents."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-permit-monitor",
+                      "name": "Permit Expiry Monitor",
+                      "type": "daemon",
+                      "description": "Warns before permits and contracts expire."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-employee-service",
+                      "name": "Employee Service",
+                      "type": "stateful-service",
+                      "description": "Employee master data."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "caia",
+                  "moduleId": "module-llm-gateway",
+                  "sourceModuleId": "module-onboarding-form",
+                  "type": "uses",
+                  "description": "Document extraction and translation."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "employee-record",
+                  "moduleIds": [
+                    "module-employee-service",
+                    "module-employee-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for employees."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "cpyr",
+              "name": "Cleaning Payroll Engine",
+              "type": "service",
+              "status": "invest",
+              "description": "Payroll for the building-cleaning trade: generally binding collective agreement wage groups, surcharges, minijob and midijob rules, Sofortmeldung, many short part-time contracts and hours from attendance. adata's facility-management payroll and Nocore Clean payroll in the Netherlands.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-console",
+                      "name": "Payroll Console",
+                      "type": "web-component",
+                      "description": "Run preparation, checks and release.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-payroll-run-api",
+                            "type": "uses",
+                            "description": "Runs."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-run-api",
+                      "name": "Payroll Run API",
+                      "type": "api",
+                      "description": "Runs, payslips and corrections."
+                    },
+                    {
+                      "id": "module-tariff-api",
+                      "name": "Tariff API",
+                      "type": "api",
+                      "description": "Wage groups, surcharges and earnings limits by effective date."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-payroll-batch",
+                      "name": "Payroll Batch",
+                      "type": "daemon",
+                      "description": "Gross-to-net per period."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-gross-net",
+                      "name": "Gross-to-Net Service",
+                      "type": "service",
+                      "description": "Tax and social-security calculation incl. minijob rules."
+                    },
+                    {
+                      "id": "module-tariff-store",
+                      "name": "Tariff Store",
+                      "type": "stateful-service",
+                      "description": "Versioned wage tables and limits."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tatt",
+                  "moduleId": "module-attendance-api",
+                  "sourceModuleId": "module-payroll-batch",
+                  "type": "uses",
+                  "description": "Approved hours."
+                },
+                {
+                  "targetBrickId": "hrst",
+                  "moduleId": "module-employee-api",
+                  "sourceModuleId": "module-payroll-batch",
+                  "type": "uses",
+                  "description": "Employee data."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "payroll-result",
+                  "moduleIds": [
+                    "module-gross-net",
+                    "module-payroll-run-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for payroll."
+                },
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-payroll-batch"
+                  ],
+                  "role": "read",
+                  "description": "Hours."
+                },
+                {
+                  "assetId": "employee-record",
+                  "moduleIds": [
+                    "module-payroll-batch"
+                  ],
+                  "role": "read",
+                  "description": "Employees."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "mpay",
+              "name": "Managed Payroll Service Desk",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Tooling for zvoove Clean's managed payroll service (announced with the adata acquisition): case queues, SLAs, four-eyes release and delegated access.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-service-desk",
+                      "name": "Service Desk",
+                      "type": "web-component",
+                      "description": "Customer payroll cases and cut-off SLAs.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-case-api",
+                            "type": "uses",
+                            "description": "Cases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-case-api",
+                      "name": "Case API",
+                      "type": "api",
+                      "description": "Cases and delegated access."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-cutoff-monitor",
+                      "name": "Cut-off Monitor",
+                      "type": "daemon",
+                      "description": "Alerts on payroll deadlines."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-case-service",
+                      "name": "Case Service",
+                      "type": "stateful-service",
+                      "description": "Cases and work logs."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cpyr",
+                  "moduleId": "module-payroll-run-api",
+                  "sourceModuleId": "module-service-desk",
+                  "type": "uses",
+                  "description": "Runs payroll in tenants."
+                },
+                {
+                  "targetBrickId": "ctnt",
+                  "moduleId": "module-access-api",
+                  "sourceModuleId": "module-case-service",
+                  "type": "uses",
+                  "description": "Delegated access."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "managed-payroll-case",
+                  "moduleIds": [
+                    "module-case-service",
+                    "module-case-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for cases."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Billing and Accounting",
+          "description": "Invoices and exports.",
+          "bricks": [
+            {
+              "id": "invc",
+              "name": "Recurring and Extra-Service Invoicing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Monthly flat-fee invoices from contracts, plus extra services and work orders, price indexation after wage increases, e-invoicing and receivables.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-console",
+                      "name": "Invoice Console",
+                      "type": "web-component",
+                      "description": "Invoice runs, extras and credit notes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-invoice-api",
+                            "type": "uses",
+                            "description": "Invoices."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-api",
+                      "name": "Invoice API",
+                      "type": "api",
+                      "description": "Invoices, extras, credit notes and status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-run",
+                      "name": "Invoice Run",
+                      "type": "daemon",
+                      "description": "Monthly recurring run and extras on completion."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-service",
+                      "name": "Invoice Service",
+                      "type": "stateful-service",
+                      "description": "Invoices and receivables."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-einvoice",
+                      "name": "e-Invoice Connector",
+                      "type": "integration",
+                      "description": "XRechnung/ZUGFeRD and Peppol."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ccrm",
+                  "moduleId": "module-contract-api",
+                  "sourceModuleId": "module-invoice-run",
+                  "type": "uses",
+                  "description": "Contract prices."
+                },
+                {
+                  "targetBrickId": "task",
+                  "moduleId": "module-work-order-api",
+                  "sourceModuleId": "module-invoice-run",
+                  "type": "uses",
+                  "description": "Completed extras."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "invoice",
+                  "moduleIds": [
+                    "module-invoice-service",
+                    "module-invoice-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for invoices."
+                },
+                {
+                  "assetId": "work-order",
+                  "moduleIds": [
+                    "module-invoice-run"
+                  ],
+                  "role": "read",
+                  "description": "Billable extras."
+                },
+                {
+                  "assetId": "client-contract",
+                  "moduleIds": [
+                    "module-invoice-run"
+                  ],
+                  "role": "read",
+                  "description": "Prices."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "E-invoicing networks",
+                  "type": "channel",
+                  "interface": "e-invoice formats",
+                  "description": "Mandatory B2B e-invoicing in Germany.",
+                  "sourceModuleId": "module-einvoice"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "acct",
+              "name": "Accounting Export and Statutory Reporting",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "DATEV and ledger exports, social-security and tax reporting, and SOKA/contribution filings triggered by payroll and invoicing.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-filing-api",
+                      "name": "Filing API",
+                      "type": "api",
+                      "description": "Export and filing status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-export-runner",
+                      "name": "Export Runner",
+                      "type": "message-consumer",
+                      "description": "Builds exports and filings after runs."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-datev-connector",
+                      "name": "DATEV and Ledger Connector",
+                      "type": "integration",
+                      "description": "DATEV and other accounting systems."
+                    },
+                    {
+                      "id": "module-authority-gateway",
+                      "name": "Authority Gateway",
+                      "type": "integration",
+                      "description": "Social-security and tax gateways."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cpyr",
+                  "moduleId": "module-payroll-run-api",
+                  "sourceModuleId": "module-export-runner",
+                  "type": "uses",
+                  "description": "Payroll results."
+                },
+                {
+                  "targetBrickId": "invc",
+                  "moduleId": "module-invoice-api",
+                  "sourceModuleId": "module-export-runner",
+                  "type": "uses",
+                  "description": "Invoices."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "payroll-result",
+                  "moduleIds": [
+                    "module-export-runner"
+                  ],
+                  "role": "read",
+                  "description": "Filings."
+                },
+                {
+                  "assetId": "invoice",
+                  "moduleIds": [
+                    "module-export-runner"
+                  ],
+                  "role": "read",
+                  "description": "Postings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DATEV",
+                  "type": "finance",
+                  "interface": "DATEV interfaces",
+                  "description": "Accounting.",
+                  "sourceModuleId": "module-datev-connector"
+                },
+                {
+                  "system": "Social-security and tax authorities",
+                  "type": "regulator",
+                  "interface": "Statutory gateways",
+                  "description": "Filings.",
+                  "sourceModuleId": "module-authority-gateway"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Intelligence and Platform",
+      "description": "Analytics, AI, integration and tenancy.",
+      "subGroups": [
+        {
+          "name": "Insight and AI",
+          "description": "Profitability and assistant.",
+          "bricks": [
+            {
+              "id": "ckpi",
+              "name": "Object Profitability and Operations Analytics",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Compares calculated, planned and actual hours per object, computes contribution margin per object and contract, and tracks sickness, turnover and quality trends.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-profit-dashboard",
+                      "name": "Object Profitability Dashboard",
+                      "type": "web-component",
+                      "description": "Margin, hour deviation and quality per object.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-analytics-api",
+                            "type": "uses",
+                            "description": "Metrics."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-analytics-api",
+                      "name": "Analytics API",
+                      "type": "api",
+                      "description": "Governed metrics."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-elt",
+                      "name": "ELT Pipeline",
+                      "type": "daemon",
+                      "description": "Loads operational data into the warehouse."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-metric-layer",
+                      "name": "Metric Layer",
+                      "type": "service",
+                      "description": "Metric definitions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cint",
+                  "moduleId": "module-event-bus",
+                  "sourceModuleId": "module-elt",
+                  "type": "uses",
+                  "description": "Events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "object-profitability-dataset",
+                  "moduleIds": [
+                    "module-metric-layer",
+                    "module-analytics-api",
+                    "module-elt"
+                  ],
+                  "role": "own",
+                  "description": "Curated dataset."
+                },
+                {
+                  "assetId": "attendance-record",
+                  "moduleIds": [
+                    "module-elt"
+                  ],
+                  "role": "read",
+                  "description": "Actual hours."
+                },
+                {
+                  "assetId": "invoice",
+                  "moduleIds": [
+                    "module-elt"
+                  ],
+                  "role": "read",
+                  "description": "Revenue."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "caia",
+              "name": "AI Operations Assistant",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Shared AI layer for the cleaning brands: translation for multilingual staff, quote drafts from floor plans and specifications, plan suggestions and natural-language questions about objects - behind one guarded gateway.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-assistant-panel",
+                      "name": "Assistant Panel",
+                      "type": "web-component",
+                      "description": "Ask about objects, hours and margins; draft quotes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-assistant-orchestrator",
+                            "type": "uses",
+                            "description": "Answers."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-llm-gateway",
+                      "name": "LLM Gateway",
+                      "type": "api",
+                      "description": "Guarded model access with PII redaction and logging."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-assistant-orchestrator",
+                      "name": "Assistant Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Routes questions to analytics and tools.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-analytics-api",
+                            "type": "uses",
+                            "description": "Metrics.",
+                            "targetBrickId": "ckpi"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-model-connector",
+                      "name": "Model Connector",
+                      "type": "integration",
+                      "description": "EU-hosted LLM endpoints."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ckpi",
+                  "moduleId": "module-analytics-api",
+                  "sourceModuleId": "module-assistant-orchestrator",
+                  "type": "uses",
+                  "description": "Answers from metrics."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "ai-interaction-log",
+                  "moduleIds": [
+                    "module-llm-gateway"
+                  ],
+                  "role": "own",
+                  "description": "Audit log."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "EU-hosted LLM providers",
+                  "type": "service",
+                  "interface": "Model API",
+                  "description": "Models.",
+                  "sourceModuleId": "module-model-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Platform Services",
+          "description": "Integration and tenancy.",
+          "bricks": [
+            {
+              "id": "cint",
+              "name": "Integration Hub",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Public API, event bus and bridges between cleaning brands (fortytools, KleanApp, CleanManager, Leviy, Nocore, adata) and to zvoove staffing products when cleaning companies also lease workers.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-public-api",
+                      "name": "Public API",
+                      "type": "api",
+                      "description": "Authenticated REST API and webhooks."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-event-bus",
+                      "name": "Event Bus",
+                      "type": "message-queue",
+                      "description": "Attendance, audit, payroll and invoice events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-brand-bridges",
+                      "name": "Brand Bridges",
+                      "type": "integration",
+                      "description": "KleanApp-fortytools-adata and CleanManager-payroll bridges."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "integration-event-log",
+                  "moduleIds": [
+                    "module-event-bus"
+                  ],
+                  "role": "own",
+                  "description": "Delivered events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Customer ERP, CAFM and HR systems",
+                  "type": "integration-consumer",
+                  "interface": "Public API",
+                  "description": "Consume data.",
+                  "moduleId": "module-public-api"
+                }
+              ]
+            },
+            {
+              "id": "ctnt",
+              "name": "Tenant, Identity and Country Packs",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Tenants, roles, delegated access and country packs (DE, AT, CH, NL, DK, UK, ES) that switch language, tariffs, filings and audit standards.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tenant-admin",
+                      "name": "Tenant Admin",
+                      "type": "web-component",
+                      "description": "Users, roles and modules.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-access-api",
+                            "type": "uses",
+                            "description": "Access."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backends for frontends.",
+                  "modules": [
+                    {
+                      "id": "module-access-api",
+                      "name": "Access API",
+                      "type": "api",
+                      "description": "Authentication, roles and delegated access."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services and state.",
+                  "modules": [
+                    {
+                      "id": "module-config-service",
+                      "name": "Configuration Service",
+                      "type": "stateful-service",
+                      "description": "Tenants and country packs."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "tenant-configuration",
+                  "moduleIds": [
+                    "module-config-service"
+                  ],
+                  "role": "own",
+                  "description": "Tenants."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

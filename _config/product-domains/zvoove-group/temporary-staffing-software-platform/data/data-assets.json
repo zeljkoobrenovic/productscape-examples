@@ -1,0 +1,1163 @@
+{
+  "metadata": {
+    "domainId": "temporary-staffing-software-platform",
+    "title": "Temporary Staffing Software Platform Data Assets",
+    "description": "Catalog of talent, placement, time, pay, billing, client-programme, AI and platform data assets with GDPR, AÜG/CAO, tax and EU AI Act governance.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Talent and Client Data",
+      "description": "Candidates, vacancies and clients.",
+      "subGroups": [
+        {
+          "name": "Talent",
+          "description": "Candidates and applications.",
+          "assets": [
+            {
+              "id": "candidate-profile",
+              "name": "Candidate Profile",
+              "kind": "master-data",
+              "description": "A person in the agency's talent pool: contact data, CV, skills, certificates, availability, preferences, consent status and assignment history.",
+              "businessMeaning": "The agency's most valuable asset - the pool it can place from without buying new applicants.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "candidate"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Recruiters and dispatchers of the owning tenant",
+              "systemOfRecordBrickId": "apts",
+              "ownerTeamId": "recruiting-experience",
+              "stewardTeamIds": [
+                "ai-recruiting-agents"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "talent-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "candidate api",
+                  "description": "Candidate CRUD and search."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted or anonymised after the consented retention period (typically 6-24 months after last contact)",
+                "residency": "eu",
+                "sharingPolicy": "Shared with clients only as anonymised or consented profiles"
+              }
+            },
+            {
+              "id": "job-vacancy",
+              "name": "Job Vacancy",
+              "kind": "transactional",
+              "description": "A published job ad with channel postings and performance.",
+              "businessMeaning": "What the agency is recruiting for and what each channel costs.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Tenant users; published text is public",
+              "systemOfRecordBrickId": "jadv",
+              "ownerTeamId": "recruiting-experience",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "client-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "talent-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "job ad api",
+                  "description": "Ads and postings."
+                }
+              ],
+              "governance": {
+                "retention": "2 years after withdrawal",
+                "residency": "eu",
+                "sharingPolicy": "Public once published"
+              }
+            },
+            {
+              "id": "application-and-screening-record",
+              "name": "Application and Screening Record",
+              "kind": "transactional",
+              "description": "An application to a vacancy with source channel, pipeline stages, AI interview answers and screening outcome.",
+              "businessMeaning": "Evidence of how and why a candidate progressed or was rejected.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "candidate"
+              ],
+              "legalTags": [
+                "gdpr",
+                "eu-ai-act"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Recruiters of the tenant",
+              "systemOfRecordBrickId": "apts",
+              "ownerTeamId": "recruiting-experience",
+              "stewardTeamIds": [
+                "ai-recruiting-agents",
+                "ai-platform"
+              ],
+              "derivedFromAssetIds": [
+                "candidate-profile",
+                "job-vacancy"
+              ],
+              "stores": [
+                {
+                  "storeId": "talent-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "application api",
+                  "description": "Stages and screening."
+                }
+              ],
+              "governance": {
+                "retention": "6 months after rejection unless consent to keep",
+                "residency": "eu",
+                "sharingPolicy": "Never shared with clients"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clients",
+          "description": "Accounts, orders and VMS.",
+          "assets": [
+            {
+              "id": "client-account",
+              "name": "Client Account",
+              "kind": "master-data",
+              "description": "Client company with sites, contacts, price agreements and credit terms.",
+              "businessMeaning": "Who the agency sells to and on what terms.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Sales and back office",
+              "systemOfRecordBrickId": "crmx",
+              "ownerTeamId": "client-sales-crm",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "talent-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "crm api",
+                  "description": "Accounts and contacts."
+                }
+              ],
+              "governance": {
+                "retention": "10 years after last invoice for commercial records",
+                "residency": "eu",
+                "sharingPolicy": "Internal"
+              }
+            },
+            {
+              "id": "client-order",
+              "name": "Client Order",
+              "kind": "transactional",
+              "description": "A request for workers: positions, requirements, site, period and bill rate.",
+              "businessMeaning": "Demand the agency must fill.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Dispatchers and clients",
+              "systemOfRecordBrickId": "ordr",
+              "ownerTeamId": "dispatch-and-compliance",
+              "stewardTeamIds": [
+                "client-sales-crm"
+              ],
+              "derivedFromAssetIds": [
+                "client-account"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "order api",
+                  "description": "Orders."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Visible to the ordering client"
+              }
+            },
+            {
+              "id": "vms-requisition",
+              "name": "VMS Requisition and Supplier Response",
+              "kind": "transactional",
+              "description": "Client requisitions, distribution to agencies, submitted candidates and spend.",
+              "businessMeaning": "The client's controlled demand and spend on temporary labour.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "candidate",
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Client programme office and invited agencies",
+              "systemOfRecordBrickId": "vmsp",
+              "ownerTeamId": "vms-and-client-portal",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "finance-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "vms api",
+                  "description": "Requisitions."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus 5 years",
+                "residency": "eu",
+                "sharingPolicy": "Client and responding agencies"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Placement and Workforce Data",
+      "description": "Assignments, contracts, schedules and hours.",
+      "subGroups": [
+        {
+          "name": "Placement",
+          "description": "Assignments, contracts and rules.",
+          "assets": [
+            {
+              "id": "assignment",
+              "name": "Assignment",
+              "kind": "transactional",
+              "description": "A worker placed on an order with pay rate, bill rate, start, end and equal-pay dates.",
+              "businessMeaning": "The unit that links law, pay and billing.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr",
+                "aueg",
+                "cao"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Dispatch, payroll and billing",
+              "systemOfRecordBrickId": "ordr",
+              "ownerTeamId": "dispatch-and-compliance",
+              "stewardTeamIds": [
+                "payroll-engine"
+              ],
+              "derivedFromAssetIds": [
+                "client-order",
+                "candidate-profile"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "event-bus",
+                  "role": "event-stream"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "assignment api",
+                  "description": "Assignments."
+                },
+                {
+                  "type": "event",
+                  "name": "assignment events",
+                  "description": "Created, changed, ended."
+                }
+              ],
+              "governance": {
+                "retention": "10 years after end",
+                "residency": "eu",
+                "sharingPolicy": "Client sees its own assignments"
+              }
+            },
+            {
+              "id": "employment-contract",
+              "name": "Employment and Leasing Contract",
+              "kind": "document",
+              "description": "Employment contract with the worker and leasing contract with the client, signed per assignment.",
+              "businessMeaning": "Legal basis of the placement.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker",
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr",
+                "aueg",
+                "eidas"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Dispatch and legal",
+              "systemOfRecordBrickId": "ctrc",
+              "ownerTeamId": "dispatch-and-compliance",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "assignment"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "contract api",
+                  "description": "Contracts."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Parties to the contract only"
+              }
+            },
+            {
+              "id": "collective-agreement-ruleset",
+              "name": "Collective Agreement and Legal Rule Set",
+              "kind": "reference-data",
+              "description": "Versioned tariffs, surcharges, phases and legal limits per country and effective date.",
+              "businessMeaning": "The encoded law and tariff that make pay and placements correct.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "aueg",
+                "cao"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Read by all tenants; edited by the rules team",
+              "systemOfRecordBrickId": "comp",
+              "ownerTeamId": "dispatch-and-compliance",
+              "stewardTeamIds": [
+                "payroll-engine"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "rules api",
+                  "description": "Evaluation."
+                }
+              ],
+              "governance": {
+                "retention": "Kept indefinitely for retro calculation",
+                "residency": "eu",
+                "sharingPolicy": "Shared across tenants"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Workforce",
+          "description": "Schedules, hours, documents and safety.",
+          "assets": [
+            {
+              "id": "shift-schedule",
+              "name": "Shift Schedule and Availability",
+              "kind": "transactional",
+              "description": "Planned shifts, demand, worker availability and swaps.",
+              "businessMeaning": "Who is expected where and when.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr",
+                "working-time"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Planners, workers and clients for their sites",
+              "systemOfRecordBrickId": "schd",
+              "ownerTeamId": "workforce-scheduling",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "assignment"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "schedule api",
+                  "description": "Shifts."
+                }
+              ],
+              "governance": {
+                "retention": "2 years",
+                "residency": "eu",
+                "sharingPolicy": "Client sees own sites"
+              }
+            },
+            {
+              "id": "time-record",
+              "name": "Time Record",
+              "kind": "transactional",
+              "description": "Clock events and classified worked hours with approvals and corrections.",
+              "businessMeaning": "The single number both payroll and invoicing depend on.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr",
+                "working-time"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Back office, workers and approving clients",
+              "systemOfRecordBrickId": "time",
+              "ownerTeamId": "workforce-scheduling",
+              "stewardTeamIds": [
+                "payroll-engine",
+                "billing-and-pay"
+              ],
+              "derivedFromAssetIds": [
+                "shift-schedule"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "event-bus",
+                  "role": "event-stream"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "time api",
+                  "description": "Hours."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory: at least 2 years for working-time records in Germany; aligned with payroll retention",
+                "residency": "eu",
+                "sharingPolicy": "Client sees its approvals"
+              }
+            },
+            {
+              "id": "worker-document",
+              "name": "Worker Personnel Document",
+              "kind": "document",
+              "description": "IDs, residence and work permits, tax and social-security data, bank details and certificates.",
+              "businessMeaning": "Proof the worker may work and can be paid.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "sensitive",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "HR back office only",
+              "systemOfRecordBrickId": "onbd",
+              "ownerTeamId": "worker-experience",
+              "stewardTeamIds": [
+                "documents-and-integration"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "document-archive",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "document api",
+                  "description": "Documents."
+                }
+              ],
+              "governance": {
+                "retention": "Per document type; permits until expiry plus statutory period",
+                "residency": "eu",
+                "sharingPolicy": "Never shared with clients"
+              }
+            },
+            {
+              "id": "safety-instruction-record",
+              "name": "Safety Instruction Record",
+              "kind": "transactional",
+              "description": "Completed site safety instructions, PPE issue and health checks.",
+              "businessMeaning": "Evidence the agency met its safety duties.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "occupational-safety"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Dispatch and safety officers",
+              "systemOfRecordBrickId": "safe",
+              "ownerTeamId": "worker-experience",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "assignment"
+              ],
+              "stores": [
+                {
+                  "storeId": "operations-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "safety api",
+                  "description": "Records."
+                }
+              ],
+              "governance": {
+                "retention": "Duration of employment plus statutory period",
+                "residency": "eu",
+                "sharingPolicy": "Shared with client on request"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pay and Finance Data",
+      "description": "Payroll, filings, invoices and advances.",
+      "subGroups": [
+        {
+          "name": "Pay and Bill",
+          "description": "Money records.",
+          "assets": [
+            {
+              "id": "payroll-result",
+              "name": "Payroll Result and Payslip",
+              "kind": "transactional",
+              "description": "Gross-to-net results per worker and period, payslips and working-time account balances.",
+              "businessMeaning": "What each worker was paid and why.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "sensitive",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr",
+                "tax",
+                "social-security"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Payroll staff and the worker",
+              "systemOfRecordBrickId": "pyrl",
+              "ownerTeamId": "payroll-engine",
+              "stewardTeamIds": [
+                "managed-services-ops"
+              ],
+              "derivedFromAssetIds": [
+                "time-record",
+                "collective-agreement-ruleset"
+              ],
+              "stores": [
+                {
+                  "storeId": "payroll-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "payroll api",
+                  "description": "Runs and payslips."
+                }
+              ],
+              "governance": {
+                "retention": "10 years (tax)",
+                "residency": "eu",
+                "sharingPolicy": "Worker sees own payslips"
+              }
+            },
+            {
+              "id": "statutory-filing",
+              "name": "Statutory Filing",
+              "kind": "transactional",
+              "description": "Social-security, tax and authority submissions and acknowledgements.",
+              "businessMeaning": "Proof of compliance with authorities.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "tax",
+                "social-security"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Payroll staff",
+              "systemOfRecordBrickId": "stat",
+              "ownerTeamId": "payroll-engine",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "payroll-result"
+              ],
+              "stores": [
+                {
+                  "storeId": "payroll-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "filing api",
+                  "description": "Status."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Authorities only"
+              }
+            },
+            {
+              "id": "client-invoice",
+              "name": "Client Invoice",
+              "kind": "transactional",
+              "description": "Invoices and credit notes with lines per worker, hours and rates, plus payment status.",
+              "businessMeaning": "Revenue and receivables of the agency.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker",
+                "client-contact"
+              ],
+              "legalTags": [
+                "tax",
+                "e-invoicing"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Billing and the client",
+              "systemOfRecordBrickId": "bill",
+              "ownerTeamId": "billing-and-pay",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "time-record",
+                "assignment"
+              ],
+              "stores": [
+                {
+                  "storeId": "finance-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "invoice api",
+                  "description": "Invoices."
+                }
+              ],
+              "governance": {
+                "retention": "10 years (tax)",
+                "residency": "eu",
+                "sharingPolicy": "Client sees own invoices"
+              }
+            },
+            {
+              "id": "earned-wage-advance",
+              "name": "Earned Wage Advance",
+              "kind": "transactional",
+              "description": "Advances drawn by workers against approved hours and their settlement.",
+              "businessMeaning": "Liquidity given to workers before payday.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Payroll and the worker",
+              "systemOfRecordBrickId": "ewap",
+              "ownerTeamId": "billing-and-pay",
+              "stewardTeamIds": [
+                "payroll-engine"
+              ],
+              "derivedFromAssetIds": [
+                "time-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "payroll-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "advance api",
+                  "description": "Advances."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu-uk",
+                "sharingPolicy": "Worker and payroll only"
+              }
+            },
+            {
+              "id": "managed-service-case",
+              "name": "Managed Service Case",
+              "kind": "transactional",
+              "description": "Payroll and sales service cases with SLAs, work logs and releases.",
+              "businessMeaning": "Evidence of outsourced delivery.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Service centre staff and the customer",
+              "systemOfRecordBrickId": "bpos",
+              "ownerTeamId": "managed-services-ops",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "service-desk-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "case api",
+                  "description": "Cases."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus 3 years",
+                "residency": "eu",
+                "sharingPolicy": "Customer sees own cases"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Insight, AI and Platform Data",
+      "description": "Metrics, AI logs, tenancy and integration.",
+      "subGroups": [
+        {
+          "name": "Insight and Platform",
+          "description": "Derived and platform data.",
+          "assets": [
+            {
+              "id": "agency-kpi-dataset",
+              "name": "Agency KPI Dataset",
+              "kind": "derived-dataset",
+              "description": "Pseudonymised facts and governed metrics: fill rate, time-to-fill, margin per hour, DSO, retention.",
+              "businessMeaning": "One version of performance truth across branches and brands.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Management of the tenant; group benchmarks aggregated",
+              "systemOfRecordBrickId": "bian",
+              "ownerTeamId": "data-and-insights",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "assignment",
+                "time-record",
+                "payroll-result",
+                "client-invoice"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "metrics api",
+                  "description": "Metric queries."
+                }
+              ],
+              "governance": {
+                "retention": "5 years",
+                "residency": "eu",
+                "sharingPolicy": "Tenant-internal; benchmarks only aggregated and anonymised"
+              }
+            },
+            {
+              "id": "ai-agent-interaction-log",
+              "name": "AI Agent Interaction Log",
+              "kind": "log",
+              "description": "Prompts, tool calls, answers and handovers of every AI agent.",
+              "businessMeaning": "Audit trail for GDPR, EU AI Act transparency and quality evaluation.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "candidate",
+                "temporary-worker"
+              ],
+              "legalTags": [
+                "gdpr",
+                "eu-ai-act"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "AI platform team and tenant admins",
+              "systemOfRecordBrickId": "aipl",
+              "ownerTeamId": "ai-platform",
+              "stewardTeamIds": [
+                "ai-recruiting-agents"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "ai-audit-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "audit api",
+                  "description": "Log retrieval."
+                }
+              ],
+              "governance": {
+                "retention": "Limited retention (e.g. 6 months) unless needed for a dispute",
+                "residency": "eu",
+                "sharingPolicy": "Never used for model training without contract"
+              }
+            },
+            {
+              "id": "tenant-configuration",
+              "name": "Tenant Configuration",
+              "kind": "reference-data",
+              "description": "Tenants, users, roles, entitlements, branches and country packs.",
+              "businessMeaning": "Who may do what in which country.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "user"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant admins and platform team",
+              "systemOfRecordBrickId": "tnnt",
+              "ownerTeamId": "tenant-and-country-platform",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "access api",
+                  "description": "Access."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus 1 year",
+                "residency": "eu",
+                "sharingPolicy": "Internal"
+              }
+            },
+            {
+              "id": "integration-event-log",
+              "name": "Integration Event Log",
+              "kind": "log",
+              "description": "Events delivered to partners and brand bridges with status.",
+              "businessMeaning": "Traceability of data leaving the platform.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Integration team",
+              "systemOfRecordBrickId": "intg",
+              "ownerTeamId": "documents-and-integration",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "event-bus",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "webhook admin api",
+                  "description": "Delivery status."
+                }
+              ],
+              "governance": {
+                "retention": "90 days",
+                "residency": "eu",
+                "sharingPolicy": "Internal"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "talent-db",
+      "name": "Talent DB",
+      "kind": "operational-database",
+      "description": "Candidates, applications, vacancies and CRM accounts per tenant.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "operations-db",
+      "name": "Operations DB",
+      "kind": "operational-database",
+      "description": "Orders, assignments, contracts, schedules, time records and safety records.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "payroll-db",
+      "name": "Payroll DB",
+      "kind": "operational-database",
+      "description": "Payroll results, working-time accounts, advances and filings.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "finance-db",
+      "name": "Finance DB",
+      "kind": "operational-database",
+      "description": "Invoices, receivables and VMS programme data.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "document-archive",
+      "name": "Revision-Safe Document Archive",
+      "kind": "object-store",
+      "description": "WORM object storage for contracts, IDs, CVs and payslips.",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "event-bus",
+      "name": "Domain Event Bus",
+      "kind": "event-stream",
+      "description": "Assignment, hours, payroll and invoice events.",
+      "technology": "event-streaming",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "analytics-warehouse",
+      "name": "Analytics Warehouse",
+      "kind": "analytics-warehouse",
+      "description": "Curated, pseudonymised data for KPIs and zAIn.",
+      "technology": "cloud-data-warehouse",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "ai-audit-store",
+      "name": "AI Audit Store",
+      "kind": "log-store",
+      "description": "Prompts, tool calls and answers of agents with retention limits.",
+      "technology": "append-only-log",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "config-store",
+      "name": "Tenant Config Store",
+      "kind": "operational-database",
+      "description": "Tenants, entitlements, country packs and rule sets.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
+      "id": "service-desk-db",
+      "name": "Service Desk DB",
+      "kind": "operational-database",
+      "description": "Managed-service cases and SLAs.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    }
+  ]
+}

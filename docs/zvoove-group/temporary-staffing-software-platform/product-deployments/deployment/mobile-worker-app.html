@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Worker App (iOS and Android) — Deployment (Temporary Staffing Software Platform)</title>
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            margin: 8px 28px 28px;
+            color: #202124;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .channel-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+            margin-bottom: 18px;
+        }
+
+        .channel-nav-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #f8fafc;
+        }
+
+        .channel-nav-link.active {
+            border-bottom: 2px solid blue;
+        }
+
+        .channel-nav-icon {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .hero {
+            margin-bottom: 18px;
+        }
+
+        .hero-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 14px;
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 8px;
+        }
+
+        .hero-title {
+            font-size: 44px;
+            line-height: 1.05;
+            margin-bottom: 4px;
+        }
+
+        .hero-subtitle {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 960px;
+            margin-top: 10px;
+        }
+
+        .deployment-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .deployment-stat {
+            display: inline-block;
+            min-width: 120px;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .deployment-stat-value {
+            font-size: 28px;
+            color: #1d4ed8;
+        }
+
+        .deployment-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .deployment-copy {
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            max-width: 980px;
+        }
+
+        .deployment-section-title {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 20px 0 10px 0;
+        }
+
+        .deployment-environment {
+            padding: 10px 12px;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background: #eff6ff;
+            margin-bottom: 10px;
+        }
+
+        .deployment-environment-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .deployment-environment-copy {
+            color: #4b5563;
+            font-size: 13px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .deployment-link-row {
+            margin-top: 6px;
+        }
+
+        .deployment-link {
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #1d4ed8;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .env-brick-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .env-brick-count {
+            color: #9ca3af;
+            font-weight: normal;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chip-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 2px;
+        }
+
+        .chip-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .chip-copy {
+            font-size: 12px;
+            color: #4b5563;
+            line-height: 1.35;
+            display: inline-block;
+        }
+
+        .empty-state {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .bpd-layout {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        .bpd-controls {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            padding: 12px;
+        }
+
+        .bpd-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .pdg-action {
+            border: 1px solid #d1d5db;
+            background-color: white;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .pdg-action:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .bpd-checklist {
+            max-height: 460px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdg-type-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #6b7280;
+            margin: 10px 0 2px 0;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pdg-type-header:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .pdg-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #374151;
+            padding: 5px 2px;
+            cursor: pointer;
+        }
+
+        .pdg-check-item .label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pdg-swatch {
+            flex: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(17, 24, 39, 0.15);
+        }
+
+        .bpd-graph {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: white;
+            padding: 14px;
+            overflow: auto;
+            min-height: 300px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body onload="initTab('HomeTab')" onhashchange="initTab('HomeTab')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html" class="active" aria-current="page">Products</a>
+    <a href="../../teams/index.html">Teams</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+<script>
+    const products = {"portfolio": {"name": "zvoove Staffing Software Portfolio", "version": "1.0", "products": [{"id": "zvoove-one", "name": "zvoove One", "type": "B2B Vertical ERP SaaS", "description": "End-to-end staffing ERP for DACH from recruiting to payroll with A\u00dcG, equal pay, GVP tariffs and notification processes built in; zvoove states 100,000+ users.", "primaryCustomers": [{"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}, {"id": "disp", "name": "Recruiter-Dispatcher", "icon": "customer-disp-portrait.jpg"}, {"id": "payr", "name": "Payroll and Billing Specialist", "icon": "customer-payr-portrait.jpg"}]}, {"id": "zvoove-cockpit", "name": "zvoove Cockpit and Cockpit X", "type": "B2B Recruiting and CRM SaaS", "description": "ATS and CRM for staffing agencies with the Cockpit X AI agents (application, scheduling, check-in) and Copilot; also sold as RecruitNow Cockpit in the Netherlands.", "primaryCustomers": [{"id": "disp", "name": "Recruiter-Dispatcher", "icon": "customer-disp-portrait.jpg"}, {"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}]}, {"id": "zvoove-payroll", "name": "zvoove Payroll", "type": "B2B Payroll SaaS", "description": "Payroll for temporary staffing with tariffs, surcharges and equal pay, integrated in the ERP.", "primaryCustomers": [{"id": "payr", "name": "Payroll and Billing Specialist", "icon": "customer-payr-portrait.jpg"}]}, {"id": "planbition", "name": "Planbition", "type": "B2B Workforce Management SaaS", "description": "Workforce planning, scheduling and time registration with Planbition X AI scheduling; 1,000+ installations in 17+ countries.", "primaryCustomers": [{"id": "plan", "name": "Onsite Workforce Planner", "icon": "customer-plan-portrait.jpg"}, {"id": "temp", "name": "Temporary Worker", "icon": "customer-temp-portrait.jpg"}]}, {"id": "helloflex", "name": "HelloFlex", "type": "B2B Vertical ERP SaaS", "description": "All-in-one software for Dutch uitzendbureaus: back office, hours, CRM, contracts, NeXt AI assistant; 1,000+ customers.", "primaryCustomers": [{"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}, {"id": "payr", "name": "Payroll and Billing Specialist", "icon": "customer-payr-portrait.jpg"}, {"id": "temp", "name": "Temporary Worker", "icon": "customer-temp-portrait.jpg"}]}, {"id": "regional-staffing-erps", "name": "Regional Staffing ERPs (Kentro, WorkExpert, Nivel IV, Plan4Flex)", "type": "B2B Vertical ERP SaaS", "description": "Country-specific ERPs acquired by zvoove: Pivoton Kentro (NL), ProSolution WorkExpert (AT/DE), Nivel IV (ES) and Plan4Flex mid-office (NL).", "primaryCustomers": [{"id": "entc", "name": "Multi-Country Staffing Group COO", "icon": "customer-entc-portrait.jpg"}, {"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}]}, {"id": "mywage", "name": "mywage", "type": "B2B Staffing Platform on Salesforce", "description": "UK all-in-one platform for recruitment agencies built on Salesforce: myhr, myschedule, mywage payroll, mybill, mypod pay-on-demand, myportal.", "primaryCustomers": [{"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}, {"id": "payr", "name": "Payroll and Billing Specialist", "icon": "customer-payr-portrait.jpg"}, {"id": "temp", "name": "Temporary Worker", "icon": "customer-temp-portrait.jpg"}]}, {"id": "directskills", "name": "DirectSkills", "type": "B2B Vendor Management System", "description": "French VMS/MSP platform for client enterprises with auto-contracting and auto-invoicing; EUR 3.675bn interim invoicing processed in 2024.", "primaryCustomers": [{"id": "proc", "name": "Client Contingent Workforce Procurement Lead", "icon": "customer-proc-portrait.jpg"}]}, {"id": "managed-services", "name": "Managed Payroll and Sales Services", "type": "Business Process Outsourcing", "description": "zvoove Managed Payroll and profitask Admin, Sales, Training and Media Centers delivered on zvoove software.", "primaryCustomers": [{"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}, {"id": "payr", "name": "Payroll and Billing Specialist", "icon": "customer-payr-portrait.jpg"}]}, {"id": "worker-app-and-pixi", "name": "Worker App and Pixi Agent", "type": "B2B2C Mobile and Messaging", "description": "zvoove Work App and the Pixi WhatsApp onboarding and admin agent for temporary workers (Switzerland first).", "primaryCustomers": [{"id": "temp", "name": "Temporary Worker", "icon": "customer-temp-portrait.jpg"}]}, {"id": "insights-and-zain", "name": "zvoove Insights and zAIn", "type": "B2B Analytics and AI Assistant", "description": "Predefined dashboards, BI exports and the zAIn natural-language business assistant.", "primaryCustomers": [{"id": "ownr", "name": "Staffing Agency Owner", "icon": "customer-ownr-portrait.jpg"}, {"id": "entc", "name": "Multi-Country Staffing Group COO", "icon": "customer-entc-portrait.jpg"}]}], "deploymentModelRef": "deployment.json"}};
+    const deployment = {"metadata": {"domainId": "temporary-staffing-software-platform", "title": "Deployment Channels", "description": "Where the staffing bricks run and which zvoove products use them.", "modelVersion": "4.0"}, "channels": [{"groupId": "web-applications", "groupName": "Web Applications", "groupType": "runtime", "description": "Browser applications and their backends hosted in EU data centres.", "channels": [{"subChannelId": "web-agency-erp", "subChannelName": "Agency ERP Back Office", "channelType": "web-app", "description": "zvoove One, HelloFlex, Kentro and WorkExpert back offices.", "deployedBricks": [{"brickId": "ordr", "brickName": "Client Orders, Assignments and Dispatch", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "Dispatch and orders."}, {"productId": "helloflex", "description": "Plaatsingen."}, {"productId": "regional-staffing-erps", "description": "Disposition in Kentro, WorkExpert, Nivel IV."}]}, {"brickId": "ctrc", "brickName": "Staffing Contracts and e-Signature", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "A\u00dcG contracts."}, {"productId": "helloflex", "description": "Contract administration."}, {"productId": "regional-staffing-erps", "description": "Local contracts."}]}, {"brickId": "comp", "brickName": "Staffing Compliance Rules Engine", "deploymentRole": "Shared rules service.", "usedInProducts": [{"productId": "zvoove-one", "description": "A\u00dcG and GVP rules."}, {"productId": "helloflex", "description": "ABU/NBBU CAO."}, {"productId": "regional-staffing-erps", "description": "Local rules."}, {"productId": "zvoove-payroll", "description": "Tariff values."}]}, {"brickId": "time", "brickName": "Time Registration and Timesheet Automation", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "Hours and Timesheet Automation."}, {"productId": "helloflex", "description": "Uren."}, {"productId": "planbition", "description": "Time registration."}, {"productId": "mywage", "description": "Timesheets."}]}, {"brickId": "pyrl", "brickName": "Staffing Payroll Engine", "deploymentRole": "Payroll batch and services.", "usedInProducts": [{"productId": "zvoove-payroll", "description": "Payroll engine."}, {"productId": "helloflex", "description": "Verloning."}, {"productId": "mywage", "description": "UK payroll."}, {"productId": "managed-services", "description": "Operated by service centres."}]}, {"brickId": "bill", "brickName": "Pay and Bill Invoicing", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "Invoicing."}, {"productId": "helloflex", "description": "Facturatie."}, {"productId": "mywage", "description": "mybill."}]}, {"brickId": "ewap", "brickName": "Pay-on-Demand Advances", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "mywage", "description": "mypod."}]}, {"brickId": "stat", "brickName": "Statutory Reporting and Authority Filings", "deploymentRole": "Integration services.", "usedInProducts": [{"productId": "zvoove-payroll", "description": "DE\u00dcV and tax filings."}, {"productId": "mywage", "description": "HMRC RTI."}, {"productId": "helloflex", "description": "Loonaangifte."}]}, {"brickId": "safe", "brickName": "Occupational Safety Instructions", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "Safety Manager."}]}, {"brickId": "docs", "brickName": "Document Management and Archive", "deploymentRole": "Archive service.", "usedInProducts": [{"productId": "zvoove-one", "description": "zvoove Documents / DMS+."}, {"productId": "helloflex", "description": "Knowledge base and documents."}]}, {"brickId": "tnnt", "brickName": "Tenant, Identity and Country Packs", "deploymentRole": "Platform service.", "usedInProducts": [{"productId": "zvoove-one", "description": "Tenant admin."}, {"productId": "regional-staffing-erps", "description": "Country packs."}]}]}, {"subChannelId": "web-recruiting-cockpit", "subChannelName": "Recruiting Cockpit", "channelType": "web-app", "description": "zvoove Cockpit, Recruit and RecruitNow.", "deployedBricks": [{"brickId": "jadv", "brickName": "Job Ads, Multiposting and Recruitment Marketing", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "Multiposting and campaigns."}]}, {"brickId": "apts", "brickName": "Applicant Tracking and Candidate Pipeline", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "ATS pipeline."}]}, {"brickId": "aiag", "brickName": "AI Recruiting and Placement Agents", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "Cockpit X agents."}]}, {"brickId": "mtch", "brickName": "Candidate Matching and Talent Pool Reactivation", "deploymentRole": "Ranking service.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "Match suggestions."}, {"productId": "zvoove-one", "description": "Match in dispatch."}]}, {"brickId": "crmx", "brickName": "Client CRM and Sales Pipeline", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "CRM and sales."}, {"productId": "mywage", "description": "Salesforce CRM."}, {"productId": "managed-services", "description": "Sales Center."}]}]}, {"subChannelId": "web-workforce-planning", "subChannelName": "Workforce Planning", "channelType": "web-app", "description": "Planbition and Plan4Flex planning.", "deployedBricks": [{"brickId": "schd", "brickName": "Shift Planning and Scheduling", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "planbition", "description": "Planning and Planbition X."}, {"productId": "mywage", "description": "myschedule."}, {"productId": "regional-staffing-erps", "description": "Plan4Flex mid-office."}]}]}, {"subChannelId": "web-client-surfaces", "subChannelName": "Client Portals and VMS", "channelType": "web-app", "description": "Portals used by client enterprises.", "deployedBricks": [{"brickId": "vmsp", "brickName": "Vendor Management for Client Enterprises", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "directskills", "description": "VMS platform."}]}, {"brickId": "clpt", "brickName": "Client Self-Service Portal", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "zvoove-one", "description": "Client portal."}, {"productId": "helloflex", "description": "Opdrachtgeversportaal."}]}]}, {"subChannelId": "web-service-desk", "subChannelName": "Managed Services Desk", "channelType": "web-app", "description": "Internal tooling for service centres.", "deployedBricks": [{"brickId": "bpos", "brickName": "Managed Payroll and Sales Service Operations", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "managed-services", "description": "Admin and Sales Center tooling."}]}]}, {"subChannelId": "web-analytics", "subChannelName": "Analytics and Assistant", "channelType": "web-app", "description": "Dashboards and zAIn.", "deployedBricks": [{"brickId": "bian", "brickName": "Agency Analytics and Insights", "deploymentRole": "Warehouse and metrics services.", "usedInProducts": [{"productId": "insights-and-zain", "description": "Dashboards."}, {"productId": "directskills", "description": "Programme dashboards."}]}, {"brickId": "zain", "brickName": "zAIn Business Assistant", "deploymentRole": "Web application and backend services deployed to the EU cloud runtime.", "usedInProducts": [{"productId": "insights-and-zain", "description": "zAIn assistant."}, {"productId": "zvoove-one", "description": "In-ERP assistant."}]}]}]}, {"groupId": "mobile-and-messaging", "groupName": "Mobile and Messaging", "groupType": "distribution", "description": "Worker-facing apps and messaging channels.", "channels": [{"subChannelId": "mobile-worker-app", "subChannelName": "Worker App (iOS and Android)", "channelType": "app-store", "description": "zvoove Work App, HelloFlex app and Planbition self-service.", "deployedBricks": [{"brickId": "wapp", "brickName": "Worker Mobile App", "deploymentRole": "Mobile app plus BFF.", "usedInProducts": [{"productId": "worker-app-and-pixi", "description": "Work App."}, {"productId": "helloflex", "description": "Flexworker app."}, {"productId": "planbition", "description": "Employee self-service."}, {"productId": "mywage", "description": "myportal."}]}]}, {"subChannelId": "messaging-whatsapp", "subChannelName": "WhatsApp Business Channel", "channelType": "messaging", "description": "Agents reachable over WhatsApp.", "deployedBricks": [{"brickId": "onbd", "brickName": "Worker Onboarding and Admin Agent", "deploymentRole": "Agent runtime and messaging connector.", "usedInProducts": [{"productId": "worker-app-and-pixi", "description": "Pixi onboarding and admin."}, {"productId": "mywage", "description": "myhr onboarding."}]}]}]}, {"groupId": "apis-and-ai", "groupName": "APIs, Integrations and AI Services", "groupType": "integration", "description": "Shared services behind all brands.", "channels": [{"subChannelId": "api-public", "subChannelName": "Public API and Events", "channelType": "api", "description": "zvoove Connect and API.", "deployedBricks": [{"brickId": "intg", "brickName": "Integration Hub and Open API", "deploymentRole": "API gateway and event bus.", "usedInProducts": [{"productId": "zvoove-one", "description": "zvoove Connect."}, {"productId": "planbition", "description": "Standard APIs."}, {"productId": "regional-staffing-erps", "description": "Brand bridges."}]}]}, {"subChannelId": "ai-services", "subChannelName": "AI Gateway", "channelType": "internal-service", "description": "Shared LLM gateway.", "deployedBricks": [{"brickId": "aipl", "brickName": "AI Agent Platform and Guardrails", "deploymentRole": "Platform service.", "usedInProducts": [{"productId": "zvoove-cockpit", "description": "Cockpit X."}, {"productId": "worker-app-and-pixi", "description": "Pixi."}, {"productId": "insights-and-zain", "description": "zAIn."}, {"productId": "planbition", "description": "Planbition X."}]}]}]}]};
+    const channelRef = "mobile-and-messaging/mobile-worker-app";
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function deploymentIconFile(channel, group) {
+        const text = [
+            group && group.groupId,
+            group && group.groupName,
+            channel && channel.subChannelId,
+            channel && channel.subChannelName,
+            channel && channel.channelType
+        ].join(' ').toLowerCase();
+
+        if (text.includes('ios')) return 'app_store_ios.png';
+        if (text.includes('android') || text.includes('play store') || text.includes('play-store')) return 'app_store_android.png';
+        if (text.includes('private cloud') || text.includes('private-cloud')) return 'private_cloud.png';
+        if (text.includes('cloud') || text.includes('runtime') || text.includes('edge') || text.includes('cdn')) return 'public_cloud.png';
+        if (text.includes('saas') || text.includes('analytics') || text.includes('crm') || text.includes('datadog') || text.includes('snowflake') || text.includes('databricks') || text.includes('salesforce')) return 'saas.png';
+        return 'deployment.png';
+    }
+
+    function interfaceIconFile(iface) {
+        const text = [iface && iface.type, iface && iface.name].join(' ').toLowerCase();
+        if (text.includes('partner_api')) return 'partner_api.png';
+        if (text.includes('public_api') || text.includes('public api')) return 'public_api.png';
+        if (text.includes('api')) return 'api.png';
+        if (text.includes('mobile web')) return 'mobile_web.png';
+        if (text.includes('mobile') || text.includes('app')) return 'mobile_app.png';
+        if (text.includes('dashboard') || text.includes('cockpit')) return 'dashboard.png';
+        if (text.includes('notification')) return 'notification.png';
+        if (text.includes('search')) return 'search_engine.png';
+        if (text.includes('social')) return 'social_media.png';
+        return 'web.png';
+    }
+
+    function buildDeploymentChannelRecords() {
+        const records = [];
+        (deployment.channels || []).forEach(group => {
+            (group.channels || []).forEach(channel => {
+                records.push({
+                    ref: (group.groupId || '') + '/' + (channel.subChannelId || ''),
+                    group: group,
+                    channel: channel
+                });
+            });
+        });
+        return records;
+    }
+
+    function findCurrentRecord() {
+        return buildDeploymentChannelRecords().find(record => record.ref === channelRef) || null;
+    }
+
+    // Bricks live directly on a channel (subchannel): channel.deployedBricks.
+    function channelDeployedBricks(channel) {
+        return (channel && channel.deployedBricks) || [];
+    }
+
+    function buildChannelProductUsage(record) {
+        // Derive products from this channel's deployedBricks[].usedInProducts.
+        const productLookup = {};
+        ((products.portfolio || {}).products || []).forEach(product => {
+            productLookup[product.id] = product;
+        });
+        const byProduct = {};
+        channelDeployedBricks(record.channel).forEach(brick => {
+            (brick.usedInProducts || []).forEach(use => {
+                const pid = use.productId;
+                if (!pid) return;
+                if (!byProduct[pid]) {
+                    const product = productLookup[pid] || {};
+                    byProduct[pid] = {
+                        id: pid,
+                        name: product.name || pid,
+                        icon: product.icon || 'product.png',
+                        brickCount: 0
+                    };
+                }
+                byProduct[pid].brickCount += 1;
+            });
+        });
+        return Object.values(byProduct).sort((left, right) => left.name.localeCompare(right.name));
+    }
+
+    function renderChip(iconPath, fallbackPath, title, copy, href) {
+        let html = '';
+        if (href) html += '<a href="' + href + '" target="_blank">';
+        html += '<div class="chip">';
+        html += '<img class="chip-icon" src="' + iconPath + '" alt="' + escapeHtml(title) + '" onerror="this.onerror=null;this.src=\'' + fallbackPath + '\'">';
+        html += '<div><div class="chip-title">' + escapeHtml(title) + '</div>';
+        if (copy) html += '<div class="chip-copy">' + escapeHtml(copy) + '</div>';
+        html += '</div></div>';
+        if (href) html += '</a>';
+        return html;
+    }
+
+    function renderNavAndHeader() {
+        const current = findCurrentRecord();
+        let navHtml = '<div class="channel-nav">';
+        buildDeploymentChannelRecords().forEach(record => {
+            const fileName = deploymentIconFile(record.channel, record.group);
+            const activeClass = record.ref === channelRef ? ' active' : '';
+            navHtml += '<a class="channel-nav-link' + activeClass + '" href="' + escapeHtml(record.channel.subChannelId || '') + '.html" title="' + escapeHtml(record.channel.subChannelName || record.channel.subChannelId || 'Deployment channel') + '">';
+            navHtml += '<img class="channel-nav-icon" src="../icons/deployment/' + fileName + '" alt="' + escapeHtml(record.channel.subChannelName || record.channel.subChannelId || 'Deployment channel') + '" onerror="this.onerror=null;this.src=\'../icons/deployment/deployment.png\'">';
+            navHtml += '</a>';
+        });
+        navHtml += '</div>';
+        document.getElementById('ChannelNav').innerHTML = navHtml;
+
+        if (!current) {
+            document.getElementById('Header').innerHTML = '<div class="empty-state">Deployment channel not found.</div>';
+            return;
+        }
+
+        let header = '<div class="hero-header">';
+        header += '<img class="hero-icon" src="../icons/deployment/' + deploymentIconFile(current.channel, current.group) + '" alt="' + escapeHtml(current.channel.subChannelName || current.channel.subChannelId || 'Deployment channel') + '" onerror="this.onerror=null;this.src=\'../icons/deployment/deployment.png\'">';
+        header += '<div>';
+        header += '<div class="page-type-badge" style="margin-top: 8px;">Deployment Channel</div>';
+        header += '<div class="chip-copy">' + escapeHtml(current.group.groupName || current.group.groupId || '') + ' · ' + escapeHtml(current.channel.channelType || 'channel') + '</div>';
+        header += '<div class="hero-title">' + escapeHtml(current.channel.subChannelName || current.channel.subChannelId || 'Deployment channel') + '</div>';
+        if (current.channel.description) {
+            header += '<div class="hero-subtitle">' + escapeHtml(current.channel.description) + '</div>';
+        }
+        header += '</div>';
+        header += '</div>';
+        document.getElementById('Header').innerHTML = header;
+    }
+
+    function renderHome() {
+        const current = findCurrentRecord();
+        const container = document.getElementById('tab_content_HomeTab');
+        if (!current) {
+            container.innerHTML = '<div class="empty-state">Deployment channel not found.</div>';
+            return;
+        }
+
+        const productUsage = buildChannelProductUsage(current);
+        const deployedBricks = channelDeployedBricks(current.channel);
+
+        let html = '';
+
+        const intro = [deployment.metadata && deployment.metadata.description, current.group.description, current.channel.description].filter(Boolean).join(' ');
+        if (intro) html += '<div class="deployment-copy">' + escapeHtml(intro) + '</div>';
+
+        html += '<div class="deployment-section-title">Deployed Bricks (' + deployedBricks.length + ')</div>';
+        if (deployedBricks.length) {
+            html += '<div class="chip-row">';
+            deployedBricks.forEach(brick => {
+                const productCount = (brick.usedInProducts || []).length;
+                const meta = [brick.deploymentRole || '', productCount ? 'Used in ' + productCount + (productCount === 1 ? ' product' : ' products') : ''].filter(Boolean).join(' · ');
+                html += renderChip('../../product-bricks/icons/' + escapeHtml(brick.brickId) + '.png', '../../product-bricks/icons/logo.png', brick.brickName || brick.brickId || 'Product brick', meta, '../../product-bricks/landing_pages/' + escapeHtml(brick.brickId) + '.html');
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="empty-state">No bricks deployed in this channel.</div>';
+        }
+
+        html += '<div class="deployment-section-title">Products Using This Channel (' + productUsage.length + ')</div>';
+        if (productUsage.length) {
+            html += '<div class="chip-row">';
+            productUsage.forEach(product => {
+                const meta = product.brickCount + (product.brickCount === 1 ? ' brick' : ' bricks');
+                html += renderChip('../icons/' + escapeHtml(product.icon), '../icons/product.png', product.name, meta, '../landing_pages/' + escapeHtml(product.id) + '.html');
+            });
+            html += '</div>';
+        } else {
+            html += '<div class="empty-state">No products currently reference this channel.</div>';
+        }
+
+        html += '<div class="deployment-section-title">Brick to Product Dependencies</div>';
+        html += '<div class="bpd-layout">';
+        html += '<div class="bpd-controls" id="BpdControls"></div>';
+        html += '<div class="bpd-graph" id="BpdGraph"></div>';
+        html += '</div>';
+
+        container.innerHTML = html;
+        renderBrickProductDependencies(current);
+    }
+
+    // --- Brick -> Product dependency diagram (mermaid) ---
+    let bpdSelected = null; // Set of selected node ids (null = all)
+
+    function bpdNodes(record) {
+        const productLookup = {};
+        ((products.portfolio || {}).products || []).forEach(product => { productLookup[product.id] = product; });
+        const bricks = [];
+        const productMap = {};
+        const edges = [];
+        channelDeployedBricks(record.channel).forEach(brick => {
+            const uses = (brick.usedInProducts || []).filter(use => productLookup[use.productId]);
+            if (!uses.length) return;
+            const brickNodeId = 'brick:' + brick.brickId;
+            bricks.push({id: brickNodeId, name: brick.brickName || brick.brickId, type: 'brick'});
+            uses.forEach(use => {
+                const product = productLookup[use.productId];
+                const productNodeId = 'product:' + product.id;
+                if (!productMap[productNodeId]) {
+                    productMap[productNodeId] = {id: productNodeId, name: product.name || product.id, type: 'product'};
+                }
+                edges.push({source: brickNodeId, target: productNodeId});
+            });
+        });
+        // dedupe brick nodes (a brick appears once)
+        const seen = {};
+        const brickNodes = bricks.filter(n => seen[n.id] ? false : (seen[n.id] = true));
+        return {bricks: brickNodes, products: Object.values(productMap), edges: edges};
+    }
+
+    function bpdAllNodeIds(model) {
+        return model.bricks.concat(model.products).map(n => n.id);
+    }
+
+    function bpdIsSelected(id) {
+        return bpdSelected === null || bpdSelected.has(id);
+    }
+
+    function renderBrickProductDependencies(record) {
+        const model = bpdNodes(record);
+        if (bpdSelected === null) {
+            bpdSelected = new Set(bpdAllNodeIds(model));
+        }
+        renderBpdControls(model);
+        renderBpdGraph(model);
+    }
+
+    function renderBpdControls(model) {
+        const groups = [
+            {label: 'Bricks', color: '#059669', nodes: model.bricks.slice().sort((a, b) => a.name.localeCompare(b.name))},
+            {label: 'Products', color: '#ea580c', nodes: model.products.slice().sort((a, b) => a.name.localeCompare(b.name))}
+        ];
+        let html = '<div class="bpd-actions">' +
+            '<button type="button" class="pdg-action" onclick="setAllBpdNodes(true)">Show all</button>' +
+            '<button type="button" class="pdg-action" onclick="setAllBpdNodes(false)">Hide all</button>' +
+            '</div><div class="bpd-checklist">';
+        groups.forEach(group => {
+            if (!group.nodes.length) return;
+            html += '<div class="pdg-type-header">' + escapeHtml(group.label) + ' (' + group.nodes.length + ')</div>';
+            group.nodes.forEach(node => {
+                html += '<label class="pdg-check-item node" title="' + escapeHtml(node.name) + '">' +
+                    '<input type="checkbox" value="' + escapeHtml(node.id) + '"' + (bpdIsSelected(node.id) ? ' checked' : '') + ' onchange="toggleBpdNode(this.value, this.checked)">' +
+                    '<span class="pdg-swatch" style="background-color:' + group.color + '"></span>' +
+                    '<span class="label">' + escapeHtml(node.name) + '</span>' +
+                    '</label>';
+            });
+        });
+        html += '</div>';
+        document.getElementById('BpdControls').innerHTML = html;
+    }
+
+    function toggleBpdNode(id, checked) {
+        if (bpdSelected === null) {
+            bpdSelected = new Set(bpdAllNodeIds(bpdNodes(findCurrentRecord())));
+        }
+        if (checked) { bpdSelected.add(id); } else { bpdSelected.delete(id); }
+        renderBpdGraph(bpdNodes(findCurrentRecord()));
+    }
+
+    function setAllBpdNodes(selected) {
+        const model = bpdNodes(findCurrentRecord());
+        bpdSelected = selected ? new Set(bpdAllNodeIds(model)) : new Set();
+        renderBpdControls(model);
+        renderBpdGraph(model);
+    }
+
+    function bpdMermaidId(value) {
+        return 'n_' + String(value).replace(/[^a-zA-Z0-9_]/g, '_');
+    }
+
+    function bpdMermaidLabel(value) {
+        return String(value || '')
+            .replaceAll('&', 'and').replaceAll('"', '').replaceAll("'", '')
+            .replaceAll('<', '').replaceAll('>', '')
+            .replaceAll('[', '(').replaceAll(']', ')')
+            .replaceAll('{', '(').replaceAll('}', ')').replaceAll('|', '/');
+    }
+
+    function renderBpdGraph(model) {
+        const container = document.getElementById('BpdGraph');
+        if (!container) return;
+        const bricks = model.bricks.filter(n => bpdIsSelected(n.id));
+        const productsSel = model.products.filter(n => bpdIsSelected(n.id));
+        const visible = new Set(bricks.concat(productsSel).map(n => n.id));
+        const edges = model.edges.filter(e => visible.has(e.source) && visible.has(e.target));
+
+        if (typeof mermaid === 'undefined') {
+            container.innerHTML = '<div class="empty-state">Diagram library failed to load.</div>';
+            return;
+        }
+        if (!bricks.length || !productsSel.length || !edges.length) {
+            container.innerHTML = '<div class="empty-state">Select bricks and products that share dependencies to render the diagram.</div>';
+            return;
+        }
+
+        let chart = 'flowchart LR\n\n';
+        // Bricks grouped in one unnamed subgraph.
+        chart += 'subgraph bpdBricks [" "]\n';
+        bricks.forEach(node => { chart += bpdMermaidId(node.id) + '["' + bpdMermaidLabel(node.name) + '"]\n'; });
+        chart += 'end\n';
+        productsSel.forEach(node => { chart += bpdMermaidId(node.id) + '["' + bpdMermaidLabel(node.name) + '"]\n'; });
+        edges.forEach(edge => { chart += bpdMermaidId(edge.source) + ' --> ' + bpdMermaidId(edge.target) + '\n'; });
+        chart += 'classDef brickCls fill:#dcfce7,stroke:#059669,color:#065f46,stroke-width:2px;\n';
+        chart += 'classDef productCls fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px;\n';
+        const brickIds = bricks.map(n => bpdMermaidId(n.id));
+        const productIds = productsSel.map(n => bpdMermaidId(n.id));
+        if (brickIds.length) chart += 'class ' + brickIds.join(',') + ' brickCls;\n';
+        if (productIds.length) chart += 'class ' + productIds.join(',') + ' productCls;\n';
+
+        const renderId = 'bpd-mermaid-' + (bpdRenderCounter++);
+        Promise.resolve(mermaid.render(renderId, chart)).then(result => {
+            container.innerHTML = result.svg;
+        }).catch(() => {
+            container.innerHTML = '<div class="empty-state">Unable to render the dependency diagram.</div>';
+        });
+    }
+    let bpdRenderCounter = 0;
+</script>
+<div id="ChannelNav"></div>
+<div class="hero" id="Header"></div>
+<div class="tab">
+    <button class="tablinks active" id="tab_HomeTab" onclick="openTab('HomeTab')">Channel</button>
+</div>
+<div id="tab_content_HomeTab" class="tabcontent"></div>
+<script>
+    if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({startOnLoad: false, securityLevel: 'loose', flowchart: {htmlLabels: false}});
+    }
+    renderNavAndHeader();
+    renderHome();
+</script>
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Temporary Staffing Software Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Deployment Channels"
+    },
+    {
+      "label": "Worker App (iOS and Android)"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

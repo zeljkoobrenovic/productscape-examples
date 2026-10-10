@@ -46,13 +46,31 @@
                 {
                   "storeId": "vehicle-register-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "rdw-register-cache",
+                  "role": "serving"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "vehicle-registration-record api",
-                  "description": "Access to vehicle registration record through the owning brick."
+                  "name": "plate register api",
+                  "description": "Lookup by plate or VIN."
+                },
+                {
+                  "type": "event",
+                  "name": "register-changed",
+                  "description": "Ownership, APK, WOK and export mutations."
+                },
+                {
+                  "type": "file",
+                  "name": "register extract",
+                  "description": "Licensed batch extracts for enrichment and insights."
                 }
               ],
               "governance": {
@@ -90,13 +108,22 @@
                 {
                   "storeId": "vehicle-register-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "partner-data-mirror",
+                  "role": "projection"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "vehicle-specification api",
-                  "description": "Access to vehicle specification through the owning brick."
+                  "name": "specification api",
+                  "description": "Normalised edition and options by plate or VIN."
+                },
+                {
+                  "type": "file",
+                  "name": "partner catalog import",
+                  "description": "Autotelex and Jato model and price feeds."
                 }
               ],
               "governance": {
@@ -133,15 +160,19 @@
               "derivedFromAssetIds": [],
               "stores": [
                 {
-                  "storeId": "vehicle-register-db",
+                  "storeId": "partner-data-mirror",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "projection"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "damage-history api",
-                  "description": "Access to damage history through the owning brick."
+                  "name": "damage history api",
+                  "description": "Damage report by plate or VIN."
                 }
               ],
               "governance": {
@@ -172,15 +203,15 @@
               "derivedFromAssetIds": [],
               "stores": [
                 {
-                  "storeId": "vehicle-register-db",
+                  "storeId": "partner-data-mirror",
                   "role": "system-of-record"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "maintenance-history api",
-                  "description": "Access to maintenance history through the owning brick."
+                  "name": "maintenance history api",
+                  "description": "Manufacturer service records by VIN."
                 }
               ],
               "governance": {
@@ -217,13 +248,17 @@
                 {
                   "storeId": "vehicle-register-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "rdw-register-cache",
+                  "role": "serving"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "odometer-reading api",
-                  "description": "Access to odometer reading and judgement through the owning brick."
+                  "name": "odometer judgement api",
+                  "description": "NAP judgement and readings by plate."
                 }
               ],
               "governance": {
@@ -256,13 +291,22 @@
                 {
                   "storeId": "vehicle-register-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "battery-health-report api",
-                  "description": "Access to ev battery health report through the owning brick."
+                  "name": "state of health api",
+                  "description": "Measurements and results."
+                },
+                {
+                  "type": "file",
+                  "name": "soh certificate",
+                  "description": "PDF certificate for buyers."
                 }
               ],
               "governance": {
@@ -302,8 +346,13 @@
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "damage-calculation api",
-                  "description": "Access to damage calculation through the owning brick."
+                  "name": "damage calculation api",
+                  "description": "Create calculations and read estimates."
+                },
+                {
+                  "type": "file",
+                  "name": "repair estimate",
+                  "description": "PDF estimate with photos."
                 }
               ],
               "governance": {
@@ -350,13 +399,22 @@
                 {
                   "storeId": "market-warehouse-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "market-raw-zone",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "file",
+                  "name": "daily advert harvest",
+                  "description": "Raw advert files from portals."
+                },
+                {
                   "type": "api",
-                  "name": "market-advertisement-observation api",
-                  "description": "Access to market advertisement observation through the owning brick."
+                  "name": "market query api",
+                  "description": "Comparables and price distributions."
                 }
               ],
               "governance": {
@@ -396,13 +454,22 @@
                 {
                   "storeId": "market-warehouse-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-processing"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "event",
+                  "name": "ownership-changed",
+                  "description": "Consumed from register changes."
+                },
+                {
                   "type": "api",
-                  "name": "vehicle-transaction-history api",
-                  "description": "Access to vehicle transaction history through the owning brick."
+                  "name": "transaction history query",
+                  "description": "Aggregated sales history."
                 }
               ],
               "governance": {
@@ -438,13 +505,22 @@
                 {
                   "storeId": "market-warehouse-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "client-file-exchange",
+                  "role": "data-files"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "market-insight-dataset api",
-                  "description": "Access to market insight dataset through the owning brick."
+                  "name": "insight api",
+                  "description": "Dashboard cubes per client scope."
+                },
+                {
+                  "type": "file",
+                  "name": "custom data files",
+                  "description": "Periodic reports and extracts."
                 }
               ],
               "governance": {
@@ -481,13 +557,22 @@
                 {
                   "storeId": "market-warehouse-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "client-file-exchange",
+                  "role": "data-files"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "file",
+                  "name": "lead list",
+                  "description": "Monthly scored lists per territory."
+                },
+                {
                   "type": "api",
-                  "name": "ownership-change-score api",
-                  "description": "Access to ownership change score through the owning brick."
+                  "name": "score api",
+                  "description": "Scores for licensed clients."
                 }
               ],
               "governance": {
@@ -531,13 +616,26 @@
                 {
                   "storeId": "market-warehouse-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "valuation-model-registry",
+                  "role": "projection"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "valuation-record api",
-                  "description": "Access to valuation record through the owning brick."
+                  "name": "valuation api",
+                  "description": "Retail, trade and maximum purchase values."
+                },
+                {
+                  "type": "event",
+                  "name": "valuation-issued",
+                  "description": "For accuracy tracking against realised sales."
                 }
               ],
               "governance": {
@@ -575,13 +673,31 @@
                 {
                   "storeId": "transactions-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "data-files"
+                },
+                {
+                  "storeId": "archive-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "bpm-calculation api",
-                  "description": "Access to bpm calculation and taxation report through the owning brick."
+                  "name": "bpm api",
+                  "description": "Calculations and taxation orders."
+                },
+                {
+                  "type": "file",
+                  "name": "taxation report",
+                  "description": "Signed report filed with the Tax Authority."
+                },
+                {
+                  "type": "workflow",
+                  "name": "taxation inspection",
+                  "description": "Appraiser inspection and sign-off."
                 }
               ],
               "governance": {
@@ -617,15 +733,24 @@
               ],
               "stores": [
                 {
-                  "storeId": "document-object-store",
+                  "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "data-files"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "purchase-appraisal-report api",
-                  "description": "Access to purchase appraisal report through the owning brick."
+                  "name": "appraisal api",
+                  "description": "Create and read appraisals."
+                },
+                {
+                  "type": "file",
+                  "name": "appraisal report",
+                  "description": "Printable report for the seller."
                 }
               ],
               "governance": {
@@ -675,13 +800,26 @@
                 {
                   "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "data-files"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "vehicle-dossier api",
-                  "description": "Access to vehicle dossier through the owning brick."
+                  "name": "dossier bff",
+                  "description": "Dossier data and actions."
+                },
+                {
+                  "type": "event",
+                  "name": "dossier-timeline",
+                  "description": "Actions recorded on the vehicle timeline."
                 }
               ],
               "governance": {
@@ -718,13 +856,26 @@
                 {
                   "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "stock-search-index",
+                  "role": "projection"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "dealer-stock-item api",
-                  "description": "Access to dealer stock item through the owning brick."
+                  "name": "stock api",
+                  "description": "Stock, prices and signals."
+                },
+                {
+                  "type": "event",
+                  "name": "stock-changed",
+                  "description": "Triggers advert updates and trade listings."
                 }
               ],
               "governance": {
@@ -757,13 +908,22 @@
                 {
                   "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "stock-search-index",
+                  "role": "serving"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "file",
+                  "name": "channel feeds",
+                  "description": "Feeds to 150+ advertising channels."
+                },
+                {
                   "type": "api",
-                  "name": "advertisement-listing api",
-                  "description": "Access to advertisement listing through the owning brick."
+                  "name": "advert api",
+                  "description": "Adverts and delivery status."
                 }
               ],
               "governance": {
@@ -798,13 +958,22 @@
                 {
                   "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "sales-lead api",
-                  "description": "Access to sales lead through the owning brick."
+                  "name": "lead api",
+                  "description": "Capture and route leads."
+                },
+                {
+                  "type": "event",
+                  "name": "lead-received",
+                  "description": "Notifies the dealer inbox."
                 }
               ],
               "governance": {
@@ -841,13 +1010,22 @@
                 {
                   "storeId": "dealer-ops-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "archive-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "sales-document api",
-                  "description": "Access to sales document through the owning brick."
+                  "name": "sales documents api",
+                  "description": "Quotes, agreements and invoices."
+                },
+                {
+                  "type": "file",
+                  "name": "accounting export",
+                  "description": "Export to bookkeeping packages."
                 }
               ],
               "governance": {
@@ -888,8 +1066,8 @@
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "financing-application api",
-                  "description": "Access to financing application through the owning brick."
+                  "name": "finance api",
+                  "description": "Quotes and application status with the lender."
                 }
               ],
               "governance": {
@@ -934,13 +1112,31 @@
                 {
                   "storeId": "transactions-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
+                },
+                {
+                  "storeId": "archive-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "rdw-transaction-record api",
-                  "description": "Access to rdw transaction record through the owning brick."
+                  "name": "rdw transaction api",
+                  "description": "Submit and track transactions."
+                },
+                {
+                  "type": "event",
+                  "name": "transaction-completed",
+                  "description": "Feeds billing and the dossier."
+                },
+                {
+                  "type": "file",
+                  "name": "proof document",
+                  "description": "RDW proof for seller and buyer."
                 }
               ],
               "governance": {
@@ -978,13 +1174,26 @@
                 {
                   "storeId": "transactions-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "data-files"
+                },
+                {
+                  "storeId": "archive-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "import-export-document api",
-                  "description": "Access to import/export document through the owning brick."
+                  "name": "trade documents api",
+                  "description": "Order and track documents."
+                },
+                {
+                  "type": "workflow",
+                  "name": "trade desk",
+                  "description": "Document specialists and counter handling."
                 }
               ],
               "governance": {
@@ -1017,13 +1226,22 @@
                 {
                   "storeId": "transactions-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "stock-search-index",
+                  "role": "projection"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "trade-offer api",
-                  "description": "Access to trade offer through the owning brick."
+                  "name": "trade api",
+                  "description": "Listings, offers and deals."
+                },
+                {
+                  "type": "event",
+                  "name": "offer-made",
+                  "description": "Alerts sellers and matching buyers."
                 }
               ],
               "governance": {
@@ -1061,13 +1279,22 @@
                 {
                   "storeId": "transactions-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "webshop-order api",
-                  "description": "Access to webshop order through the owning brick."
+                  "name": "order api",
+                  "description": "Orders and fulfilment status."
+                },
+                {
+                  "type": "event",
+                  "name": "order-paid",
+                  "description": "Starts fulfilment."
                 }
               ],
               "governance": {
@@ -1102,15 +1329,20 @@
               ],
               "stores": [
                 {
-                  "storeId": "document-object-store",
+                  "storeId": "client-file-exchange",
                   "role": "system-of-record"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "file",
+                  "name": "plate file upload and result",
+                  "description": "Client plate sets in, enriched files out."
+                },
+                {
                   "type": "api",
-                  "name": "enrichment-batch api",
-                  "description": "Access to enrichment batch through the owning brick."
+                  "name": "enrichment api",
+                  "description": "Job submission and status."
                 }
               ],
               "governance": {
@@ -1149,13 +1381,22 @@
                 {
                   "storeId": "consumer-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-object-store",
+                  "role": "data-files"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "consumer-vehicle-report api",
-                  "description": "Access to consumer vehicle report through the owning brick."
+                  "name": "finnik report api",
+                  "description": "Free and paid report flows."
+                },
+                {
+                  "type": "file",
+                  "name": "consumer report",
+                  "description": "Downloadable report."
                 }
               ],
               "governance": {
@@ -1202,15 +1443,24 @@
               "derivedFromAssetIds": [],
               "stores": [
                 {
-                  "storeId": "accounts-billing-db",
+                  "storeId": "identity-directory",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-source"
                 }
               ],
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "customer-account api",
-                  "description": "Access to customer account through the owning brick."
+                  "name": "entitlement api",
+                  "description": "Modules, roles and RDW authorisations."
+                },
+                {
+                  "type": "event",
+                  "name": "subscription-changed",
+                  "description": "Updates billing and access."
                 }
               ],
               "governance": {
@@ -1246,15 +1496,33 @@
               ],
               "stores": [
                 {
-                  "storeId": "accounts-billing-db",
+                  "storeId": "billing-ledger-db",
                   "role": "system-of-record"
+                },
+                {
+                  "storeId": "vehicle-events",
+                  "role": "event-processing"
+                },
+                {
+                  "storeId": "archive-store",
+                  "role": "archive"
                 }
               ],
               "interfaces": [
                 {
+                  "type": "event",
+                  "name": "usage-recorded",
+                  "description": "Billable events from every module."
+                },
+                {
+                  "type": "file",
+                  "name": "invoice",
+                  "description": "Monthly invoice."
+                },
+                {
                   "type": "api",
-                  "name": "subscription-and-usage-ledger api",
-                  "description": "Access to subscription and usage ledger through the owning brick."
+                  "name": "usage metering api",
+                  "description": "Record and query usage."
                 }
               ],
               "governance": {
@@ -1296,8 +1564,13 @@
               "interfaces": [
                 {
                   "type": "api",
-                  "name": "data-licence-and-consent-register api",
-                  "description": "Access to data licence and consent register through the owning brick."
+                  "name": "licence check api",
+                  "description": "Allow or deny a request by client, purpose and source."
+                },
+                {
+                  "type": "event",
+                  "name": "data-access-audited",
+                  "description": "Immutable access audit entries."
                 }
               ],
               "governance": {
@@ -1322,13 +1595,58 @@
       "classification": "confidential"
     },
     {
+      "id": "rdw-register-cache",
+      "name": "RDW Register Cache",
+      "kind": "cache",
+      "description": "Short-lived cache of RDW lookups with freshness flags so plate lookups survive RDW slowness.",
+      "technology": "key-value cache",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "partner-data-mirror",
+      "name": "Partner Data Mirror",
+      "kind": "integration-mirror",
+      "description": "Licensed copies and caches of partner sources (DAT, Autotelex, Jato, damage and maintenance providers) with source lineage.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "vehicle-events",
+      "name": "Vehicle and Business Events",
+      "kind": "event-topic",
+      "description": "Event topics for register changes, valuations, stock changes, transactions, orders and usage.",
+      "technology": "message-bus",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "market-raw-zone",
+      "name": "Market Data Raw Zone",
+      "kind": "blob-store",
+      "description": "Landing zone for daily advert harvests, ownership-change feeds and partner files before matching.",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
       "id": "market-warehouse-db",
       "name": "Market Data Warehouse",
-      "kind": "analytical-store",
+      "kind": "analytics-warehouse",
       "description": "Adverts, ownership changes, transactions, valuations and insight cubes.",
       "technology": "columnar-warehouse",
       "status": "active",
       "classification": "confidential"
+    },
+    {
+      "id": "valuation-model-registry",
+      "name": "Valuation Model Registry",
+      "kind": "metadata-catalog",
+      "description": "Versioned depreciation curves, option values, scoring models and their back-test results.",
+      "technology": "model registry",
+      "status": "active",
+      "classification": "internal"
     },
     {
       "id": "dealer-ops-db",
@@ -1340,6 +1658,15 @@
       "classification": "confidential"
     },
     {
+      "id": "stock-search-index",
+      "name": "Stock Search Index",
+      "kind": "search-index",
+      "description": "Searchable projection of dealer stock and adverts for dealer websites and the trade market.",
+      "technology": "opensearch",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
       "id": "transactions-db",
       "name": "Transactions and Trade DB",
       "kind": "operational-database",
@@ -1349,10 +1676,19 @@
       "classification": "restricted"
     },
     {
-      "id": "accounts-billing-db",
-      "name": "Accounts and Billing DB",
+      "id": "identity-directory",
+      "name": "Identity Directory",
       "kind": "operational-database",
-      "description": "Accounts, users, authorisations, subscriptions, usage and invoices.",
+      "description": "Companies, branches, users, roles, module entitlements and RDW authorisations.",
+      "technology": "identity provider directory",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "billing-ledger-db",
+      "name": "Billing Ledger DB",
+      "kind": "operational-database",
+      "description": "Subscriptions, rated usage events and invoices.",
       "technology": "relational-database",
       "status": "active",
       "classification": "restricted"
@@ -1360,11 +1696,20 @@
     {
       "id": "document-object-store",
       "name": "Document and Photo Store",
-      "kind": "object-store",
-      "description": "Reports, photos, PDFs and certificates.",
+      "kind": "blob-store",
+      "description": "Reports, photos, PDFs, certificates and client files.",
       "technology": "object-storage",
       "status": "active",
       "classification": "confidential"
+    },
+    {
+      "id": "client-file-exchange",
+      "name": "Client File Exchange",
+      "kind": "data-files",
+      "description": "Secure upload and download area for enrichment files, lead lists and custom data files.",
+      "technology": "sftp-object-storage",
+      "status": "active",
+      "classification": "restricted"
     },
     {
       "id": "consumer-db",
@@ -1380,7 +1725,16 @@
       "name": "Compliance Audit Log",
       "kind": "append-only-log",
       "description": "Immutable data-access audit trail and licence register.",
-      "technology": "append-only-store",
+      "technology": "append-only-log-store",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "archive-store",
+      "name": "Fiscal and Legal Archive",
+      "kind": "blob-store",
+      "description": "Write-once archive for records with statutory retention (sales, tax, transactions, invoices).",
+      "technology": "object-storage (WORM)",
       "status": "active",
       "classification": "restricted"
     }

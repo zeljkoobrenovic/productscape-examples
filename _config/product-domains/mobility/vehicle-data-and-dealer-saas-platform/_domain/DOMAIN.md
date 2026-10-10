@@ -48,7 +48,7 @@ The `Voor wie` pages list starters, rental companies, multi-brand dealers, lease
 ## Assumptions and open questions
 
 - **All KPI values are modeled seed values.** VWE publishes no revenue, volume or adoption metrics beyond customer counts and prices.
-- Teams, headcounts and the organisation are modeled. They are sized for roughly 125–160 employees and are not VWE's actual structure.
+- Teams, headcounts and the organisation are modeled, not VWE's actual structure. Product and engineering total 62 people (13 small teams plus 5 group leads), sized against Magnet.me's figure of about 125 employees at head office; sales, support, the HQ counter and remarketing operations are outside the team model.
 - The founding year is inconsistent across sources (1975, 1993, "30" or "40+ years"), so the model does not depend on it.
 - Whether the Main Capital transaction has closed (expected October 2026) is unconfirmed.
 - The Autoveiling page still references ATC after its sale. The model treats auctions as a partner hand-off.

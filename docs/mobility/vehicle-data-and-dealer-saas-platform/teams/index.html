@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Teams (Vehicle Data and Dealer SaaS Platform)</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            margin: 8px 28px 28px;
+            color: #202124;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .hero {
+            margin-bottom: 20px;
+        }
+
+        .hero-table {
+            border-collapse: collapse;
+            width: auto;
+        }
+
+        .hero-logo {
+            width: 108px;
+            height: 108px;
+            margin-right: 12px;
+        }
+
+        .hero-logo-cell {
+            border: none;
+            vertical-align: top;
+            padding-top: 12px;
+            padding-right: 12px;
+        }
+
+        .hero-copy-cell {
+            vertical-align: top;
+            border: none;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            margin-bottom: 4px;
+        }
+
+        .hero-note {
+            max-width: 960px;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 0 0 10px 0;
+        }
+
+        .team-search {
+            flex: 1;
+            max-width: 520px;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .team-search:focus {
+            outline: none;
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+        }
+
+        .search-clear {
+            padding: 9px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #4b5563;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .search-clear:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .search-summary {
+            margin: 0 4px 18px 0;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .search-summary strong {
+            color: #1f2937;
+        }
+
+        .search-summary .search-term {
+            color: #1d4ed8;
+        }
+
+        .tab-intro {
+            margin-bottom: 18px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        /* hierarchy */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .group {
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background-color: #fbfbfc;
+            padding: 16px;
+        }
+
+        .group.nested {
+            margin-top: 14px;
+            background-color: #ffffff;
+        }
+
+        .group-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .group-name {
+            font-size: 22px;
+        }
+
+        .group-hc {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group-mission {
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 14px;
+            max-width: 900px;
+        }
+
+        .group-direct {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background-color: #eef2f6;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .group-direct-text {
+            margin-bottom: 6px;
+        }
+
+        .group-direct .hc-dots {
+            margin-bottom: 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .team-card {
+            display: block;
+            color: inherit;
+            border: 1px solid #d1d5db;
+            border-left-width: 4px;
+            border-radius: 10px;
+            padding: 14px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+            transition: 0.15s;
+        }
+
+        .team-card:hover {
+            box-shadow: rgba(0, 0, 0, 0.12) 0 2px 8px;
+            transform: translateY(-1px);
+        }
+
+        .team-type {
+            display: inline-block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            border-radius: 999px;
+            padding: 3px 9px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .team-name {
+            font-size: 19px;
+            color: #1f2937;
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+
+        .team-card:hover .team-name {
+            color: #1d4ed8;
+        }
+
+        .team-desc {
+            color: #4b5563;
+            line-height: 1.45;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        /* dependency icon rows */
+        .link-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .link-group {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .link-sep {
+            color: #cbd5e1;
+            margin: 0 4px;
+            font-weight: bold;
+        }
+
+        .link-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #d7dce1;
+            background-color: white;
+        }
+
+        .link-icon.round {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* headcount dots */
+        .hc-dots {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 3px;
+            margin-bottom: 12px;
+        }
+
+        .hc-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(17, 24, 39, 0.12);
+        }
+
+        .hc-dots-label {
+            margin-left: 6px;
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        /* legend */
+        .type-legend {
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 10px 0 0 0;
+        }
+
+        .legend-pill {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background-color: #f8fafc;
+            font-size: 12px;
+            color: #4b5563;
+            max-width: 320px;
+        }
+
+        .legend-swatch {
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            display: inline-block;
+            border: 1px solid rgba(17, 24, 39, 0.12);
+            margin-top: 2px;
+            flex: none;
+        }
+
+        .legend-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .legend-name {
+            color: #1f2937;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .legend-desc {
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .legend-count {
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: normal;
+        }
+
+        /* dependencies tab */
+        .dependencies-layout {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .dependency-controls {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            padding: 14px;
+        }
+
+        .dependency-control-group {
+            margin-bottom: 16px;
+        }
+
+        .dependency-control-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .dependency-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dependency-action {
+            border: 1px solid #d1d5db;
+            background-color: white;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .dependency-checklist {
+            max-height: 340px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .dependency-check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .dependency-swatch {
+            flex: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 3px;
+            border: 1px solid rgba(17, 24, 39, 0.15);
+        }
+
+        .dependency-check-meta {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .dependency-summary {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .dependency-summary strong {
+            color: #1f2937;
+        }
+
+        .dependency-view {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 6px;
+        }
+
+        .view-toggle-btn {
+            border: 1px solid #d1d5db;
+            background-color: #f8fafc;
+            color: #4b5563;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .view-toggle-btn:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .view-toggle-btn.active {
+            background-color: #202124;
+            border-color: #202124;
+            color: white;
+        }
+
+        .force-label-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 4px;
+            font-size: 13px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .force-label-toggle[hidden] {
+            display: none;
+        }
+
+        .dependency-graph {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: white;
+            padding: 14px;
+            overflow: auto;
+            min-height: 560px;
+        }
+
+        .dependency-graph.force {
+            padding: 0;
+            overflow: hidden;
+            height: 620px;
+        }
+
+        .dependency-empty {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        @media (max-width: 1080px) {
+            .dependencies-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" target="_blank" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/force-graph@1.51.4/dist/force-graph.min.js"></script>
+</head>
+<body onload="initTab('home')" onhashchange="initTab('home')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../teams/index.html" class="active" aria-current="page">Teams</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+<div class="hero">
+    <table class="hero-table">
+        <tr>
+            <td class="hero-logo-cell"><img class="hero-logo" src="icons/logo.png" alt="Teams"></td>
+            <td class="hero-copy-cell">
+                <div class="hero-title">Teams</div>
+                <div id="HeroNote" class="hero-note">A lean team index: the group hierarchy with headcount roll-ups, and each team's links to customers, streams, product bricks, and other teams. Click a team to open its page.</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="tab">
+    <button class="tablinks" id="tab_home" onclick="openTab('home')">Team Index</button>
+    <button class="tablinks" id="tab_dependencies" onclick="openTab('dependencies')">Dependencies</button>
+</div>
+
+<div id="tab_content_home" class="tabcontent">
+    <div class="search-bar" style="margin-top: 12px">
+        <input type="search" id="TeamSearch" class="team-search" placeholder="Search teams by name, description, type, or group…" autocomplete="off">
+        <button type="button" id="TeamSearchClear" class="search-clear" onclick="clearTeamSearch()" hidden>Clear</button>
+    </div>
+    <div id="SearchSummary" class="search-summary"></div>
+    <div id="Hierarchy"></div>
+    <div id="TypeLegend" class="type-legend"></div>
+</div>
+
+<div id="tab_content_dependencies" class="tabcontent">
+    <div class="tab-intro">Cross-team dependency graph. Filter by team and by dependency type.</div>
+    <div id="DependenciesContent"></div>
+</div>
+
+<script>
+    const teamsData = {"orgDesign": {"domainId": "vehicle-data-and-dealer-saas-platform", "domainName": "Vehicle Data and Dealer SaaS Platform", "companyProfile": "VWE Automotive (VWE Groep B.V., Heerhugowaard; offices in Heerhugowaard and Veghel) calls itself the number one in vehicle data in the Netherlands and the largest officially recognised RDW provider, serving 11,000+ business customers (September 2026). Products include MijnVWE, Occasion Manager, Finnik, RDW services, data products and APIs; acquisitions include AVN Group (2022), Cargo and XRAY Automotive (2026); ATC was sold to Autorola in February 2026. NewPort Capital invested in 2022; Main Capital Partners agreed in 2026 to take a majority stake. Magnet.me lists about 125 employees at HQ.", "operatingModel": "Modeled: product teams aligned to dealer, trade, data and consumer streams build on a shared vehicle-data and valuation core and an accounts/billing platform, with a small enabling team for data licensing and compliance. Team names and headcounts are illustrative, sized for a company of roughly 125\u2013160 employees, not VWE's actual structure.", "teamTypes": [{"id": "stream-aligned", "name": "Stream-aligned", "color": "#2563eb", "description": "Aligned to a product, service, or customer journey; owns end-to-end delivery and outcomes."}, {"id": "platform", "name": "Platform", "color": "#0891b2", "description": "Provides reusable capabilities, services, or infrastructure to multiple stream-aligned teams."}, {"id": "enabling", "name": "Enabling", "color": "#16a34a", "description": "Helps stream-aligned teams overcome obstacles, adopt technologies, or improve practices."}, {"id": "complicated-subsystem", "name": "Complicated subsystem", "color": "#9333ea", "description": "Owns a complex subsystem that requires specialized knowledge and skills."}, {"id": "other", "name": "Other", "color": "#6b7280", "description": "Does not fit the other categories (e.g. a temporary or cross-functional team)."}], "teamDependencyTypes": [{"id": "collaboration", "name": "Collaboration", "description": "Working closely together with another team."}, {"id": "x-as-a-service", "name": "X-as-a-Service", "description": "Consuming or providing something with minimal collaboration."}, {"id": "facilitating", "name": "Facilitating", "description": "Helping (or being helped by) another team to clear impediments."}, {"id": "other", "name": "Other", "description": "Any other type of dependency not covered above."}]}, "groups": [{"id": "dealer-platform", "name": "Dealer Platform (MijnVWE)", "mission": "Help dealers buy, price, sell and deliver used cars from one dossier.", "groupDirectHeadcount": {"headcount": 2, "description": "Group product lead and engineering manager."}, "teams": [{"id": "stock-and-pricing", "name": "Stock, Pricing and Appraisal", "type": "stream-aligned", "description": "Owns Occasion Manager and Finnik Zakelijk appraisals: buying advice, price advice and signals.", "teamHeadcount": {"headcount": 7, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Gross margin per used car sold", "description": "KPI from the customer pyramids."}, {"name": "Cars bought within maximum purchase price", "description": "KPI from the customer pyramids."}, {"name": "Occasion Manager attach rate", "description": "KPI from the customer pyramids."}, {"name": "Group used-car stand-time", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "dhld", "name": "Dealer Group Used-Car Director", "icon": "customer-dhld-portrait.jpg", "href": "../customers/landing_pages/dhld.html", "description": ""}, {"customerId": "trex", "name": "Car Trader and Importer-Exporter", "icon": "customer-trex-portrait.jpg", "href": "../customers/landing_pages/trex.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-source-and-appraise-used-cars", "name": "Source and Appraise Used Cars at the Right Price", "icon": "dealer-source-and-appraise-used-cars.png", "href": "../product-bricks/stream_pages/dealer-source-and-appraise-used-cars.html", "description": ""}, {"streamId": "dealer-price-and-advertise-stock", "name": "Price and Advertise Stock to Sell Fast", "icon": "dealer-price-and-advertise-stock.png", "href": "../product-bricks/stream_pages/dealer-price-and-advertise-stock.html", "description": ""}, {"streamId": "dealer-group-steer-multi-site-performance", "name": "Steer Multi-site Dealer Performance", "icon": "dealer-group-steer-multi-site-performance.png", "href": "../product-bricks/stream_pages/dealer-group-steer-multi-site-performance.html", "description": ""}], "brickDependencies": [{"brickId": "occm", "name": "Occasion Manager Stock and Pricing", "icon": "occm.png", "href": "../product-bricks/landing_pages/occm.html", "description": "Owns Occasion Manager Stock and Pricing."}, {"brickId": "tapp", "name": "Trade-in Appraisal Reports", "icon": "tapp.png", "href": "../product-bricks/landing_pages/tapp.html", "description": "Owns Trade-in Appraisal Reports."}], "otherTeamDependencies": [{"teamId": "valuation-and-market-data", "name": "Valuation and Market Data", "type": "complicated-subsystem", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/valuation-and-market-data.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Values and market comparables."}, {"teamId": "vehicle-intelligence", "name": "Vehicle History and Condition", "type": "complicated-subsystem", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-intelligence.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "History and damage."}], "groupId": "dealer-platform", "groupName": "Dealer Platform (MijnVWE)"}, {"id": "dealer-sales-and-marketing", "name": "Dealer Dossier, Sales and Marketing", "type": "stream-aligned", "description": "Owns the dossier, advertising syndication, dealer websites, sales administration and financing referral.", "teamHeadcount": {"headcount": 8, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Lead-to-sale conversion", "description": "KPI from the customer pyramids."}, {"name": "Channels per advert", "description": "KPI from the customer pyramids."}, {"name": "Weekly active dealers", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "dhld", "name": "Dealer Group Used-Car Director", "icon": "customer-dhld-portrait.jpg", "href": "../customers/landing_pages/dhld.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-price-and-advertise-stock", "name": "Price and Advertise Stock to Sell Fast", "icon": "dealer-price-and-advertise-stock.png", "href": "../product-bricks/stream_pages/dealer-price-and-advertise-stock.html", "description": ""}, {"streamId": "dealer-sell-register-and-deliver-a-car", "name": "Sell, Register and Deliver a Car", "icon": "dealer-sell-register-and-deliver-a-car.png", "href": "../product-bricks/stream_pages/dealer-sell-register-and-deliver-a-car.html", "description": ""}], "brickDependencies": [{"brickId": "dosr", "name": "Vehicle Dossier and Workflow Hub", "icon": "dosr.png", "href": "../product-bricks/landing_pages/dosr.html", "description": "Owns Vehicle Dossier and Workflow Hub."}, {"brickId": "advf", "name": "Advertising Feed Syndication", "icon": "advf.png", "href": "../product-bricks/landing_pages/advf.html", "description": "Owns Advertising Feed Syndication."}, {"brickId": "dweb", "name": "Dealer Website and Lead Capture", "icon": "dweb.png", "href": "../product-bricks/landing_pages/dweb.html", "description": "Owns Dealer Website and Lead Capture."}, {"brickId": "admn", "name": "Dealer Sales Administration", "icon": "admn.png", "href": "../product-bricks/landing_pages/admn.html", "description": "Owns Dealer Sales Administration."}, {"brickId": "finc", "name": "Vehicle Financing Referral", "icon": "finc.png", "href": "../product-bricks/landing_pages/finc.html", "description": "Owns Vehicle Financing Referral."}], "otherTeamDependencies": [{"teamId": "rdw-services", "name": "RDW Services", "type": "stream-aligned", "groupName": "Registration and Trade Services", "href": "landing_pages/rdw-services.html", "dependencyType": "collaboration", "dependencyTypeName": "Collaboration", "description": "RDW actions from the dossier."}, {"teamId": "platform-and-commerce", "name": "Accounts and Billing Platform", "type": "platform", "groupName": "Platform and Commerce", "href": "landing_pages/platform-and-commerce.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Entitlements and billing."}], "groupId": "dealer-platform", "groupName": "Dealer Platform (MijnVWE)"}], "groups": [], "teamHeadcount": 15, "rollupHeadcount": 17}, {"id": "registration-and-trade", "name": "Registration and Trade Services", "mission": "Make official RDW, tax and cross-border paperwork fast and correct.", "groupDirectHeadcount": {"headcount": 2, "description": "Group product lead and engineering manager."}, "teams": [{"id": "rdw-services", "name": "RDW Services", "type": "stream-aligned", "description": "Owns RDW transactions for dealers, lessors and integrators, and the plates and materials webshop and counter.", "teamHeadcount": {"headcount": 7, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "RDW transactions per dealer per month", "description": "KPI from the customer pyramids."}, {"name": "Transaction failure rate", "description": "KPI from the customer pyramids."}, {"name": "Lessors using transaction API", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}, {"customerId": "trex", "name": "Car Trader and Importer-Exporter", "icon": "customer-trex-portrait.jpg", "href": "../customers/landing_pages/trex.html", "description": ""}, {"customerId": "ivnd", "name": "Automotive Software Vendor Product Owner", "icon": "customer-ivnd-portrait.jpg", "href": "../customers/landing_pages/ivnd.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-sell-register-and-deliver-a-car", "name": "Sell, Register and Deliver a Car", "icon": "dealer-sell-register-and-deliver-a-car.png", "href": "../product-bricks/stream_pages/dealer-sell-register-and-deliver-a-car.html", "description": ""}, {"streamId": "lease-keep-fleet-data-and-registrations-current", "name": "Keep Fleet Data and Registrations Current", "icon": "lease-keep-fleet-data-and-registrations-current.png", "href": "../product-bricks/stream_pages/lease-keep-fleet-data-and-registrations-current.html", "description": ""}, {"streamId": "lease-remarket-returned-vehicles", "name": "Remarket Returned Lease and Rental Vehicles", "icon": "lease-remarket-returned-vehicles.png", "href": "../product-bricks/stream_pages/lease-remarket-returned-vehicles.html", "description": ""}], "brickDependencies": [{"brickId": "rdwt", "name": "RDW Transaction Services", "icon": "rdwt.png", "href": "../product-bricks/landing_pages/rdwt.html", "description": "Owns RDW Transaction Services."}, {"brickId": "mats", "name": "Plates and Materials Webshop", "icon": "mats.png", "href": "../product-bricks/landing_pages/mats.html", "description": "Owns Plates and Materials Webshop."}], "otherTeamDependencies": [{"teamId": "vehicle-data-core", "name": "Vehicle Data Core", "type": "platform", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-data-core.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "RDW channel."}, {"teamId": "platform-and-commerce", "name": "Accounts and Billing Platform", "type": "platform", "groupName": "Platform and Commerce", "href": "landing_pages/platform-and-commerce.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Authorisations and fees."}], "groupId": "registration-and-trade", "groupName": "Registration and Trade Services"}, {"id": "trade-and-tax", "name": "Trade and Tax (XRAY)", "type": "stream-aligned", "description": "Owns BPM calculation and taxation (incl. XRAY), import/export documents and the B2B trade exchange.", "teamHeadcount": {"headcount": 8, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Net margin per traded car", "description": "KPI from the customer pyramids."}, {"name": "BPM corrections per 100 imports", "description": "KPI from the customer pyramids."}, {"name": "Trade deals per month", "description": "KPI from the customer pyramids."}, {"name": "XRAY customers cross-sold", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "trex", "name": "Car Trader and Importer-Exporter", "icon": "customer-trex-portrait.jpg", "href": "../customers/landing_pages/trex.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}, {"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}], "streamDependencies": [{"streamId": "trader-import-or-export-a-vehicle", "name": "Import or Export a Vehicle Across Borders", "icon": "trader-import-or-export-a-vehicle.png", "href": "../product-bricks/stream_pages/trader-import-or-export-a-vehicle.html", "description": ""}, {"streamId": "lease-remarket-returned-vehicles", "name": "Remarket Returned Lease and Rental Vehicles", "icon": "lease-remarket-returned-vehicles.png", "href": "../product-bricks/stream_pages/lease-remarket-returned-vehicles.html", "description": ""}, {"streamId": "dealer-group-steer-multi-site-performance", "name": "Steer Multi-site Dealer Performance", "icon": "dealer-group-steer-multi-site-performance.png", "href": "../product-bricks/stream_pages/dealer-group-steer-multi-site-performance.html", "description": ""}], "brickDependencies": [{"brickId": "bpmc", "name": "BPM and Vehicle Tax Calculation", "icon": "bpmc.png", "href": "../product-bricks/landing_pages/bpmc.html", "description": "Owns BPM and Vehicle Tax Calculation."}, {"brickId": "impx", "name": "Import and Export Documents", "icon": "impx.png", "href": "../product-bricks/landing_pages/impx.html", "description": "Owns Import and Export Documents."}, {"brickId": "b2bt", "name": "B2B Trade and Stock Exchange", "icon": "b2bt.png", "href": "../product-bricks/landing_pages/b2bt.html", "description": "Owns B2B Trade and Stock Exchange."}], "otherTeamDependencies": [{"teamId": "valuation-and-market-data", "name": "Valuation and Market Data", "type": "complicated-subsystem", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/valuation-and-market-data.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Market values for taxation."}, {"teamId": "rdw-services", "name": "RDW Services", "type": "stream-aligned", "groupName": "Registration and Trade Services", "href": "landing_pages/rdw-services.html", "dependencyType": "collaboration", "dependencyTypeName": "Collaboration", "description": "Import registration and export sign-off."}], "groupId": "registration-and-trade", "groupName": "Registration and Trade Services"}], "groups": [], "teamHeadcount": 15, "rollupHeadcount": 17}, {"id": "vehicle-data", "name": "Vehicle Data and Valuation", "mission": "Own the authoritative vehicle facts, history and values every product depends on.", "groupDirectHeadcount": {"headcount": 2, "description": "Group product lead and engineering manager."}, "teams": [{"id": "vehicle-data-core", "name": "Vehicle Data Core", "type": "platform", "description": "Owns the RDW connection, vehicle register and specification resolution.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "API availability", "description": "KPI from the customer pyramids."}, {"name": "RDW-dependent error rate", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "ivnd", "name": "Automotive Software Vendor Product Owner", "icon": "customer-ivnd-portrait.jpg", "href": "../customers/landing_pages/ivnd.html", "description": ""}, {"customerId": "dcli", "name": "Importer and Insurer Data Analyst", "icon": "customer-dcli-portrait.jpg", "href": "../customers/landing_pages/dcli.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}], "streamDependencies": [{"streamId": "data-client-integrate-vehicle-data", "name": "Integrate Trusted Vehicle Data into a Product", "icon": "data-client-integrate-vehicle-data.png", "href": "../product-bricks/stream_pages/data-client-integrate-vehicle-data.html", "description": ""}, {"streamId": "lease-keep-fleet-data-and-registrations-current", "name": "Keep Fleet Data and Registrations Current", "icon": "lease-keep-fleet-data-and-registrations-current.png", "href": "../product-bricks/stream_pages/lease-keep-fleet-data-and-registrations-current.html", "description": ""}], "brickDependencies": [{"brickId": "rdwc", "name": "RDW Registry Connector and Vehicle Register", "icon": "rdwc.png", "href": "../product-bricks/landing_pages/rdwc.html", "description": "Owns RDW Registry Connector and Vehicle Register."}, {"brickId": "vidn", "name": "Vehicle Identity and Specification", "icon": "vidn.png", "href": "../product-bricks/landing_pages/vidn.html", "description": "Owns Vehicle Identity and Specification."}], "otherTeamDependencies": [{"teamId": "data-governance-enabling", "name": "Data Governance and Compliance", "type": "enabling", "groupName": "Platform and Commerce", "href": "landing_pages/data-governance-enabling.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": "RDW provider obligations."}], "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation"}, {"id": "vehicle-intelligence", "name": "Vehicle History and Condition", "type": "complicated-subsystem", "description": "Owns damage, maintenance and odometer history, EV battery health and damage calculation partner integrations.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Appraisals with full history report", "description": "KPI from the customer pyramids."}, {"name": "Damage disputes per 100 returns", "description": "KPI from the customer pyramids."}, {"name": "Damage history coverage", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}, {"customerId": "cons", "name": "Private Car Buyer and Motorist", "icon": "customer-cons-portrait.jpg", "href": "../customers/landing_pages/cons.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-source-and-appraise-used-cars", "name": "Source and Appraise Used Cars at the Right Price", "icon": "dealer-source-and-appraise-used-cars.png", "href": "../product-bricks/stream_pages/dealer-source-and-appraise-used-cars.html", "description": ""}, {"streamId": "assess-and-price-vehicle-damage", "name": "Assess and Price Vehicle Damage", "icon": "assess-and-price-vehicle-damage.png", "href": "../product-bricks/stream_pages/assess-and-price-vehicle-damage.html", "description": ""}, {"streamId": "consumer-check-a-car-before-buying", "name": "Check a Car Before Buying It", "icon": "consumer-check-a-car-before-buying.png", "href": "../product-bricks/stream_pages/consumer-check-a-car-before-buying.html", "description": ""}], "brickDependencies": [{"brickId": "vhis", "name": "Vehicle History Intelligence", "icon": "vhis.png", "href": "../product-bricks/landing_pages/vhis.html", "description": "Owns Vehicle History Intelligence."}, {"brickId": "evsh", "name": "EV Battery State of Health", "icon": "evsh.png", "href": "../product-bricks/landing_pages/evsh.html", "description": "Owns EV Battery State of Health."}, {"brickId": "dmgc", "name": "Damage Calculation", "icon": "dmgc.png", "href": "../product-bricks/landing_pages/dmgc.html", "description": "Owns Damage Calculation."}], "otherTeamDependencies": [{"teamId": "vehicle-data-core", "name": "Vehicle Data Core", "type": "platform", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-data-core.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Specification."}], "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation"}, {"id": "valuation-and-market-data", "name": "Valuation and Market Data", "type": "complicated-subsystem", "description": "Owns the market data lake and the valuation engine shared by all products.", "teamHeadcount": {"headcount": 7, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Price position versus market", "description": "KPI from the customer pyramids."}, {"name": "Remarketing result versus book value", "description": "KPI from the customer pyramids."}, {"name": "Automatic valuations at return", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "dhld", "name": "Dealer Group Used-Car Director", "icon": "customer-dhld-portrait.jpg", "href": "../customers/landing_pages/dhld.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}, {"customerId": "dcli", "name": "Importer and Insurer Data Analyst", "icon": "customer-dcli-portrait.jpg", "href": "../customers/landing_pages/dcli.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-source-and-appraise-used-cars", "name": "Source and Appraise Used Cars at the Right Price", "icon": "dealer-source-and-appraise-used-cars.png", "href": "../product-bricks/stream_pages/dealer-source-and-appraise-used-cars.html", "description": ""}, {"streamId": "dealer-price-and-advertise-stock", "name": "Price and Advertise Stock to Sell Fast", "icon": "dealer-price-and-advertise-stock.png", "href": "../product-bricks/stream_pages/dealer-price-and-advertise-stock.html", "description": ""}, {"streamId": "lease-remarket-returned-vehicles", "name": "Remarket Returned Lease and Rental Vehicles", "icon": "lease-remarket-returned-vehicles.png", "href": "../product-bricks/stream_pages/lease-remarket-returned-vehicles.html", "description": ""}], "brickDependencies": [{"brickId": "mktd", "name": "Market and Transaction Data Lake", "icon": "mktd.png", "href": "../product-bricks/landing_pages/mktd.html", "description": "Owns Market and Transaction Data Lake."}, {"brickId": "valu", "name": "Valuation Engine", "icon": "valu.png", "href": "../product-bricks/landing_pages/valu.html", "description": "Owns Valuation Engine."}], "otherTeamDependencies": [{"teamId": "vehicle-data-core", "name": "Vehicle Data Core", "type": "platform", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-data-core.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Specification normalisation."}], "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation"}], "groups": [], "teamHeadcount": 19, "rollupHeadcount": 21}, {"id": "data-products-and-consumer", "name": "Data Products and Consumer", "mission": "Turn vehicle data into products for enterprises, developers and consumers.", "groupDirectHeadcount": {"headcount": 2, "description": "Group product lead and engineering manager."}, "teams": [{"id": "data-products-and-apis", "name": "Data Products and APIs", "type": "stream-aligned", "description": "Owns Interdata, XMLmode and JSON APIs, the developer portal and batch enrichment.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Successful plate lookups for end customers", "description": "KPI from the customer pyramids."}, {"name": "Average integration time", "description": "KPI from the customer pyramids."}, {"name": "Enrichment match rate", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "ivnd", "name": "Automotive Software Vendor Product Owner", "icon": "customer-ivnd-portrait.jpg", "href": "../customers/landing_pages/ivnd.html", "description": ""}, {"customerId": "dcli", "name": "Importer and Insurer Data Analyst", "icon": "customer-dcli-portrait.jpg", "href": "../customers/landing_pages/dcli.html", "description": ""}, {"customerId": "lsco", "name": "Lease and Rental Fleet Remarketing Manager", "icon": "customer-lsco-portrait.jpg", "href": "../customers/landing_pages/lsco.html", "description": ""}], "streamDependencies": [{"streamId": "data-client-integrate-vehicle-data", "name": "Integrate Trusted Vehicle Data into a Product", "icon": "data-client-integrate-vehicle-data.png", "href": "../product-bricks/stream_pages/data-client-integrate-vehicle-data.html", "description": ""}, {"streamId": "lease-keep-fleet-data-and-registrations-current", "name": "Keep Fleet Data and Registrations Current", "icon": "lease-keep-fleet-data-and-registrations-current.png", "href": "../product-bricks/stream_pages/lease-keep-fleet-data-and-registrations-current.html", "description": ""}], "brickDependencies": [{"brickId": "vapi", "name": "Vehicle Data API Gateway", "icon": "vapi.png", "href": "../product-bricks/landing_pages/vapi.html", "description": "Owns Vehicle Data API Gateway."}, {"brickId": "fenr", "name": "Vehicle File Enrichment", "icon": "fenr.png", "href": "../product-bricks/landing_pages/fenr.html", "description": "Owns Vehicle File Enrichment."}], "otherTeamDependencies": [{"teamId": "vehicle-data-core", "name": "Vehicle Data Core", "type": "platform", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-data-core.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Register and specification."}, {"teamId": "data-governance-enabling", "name": "Data Governance and Compliance", "type": "enabling", "groupName": "Platform and Commerce", "href": "landing_pages/data-governance-enabling.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": "Licence checks."}], "groupId": "data-products-and-consumer", "groupName": "Data Products and Consumer"}, {"id": "market-insights-and-data-science", "name": "Market Insights and Data Science", "type": "stream-aligned", "description": "Owns Marktinzicht, the Market Performance Manager, occasion performance meter and change-of-ownership scoring.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Decision-ready market data", "description": "KPI from the customer pyramids."}, {"name": "Report publication lag", "description": "KPI from the customer pyramids."}, {"name": "Model precision", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "dcli", "name": "Importer and Insurer Data Analyst", "icon": "customer-dcli-portrait.jpg", "href": "../customers/landing_pages/dcli.html", "description": ""}, {"customerId": "dhld", "name": "Dealer Group Used-Car Director", "icon": "customer-dhld-portrait.jpg", "href": "../customers/landing_pages/dhld.html", "description": ""}], "streamDependencies": [{"streamId": "data-client-understand-market-and-demand", "name": "Understand the Market and Find Demand", "icon": "data-client-understand-market-and-demand.png", "href": "../product-bricks/stream_pages/data-client-understand-market-and-demand.html", "description": ""}, {"streamId": "dealer-group-steer-multi-site-performance", "name": "Steer Multi-site Dealer Performance", "icon": "dealer-group-steer-multi-site-performance.png", "href": "../product-bricks/stream_pages/dealer-group-steer-multi-site-performance.html", "description": ""}], "brickDependencies": [{"brickId": "mins", "name": "Market Insights and Performance Dashboards", "icon": "mins.png", "href": "../product-bricks/landing_pages/mins.html", "description": "Owns Market Insights and Performance Dashboards."}, {"brickId": "cool", "name": "Change-of-Ownership Lead Scoring", "icon": "cool.png", "href": "../product-bricks/landing_pages/cool.html", "description": "Owns Change-of-Ownership Lead Scoring."}], "otherTeamDependencies": [{"teamId": "valuation-and-market-data", "name": "Valuation and Market Data", "type": "complicated-subsystem", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/valuation-and-market-data.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Market warehouse."}], "groupId": "data-products-and-consumer", "groupName": "Data Products and Consumer"}, {"id": "consumer-finnik", "name": "Consumer (Finnik)", "type": "stream-aligned", "description": "Owns the Finnik app and web check and the consumer travel-document shop.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Confident private car purchases", "description": "KPI from the customer pyramids."}, {"name": "Free-to-paid conversion", "description": "KPI from the customer pyramids."}, {"name": "On-time delivery", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "cons", "name": "Private Car Buyer and Motorist", "icon": "customer-cons-portrait.jpg", "href": "../customers/landing_pages/cons.html", "description": ""}], "streamDependencies": [{"streamId": "consumer-check-a-car-before-buying", "name": "Check a Car Before Buying It", "icon": "consumer-check-a-car-before-buying.png", "href": "../product-bricks/stream_pages/consumer-check-a-car-before-buying.html", "description": ""}, {"streamId": "consumer-prepare-a-car-for-foreign-travel", "name": "Prepare a Car for Driving Abroad", "icon": "consumer-prepare-a-car-for-foreign-travel.png", "href": "../product-bricks/stream_pages/consumer-prepare-a-car-for-foreign-travel.html", "description": ""}], "brickDependencies": [{"brickId": "fnnk", "name": "Finnik Consumer Plate Check", "icon": "fnnk.png", "href": "../product-bricks/landing_pages/fnnk.html", "description": "Owns Finnik Consumer Plate Check."}, {"brickId": "ctrv", "name": "Consumer Travel and Vehicle Documents", "icon": "ctrv.png", "href": "../product-bricks/landing_pages/ctrv.html", "description": "Owns Consumer Travel and Vehicle Documents."}], "otherTeamDependencies": [{"teamId": "vehicle-intelligence", "name": "Vehicle History and Condition", "type": "complicated-subsystem", "groupName": "Vehicle Data and Valuation", "href": "landing_pages/vehicle-intelligence.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "History reports."}, {"teamId": "rdw-services", "name": "RDW Services", "type": "stream-aligned", "groupName": "Registration and Trade Services", "href": "landing_pages/rdw-services.html", "dependencyType": "x-as-a-service", "dependencyTypeName": "X-as-a-Service", "description": "Order fulfilment."}], "groupId": "data-products-and-consumer", "groupName": "Data Products and Consumer"}], "groups": [], "teamHeadcount": 18, "rollupHeadcount": 20}, {"id": "platform", "name": "Platform and Commerce", "mission": "Provide accounts, billing and data governance as shared services.", "groupDirectHeadcount": {"headcount": 1, "description": "Group product lead and engineering manager."}, "teams": [{"id": "platform-and-commerce", "name": "Accounts and Billing Platform", "type": "platform", "description": "Owns customer accounts, identity, entitlements and subscription/transaction billing.", "teamHeadcount": {"headcount": 6, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Trial-to-paid conversion", "description": "KPI from the customer pyramids."}, {"name": "Dealer logo churn", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "udlr", "name": "Independent Used-Car Dealer", "icon": "customer-udlr-portrait.jpg", "href": "../customers/landing_pages/udlr.html", "description": ""}, {"customerId": "dhld", "name": "Dealer Group Used-Car Director", "icon": "customer-dhld-portrait.jpg", "href": "../customers/landing_pages/dhld.html", "description": ""}, {"customerId": "ivnd", "name": "Automotive Software Vendor Product Owner", "icon": "customer-ivnd-portrait.jpg", "href": "../customers/landing_pages/ivnd.html", "description": ""}], "streamDependencies": [{"streamId": "dealer-sell-register-and-deliver-a-car", "name": "Sell, Register and Deliver a Car", "icon": "dealer-sell-register-and-deliver-a-car.png", "href": "../product-bricks/stream_pages/dealer-sell-register-and-deliver-a-car.html", "description": ""}, {"streamId": "data-client-integrate-vehicle-data", "name": "Integrate Trusted Vehicle Data into a Product", "icon": "data-client-integrate-vehicle-data.png", "href": "../product-bricks/stream_pages/data-client-integrate-vehicle-data.html", "description": ""}], "brickDependencies": [{"brickId": "iden", "name": "Customer Account, Identity and Entitlements", "icon": "iden.png", "href": "../product-bricks/landing_pages/iden.html", "description": "Owns Customer Account, Identity and Entitlements."}, {"brickId": "bill", "name": "Subscription and Transaction Billing", "icon": "bill.png", "href": "../product-bricks/landing_pages/bill.html", "description": "Owns Subscription and Transaction Billing."}], "otherTeamDependencies": [], "groupId": "platform", "groupName": "Platform and Commerce"}, {"id": "data-governance-enabling", "name": "Data Governance and Compliance", "type": "enabling", "description": "Owns data licensing and compliance governance and helps product teams meet RDW, partner and GDPR obligations.", "teamHeadcount": {"headcount": 4, "description": "Modeled cross-functional team (product, engineering, data/QA)."}, "documentLinks": [], "charter": {"metrics": [{"name": "Licensed purposes documented", "description": "KPI from the customer pyramids."}, {"name": "Audit findings", "description": "KPI from the customer pyramids."}]}, "customerDependencies": [{"customerId": "dcli", "name": "Importer and Insurer Data Analyst", "icon": "customer-dcli-portrait.jpg", "href": "../customers/landing_pages/dcli.html", "description": ""}, {"customerId": "ivnd", "name": "Automotive Software Vendor Product Owner", "icon": "customer-ivnd-portrait.jpg", "href": "../customers/landing_pages/ivnd.html", "description": ""}], "streamDependencies": [{"streamId": "data-client-integrate-vehicle-data", "name": "Integrate Trusted Vehicle Data into a Product", "icon": "data-client-integrate-vehicle-data.png", "href": "../product-bricks/stream_pages/data-client-integrate-vehicle-data.html", "description": ""}, {"streamId": "data-client-understand-market-and-demand", "name": "Understand the Market and Find Demand", "icon": "data-client-understand-market-and-demand.png", "href": "../product-bricks/stream_pages/data-client-understand-market-and-demand.html", "description": ""}], "brickDependencies": [{"brickId": "dgov", "name": "Data Licensing and Compliance Governance", "icon": "dgov.png", "href": "../product-bricks/landing_pages/dgov.html", "description": "Owns Data Licensing and Compliance Governance."}], "otherTeamDependencies": [{"teamId": "data-products-and-apis", "name": "Data Products and APIs", "type": "stream-aligned", "groupName": "Data Products and Consumer", "href": "landing_pages/data-products-and-apis.html", "dependencyType": "facilitating", "dependencyTypeName": "Facilitating", "description": "Purpose checks in the gateway."}], "groupId": "platform", "groupName": "Platform and Commerce"}], "groups": [], "teamHeadcount": 10, "rollupHeadcount": 11}]};
+    const orgDesign = teamsData.orgDesign || {};
+    const teamTypes = orgDesign.teamTypes || [];
+    const dependencyTypes = orgDesign.teamDependencyTypes || [];
+
+    const typeColorMap = {};
+    teamTypes.forEach(type => { typeColorMap[type.id] = type.color || '#6b7280'; });
+    const typeNameMap = {};
+    teamTypes.forEach(type => { typeNameMap[type.id] = type.name || type.id; });
+
+    const dependencyTypePalette = ['#1d4ed8', '#047857', '#b45309', '#9333ea', '#dc2626', '#0891b2'];
+    const dependencyTypeColorMap = {};
+    dependencyTypes.forEach((type, index) => {
+        dependencyTypeColorMap[type.id] = dependencyTypePalette[index % dependencyTypePalette.length];
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat('en-US').format(value || 0);
+    }
+
+    function typeColor(typeId) {
+        return typeColorMap[typeId] || '#6b7280';
+    }
+
+    // Convert a #rrggbb color to rgba with the given alpha so overlapping
+    // force-graph nodes blend instead of forming a solid color block.
+    function withAlpha(hexColor, alpha) {
+        const hex = String(hexColor || '').replace('#', '');
+        if (hex.length !== 6) {
+            return hexColor;
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
+
+    // flatten teams across the recursive group tree
+    const flatTeams = [];
+    const flatGroups = [];
+    (function walk(groups) {
+        (groups || []).forEach(group => {
+            flatGroups.push(group);
+            (group.teams || []).forEach(team => flatTeams.push(team));
+            walk(group.groups || []);
+        });
+    })(teamsData.groups || []);
+
+    function sumHeadcounts(counts) {
+        return counts.every(count => typeof count === 'number' && Number.isFinite(count))
+            ? counts.reduce((sum, count) => sum + count, 0) : null;
+    }
+
+    function headcountLabel(count, suffix) {
+        return typeof count === 'number' && Number.isFinite(count)
+            ? formatNumber(count) + ' FTE' + (suffix || '') : 'Headcount not set';
+    }
+
+    const totalHeadcount = sumHeadcounts((teamsData.groups || []).map(group => group.rollupHeadcount));
+    const typeCounts = {};
+    flatTeams.forEach(team => {
+        typeCounts[team.type] = (typeCounts[team.type] || 0) + 1;
+    });
+
+    function renderTypeLegend() {
+        let html = '<div class="section-title">Team Types</div><div class="legend-row">';
+        teamTypes.forEach(type => {
+            const count = typeCounts[type.id] || 0;
+            if (!count) return;
+            html += '<span class="legend-pill">' +
+                '<span class="legend-swatch" style="background-color:' + typeColor(type.id) + '"></span>' +
+                '<span class="legend-text">' +
+                '<span class="legend-name">' + escapeHtml(type.name || type.id) +
+                ' <span class="legend-count">(' + escapeHtml(String(count)) + ')</span></span>' +
+                (type.description ? '<span class="legend-desc">' + escapeHtml(type.description) + '</span>' : '') +
+                '</span></span>';
+        });
+        html += '</div>';
+        document.getElementById('TypeLegend').innerHTML = html;
+    }
+
+    function renderHeadcountDots(count, color, showLabel) {
+        if (typeof count !== 'number' || !Number.isFinite(count)) {
+            return '<div class="hc-dots"><span class="hc-dots-label">Headcount not set</span></div>';
+        }
+        const total = Math.max(count, 0);
+        let dots = '';
+        for (let i = 0; i < total; i++) {
+            dots += '<span class="hc-dot" style="background-color:' + color + '"></span>';
+        }
+        const label = showLabel === false ? '' : '<span class="hc-dots-label">' + escapeHtml(String(total)) + ' FTE</span>';
+        return '<div class="hc-dots" title="' + escapeHtml(String(total)) + ' FTE">' + dots + label + '</div>';
+    }
+
+    function renderTeamCard(team) {
+        const color = typeColor(team.type);
+        const hc = (team.teamHeadcount || {}).headcount;
+        let html = '<a class="team-card" target="_blank" style="border-left-color:' + color + '" href="landing_pages/' + escapeHtml(team.id) + '.html">';
+        html += '<span class="team-type" style="background-color:' + color + '">' + escapeHtml(typeNameMap[team.type] || team.type || 'team') + '</span>';
+        html += '<div class="team-name">' + escapeHtml(team.name) + '</div>';
+        if (team.description) {
+            html += '<div class="team-desc">' + escapeHtml(team.description) + '</div>';
+        }
+        html += renderHeadcountDots(hc, color);
+        const groups = [
+            renderLinkIconGroup('Customer', team.customerDependencies || [], '../customers/icons/', 'customer.png', 'round'),
+            renderLinkIconGroup('Stream', team.streamDependencies || [], '../product-bricks/icons/', 'brick.png', ''),
+            renderLinkIconGroup('Brick', team.brickDependencies || [], '../product-bricks/icons/', 'brick.png', ''),
+            renderLinkIconGroup('Team', team.otherTeamDependencies || [], 'icons/', 'logo.png', 'round')
+        ].filter(Boolean);
+        if (groups.length) {
+            html += '<div class="link-row">' +
+                groups.join('<span class="link-sep">&middot;</span>') + '</div>';
+        }
+        html += '</a>';
+        return html;
+    }
+
+    function renderLinkIconGroup(label, items, iconBase, defaultIcon, shape) {
+        if (!items || !items.length) {
+            return '';
+        }
+        const fallback = iconBase + defaultIcon;
+        let icons = '';
+        items.forEach(item => {
+            const src = item.icon ? iconBase + item.icon : fallback;
+            const cls = 'link-icon' + (shape === 'round' ? ' round' : '');
+            const title = label + ': ' + (item.name || '');
+            icons += '<img class="' + cls + '" src="' + escapeHtml(src) + '" alt="" title="' + escapeHtml(title) + '" ' +
+                'onerror="this.onerror=null;this.src=\'' + fallback + '\'">';
+        });
+        return '<span class="link-group">' + icons + '</span>';
+    }
+
+    let searchQuery = '';
+
+    function teamMatchesQuery(team, query) {
+        if (!query) return true;
+        const haystack = [
+            team.name,
+            team.description,
+            typeNameMap[team.type] || team.type,
+            team.groupName
+        ].filter(Boolean).join(' ').toLowerCase();
+        return query.split(/\s+/).filter(Boolean).every(word => haystack.indexOf(word) !== -1);
+    }
+
+    // Returns { html, teams, headcount } for a group, keeping only teams that match
+    // the query (and groups that still contain a match anywhere in their subtree).
+    function renderGroup(group, nested, query) {
+        const matchedTeams = (group.teams || []).filter(team => teamMatchesQuery(team, query));
+        const childResults = (group.groups || []).map(child => renderGroup(child, true, query)).filter(Boolean);
+
+        if (query && !matchedTeams.length && !childResults.length) {
+            return null;
+        }
+
+        const teamCount = matchedTeams.length + childResults.reduce((sum, child) => sum + child.teams, 0);
+        const headcount = sumHeadcounts(matchedTeams.map(team => (team.teamHeadcount || {}).headcount)
+            .concat(childResults.map(child => child.headcount)));
+
+        let html = '<div class="group' + (nested ? ' nested' : '') + '">';
+        html += '<div class="group-head">';
+        html += '<span class="group-name">' + escapeHtml(group.name || group.id) + '</span>';
+        html += '<span class="group-hc">' + headcountLabel(group.rollupHeadcount, ' total') + '</span>';
+        html += '</div>';
+        if (group.mission) {
+            html += '<div class="group-mission">' + escapeHtml(group.mission) + '</div>';
+        }
+        const direct = group.groupDirectHeadcount || {};
+        if (direct.headcount && !query) {
+            html += '<div class="group-direct">' +
+                '<div class="group-direct-text">Group leadership &amp; support: <strong>' + escapeHtml(String(direct.headcount)) + ' FTE</strong>' +
+                (direct.description ? ' &mdash; ' + escapeHtml(direct.description) : '') + '</div>' +
+                renderHeadcountDots(direct.headcount, '#94a3b8', false) +
+                '</div>';
+        }
+        if (matchedTeams.length) {
+            html += '<div class="team-grid">';
+            matchedTeams.forEach(team => { html += renderTeamCard(team); });
+            html += '</div>';
+        }
+        childResults.forEach(child => { html += child.html; });
+        html += '</div>';
+        return {html: html, teams: teamCount, headcount: headcount};
+    }
+
+    function renderHierarchy() {
+        const query = searchQuery;
+        const results = (teamsData.groups || []).map(group => renderGroup(group, false, query)).filter(Boolean);
+        let html = '<div class="hierarchy">';
+        if (!results.length) {
+            html += '<div class="dependency-empty">No teams match &ldquo;' + escapeHtml(query) + '&rdquo;.</div>';
+        } else {
+            results.forEach(result => { html += result.html; });
+        }
+        html += '</div>';
+        document.getElementById('Hierarchy').innerHTML = html;
+
+        const visibleTeams = results.reduce((sum, result) => sum + result.teams, 0);
+        const visibleHeadcount = sumHeadcounts(results.map(result => result.headcount));
+        renderSearchSummary(visibleTeams, visibleHeadcount);
+    }
+
+    function renderSearchSummary(visibleTeams, visibleHeadcount) {
+        const el = document.getElementById('SearchSummary');
+        if (searchQuery) {
+            el.innerHTML = 'showing ' +
+                '<strong>' + formatNumber(visibleTeams) + '</strong> of ' + formatNumber(flatTeams.length) + ' teams' +
+                ' &middot; <strong>' + headcountLabel(visibleHeadcount) + '</strong>';
+        } else {
+            el.innerHTML = 'showing all <strong>' + formatNumber(flatTeams.length) + '</strong> teams &middot; <strong>' + headcountLabel(totalHeadcount, ' total') + '</strong>';
+        }
+    }
+
+    function onTeamSearch(value) {
+        searchQuery = String(value || '').trim().toLowerCase();
+        document.getElementById('TeamSearchClear').hidden = !searchQuery;
+        renderHierarchy();
+    }
+
+    function clearTeamSearch() {
+        const input = document.getElementById('TeamSearch');
+        input.value = '';
+        onTeamSearch('');
+        input.focus();
+    }
+
+    document.getElementById('TeamSearch').addEventListener('input', event => onTeamSearch(event.target.value));
+
+    renderTypeLegend();
+    renderHierarchy();
+
+    /* ---------- Dependencies tab ---------- */
+    let dependenciesInitialized = false;
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {htmlLabels: false}
+    });
+
+    window.afterOpenTab = function (tabName) {
+        if (tabName === 'dependencies') {
+            renderDependenciesView();
+        }
+    };
+
+    function sanitizeMermaidId(value) {
+        return String(value || 'team').replace(/[^a-zA-Z0-9_]/g, '_').replace(/_+/g, '_');
+    }
+
+    function escapeMermaidLabel(value) {
+        return String(value || '')
+            .replaceAll('&', 'and').replaceAll('"', '').replaceAll("'", '')
+            .replaceAll('<', '').replaceAll('>', '')
+            .replaceAll('[', '(').replaceAll(']', ')')
+            .replaceAll('{', '(').replaceAll('}', ')').replaceAll('|', '/');
+    }
+
+    const teamNameMap = {};
+    flatTeams.forEach(team => { teamNameMap[team.id] = team.name || team.id; });
+
+    function buildEdges() {
+        const edges = [];
+        flatTeams.forEach(team => {
+            (team.otherTeamDependencies || []).forEach(dependency => {
+                if (!teamNameMap[dependency.teamId]) return;
+                edges.push({
+                    source: team.id,
+                    target: dependency.teamId,
+                    type: dependency.dependencyType || 'other',
+                    typeLabel: dependency.dependencyTypeName || dependency.dependencyType || 'depends on'
+                });
+            });
+        });
+        return edges;
+    }
+
+    function teamCatalog() {
+        return flatTeams.slice().sort((left, right) => (left.name || '').localeCompare(right.name || ''));
+    }
+
+    function renderChecklistItems(items, kind) {
+        if (!items.length) {
+            return '<div class="dependency-empty">No items available.</div>';
+        }
+        return items.map(item => {
+            const meta = kind === 'team' ? [item.groupName || '', typeNameMap[item.type] || item.type || ''].filter(Boolean).join(' | ') : (item.description || '');
+            const swatchColor = kind === 'team' ? typeColor(item.type) : (dependencyTypeColorMap[item.id] || '#9ca3af');
+            return '<label class="dependency-check-item">' +
+                '<input type="checkbox" class="dependency-' + kind + '-checkbox" value="' + escapeHtml(item.id) + '" checked onchange="renderDependenciesView()">' +
+                '<span class="dependency-swatch" style="background-color:' + swatchColor + '"></span>' +
+                '<span><span>' + escapeHtml(item.name) + '</span>' +
+                (meta ? '<span class="dependency-check-meta">' + escapeHtml(meta) + '</span>' : '') +
+                '</span></label>';
+        }).join('');
+    }
+
+    function setAllCheckboxes(selector, checked) {
+        document.querySelectorAll(selector).forEach(input => { input.checked = checked; });
+        renderDependenciesView();
+    }
+
+    function selectedValues(selector) {
+        return new Set(Array.from(document.querySelectorAll(selector)).filter(input => input.checked).map(input => input.value));
+    }
+
+    function renderDependenciesControls() {
+        const teams = teamCatalog();
+        const types = dependencyTypes.map(type => ({id: type.id, name: type.name || type.id, description: type.description || ''}));
+        return '<div class="dependency-controls">' +
+            '<div class="dependency-control-group">' +
+            '<div class="dependency-control-title">Teams</div>' +
+            '<div class="dependency-actions">' +
+            '<button class="dependency-action" type="button" onclick="setAllCheckboxes(\'.dependency-team-checkbox\', true)">Show all</button>' +
+            '<button class="dependency-action" type="button" onclick="setAllCheckboxes(\'.dependency-team-checkbox\', false)">Hide all</button>' +
+            '</div><div class="dependency-checklist">' +
+            renderChecklistItems(teams, 'team') +
+            '</div></div>' +
+            '<div class="dependency-control-group">' +
+            '<div class="dependency-control-title">Dependency Types</div>' +
+            '<div class="dependency-checklist">' +
+            renderChecklistItems(types, 'type') +
+            '</div></div>' +
+            '<div id="DependenciesSummary" class="dependency-summary"></div>' +
+            '</div>';
+    }
+
+    let dependencyView = 'force';
+    let forceGraphInstance = null;
+    let forceShowLabels = false;
+
+    function setDependencyView(view) {
+        dependencyView = view;
+        document.querySelectorAll('.view-toggle-btn').forEach(button => {
+            button.classList.toggle('active', button.getAttribute('data-view') === view);
+        });
+        const labelToggle = document.getElementById('ForceLabelToggle');
+        if (labelToggle) {
+            labelToggle.hidden = view !== 'force';
+        }
+        renderDependenciesView();
+    }
+
+    function setForceLabels(show) {
+        forceShowLabels = show;
+        if (forceGraphInstance && dependencyView === 'force') {
+            // trigger a redraw so nodeCanvasObject re-evaluates the flag
+            forceGraphInstance.nodeCanvasObjectMode(() => 'after');
+        }
+    }
+
+    function renderDependenciesView() {
+        const container = document.getElementById('DependenciesContent');
+        if (!container) return;
+
+        if (!dependenciesInitialized) {
+            container.innerHTML = '<div class="dependencies-layout">' +
+                renderDependenciesControls() +
+                '<div class="dependency-view">' +
+                '<div class="view-toggle">' +
+                '<button type="button" class="view-toggle-btn active" data-view="force" onclick="setDependencyView(\'force\')">2D force graph</button>' +
+                '<button type="button" class="view-toggle-btn" data-view="mermaid" onclick="setDependencyView(\'mermaid\')">Flow diagram</button>' +
+                '<label id="ForceLabelToggle" class="force-label-toggle"><input type="checkbox" onchange="setForceLabels(this.checked)"> Show labels</label>' +
+                '</div>' +
+                '<div id="DependenciesGraph" class="dependency-graph"></div>' +
+                '</div></div>';
+            dependenciesInitialized = true;
+        }
+
+        const selectedTeamIds = selectedValues('.dependency-team-checkbox');
+        const selectedTypeIds = selectedValues('.dependency-type-checkbox');
+        const edges = buildEdges().filter(edge =>
+            selectedTeamIds.has(edge.source) && selectedTeamIds.has(edge.target) && selectedTypeIds.has(edge.type));
+        const visibleTeamIds = new Set();
+        edges.forEach(edge => { visibleTeamIds.add(edge.source); visibleTeamIds.add(edge.target); });
+
+        document.getElementById('DependenciesSummary').innerHTML =
+            'Showing <strong>' + formatNumber(visibleTeamIds.size) + '</strong> connected teams &middot; ' +
+            '<strong>' + formatNumber(edges.length) + '</strong> dependencies &middot; ' +
+            '<strong>' + formatNumber(selectedTypeIds.size) + '</strong> of ' + formatNumber(dependencyTypes.length) + ' types active.';
+
+        const graphContainer = document.getElementById('DependenciesGraph');
+        forceGraphInstance = null;
+        graphContainer.classList.toggle('force', dependencyView === 'force');
+
+        if (!edges.length) {
+            graphContainer.innerHTML = '<div class="dependency-empty">Select at least two connected teams and one dependency type.</div>';
+            return;
+        }
+
+        if (dependencyView === 'force') {
+            renderForceGraph(graphContainer, edges, visibleTeamIds);
+        } else {
+            renderMermaidGraph(graphContainer, edges, visibleTeamIds);
+        }
+    }
+
+    function renderMermaidGraph(graphContainer, edges, visibleTeamIds) {
+        let diagram = 'flowchart LR\n';
+        visibleTeamIds.forEach(teamId => {
+            const team = flatTeams.find(candidate => candidate.id === teamId) || {};
+            const color = typeColor(team.type);
+            const id = sanitizeMermaidId(teamId);
+            diagram += id + '["' + escapeMermaidLabel(teamNameMap[teamId] || teamId) + '"]\n';
+            diagram += 'style ' + id + ' fill:#ffffff,stroke:' + color + ',stroke-width:2px\n';
+        });
+        edges.forEach((edge, index) => {
+            const sourceId = sanitizeMermaidId(edge.source);
+            const targetId = sanitizeMermaidId(edge.target);
+            diagram += sourceId + ' -->|' + escapeMermaidLabel(edge.typeLabel) + '| ' + targetId + '\n';
+            const linkColor = dependencyTypeColorMap[edge.type] || '#6b7280';
+            diagram += 'linkStyle ' + index + ' stroke:' + linkColor + ',stroke-width:1.5px\n';
+        });
+
+        const graphId = 'teams-dependency-graph';
+        graphContainer.innerHTML = '<div class="mermaid" id="' + graphId + '">' + diagram + '</div>';
+        mermaid.run({querySelector: '#' + graphId});
+    }
+
+    function renderForceGraph(graphContainer, edges, visibleTeamIds) {
+        if (typeof ForceGraph === 'undefined') {
+            graphContainer.innerHTML = '<div class="dependency-empty">Force graph library failed to load.</div>';
+            return;
+        }
+        graphContainer.innerHTML = '';
+
+        // Node size scales with the number of dependency links touching the team.
+        const degree = {};
+        edges.forEach(edge => {
+            degree[edge.source] = (degree[edge.source] || 0) + 1;
+            degree[edge.target] = (degree[edge.target] || 0) + 1;
+        });
+        const nodes = Array.from(visibleTeamIds).map(teamId => {
+            const team = flatTeams.find(candidate => candidate.id === teamId) || {};
+            return {id: teamId, name: teamNameMap[teamId] || teamId, type: team.type || '', val: (degree[teamId] || 1)};
+        });
+        const links = edges.map(edge => ({source: edge.source, target: edge.target, type: edge.type, typeLabel: edge.typeLabel}));
+
+        const Graph = ForceGraph()(graphContainer)
+            .nodeRelSize(5)
+            .nodeVal(() => 1)
+            .nodeLabel(node => escapeHtml(node.name))
+            .nodeColor(node => withAlpha(typeColor(node.type), 0.65))
+            .nodeCanvasObjectMode(() => 'after')
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                if (!forceShowLabels) return;
+                const label = node.name;
+                const fontSize = 12 / globalScale;
+                ctx.font = fontSize + 'px Ubuntu, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = '#374151';
+                ctx.fillText(label, node.x, node.y + 7);
+            })
+            .linkColor(link => dependencyTypeColorMap[link.type] || '#9ca3af')
+            .linkWidth(1.5)
+            .linkDirectionalArrowLength(4)
+            .linkDirectionalArrowRelPos(1)
+            .linkDirectionalParticles(1)
+            .linkDirectionalParticleSpeed(0.006)
+            .linkLabel(link => escapeHtml(link.typeLabel || link.type))
+            .onNodeClick(node => { window.open('landing_pages/' + node.id + '.html', '_blank'); })
+            .graphData({nodes: nodes, links: links});
+
+        forceGraphInstance = Graph;
+        sizeForceGraph();
+    }
+
+    function sizeForceGraph() {
+        if (!forceGraphInstance) return;
+        const container = document.getElementById('DependenciesGraph');
+        if (!container) return;
+        const w = container.clientWidth || container.offsetWidth;
+        const h = container.clientHeight || container.offsetHeight;
+        if (w > 0 && h > 0) {
+            forceGraphInstance.width(w).height(h);
+            if (typeof forceGraphInstance.d3ReheatSimulation === 'function') {
+                forceGraphInstance.d3ReheatSimulation();
+            }
+        }
+    }
+
+    window.addEventListener('resize', sizeForceGraph);
+</script>
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../start/index.html",
+      "label": "Vehicle Data and Dealer SaaS Platform Home"
+    },
+    {
+      "label": "Teams"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

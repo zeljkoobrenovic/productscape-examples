@@ -1,0 +1,4069 @@
+{
+  "metadata": {
+    "domainId": "vehicle-data-and-dealer-saas-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of VWE Automotive's vehicle-data and dealer SaaS platform: RDW-based vehicle data, valuation and BPM, the modular MijnVWE dealer platform, RDW and trade services, data products and APIs, and Finnik consumer channels.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Vehicle Data Foundation"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Dealer Operations (MijnVWE)",
+            "Registration, Trade and Remarketing Services"
+          ]
+        },
+        {
+          "row": 3,
+          "rootGroupNames": [
+            "Data Products and Channels",
+            "Platform and Commerce"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Vehicle Data Foundation",
+      "description": "The authoritative vehicle facts VWE is known for: RDW register, specification, history, market data and valuations.",
+      "subGroups": [
+        {
+          "name": "Registry and Identity",
+          "description": "Who and what the vehicle is.",
+          "bricks": [
+            {
+              "id": "rdwc",
+              "name": "RDW Registry Connector and Vehicle Register",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously refreshed vehicle register keyed by license plate. Every plate lookup, RDW transaction and data product starts here.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-plate-register-api",
+                      "name": "Plate Register API",
+                      "type": "api",
+                      "description": "Internal lookup of registration, technical and status data by plate or VIN.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-vehicle-register",
+                            "type": "uses",
+                            "description": "Reads the current register."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-register-change-consumer",
+                      "name": "Register Change Consumer",
+                      "type": "message-consumer",
+                      "description": "Applies RDW mutation feeds (ownership changes, APK, WOK, export) to the register.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-vehicle-register",
+                            "type": "uses",
+                            "description": "Writes mutations."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-rdw-session-monitor",
+                      "name": "RDW Session Monitor",
+                      "type": "daemon",
+                      "description": "Monitors RDW channel availability, certificates and quota so transactions fail fast."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-vehicle-register",
+                      "name": "Vehicle Register",
+                      "type": "stateful-service",
+                      "description": "Plate-keyed register of registration, technical, APK and status facts with change history."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-rdw-channel-adapter",
+                      "name": "RDW Channel Adapter",
+                      "type": "integration",
+                      "description": "Authenticated adapter to RDW information and transaction channels."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-vehicle-register",
+                    "module-register-change-consumer",
+                    "module-plate-register-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for the RDW-derived register."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "RDW information and transaction services",
+                  "type": "data",
+                  "interface": "RDW provider channel",
+                  "description": "Source of registration data and the channel for official transactions.",
+                  "sourceModuleId": "module-rdw-channel-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Dealer and lease back-office systems",
+                  "type": "channel-consumer",
+                  "interface": "Plate Register API (via data API)",
+                  "description": "Plate lookups embedded in third-party software.",
+                  "moduleId": "module-plate-register-api"
+                }
+              ]
+            },
+            {
+              "id": "vidn",
+              "name": "Vehicle Identity and Specification",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW technical data with partner sources (SilverDAT VIN information from DAT, Autotelex, Jato).",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-specification-api",
+                      "name": "Specification API",
+                      "type": "api",
+                      "description": "Returns the normalised specification for a plate or VIN.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-specification-resolver",
+                            "type": "uses",
+                            "description": "Resolves the specification."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-specification-resolver",
+                      "name": "Specification Resolver",
+                      "type": "stateless-service",
+                      "description": "Merges RDW technical data with partner option data and resolves conflicts.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-specification-catalog",
+                            "type": "uses",
+                            "description": "Reads catalog."
+                          },
+                          {
+                            "moduleId": "module-plate-register-api",
+                            "type": "uses",
+                            "description": "Reads RDW technical data.",
+                            "targetBrickId": "rdwc"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-specification-catalog",
+                      "name": "Specification Catalog",
+                      "type": "stateful-service",
+                      "description": "Normalised model, edition and option catalog with source lineage."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-silverdat-vin-adapter",
+                      "name": "SilverDAT VIN Adapter",
+                      "type": "integration",
+                      "description": "Fetches factory option data by VIN from DAT (charged per request)."
+                    },
+                    {
+                      "id": "module-spec-partner-adapter",
+                      "name": "Specification Partner Adapter",
+                      "type": "integration",
+                      "description": "Imports Autotelex and Jato model and price data."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-specification-resolver",
+                  "type": "data",
+                  "description": "RDW technical data per plate."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "vehicle-specification",
+                  "moduleIds": [
+                    "module-specification-catalog",
+                    "module-specification-resolver"
+                  ],
+                  "role": "own",
+                  "description": "Normalised specification."
+                },
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-specification-resolver"
+                  ],
+                  "role": "read",
+                  "description": "Technical RDW facts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DAT Group (SilverDAT)",
+                  "type": "data",
+                  "interface": "SilverDAT VIN query",
+                  "description": "Factory options per VIN.",
+                  "sourceModuleId": "module-silverdat-vin-adapter"
+                },
+                {
+                  "system": "Autotelex and Jato",
+                  "type": "data",
+                  "interface": "Model and price data feeds",
+                  "description": "Model editions, options and list prices.",
+                  "sourceModuleId": "module-spec-partner-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Vehicle History and Condition",
+          "description": "What happened to the vehicle and what state it is in.",
+          "bricks": [
+            {
+              "id": "vhis",
+              "name": "Vehicle History Intelligence",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Assembles what happened to a vehicle: international damage history (insurer claims, damage trade, WOK status, BPM changes; NL, DE, EU, US and more), manufacturer maintenance history and NAP odometer judgements. Sold per report to dealers and embedded in Finnik reports.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-history-report-view",
+                      "name": "History Report View",
+                      "type": "web-component",
+                      "description": "Damage and maintenance history report inside the vehicle dossier.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-history-api",
+                            "type": "uses",
+                            "description": "Loads reports."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-history-api",
+                      "name": "History API",
+                      "type": "api",
+                      "description": "Orders and returns damage, maintenance and odometer reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-history-assembler",
+                            "type": "uses",
+                            "description": "Builds reports."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-history-assembler",
+                      "name": "History Assembler",
+                      "type": "stateless-service",
+                      "description": "Queries sources in parallel, de-duplicates events and applies the no-damage-no-charge rule.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-history-store",
+                            "type": "uses",
+                            "description": "Caches results."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-history-store",
+                      "name": "History Event Store",
+                      "type": "stateful-service",
+                      "description": "Normalised damage, maintenance and odometer events per VIN with source and date."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-damage-source-adapter",
+                      "name": "Damage Source Adapter",
+                      "type": "integration",
+                      "description": "Connects international insurer and damage-trade databases."
+                    },
+                    {
+                      "id": "module-maintenance-source-adapter",
+                      "name": "Maintenance Source Adapter",
+                      "type": "integration",
+                      "description": "Fetches manufacturer service records."
+                    },
+                    {
+                      "id": "module-nap-adapter",
+                      "name": "NAP Odometer Adapter",
+                      "type": "integration",
+                      "description": "Reads Nationale Autopas odometer judgements via RDW."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-history-assembler",
+                  "type": "data",
+                  "description": "WOK and status data."
+                },
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-usage-metering-api",
+                  "sourceModuleId": "module-history-api",
+                  "type": "billing",
+                  "description": "Charges paid reports."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "damage-history",
+                  "moduleIds": [
+                    "module-history-store",
+                    "module-damage-source-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Damage events."
+                },
+                {
+                  "assetId": "maintenance-history",
+                  "moduleIds": [
+                    "module-history-store",
+                    "module-maintenance-source-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Service records."
+                },
+                {
+                  "assetId": "odometer-reading",
+                  "moduleIds": [
+                    "module-history-store",
+                    "module-nap-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Odometer judgement and readings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "International insurer and damage-trade databases",
+                  "type": "data",
+                  "interface": "Damage history query",
+                  "description": "Claims and damage records by plate or VIN.",
+                  "sourceModuleId": "module-damage-source-adapter"
+                },
+                {
+                  "system": "Manufacturer maintenance databases",
+                  "type": "data",
+                  "interface": "Service history query",
+                  "description": "Dealer service records.",
+                  "sourceModuleId": "module-maintenance-source-adapter"
+                },
+                {
+                  "system": "Nationale Autopas (NAP) via RDW",
+                  "type": "data",
+                  "interface": "Odometer judgement",
+                  "description": "Logical/illogical odometer status.",
+                  "sourceModuleId": "module-nap-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "evsh",
+              "name": "EV Battery State of Health",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Measures and reports the battery condition of used electric vehicles so dealers can price and sell them with confidence. Reads diagnostic data via a DoIP/OBD dongle and produces a certificate for the buyer.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-soh-certificate-view",
+                      "name": "SoH Certificate View",
+                      "type": "web-component",
+                      "description": "Battery health certificate in the dossier and for buyers.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-soh-api",
+                            "type": "uses",
+                            "description": "Loads results."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-soh-api",
+                      "name": "SoH API",
+                      "type": "api",
+                      "description": "Registers measurements and returns certificates.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-soh-results",
+                            "type": "uses",
+                            "description": "Stores results."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-soh-interpreter",
+                      "name": "SoH Interpreter",
+                      "type": "stateless-service",
+                      "description": "Converts raw diagnostic readings into a health percentage and range estimate per model.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-soh-results",
+                            "type": "uses",
+                            "description": "Writes results."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-soh-results",
+                      "name": "SoH Result Store",
+                      "type": "stateful-service",
+                      "description": "Battery measurements and certificates per VIN."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-diagnostic-dongle-adapter",
+                      "name": "Diagnostic Dongle Adapter",
+                      "type": "integration",
+                      "description": "Receives readings from the diagnostic dongle (Moba DoIP)."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-soh-interpreter",
+                  "type": "data",
+                  "description": "Battery capacity per edition."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "battery-health-report",
+                  "moduleIds": [
+                    "module-soh-results",
+                    "module-soh-interpreter"
+                  ],
+                  "role": "own",
+                  "description": "SoH measurements."
+                },
+                {
+                  "assetId": "vehicle-specification",
+                  "moduleIds": [
+                    "module-soh-interpreter"
+                  ],
+                  "role": "read",
+                  "description": "Nominal capacity."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Diagnostic dongle provider (Moba)",
+                  "type": "data",
+                  "interface": "DoIP readout",
+                  "description": "Battery diagnostic data.",
+                  "sourceModuleId": "module-diagnostic-dongle-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "dmgc",
+              "name": "Damage Calculation",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Estimates repair cost from photos and part catalogues so dealers and lease companies can price repairs into purchase decisions. Delivered with DAT Nederland: SilverDAT Calculate and its AI successor weDAT damage calculation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-damage-capture-ui",
+                      "name": "Damage Capture",
+                      "type": "web-component",
+                      "description": "Photo-guided damage capture and estimate review.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-damage-api",
+                            "type": "uses",
+                            "description": "Submits cases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-damage-api",
+                      "name": "Damage Calculation API",
+                      "type": "api",
+                      "description": "Creates calculations and returns estimates.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-damage-case-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-damage-case-store",
+                      "name": "Damage Case Store",
+                      "type": "stateful-service",
+                      "description": "Calculations, photos and estimates per vehicle."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-wedat-adapter",
+                      "name": "weDAT Adapter",
+                      "type": "integration",
+                      "description": "Sends photos and VIN to DAT AI damage calculation and receives repair estimates."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-damage-api",
+                  "type": "data",
+                  "description": "Exact edition and options for part prices."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "damage-calculation",
+                  "moduleIds": [
+                    "module-damage-case-store",
+                    "module-wedat-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Repair estimates."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DAT Nederland (SilverDAT / weDAT)",
+                  "type": "service",
+                  "interface": "Damage calculation service",
+                  "description": "Parts, labour times and AI recognition.",
+                  "sourceModuleId": "module-wedat-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Market, Value and Tax",
+          "description": "What the vehicle is worth and what tax applies.",
+          "bricks": [
+            {
+              "id": "mktd",
+              "name": "Market and Transaction Data Lake",
+              "type": "service",
+              "status": "invest",
+              "description": "Collects national and international used-car advertisements, RDW ownership changes and more than 30 years of vehicle and transaction history into an analysable market dataset: asking prices, days-to-sell, supply and demand per model and region.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-market-query-api",
+                      "name": "Market Query API",
+                      "type": "api",
+                      "description": "Comparable listings, price distributions and stand-time per segment.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-market-warehouse",
+                            "type": "uses",
+                            "description": "Queries warehouse."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-advert-harvester",
+                      "name": "Advertisement Harvester",
+                      "type": "daemon",
+                      "description": "Collects advertisements from national and international portals daily.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-listing-matcher",
+                            "type": "uses",
+                            "description": "Matches listings."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-ownership-change-ingest",
+                      "name": "Ownership Change Ingest",
+                      "type": "message-consumer",
+                      "description": "Turns RDW ownership changes into sale events.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-market-warehouse",
+                            "type": "uses",
+                            "description": "Writes sales."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-listing-matcher",
+                      "name": "Listing Matcher",
+                      "type": "stateless-service",
+                      "description": "Matches adverts to plates/specifications and detects when a car is sold.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-specification-api",
+                            "type": "uses",
+                            "description": "Normalises editions.",
+                            "targetBrickId": "vidn"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-market-warehouse",
+                      "name": "Market Warehouse",
+                      "type": "stateful-service",
+                      "description": "Historical adverts, sales and transactions by model, edition and region."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-portal-data-adapter",
+                      "name": "Portal Data Adapter",
+                      "type": "integration",
+                      "description": "Data agreements and collectors for advertising portals."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-ownership-change-ingest",
+                  "type": "data",
+                  "description": "Ownership mutations."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-listing-matcher",
+                  "type": "data",
+                  "description": "Specification normalisation."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "market-advertisement-observation",
+                  "moduleIds": [
+                    "module-market-warehouse",
+                    "module-advert-harvester",
+                    "module-portal-data-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Observed adverts."
+                },
+                {
+                  "assetId": "vehicle-transaction-history",
+                  "moduleIds": [
+                    "module-market-warehouse",
+                    "module-ownership-change-ingest"
+                  ],
+                  "role": "own",
+                  "description": "Sales and ownership history."
+                },
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-ownership-change-ingest"
+                  ],
+                  "role": "read",
+                  "description": "Mutations."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "National and international advertising portals",
+                  "type": "data",
+                  "interface": "Advertisement data",
+                  "description": "Asking prices and stand-time.",
+                  "sourceModuleId": "module-portal-data-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "valu",
+              "name": "Valuation Engine",
+              "type": "service",
+              "status": "invest",
+              "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by Occasion Manager, Finnik Zakelijk taxation reports, XRAY valuations and remarketing.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-valuation-api",
+                      "name": "Valuation API",
+                      "type": "api",
+                      "description": "Returns retail, trade and maximum purchase values with confidence and comparables.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-valuation-calculator",
+                            "type": "uses",
+                            "description": "Calculates."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-model-retrainer",
+                      "name": "Model Retrainer",
+                      "type": "daemon",
+                      "description": "Retrains depreciation curves weekly and back-tests against realised sales.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-valuation-model-store",
+                            "type": "uses",
+                            "description": "Publishes model."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-valuation-calculator",
+                      "name": "Valuation Calculator",
+                      "type": "stateless-service",
+                      "description": "Applies the valuation model to a vehicle context.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-valuation-model-store",
+                            "type": "uses",
+                            "description": "Model."
+                          },
+                          {
+                            "moduleId": "module-market-query-api",
+                            "type": "uses",
+                            "description": "Comparables.",
+                            "targetBrickId": "mktd"
+                          },
+                          {
+                            "moduleId": "module-specification-api",
+                            "type": "uses",
+                            "description": "Specification.",
+                            "targetBrickId": "vidn"
+                          },
+                          {
+                            "moduleId": "module-history-api",
+                            "type": "uses",
+                            "description": "Damage and odometer.",
+                            "targetBrickId": "vhis"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-valuation-model-store",
+                      "name": "Valuation Model Store",
+                      "type": "stateful-service",
+                      "description": "Versioned depreciation curves, option values and correction factors."
+                    },
+                    {
+                      "id": "module-valuation-ledger",
+                      "name": "Valuation Ledger",
+                      "type": "stateful-service",
+                      "description": "Every issued valuation with inputs and model version for audit and accuracy tracking."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mktd",
+                  "moduleId": "module-market-query-api",
+                  "sourceModuleId": "module-valuation-calculator",
+                  "type": "data",
+                  "description": "Market comparables."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-valuation-calculator",
+                  "type": "data",
+                  "description": "Specification and options."
+                },
+                {
+                  "targetBrickId": "vhis",
+                  "moduleId": "module-history-api",
+                  "sourceModuleId": "module-valuation-calculator",
+                  "type": "data",
+                  "description": "Damage and odometer corrections."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "valuation-record",
+                  "moduleIds": [
+                    "module-valuation-ledger",
+                    "module-valuation-calculator"
+                  ],
+                  "role": "own",
+                  "description": "Issued valuations."
+                },
+                {
+                  "assetId": "market-advertisement-observation",
+                  "moduleIds": [
+                    "module-model-retrainer"
+                  ],
+                  "role": "read",
+                  "description": "Training data."
+                },
+                {
+                  "assetId": "vehicle-transaction-history",
+                  "moduleIds": [
+                    "module-model-retrainer"
+                  ],
+                  "role": "read",
+                  "description": "Realised sales."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "bpmc",
+              "name": "BPM and Vehicle Tax Calculation",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Calculates Dutch BPM (registration tax) for imported vehicles and remaining BPM for exports, using forfaitaire tables, valuation reports or the koerslijst method, and produces taxation reports that importers file with the Tax Authority. Strengthened by the XRAY Automotive acquisition (2026).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-bpm-calculator-ui",
+                      "name": "BPM Calculator",
+                      "type": "web-component",
+                      "description": "Interactive BPM and remaining-BPM calculation.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-bpm-api",
+                            "type": "uses",
+                            "description": "Calculates."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-bpm-api",
+                      "name": "BPM API",
+                      "type": "api",
+                      "description": "BPM calculations and taxation report orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-bpm-rules-engine",
+                            "type": "uses",
+                            "description": "Applies rules."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-taxation-workbench",
+                      "name": "Taxation Workbench",
+                      "type": "backoffice-interface",
+                      "description": "Appraisers complete inspections and sign taxation reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-taxation-case-store",
+                            "type": "uses",
+                            "description": "Cases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-bpm-rules-engine",
+                      "name": "BPM Rules Engine",
+                      "type": "stateless-service",
+                      "description": "Versioned BPM tariffs, CO2 brackets and depreciation methods per year.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-valuation-api",
+                            "type": "uses",
+                            "description": "Market value for koerslijst/taxation method.",
+                            "targetBrickId": "valu"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-taxation-case-store",
+                      "name": "Taxation Case Store",
+                      "type": "stateful-service",
+                      "description": "Inspections, photos, damage notes and signed reports."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-tax-filing-export",
+                      "name": "Tax Filing Export",
+                      "type": "integration",
+                      "description": "Exports reports in the format importers submit to the Belastingdienst."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-bpm-rules-engine",
+                  "type": "data",
+                  "description": "Market value."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-bpm-api",
+                  "type": "data",
+                  "description": "CO2 and first registration date."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "bpm-calculation",
+                  "moduleIds": [
+                    "module-taxation-case-store",
+                    "module-bpm-rules-engine"
+                  ],
+                  "role": "own",
+                  "description": "BPM calculations and reports."
+                },
+                {
+                  "assetId": "valuation-record",
+                  "moduleIds": [
+                    "module-bpm-rules-engine"
+                  ],
+                  "role": "read",
+                  "description": "Valuation evidence."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Belastingdienst (Dutch Tax Authority)",
+                  "type": "regulator",
+                  "interface": "BPM tariffs and declaration format",
+                  "description": "Rules and filing format for BPM.",
+                  "sourceModuleId": "module-tax-filing-export"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dealer Operations (MijnVWE)",
+      "description": "The modular dealer platform from purchase to delivery.",
+      "subGroups": [
+        {
+          "name": "Stock and Purchasing",
+          "description": "Buy right and price right.",
+          "bricks": [
+            {
+              "id": "dosr",
+              "name": "Vehicle Dossier and Workflow Hub",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "The MijnVWE core: a dossier per vehicle that collects data, reports, documents and actions from purchase to delivery, and launches RDW transactions, advertising, reports and paperwork from one place.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-dossier-workspace",
+                      "name": "Dossier Workspace",
+                      "type": "web-component",
+                      "description": "mijn.vwe.nl vehicle dossier with actions and timeline.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-dossier-bff",
+                            "type": "uses",
+                            "description": "Loads dossier."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-dossier-bff",
+                      "name": "Dossier BFF",
+                      "type": "bff",
+                      "description": "Aggregates data, reports and module actions for the dossier.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-dossier-orchestrator",
+                            "type": "uses",
+                            "description": "Actions."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-dossier-orchestrator",
+                      "name": "Dossier Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Routes dossier actions to modules and records outcomes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-dossier-store",
+                            "type": "uses",
+                            "description": "Timeline."
+                          },
+                          {
+                            "moduleId": "module-plate-register-api",
+                            "type": "uses",
+                            "description": "Plate data.",
+                            "targetBrickId": "rdwc"
+                          },
+                          {
+                            "moduleId": "module-entitlement-api",
+                            "type": "uses",
+                            "description": "Checks module entitlement.",
+                            "targetBrickId": "iden"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-dossier-store",
+                      "name": "Dossier Store",
+                      "type": "stateful-service",
+                      "description": "Vehicle dossiers, timeline events and attached documents per dealer."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-dossier-orchestrator",
+                  "type": "data",
+                  "description": "Plate data on creation."
+                },
+                {
+                  "targetBrickId": "iden",
+                  "moduleId": "module-entitlement-api",
+                  "sourceModuleId": "module-dossier-orchestrator",
+                  "type": "access",
+                  "description": "Module entitlements."
+                },
+                {
+                  "targetBrickId": "vhis",
+                  "moduleId": "module-history-api",
+                  "sourceModuleId": "module-dossier-bff",
+                  "type": "context",
+                  "description": "History reports in dossier."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "vehicle-dossier",
+                  "moduleIds": [
+                    "module-dossier-store",
+                    "module-dossier-orchestrator"
+                  ],
+                  "role": "own",
+                  "description": "Dossiers."
+                },
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-dossier-orchestrator"
+                  ],
+                  "role": "read",
+                  "description": "Plate data."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "occm",
+              "name": "Occasion Manager Stock and Pricing",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid limits and import checks. Runs as a web app and PWA for iOS and Android.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-stock-list-ui",
+                      "name": "Stock and Signal List",
+                      "type": "web-component",
+                      "description": "Stock overview with price position, stand-time and signals.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-bff",
+                            "type": "uses",
+                            "description": "Loads stock."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-buying-pwa",
+                      "name": "Buying PWA",
+                      "type": "mobile-component",
+                      "description": "Scan a plate on the lot or at auction and see maximum purchase price.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-bff",
+                            "type": "uses",
+                            "description": "Valuations."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-stock-bff",
+                      "name": "Stock BFF",
+                      "type": "bff",
+                      "description": "Stock, signals and buying advice for web and PWA.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-pricing-advisor",
+                            "type": "uses",
+                            "description": "Advice."
+                          },
+                          {
+                            "moduleId": "module-stock-store",
+                            "type": "uses",
+                            "description": "Stock."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-signal-generator",
+                      "name": "Signal Generator",
+                      "type": "daemon",
+                      "description": "Nightly recomputes price position and raises stand-time and price signals.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-store",
+                            "type": "uses",
+                            "description": "Writes signals."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-pricing-advisor",
+                      "name": "Pricing and Buying Advisor",
+                      "type": "stateless-service",
+                      "description": "Combines valuation, market position and target margin into price and bid advice.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-valuation-api",
+                            "type": "uses",
+                            "description": "Values.",
+                            "targetBrickId": "valu"
+                          },
+                          {
+                            "moduleId": "module-market-query-api",
+                            "type": "uses",
+                            "description": "Competition.",
+                            "targetBrickId": "mktd"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-stock-store",
+                      "name": "Stock Store",
+                      "type": "stateful-service",
+                      "description": "Dealer stock items, cost, target margin, price history and signals."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-pricing-advisor",
+                  "type": "data",
+                  "description": "Retail and purchase values."
+                },
+                {
+                  "targetBrickId": "mktd",
+                  "moduleId": "module-market-query-api",
+                  "sourceModuleId": "module-pricing-advisor",
+                  "type": "data",
+                  "description": "Competing listings."
+                },
+                {
+                  "targetBrickId": "dosr",
+                  "moduleId": "module-dossier-bff",
+                  "sourceModuleId": "module-stock-bff",
+                  "type": "context",
+                  "description": "Stock items link to dossiers."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "dealer-stock-item",
+                  "moduleIds": [
+                    "module-stock-store",
+                    "module-signal-generator"
+                  ],
+                  "role": "own",
+                  "description": "Stock."
+                },
+                {
+                  "assetId": "valuation-record",
+                  "moduleIds": [
+                    "module-pricing-advisor"
+                  ],
+                  "role": "read",
+                  "description": "Values."
+                },
+                {
+                  "assetId": "market-advertisement-observation",
+                  "moduleIds": [
+                    "module-pricing-advisor"
+                  ],
+                  "role": "read",
+                  "description": "Competing adverts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "tapp",
+              "name": "Trade-in Appraisal Reports",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Finnik Zakelijk taxation and purchase reports: a guided trade-in inspection that combines RDW, NAP, manufacturer, SilverDAT, damage and market-price data into a value and a printable report for the customer. Available on the web and in the Finnik app business tab.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-appraisal-web",
+                      "name": "Appraisal Web",
+                      "type": "web-component",
+                      "description": "Appraisal form and report on the web.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-appraisal-api",
+                            "type": "uses",
+                            "description": "Saves."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-appraisal-app-tab",
+                      "name": "Finnik Business Tab",
+                      "type": "mobile-component",
+                      "description": "Appraisal on the phone with photos at the customer.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-appraisal-api",
+                            "type": "uses",
+                            "description": "Saves."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-appraisal-api",
+                      "name": "Appraisal API",
+                      "type": "api",
+                      "description": "Creates appraisals and renders reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-appraisal-composer",
+                            "type": "uses",
+                            "description": "Composes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-appraisal-composer",
+                      "name": "Appraisal Composer",
+                      "type": "stateless-service",
+                      "description": "Pulls specification, history and valuation into a single report.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-appraisal-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          },
+                          {
+                            "moduleId": "module-valuation-api",
+                            "type": "uses",
+                            "description": "Value.",
+                            "targetBrickId": "valu"
+                          },
+                          {
+                            "moduleId": "module-history-api",
+                            "type": "uses",
+                            "description": "History.",
+                            "targetBrickId": "vhis"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-appraisal-store",
+                      "name": "Appraisal Store",
+                      "type": "stateful-service",
+                      "description": "Appraisals, photos, condition notes and offers."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-appraisal-composer",
+                  "type": "data",
+                  "description": "Value."
+                },
+                {
+                  "targetBrickId": "vhis",
+                  "moduleId": "module-history-api",
+                  "sourceModuleId": "module-appraisal-composer",
+                  "type": "data",
+                  "description": "History."
+                },
+                {
+                  "targetBrickId": "dmgc",
+                  "moduleId": "module-damage-api",
+                  "sourceModuleId": "module-appraisal-web",
+                  "type": "context",
+                  "description": "Repair estimates for visible damage."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "purchase-appraisal-report",
+                  "moduleIds": [
+                    "module-appraisal-store",
+                    "module-appraisal-composer"
+                  ],
+                  "role": "own",
+                  "description": "Appraisals."
+                },
+                {
+                  "assetId": "valuation-record",
+                  "moduleIds": [
+                    "module-appraisal-composer"
+                  ],
+                  "role": "read",
+                  "description": "Value."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Marketing and Sales",
+          "description": "Advertise, capture leads and close the sale.",
+          "bricks": [
+            {
+              "id": "advf",
+              "name": "Advertising Feed Syndication",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Publishes a dealer stock to 150+ advertising channels (Marktplaats, AutoTrack, Gaspedaal and others) from a single entry, enriched with specification and photos, and keeps prices and sold status in sync.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-advert-editor",
+                      "name": "Advert Editor",
+                      "type": "web-component",
+                      "description": "Advert text, photos and channel selection per car.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-advert-api",
+                            "type": "uses",
+                            "description": "Saves."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-advert-api",
+                      "name": "Advert API",
+                      "type": "api",
+                      "description": "Adverts and channel status.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-advert-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-channel-publish-queue",
+                      "name": "Channel Publish Queue",
+                      "type": "message-queue",
+                      "description": "Queues inserts, updates and removals per channel.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-channel-adapters",
+                            "type": "uses",
+                            "description": "Delivers."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-advert-store",
+                      "name": "Advert Store",
+                      "type": "stateful-service",
+                      "description": "Adverts, channel mappings and delivery status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-channel-adapters",
+                      "name": "Channel Adapters",
+                      "type": "integration",
+                      "description": "Feed formats and APIs of the 150+ advertising channels."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "occm",
+                  "moduleId": "module-stock-bff",
+                  "sourceModuleId": "module-advert-api",
+                  "type": "data",
+                  "description": "Stock and prices."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-advert-api",
+                  "type": "data",
+                  "description": "Options for advert text."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "advertisement-listing",
+                  "moduleIds": [
+                    "module-advert-store",
+                    "module-channel-publish-queue"
+                  ],
+                  "role": "own",
+                  "description": "Adverts."
+                },
+                {
+                  "assetId": "dealer-stock-item",
+                  "moduleIds": [
+                    "module-advert-api"
+                  ],
+                  "role": "read",
+                  "description": "Stock."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Advertising portals (Marktplaats, AutoTrack, Gaspedaal, others)",
+                  "type": "channel",
+                  "interface": "Listing feeds and APIs",
+                  "description": "Where adverts are published.",
+                  "sourceModuleId": "module-channel-adapters"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "dweb",
+              "name": "Dealer Website and Lead Capture",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Lead-generating dealer websites with live stock, plus a lead inbox that collects enquiries from the website and advertising channels.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-dealer-site",
+                      "name": "Dealer Website",
+                      "type": "web-component",
+                      "description": "Templated, SEO-friendly website with live stock and forms.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-site-bff",
+                            "type": "uses",
+                            "description": "Content."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-lead-inbox",
+                      "name": "Lead Inbox",
+                      "type": "web-component",
+                      "description": "Enquiries with status and follow-up.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-lead-api",
+                            "type": "uses",
+                            "description": "Leads."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-site-bff",
+                      "name": "Site BFF",
+                      "type": "bff",
+                      "description": "Stock and content for websites.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-lead-api",
+                            "type": "uses",
+                            "description": "Posts leads."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-lead-api",
+                      "name": "Lead API",
+                      "type": "api",
+                      "description": "Captures and routes leads.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-lead-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-lead-store",
+                      "name": "Lead Store",
+                      "type": "stateful-service",
+                      "description": "Leads with source, vehicle and status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-portal-lead-adapter",
+                      "name": "Portal Lead Adapter",
+                      "type": "integration",
+                      "description": "Receives enquiries from advertising portals."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "occm",
+                  "moduleId": "module-stock-bff",
+                  "sourceModuleId": "module-site-bff",
+                  "type": "data",
+                  "description": "Live stock."
+                },
+                {
+                  "targetBrickId": "advf",
+                  "moduleId": "module-advert-api",
+                  "sourceModuleId": "module-site-bff",
+                  "type": "data",
+                  "description": "Advert content."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-lead",
+                  "moduleIds": [
+                    "module-lead-store",
+                    "module-lead-api"
+                  ],
+                  "role": "own",
+                  "description": "Leads."
+                },
+                {
+                  "assetId": "advertisement-listing",
+                  "moduleIds": [
+                    "module-site-bff"
+                  ],
+                  "role": "read",
+                  "description": "Advert content."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Advertising portals (Marktplaats, AutoTrack, Gaspedaal, others)",
+                  "type": "channel",
+                  "interface": "Lead e-mail and API",
+                  "description": "Enquiries.",
+                  "sourceModuleId": "module-portal-lead-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "admn",
+              "name": "Dealer Sales Administration",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Quotes, purchase agreements, sales contracts and invoices for used-car dealers (Administratiepakket), with margin-scheme VAT handling and export to accounting packages.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-sales-docs-ui",
+                      "name": "Sales Documents",
+                      "type": "web-component",
+                      "description": "Quote, agreement and invoice editor.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-sales-docs-api",
+                            "type": "uses",
+                            "description": "Saves."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-sales-docs-api",
+                      "name": "Sales Documents API",
+                      "type": "api",
+                      "description": "Creates and numbers documents.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-document-generator",
+                            "type": "uses",
+                            "description": "Renders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-document-generator",
+                      "name": "Document Generator",
+                      "type": "stateless-service",
+                      "description": "Renders PDFs with VAT/margin-scheme logic.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-sales-ledger",
+                            "type": "uses",
+                            "description": "Writes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-sales-ledger",
+                      "name": "Sales Ledger",
+                      "type": "stateful-service",
+                      "description": "Quotes, agreements and invoices per dealer."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-accounting-export",
+                      "name": "Accounting Export",
+                      "type": "integration",
+                      "description": "Exports to accounting packages."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "dosr",
+                  "moduleId": "module-dossier-bff",
+                  "sourceModuleId": "module-sales-docs-ui",
+                  "type": "context",
+                  "description": "Starts from the dossier."
+                },
+                {
+                  "targetBrickId": "occm",
+                  "moduleId": "module-stock-bff",
+                  "sourceModuleId": "module-sales-docs-api",
+                  "type": "data",
+                  "description": "Purchase cost and price."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-document",
+                  "moduleIds": [
+                    "module-sales-ledger",
+                    "module-document-generator"
+                  ],
+                  "role": "own",
+                  "description": "Documents."
+                },
+                {
+                  "assetId": "dealer-stock-item",
+                  "moduleIds": [
+                    "module-sales-docs-api"
+                  ],
+                  "role": "read",
+                  "description": "Cost."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Accounting packages",
+                  "type": "integration",
+                  "interface": "Bookkeeping export",
+                  "description": "Invoices and purchases.",
+                  "sourceModuleId": "module-accounting-export"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "finc",
+              "name": "Vehicle Financing Referral",
+              "type": "integration",
+              "status": "invest",
+              "description": "Lets dealers offer car financing to buyers through the financing partner (Financial Lease Partner since October 2025), with quotes, application hand-off and commission tracking as an extra revenue line for the dealer.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-finance-quote-widget",
+                      "name": "Finance Quote Widget",
+                      "type": "web-component",
+                      "description": "Monthly payment on website and in quotes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-finance-api",
+                            "type": "uses",
+                            "description": "Quotes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-finance-api",
+                      "name": "Finance API",
+                      "type": "api",
+                      "description": "Quotes and application status.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-finance-case-store",
+                            "type": "uses",
+                            "description": "Cases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-finance-case-store",
+                      "name": "Finance Case Store",
+                      "type": "stateful-service",
+                      "description": "Applications, status and commission."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-lender-adapter",
+                      "name": "Lender Adapter",
+                      "type": "integration",
+                      "description": "Connection to the financing partner."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "admn",
+                  "moduleId": "module-sales-docs-api",
+                  "sourceModuleId": "module-finance-api",
+                  "type": "context",
+                  "description": "Adds financing to quotes."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "financing-application",
+                  "moduleIds": [
+                    "module-finance-case-store",
+                    "module-lender-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Applications."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Financing partner (Financial Lease Partner)",
+                  "type": "service",
+                  "interface": "Lending application",
+                  "description": "Credit decisions and payouts.",
+                  "sourceModuleId": "module-lender-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Registration, Trade and Remarketing Services",
+      "description": "Official RDW transactions, cross-border trade and B2B trading.",
+      "subGroups": [
+        {
+          "name": "RDW and Compliance Transactions",
+          "description": "Official paperwork for the trade.",
+          "bricks": [
+            {
+              "id": "rdwt",
+              "name": "RDW Transaction Services",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK and tachograph/LPG sign-off, dismantling, mileage registration and driving licence checks; each charged per transaction.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-transaction-forms",
+                      "name": "Transaction Forms",
+                      "type": "web-component",
+                      "description": "Guided RDW transactions from the dossier.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-transaction-api",
+                            "type": "uses",
+                            "description": "Submits."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-transaction-api",
+                      "name": "RDW Transaction API",
+                      "type": "api",
+                      "description": "Submits transactions for web users and integrators.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-transaction-orchestrator",
+                            "type": "uses",
+                            "description": "Executes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-transaction-retry-queue",
+                      "name": "Transaction Retry Queue",
+                      "type": "message-queue",
+                      "description": "Retries transactions during RDW outages and preserves order."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-transaction-orchestrator",
+                      "name": "Transaction Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Validates prerequisites, authority and fees before submission.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-transaction-log",
+                            "type": "uses",
+                            "description": "Logs."
+                          },
+                          {
+                            "moduleId": "module-authority-api",
+                            "type": "uses",
+                            "description": "Checks RDW authorisation.",
+                            "targetBrickId": "iden"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-transaction-log",
+                      "name": "Transaction Log",
+                      "type": "stateful-service",
+                      "description": "Every submitted transaction with RDW response and proof document."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-transaction-orchestrator",
+                  "type": "data",
+                  "description": "Uses the RDW channel."
+                },
+                {
+                  "targetBrickId": "iden",
+                  "moduleId": "module-authority-api",
+                  "sourceModuleId": "module-transaction-orchestrator",
+                  "type": "access",
+                  "description": "RDW company authorisation."
+                },
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-usage-metering-api",
+                  "sourceModuleId": "module-transaction-api",
+                  "type": "billing",
+                  "description": "Per-transaction fees."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "rdw-transaction-record",
+                  "moduleIds": [
+                    "module-transaction-log",
+                    "module-transaction-orchestrator"
+                  ],
+                  "role": "own",
+                  "description": "Transactions."
+                },
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-transaction-orchestrator"
+                  ],
+                  "role": "read",
+                  "description": "Status."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "RDW information and transaction services",
+                  "type": "regulator",
+                  "interface": "RDW transaction channel",
+                  "description": "Executes official transactions.",
+                  "sourceModuleId": "module-transaction-orchestrator"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Dealer management and lease systems",
+                  "type": "channel-consumer",
+                  "interface": "RDW Transaction API",
+                  "description": "Transactions from partner software.",
+                  "moduleId": "module-transaction-api"
+                }
+              ]
+            },
+            {
+              "id": "mats",
+              "name": "Plates and Materials Webshop",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Webshop and HQ counter for trade materials: license plates, export plates, stickers, safes and the export shop, plus short-term insurance products (green card) sold alongside.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-materials-shop",
+                      "name": "Materials Shop",
+                      "type": "web-component",
+                      "description": "Trade webshop for plates and materials.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-api",
+                            "type": "uses",
+                            "description": "Orders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-order-api",
+                      "name": "Order API",
+                      "type": "api",
+                      "description": "Orders, payment and fulfilment status.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-fulfilment-consumer",
+                      "name": "Fulfilment Consumer",
+                      "type": "message-consumer",
+                      "description": "Sends orders to plate production and shipping.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-store",
+                            "type": "uses",
+                            "description": "Status."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-order-store",
+                      "name": "Order Store",
+                      "type": "stateful-service",
+                      "description": "Trade and consumer orders."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-payment-and-shipping-adapter",
+                      "name": "Payment and Shipping Adapter",
+                      "type": "integration",
+                      "description": "Payment provider and parcel carrier."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-usage-metering-api",
+                  "sourceModuleId": "module-order-api",
+                  "type": "billing",
+                  "description": "Trade orders on account."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "webshop-order",
+                  "moduleIds": [
+                    "module-order-store",
+                    "module-order-api"
+                  ],
+                  "role": "own",
+                  "description": "Orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment providers and parcel carriers",
+                  "type": "service",
+                  "interface": "Payment and shipping",
+                  "description": "Checkout and delivery.",
+                  "sourceModuleId": "module-payment-and-shipping-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Cross-border and B2B Trade",
+          "description": "Import, export and trader-to-trader sales.",
+          "bricks": [
+            {
+              "id": "impx",
+              "name": "Import and Export Documents",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Paperwork for cross-border vehicle trade: export accompanying documents (EAD), vehicle identification reports (VKR), type-approval declarations, German registration letters (Kfz-Zulassung), export plates and 14-day green cards. Builds on the Cargo acquisition.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-trade-docs-ui",
+                      "name": "Trade Documents",
+                      "type": "web-component",
+                      "description": "Order and track import/export documents.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-docs-api",
+                            "type": "uses",
+                            "description": "Orders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-trade-docs-api",
+                      "name": "Trade Documents API",
+                      "type": "api",
+                      "description": "Document orders and status.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-case-store",
+                            "type": "uses",
+                            "description": "Cases."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-trade-desk",
+                      "name": "Trade Desk",
+                      "type": "backoffice-interface",
+                      "description": "Back office for document specialists and the HQ counter.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-case-store",
+                            "type": "uses",
+                            "description": "Cases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-trade-case-store",
+                      "name": "Trade Case Store",
+                      "type": "stateful-service",
+                      "description": "Import/export cases, documents and shipments."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-customs-adapter",
+                      "name": "Customs Adapter",
+                      "type": "integration",
+                      "description": "Customs export declarations (EAD)."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwt",
+                  "moduleId": "module-transaction-api",
+                  "sourceModuleId": "module-trade-docs-api",
+                  "type": "process",
+                  "description": "Export sign-off and import registration."
+                },
+                {
+                  "targetBrickId": "bpmc",
+                  "moduleId": "module-bpm-api",
+                  "sourceModuleId": "module-trade-docs-api",
+                  "type": "data",
+                  "description": "Remaining BPM on export, BPM on import."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-trade-docs-api",
+                  "type": "data",
+                  "description": "Type approval data."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "import-export-document",
+                  "moduleIds": [
+                    "module-trade-case-store",
+                    "module-customs-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Trade documents."
+                },
+                {
+                  "assetId": "bpm-calculation",
+                  "moduleIds": [
+                    "module-trade-docs-api"
+                  ],
+                  "role": "read",
+                  "description": "BPM."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Dutch Customs (Douane)",
+                  "type": "regulator",
+                  "interface": "Export declaration",
+                  "description": "EAD declarations.",
+                  "sourceModuleId": "module-customs-adapter"
+                },
+                {
+                  "system": "Foreign registration authorities",
+                  "type": "regulator",
+                  "interface": "Registration documents",
+                  "description": "German and other registrations.",
+                  "sourceModuleId": "module-trade-docs-api"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "b2bt",
+              "name": "B2B Trade and Stock Exchange",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Trader-to-trader marketplace functions: Voorraad Nederland (dealer stock visible to the trade) and the XRAY XBS trading platform, with hand-off to the auction partner for vehicles sold through online auction since the ATC sale to Autorola (February 2026).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-trade-market-ui",
+                      "name": "Trade Market",
+                      "type": "web-component",
+                      "description": "Browse trade stock, make offers, follow deals.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-api",
+                            "type": "uses",
+                            "description": "Offers."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-trade-api",
+                      "name": "Trade API",
+                      "type": "api",
+                      "description": "Listings, offers and deals.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-matcher",
+                            "type": "uses",
+                            "description": "Matches."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-trade-matcher",
+                      "name": "Trade Matcher",
+                      "type": "stateless-service",
+                      "description": "Matches buyer searches to trade stock and alerts buyers.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trade-offer-store",
+                            "type": "uses",
+                            "description": "Stores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-trade-offer-store",
+                      "name": "Trade Offer Store",
+                      "type": "stateful-service",
+                      "description": "Trade listings, offers and deal status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-auction-partner-adapter",
+                      "name": "Auction Partner Adapter",
+                      "type": "integration",
+                      "description": "Hands vehicles to the external auction partner and receives results."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "occm",
+                  "moduleId": "module-stock-bff",
+                  "sourceModuleId": "module-trade-api",
+                  "type": "data",
+                  "description": "Dealer stock offered to the trade."
+                },
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-trade-matcher",
+                  "type": "data",
+                  "description": "Trade value guidance."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "trade-offer",
+                  "moduleIds": [
+                    "module-trade-offer-store",
+                    "module-trade-matcher"
+                  ],
+                  "role": "own",
+                  "description": "Trade offers."
+                },
+                {
+                  "assetId": "dealer-stock-item",
+                  "moduleIds": [
+                    "module-trade-api"
+                  ],
+                  "role": "read",
+                  "description": "Stock."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Online auction partner (ATC / Autorola)",
+                  "type": "channel",
+                  "interface": "Auction listing hand-off",
+                  "description": "Vehicles sold through B2B auction.",
+                  "sourceModuleId": "module-auction-partner-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Data Products and Channels",
+      "description": "Vehicle data sold to enterprises, developers and consumers.",
+      "subGroups": [
+        {
+          "name": "Enterprise Data and APIs",
+          "description": "APIs, enrichment and market insight for businesses.",
+          "bricks": [
+            {
+              "id": "vapi",
+              "name": "Vehicle Data API Gateway",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Commercial API surface for vehicle data: Interdata (XML web service by plate, with RDW, VWE, Autotelex, Audacon, Jato, SilverDAT, environmental and road-tax categories), XMLmode for garage-software vendors, and the JSON Voertuigkenmerken plate API.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-developer-portal",
+                      "name": "Developer Portal",
+                      "type": "web-component",
+                      "description": "API documentation, XSDs, keys and usage.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-api-gateway",
+                            "type": "uses",
+                            "description": "Keys."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-api-gateway",
+                      "name": "API Gateway",
+                      "type": "api",
+                      "description": "Authenticates, meters and routes Interdata, XMLmode and JSON calls.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-response-composer",
+                            "type": "uses",
+                            "description": "Composes."
+                          },
+                          {
+                            "moduleId": "module-licence-check-api",
+                            "type": "uses",
+                            "description": "Checks data licence.",
+                            "targetBrickId": "dgov"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-response-composer",
+                      "name": "Response Composer",
+                      "type": "stateless-service",
+                      "description": "Assembles category blocks from internal sources into XML or JSON.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-plate-register-api",
+                            "type": "uses",
+                            "description": "RDW data.",
+                            "targetBrickId": "rdwc"
+                          },
+                          {
+                            "moduleId": "module-specification-api",
+                            "type": "uses",
+                            "description": "Specification.",
+                            "targetBrickId": "vidn"
+                          },
+                          {
+                            "moduleId": "module-valuation-api",
+                            "type": "uses",
+                            "description": "Values.",
+                            "targetBrickId": "valu"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-api-contract-registry",
+                      "name": "API Contract Registry",
+                      "type": "service",
+                      "description": "Versioned XSD/JSON schemas and category definitions per client."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-response-composer",
+                  "type": "data",
+                  "description": "RDW data."
+                },
+                {
+                  "targetBrickId": "vidn",
+                  "moduleId": "module-specification-api",
+                  "sourceModuleId": "module-response-composer",
+                  "type": "data",
+                  "description": "Specification."
+                },
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-response-composer",
+                  "type": "data",
+                  "description": "Values."
+                },
+                {
+                  "targetBrickId": "dgov",
+                  "moduleId": "module-licence-check-api",
+                  "sourceModuleId": "module-api-gateway",
+                  "type": "access",
+                  "description": "Licence and purpose checks."
+                },
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-usage-metering-api",
+                  "sourceModuleId": "module-api-gateway",
+                  "type": "billing",
+                  "description": "Metered calls."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-response-composer"
+                  ],
+                  "role": "read",
+                  "description": "RDW data."
+                },
+                {
+                  "assetId": "vehicle-specification",
+                  "moduleIds": [
+                    "module-response-composer"
+                  ],
+                  "role": "read",
+                  "description": "Specification."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Garage and dealer management software vendors",
+                  "type": "channel-consumer",
+                  "interface": "XMLmode web services",
+                  "description": "Plate data inside workshop software.",
+                  "moduleId": "module-api-gateway"
+                },
+                {
+                  "system": "Insurers, lessors and data companies",
+                  "type": "channel-consumer",
+                  "interface": "Interdata / JSON API",
+                  "description": "Vehicle data in quoting and fleet systems.",
+                  "moduleId": "module-api-gateway"
+                }
+              ]
+            },
+            {
+              "id": "fenr",
+              "name": "Vehicle File Enrichment",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Batch enrichment of customer plate lists with current vehicle characteristics (Voertuigkenmerken), for fleet audits, insurer portfolios and data companies.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-enrichment-upload",
+                      "name": "Enrichment Upload",
+                      "type": "web-component",
+                      "description": "Upload a plate file and choose attributes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-enrichment-api",
+                            "type": "uses",
+                            "description": "Submits."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-enrichment-api",
+                      "name": "Enrichment API",
+                      "type": "api",
+                      "description": "Batch jobs and results.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-enrichment-job-runner",
+                            "type": "uses",
+                            "description": "Runs."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-enrichment-job-runner",
+                      "name": "Enrichment Job Runner",
+                      "type": "daemon",
+                      "description": "Processes plate files in batches against the register.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-enrichment-job-store",
+                            "type": "uses",
+                            "description": "Results."
+                          },
+                          {
+                            "moduleId": "module-plate-register-api",
+                            "type": "uses",
+                            "description": "Lookups.",
+                            "targetBrickId": "rdwc"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-enrichment-job-store",
+                      "name": "Enrichment Job Store",
+                      "type": "stateful-service",
+                      "description": "Jobs, input files and enriched results with retention limits."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-enrichment-job-runner",
+                  "type": "data",
+                  "description": "Register lookups."
+                },
+                {
+                  "targetBrickId": "dgov",
+                  "moduleId": "module-licence-check-api",
+                  "sourceModuleId": "module-enrichment-api",
+                  "type": "access",
+                  "description": "Purpose check."
+                },
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-usage-metering-api",
+                  "sourceModuleId": "module-enrichment-api",
+                  "type": "billing",
+                  "description": "Per-record fees."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "enrichment-batch",
+                  "moduleIds": [
+                    "module-enrichment-job-store",
+                    "module-enrichment-job-runner"
+                  ],
+                  "role": "own",
+                  "description": "Batches."
+                },
+                {
+                  "assetId": "vehicle-registration-record",
+                  "moduleIds": [
+                    "module-enrichment-job-runner"
+                  ],
+                  "role": "read",
+                  "description": "Register."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "mins",
+              "name": "Market Insights and Performance Dashboards",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Marktinzicht: RDW-register based market reports, the online Market Performance Manager dashboard and custom data files for importers, dealer groups and franchise formulas; plus the Occasion prestatiemeter that shows a dealer its used-car sales and share versus competitors in its postcode area.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-performance-dashboard",
+                      "name": "Market Performance Manager",
+                      "type": "web-component",
+                      "description": "Dashboards for registrations, sales, share and stand-time.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-insight-api",
+                            "type": "uses",
+                            "description": "Data."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-occasion-meter",
+                      "name": "Occasion Performance Meter",
+                      "type": "web-component",
+                      "description": "Dealer share vs local competitors.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-insight-api",
+                            "type": "uses",
+                            "description": "Data."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-insight-api",
+                      "name": "Insight API",
+                      "type": "api",
+                      "description": "Aggregated market cubes per client scope.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-insight-cube-store",
+                            "type": "uses",
+                            "description": "Cubes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-report-scheduler",
+                      "name": "Report Scheduler",
+                      "type": "daemon",
+                      "description": "Produces periodic reports and custom data files.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-insight-cube-store",
+                            "type": "uses",
+                            "description": "Reads."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-insight-cube-store",
+                      "name": "Insight Cube Store",
+                      "type": "stateful-service",
+                      "description": "Aggregated registrations, sales and market share by brand, model, dealer and region."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mktd",
+                  "moduleId": "module-market-query-api",
+                  "sourceModuleId": "module-insight-api",
+                  "type": "data",
+                  "description": "Market data."
+                },
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-report-scheduler",
+                  "type": "data",
+                  "description": "Registrations."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "market-insight-dataset",
+                  "moduleIds": [
+                    "module-insight-cube-store",
+                    "module-report-scheduler"
+                  ],
+                  "role": "own",
+                  "description": "Aggregates."
+                },
+                {
+                  "assetId": "vehicle-transaction-history",
+                  "moduleIds": [
+                    "module-insight-api"
+                  ],
+                  "role": "read",
+                  "description": "Sales history."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "cool",
+              "name": "Change-of-Ownership Lead Scoring",
+              "type": "service",
+              "status": "invest",
+              "description": "Data-science model that predicts which vehicle owners are likely to change cars in the next one to two months, delivered as lead lists to dealers and importers for timely outreach within privacy rules.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-lead-list-ui",
+                      "name": "Lead List",
+                      "type": "web-component",
+                      "description": "Scored vehicles and campaign selection.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-score-api",
+                            "type": "uses",
+                            "description": "Scores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-score-api",
+                      "name": "Score API",
+                      "type": "api",
+                      "description": "Scores and lists per client territory.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-score-store",
+                            "type": "uses",
+                            "description": "Scores."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-scoring-pipeline",
+                      "name": "Scoring Pipeline",
+                      "type": "daemon",
+                      "description": "Monthly feature build and scoring.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-score-store",
+                            "type": "uses",
+                            "description": "Writes."
+                          },
+                          {
+                            "moduleId": "module-market-query-api",
+                            "type": "uses",
+                            "description": "History.",
+                            "targetBrickId": "mktd"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-score-store",
+                      "name": "Score Store",
+                      "type": "stateful-service",
+                      "description": "Scores per vehicle with model version and expiry."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mktd",
+                  "moduleId": "module-market-query-api",
+                  "sourceModuleId": "module-scoring-pipeline",
+                  "type": "data",
+                  "description": "Ownership history."
+                },
+                {
+                  "targetBrickId": "dgov",
+                  "moduleId": "module-licence-check-api",
+                  "sourceModuleId": "module-score-api",
+                  "type": "compliance",
+                  "description": "Privacy and purpose checks."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "ownership-change-score",
+                  "moduleIds": [
+                    "module-score-store",
+                    "module-scoring-pipeline"
+                  ],
+                  "role": "own",
+                  "description": "Scores."
+                },
+                {
+                  "assetId": "vehicle-transaction-history",
+                  "moduleIds": [
+                    "module-scoring-pipeline"
+                  ],
+                  "role": "read",
+                  "description": "Training data."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Consumer Channels",
+          "description": "Finnik and consumer documents.",
+          "bricks": [
+            {
+              "id": "fnnk",
+              "name": "Finnik Consumer Plate Check",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "The Finnik consumer app and web check: basic vehicle data for free by plate, a paid full report (history, odometer, value) for private buyers, and the funnel to VWE consumer services.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-finnik-app",
+                      "name": "Finnik App",
+                      "type": "mobile-component",
+                      "description": "iOS/Android plate check with camera scan.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-finnik-bff",
+                            "type": "uses",
+                            "description": "Reports."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-finnik-web",
+                      "name": "Finnik Web",
+                      "type": "web-component",
+                      "description": "app.finnik.nl plate check.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-finnik-bff",
+                            "type": "uses",
+                            "description": "Reports."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-finnik-bff",
+                      "name": "Finnik BFF",
+                      "type": "bff",
+                      "description": "Free and paid report flows.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-report-builder",
+                            "type": "uses",
+                            "description": "Builds."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-report-builder",
+                      "name": "Consumer Report Builder",
+                      "type": "stateless-service",
+                      "description": "Builds consumer-safe reports without personal data.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-history-api",
+                            "type": "uses",
+                            "description": "History.",
+                            "targetBrickId": "vhis"
+                          },
+                          {
+                            "moduleId": "module-valuation-api",
+                            "type": "uses",
+                            "description": "Value.",
+                            "targetBrickId": "valu"
+                          },
+                          {
+                            "moduleId": "module-plate-register-api",
+                            "type": "uses",
+                            "description": "Basics.",
+                            "targetBrickId": "rdwc"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-consumer-report-store",
+                      "name": "Consumer Report Store",
+                      "type": "stateful-service",
+                      "description": "Purchased reports and receipts."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-app-payment-adapter",
+                      "name": "App Payment Adapter",
+                      "type": "integration",
+                      "description": "In-app and web payments."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "vhis",
+                  "moduleId": "module-history-api",
+                  "sourceModuleId": "module-report-builder",
+                  "type": "data",
+                  "description": "History."
+                },
+                {
+                  "targetBrickId": "valu",
+                  "moduleId": "module-valuation-api",
+                  "sourceModuleId": "module-report-builder",
+                  "type": "data",
+                  "description": "Value."
+                },
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-report-builder",
+                  "type": "data",
+                  "description": "Basics."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "consumer-vehicle-report",
+                  "moduleIds": [
+                    "module-consumer-report-store",
+                    "module-report-builder"
+                  ],
+                  "role": "own",
+                  "description": "Reports."
+                },
+                {
+                  "assetId": "odometer-reading",
+                  "moduleIds": [
+                    "module-report-builder"
+                  ],
+                  "role": "read",
+                  "description": "Odometer judgement."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "App stores and payment providers",
+                  "type": "channel",
+                  "interface": "In-app purchase",
+                  "description": "Distribution and payment.",
+                  "sourceModuleId": "module-app-payment-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ctrv",
+              "name": "Consumer Travel and Vehicle Documents",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Consumer webshop for vehicle travel documents: German and French environmental stickers, the Swiss vignette, one-day insurance, export green cards and the Kentekenloket, partly sold through retail partners such as GWK Travelex.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-consumer-shop",
+                      "name": "Consumer Shop",
+                      "type": "web-component",
+                      "description": "vwe.nl/particulier shop.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-travel-order-api",
+                            "type": "uses",
+                            "description": "Orders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-travel-order-api",
+                      "name": "Travel Order API",
+                      "type": "api",
+                      "description": "Orders, plate validation and fulfilment.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-api",
+                            "type": "uses",
+                            "description": "Order handling.",
+                            "targetBrickId": "mats"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-sticker-authority-adapter",
+                      "name": "Sticker Authority Adapter",
+                      "type": "integration",
+                      "description": "Orders stickers and vignettes from issuing bodies."
+                    },
+                    {
+                      "id": "module-retail-partner-adapter",
+                      "name": "Retail Partner Adapter",
+                      "type": "integration",
+                      "description": "Orders from retail partners."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mats",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-travel-order-api",
+                  "type": "process",
+                  "description": "Shared order and fulfilment."
+                },
+                {
+                  "targetBrickId": "rdwc",
+                  "moduleId": "module-plate-register-api",
+                  "sourceModuleId": "module-travel-order-api",
+                  "type": "data",
+                  "description": "Emission class for sticker eligibility."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "webshop-order",
+                  "moduleIds": [
+                    "module-travel-order-api"
+                  ],
+                  "role": "write",
+                  "description": "Consumer orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Environmental-zone sticker issuers and vignette authorities",
+                  "type": "service",
+                  "interface": "Sticker/vignette ordering",
+                  "description": "Issue documents.",
+                  "sourceModuleId": "module-sticker-authority-adapter"
+                },
+                {
+                  "system": "Retail partners (GWK Travelex)",
+                  "type": "channel",
+                  "interface": "Partner orders",
+                  "description": "Retail distribution.",
+                  "sourceModuleId": "module-retail-partner-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform and Commerce",
+      "description": "Accounts, billing and data governance shared by every product.",
+      "subGroups": [
+        {
+          "name": "Accounts, Billing and Governance",
+          "description": "Shared commercial and compliance backbone.",
+          "bricks": [
+            {
+              "id": "iden",
+              "name": "Customer Account, Identity and Entitlements",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Accounts for 11,000+ business customers: companies, branches, users, roles, module subscriptions and RDW company authorisations, with single sign-on across MijnVWE, Finnik Zakelijk and partner apps.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing web, PWA and app surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-account-admin",
+                      "name": "Account Admin",
+                      "type": "web-component",
+                      "description": "Users, branches and modules.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-entitlement-api",
+                            "type": "uses",
+                            "description": "Manages."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-entitlement-api",
+                      "name": "Entitlement API",
+                      "type": "api",
+                      "description": "Who may use which module.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-account-store",
+                            "type": "uses",
+                            "description": "Reads."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-authority-api",
+                      "name": "RDW Authority API",
+                      "type": "api",
+                      "description": "RDW company authorisation and user certificates.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-account-store",
+                            "type": "uses",
+                            "description": "Reads."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-account-store",
+                      "name": "Account Store",
+                      "type": "stateful-service",
+                      "description": "Companies, branches, users, roles, subscriptions and authorisations."
+                    },
+                    {
+                      "id": "module-identity-provider",
+                      "name": "Identity Provider",
+                      "type": "service",
+                      "description": "Login, MFA and SSO."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-account",
+                  "moduleIds": [
+                    "module-account-store",
+                    "module-identity-provider"
+                  ],
+                  "role": "own",
+                  "description": "Accounts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "bill",
+              "name": "Subscription and Transaction Billing",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Prices and bills the mixed revenue model: monthly module subscriptions (e.g. Occasion Manager, Finnik Zakelijk), per-report and per-transaction fees (damage reports, SilverDAT VIN, RDW transactions), API usage and webshop orders on account.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-usage-metering-api",
+                      "name": "Usage Metering API",
+                      "type": "api",
+                      "description": "Records billable events from every module.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rating-engine",
+                            "type": "uses",
+                            "description": "Rates."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-billing-console",
+                      "name": "Billing Console",
+                      "type": "backoffice-interface",
+                      "description": "Price books, credits and disputes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-billing-ledger",
+                            "type": "uses",
+                            "description": "Ledger."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-run",
+                      "name": "Invoice Run",
+                      "type": "daemon",
+                      "description": "Monthly invoices and direct-debit collection.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-billing-ledger",
+                            "type": "uses",
+                            "description": "Reads."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-rating-engine",
+                      "name": "Rating Engine",
+                      "type": "stateless-service",
+                      "description": "Applies price books, bundles and no-hit-no-fee rules.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-billing-ledger",
+                            "type": "uses",
+                            "description": "Writes."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-billing-ledger",
+                      "name": "Billing Ledger",
+                      "type": "stateful-service",
+                      "description": "Subscriptions, usage events and invoices."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to RDW, data partners, channels and providers.",
+                  "modules": [
+                    {
+                      "id": "module-payment-collection-adapter",
+                      "name": "Payment Collection Adapter",
+                      "type": "integration",
+                      "description": "Direct debit and payment provider."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "iden",
+                  "moduleId": "module-entitlement-api",
+                  "sourceModuleId": "module-rating-engine",
+                  "type": "data",
+                  "description": "Subscriptions per account."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "subscription-and-usage-ledger",
+                  "moduleIds": [
+                    "module-billing-ledger",
+                    "module-rating-engine"
+                  ],
+                  "role": "own",
+                  "description": "Billing."
+                },
+                {
+                  "assetId": "customer-account",
+                  "moduleIds": [
+                    "module-rating-engine"
+                  ],
+                  "role": "read",
+                  "description": "Accounts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment service providers",
+                  "type": "service",
+                  "interface": "SEPA direct debit",
+                  "description": "Collection.",
+                  "sourceModuleId": "module-payment-collection-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "dgov",
+              "name": "Data Licensing and Compliance Governance",
+              "type": "service",
+              "status": "invest",
+              "description": "Enforces the conditions under which vehicle data may be used: RDW provider obligations, partner licence terms (DAT, Jato, Autotelex, insurers), GDPR purpose limitation for owner-related data, and audit trails of who queried what and why.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-licence-check-api",
+                      "name": "Licence Check API",
+                      "type": "api",
+                      "description": "Allows or denies a data request by client, purpose and source.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-licence-register",
+                            "type": "uses",
+                            "description": "Rules."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-compliance-console",
+                      "name": "Compliance Console",
+                      "type": "backoffice-interface",
+                      "description": "Licences, purposes, DPIAs and audit queries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-licence-register",
+                            "type": "uses",
+                            "description": "Manages."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-query-audit-consumer",
+                      "name": "Query Audit Consumer",
+                      "type": "message-consumer",
+                      "description": "Writes an immutable audit log of data access.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-licence-register",
+                            "type": "uses",
+                            "description": "Logs."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Domain services that own state.",
+                  "modules": [
+                    {
+                      "id": "module-licence-register",
+                      "name": "Licence and Consent Register",
+                      "type": "stateful-service",
+                      "description": "Source licences, client purposes and audit log."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "data-licence-and-consent-register",
+                  "moduleIds": [
+                    "module-licence-register",
+                    "module-query-audit-consumer"
+                  ],
+                  "role": "own",
+                  "description": "Licences and audit."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "RDW and data partners",
+                  "type": "regulator",
+                  "interface": "Provider agreements and audits",
+                  "description": "Licence terms and audits.",
+                  "sourceModuleId": "module-compliance-console"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

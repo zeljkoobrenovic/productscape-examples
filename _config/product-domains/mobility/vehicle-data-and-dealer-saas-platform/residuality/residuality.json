@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "domainId": "vehicle-data-and-dealer-saas-platform",
+    "title": "Vehicle Data and Dealer SaaS Platform Residuality Stress Test",
+    "description": "How VWE's platform must change under RDW dependency, free data, channel consolidation, tax change, EV growth, acquisitions and privacy pressure.",
+    "modelVersion": "1.0",
+    "naiveArchitecture": "Each product calls the RDW and partner sources directly, keeps its own customer accounts and price lists, and hard-codes BPM rules and portal feeds.",
+    "residualArchitecture": "A cached RDW register and transaction retry queue, a shared specification/history/valuation core, a portal-neutral publish queue, versioned BPM rules, shared identity and billing across brands, and a licence register enforced at every data interface."
+  },
+  "stressors": [
+    {
+      "id": "rdwoutage",
+      "name": "RDW channel unavailable for a day or changes provider terms",
+      "group": "Regulation and dependency",
+      "detection": "RDW incident notices, certificate expiry, new provider conditions.",
+      "attractor": "Every product stops at once: no plate data, no transactions, angry dealers on delivery day.",
+      "businessReaction": "Cache register data, queue transactions with ordered retry, publish status, and keep provider compliance current.",
+      "residue": "A register cache with freshness flags, a transaction retry queue and a licence register that encode RDW terms.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "rdwc",
+          "effect": "Cache and session monitoring."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "rdwt",
+          "effect": "Retry queue."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "dgov",
+          "effect": "Terms as rules."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "ivnd/ivnd-co-1-1",
+          "effect": "Availability at risk."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-rdwoutage.jpg",
+          "title": "Residuality stressor illustration: RDW channel unavailable for a day or changes provider terms",
+          "alt": "Illustration of the residuality stressor 'RDW channel unavailable for a day or changes provider terms', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "freedata",
+      "name": "Free RDW open data and AI apps commoditise plate lookups",
+      "group": "Market",
+      "detection": "Growth of free plate apps; falling Finnik conversion; vendor price pressure.",
+      "attractor": "Basic data revenue erodes; consumers and vendors stop paying for what is free.",
+      "businessReaction": "Shift value to history, valuation, workflow and transactions; bundle data into modules.",
+      "residue": "Products priced on derived intelligence and workflow rather than raw register fields.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "vapi",
+          "effect": "Repriced categories."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "fnnk",
+          "effect": "Report value over basics."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "rdw-open-data",
+          "effect": "Substitute."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "cons/cons-bo-1-1",
+          "effect": "Conversion pressure."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-freedata.jpg",
+          "title": "Residuality stressor illustration: Free RDW open data and AI apps commoditise plate lookups",
+          "alt": "Illustration of the residuality stressor 'Free RDW open data and AI apps commoditise plate lookups', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "portalconsolidation",
+      "name": "A consolidated portal group bundles its own dealer tools",
+      "group": "Channels",
+      "detection": "Portal acquisitions (AutoScout24 with AutoTrack and Gaspedaal), new portal pricing and dealer tool launches.",
+      "attractor": "Portals restrict feeds or undercut stock and pricing tools; dealers ask why they need VWE.",
+      "businessReaction": "Keep syndication portal-neutral, strengthen market data independent of one portal, deepen dossier and RDW workflow.",
+      "residue": "Channel adapters isolated behind a publish queue and a market data lake fed by many sources.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "advf",
+          "effect": "Adapter changes."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "mktd",
+          "effect": "Source diversity."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "autoscout24",
+          "effect": "Bundling threat."
+        },
+        {
+          "targetType": "product",
+          "targetId": "occasion-manager",
+          "effect": "Differentiation needed."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-portalconsolidation.jpg",
+          "title": "Residuality stressor illustration: A consolidated portal group bundles its own dealer tools",
+          "alt": "Illustration of the residuality stressor 'A consolidated portal group bundles its own dealer tools', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "bpmchange",
+      "name": "BPM rules change sharply (e.g. EV tax shift or import reform)",
+      "group": "Tax",
+      "detection": "Tax plan announcements and Belastingdienst guidance.",
+      "attractor": "Import margins and calculators become wrong overnight; traders face corrections.",
+      "businessReaction": "Release versioned BPM rule sets before effective dates and flag affected open cases.",
+      "residue": "A versioned BPM rules engine shared by calculator, taxation reports and export refunds.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "bpmc",
+          "effect": "Versioned rules."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "impx",
+          "effect": "Refund rules."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "trex/trex-co-1-1",
+          "effect": "Corrections risk."
+        },
+        {
+          "targetType": "team",
+          "targetId": "trade-and-tax",
+          "effect": "Rule releases."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-bpmchange.jpg",
+          "title": "Residuality stressor illustration: BPM rules change sharply (e.g. EV tax shift or import reform)",
+          "alt": "Illustration of the residuality stressor 'BPM rules change sharply (e.g. EV tax shift or import reform)', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "evshift",
+      "name": "Used EVs become a large share of stock",
+      "group": "Technology",
+      "detection": "EV share in trade-ins and adverts; battery questions in leads.",
+      "attractor": "Valuations ignore battery health; buyers distrust used EVs; stand-time rises.",
+      "businessReaction": "Battery health certificates in appraisals, adverts and valuations.",
+      "residue": "Battery health as a first-class input to valuation and history.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "evsh",
+          "effect": "Scale certificates."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "valu",
+          "effect": "Battery-adjusted values."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "dealer-source-and-appraise-used-cars",
+          "effect": "Extra check step."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-evshift.jpg",
+          "title": "Residuality stressor illustration: Used EVs become a large share of stock",
+          "alt": "Illustration of the residuality stressor 'Used EVs become a large share of stock', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "acquisitions",
+      "name": "New owner drives buy-and-build integrations",
+      "group": "Ownership",
+      "detection": "Main Capital majority stake; acquisitions like XRAY.",
+      "attractor": "Each acquired brand keeps its own accounts, billing and data, multiplying cost and confusing customers.",
+      "businessReaction": "Integrate identities, billing and the vehicle data core first; keep brands on the surface.",
+      "residue": "Shared accounts, entitlements, billing and data core with brand-specific front ends.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "iden",
+          "effect": "Shared identity."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "bill",
+          "effect": "Shared billing."
+        },
+        {
+          "targetType": "product",
+          "targetId": "xray",
+          "effect": "Integrated brand."
+        },
+        {
+          "targetType": "team",
+          "targetId": "platform-and-commerce",
+          "effect": "Integration load."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-acquisitions.jpg",
+          "title": "Residuality stressor illustration: New owner drives buy-and-build integrations",
+          "alt": "Illustration of the residuality stressor 'New owner drives buy-and-build integrations', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "privacy",
+      "name": "Regulator challenges use of owner-related data for lead scoring",
+      "group": "Privacy",
+      "detection": "AP guidance, complaints, RDW audit.",
+      "attractor": "Lead lists and enrichment must stop or change; reputational damage.",
+      "businessReaction": "Purpose limitation, pseudonymisation and audit logging for every owner-related data use.",
+      "residue": "A licence and purpose register enforced at every data interface.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "cool",
+          "effect": "Purpose checks."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "dgov",
+          "effect": "Enforcement."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "dcli/dcli-co-2-2",
+          "effect": "Documented purposes."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-privacy.jpg",
+          "title": "Residuality stressor illustration: Regulator challenges use of owner-related data for lead scoring",
+          "alt": "Illustration of the residuality stressor 'Regulator challenges use of owner-related data for lead scoring', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    }
+  ]
+}

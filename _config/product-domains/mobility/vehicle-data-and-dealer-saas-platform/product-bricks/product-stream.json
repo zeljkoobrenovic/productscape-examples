@@ -1,0 +1,1598 @@
+{
+  "metadata": {
+    "domainId": "vehicle-data-and-dealer-saas-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams across dealers, traders, lease companies, data clients and consumers: Identify -> Check -> Value -> Stock -> Advertise -> Sell -> Register -> Trade -> Insight.",
+    "sources": [
+      "https://vwe.nl/",
+      "https://vwe.nl/mijnvwe/",
+      "https://vwe.nl/onze-oplossingen/",
+      "https://vwe.nl/api-documentatie/"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Steps name the bricks they depend on; personas are documented in customers.json JTBD steps."
+  },
+  "rootGroups": [
+    {
+      "name": "Dealer Journeys",
+      "description": "How used-car dealers buy, sell and steer.",
+      "streams": [
+        {
+          "id": "dealer-source-and-appraise-used-cars",
+          "name": "Source and Appraise Used Cars at the Right Price",
+          "type": "outcome-based-stream",
+          "description": "From a trade-in offer, auction lot or import opportunity to a purchase decision at a price that leaves room for margin.",
+          "outcomes": [
+            "Fewer cars bought above maximum purchase price",
+            "Faster, defensible trade-in offers",
+            "Fewer hidden-damage surprises"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "rdwc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vidn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vhis",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "evsh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "dmgc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "valu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tapp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "occm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bpmc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "source-and-appraise-used-cars-flow",
+              "title": "Trade-in or purchase to decision",
+              "description": "Dealer appraises a candidate vehicle and decides what to pay.",
+              "steps": [
+                {
+                  "id": "identify-vehicle",
+                  "title": "Identify the vehicle by plate or VIN",
+                  "keyFacts": [
+                    "Plate scan returns RDW and specification data in seconds",
+                    "Options decoded via SilverDAT VIN"
+                  ],
+                  "painPoints": [
+                    "Wrong edition means wrong value",
+                    "Options not visible from RDW data"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rdwc",
+                      "name": "RDW Registry Connector and Vehicle Register",
+                      "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously…",
+                      "how": "RDW registration and status."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vidn",
+                      "name": "Vehicle Identity and Specification",
+                      "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW…",
+                      "how": "Edition and factory options."
+                    }
+                  ]
+                },
+                {
+                  "id": "check-history",
+                  "title": "Check history and condition",
+                  "keyFacts": [
+                    "Damage history, maintenance and NAP odometer judgement",
+                    "Battery health for EVs"
+                  ],
+                  "painPoints": [
+                    "Undisclosed damage abroad",
+                    "Illogical odometer readings"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "vhis",
+                      "name": "Vehicle History Intelligence",
+                      "description": "Assembles what happened to a vehicle: international damage history (insurer claims, damage trade, WOK status, BPM changes; NL, DE, EU, US and more),…",
+                      "how": "Damage, maintenance and odometer reports."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "evsh",
+                      "name": "EV Battery State of Health",
+                      "description": "Measures and reports the battery condition of used electric vehicles so dealers can price and sell them with confidence. Reads diagnostic data via a DoIP/OBD…",
+                      "how": "EV battery state of health."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "dmgc",
+                      "name": "Damage Calculation",
+                      "description": "Estimates repair cost from photos and part catalogues so dealers and lease companies can price repairs into purchase decisions. Delivered with DAT Nederland:…",
+                      "how": "Repair cost for visible damage."
+                    }
+                  ]
+                },
+                {
+                  "id": "value-and-offer",
+                  "title": "Value the car and make an offer",
+                  "keyFacts": [
+                    "Maximum purchase price from target margin and market",
+                    "Printable appraisal for the seller"
+                  ],
+                  "painPoints": [
+                    "Market moves weekly",
+                    "Seller anchors on consumer sites"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "valu",
+                      "name": "Valuation Engine",
+                      "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by…",
+                      "how": "Retail and trade values."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tapp",
+                      "name": "Trade-in Appraisal Reports",
+                      "description": "Finnik Zakelijk taxation and purchase reports: a guided trade-in inspection that combines RDW, NAP, manufacturer, SilverDAT, damage and market-price data into…",
+                      "how": "Appraisal report."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "occm",
+                      "name": "Occasion Manager Stock and Pricing",
+                      "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid…",
+                      "how": "Buying advice and bid limit."
+                    }
+                  ]
+                },
+                {
+                  "id": "check-import-cost",
+                  "title": "Add import and tax cost when buying abroad",
+                  "keyFacts": [
+                    "BPM on import changes the landed cost"
+                  ],
+                  "painPoints": [
+                    "BPM miscalculation wipes out margin"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bpmc",
+                      "name": "BPM and Vehicle Tax Calculation",
+                      "description": "Calculates Dutch BPM (registration tax) for imported vehicles and remaining BPM for exports, using forfaitaire tables, valuation reports or the koerslijst…",
+                      "how": "BPM calculation."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "dealer-price-and-advertise-stock",
+          "name": "Price and Advertise Stock to Sell Fast",
+          "type": "outcome-based-stream",
+          "description": "From a car entering stock to a well-priced advert live on every relevant channel, with signals when it stands too long.",
+          "outcomes": [
+            "Shorter stand-time",
+            "Price position in line with the market",
+            "More qualified leads per car"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "dosr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "occm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mktd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "valu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "advf",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "dweb",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "b2bt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "price-and-advertise-stock-flow",
+              "title": "Stock-in to live advert",
+              "description": "Dealer prepares, prices and publishes a car and acts on signals.",
+              "steps": [
+                {
+                  "id": "register-stock",
+                  "title": "Register the car in stock",
+                  "keyFacts": [
+                    "Dossier created from the plate",
+                    "Cost and target margin recorded"
+                  ],
+                  "painPoints": [
+                    "Duplicate data entry in several tools"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dosr",
+                      "name": "Vehicle Dossier and Workflow Hub",
+                      "description": "The MijnVWE core: a dossier per vehicle that collects data, reports, documents and actions from purchase to delivery, and launches RDW transactions,…",
+                      "how": "Vehicle dossier."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "occm",
+                      "name": "Occasion Manager Stock and Pricing",
+                      "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid…",
+                      "how": "Stock record."
+                    }
+                  ]
+                },
+                {
+                  "id": "set-price",
+                  "title": "Set the asking price",
+                  "keyFacts": [
+                    "Comparable listings and days-to-sell per model"
+                  ],
+                  "painPoints": [
+                    "Pricing by gut feel",
+                    "Over-priced cars stand for months"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mktd",
+                      "name": "Market and Transaction Data Lake",
+                      "description": "Collects national and international used-car advertisements, RDW ownership changes and more than 30 years of vehicle and transaction history into an analysable…",
+                      "how": "Comparable adverts."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "valu",
+                      "name": "Valuation Engine",
+                      "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by…",
+                      "how": "Retail value."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "occm",
+                      "name": "Occasion Manager Stock and Pricing",
+                      "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid…",
+                      "how": "Price advice."
+                    }
+                  ]
+                },
+                {
+                  "id": "publish-adverts",
+                  "title": "Publish adverts everywhere",
+                  "keyFacts": [
+                    "One entry feeds 150+ channels",
+                    "Website shows live stock"
+                  ],
+                  "painPoints": [
+                    "Channels out of sync after sale"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "advf",
+                      "name": "Advertising Feed Syndication",
+                      "description": "Publishes a dealer stock to 150+ advertising channels (Marktplaats, AutoTrack, Gaspedaal and others) from a single entry, enriched with specification and…",
+                      "how": "Feed syndication."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "dweb",
+                      "name": "Dealer Website and Lead Capture",
+                      "description": "Lead-generating dealer websites with live stock, plus a lead inbox that collects enquiries from the website and advertising channels.",
+                      "how": "Dealer website."
+                    }
+                  ]
+                },
+                {
+                  "id": "act-on-signals",
+                  "title": "Act on stand-time and price signals",
+                  "keyFacts": [
+                    "Nightly signal list"
+                  ],
+                  "painPoints": [
+                    "Slow movers noticed too late"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "occm",
+                      "name": "Occasion Manager Stock and Pricing",
+                      "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid…",
+                      "how": "Signal list."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "b2bt",
+                      "name": "B2B Trade and Stock Exchange",
+                      "description": "Trader-to-trader marketplace functions: Voorraad Nederland (dealer stock visible to the trade) and the XRAY XBS trading platform, with hand-off to the auction…",
+                      "how": "Offer slow movers to the trade."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "Advertising portals (Marktplaats, AutoTrack, Gaspedaal)"
+          ]
+        },
+        {
+          "id": "dealer-sell-register-and-deliver-a-car",
+          "name": "Sell, Register and Deliver a Car",
+          "type": "outcome-based-stream",
+          "description": "From lead to signed sale, financing, official RDW registration and handover, with correct paperwork and invoicing.",
+          "outcomes": [
+            "Higher lead-to-sale conversion",
+            "Same-day registration",
+            "No paperwork errors at delivery"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "dweb",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "admn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "finc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "iden",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bill",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "dosr",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sell-register-and-deliver-a-car-flow",
+              "title": "Lead to delivery",
+              "description": "Dealer converts a lead and completes the legal and financial steps.",
+              "steps": [
+                {
+                  "id": "follow-lead",
+                  "title": "Follow up the lead",
+                  "keyFacts": [
+                    "Leads from website and portals in one inbox"
+                  ],
+                  "painPoints": [
+                    "Leads lost across mailboxes"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dweb",
+                      "name": "Dealer Website and Lead Capture",
+                      "description": "Lead-generating dealer websites with live stock, plus a lead inbox that collects enquiries from the website and advertising channels.",
+                      "how": "Lead inbox."
+                    }
+                  ]
+                },
+                {
+                  "id": "quote-and-finance",
+                  "title": "Quote and offer financing",
+                  "keyFacts": [
+                    "Quote, purchase agreement and finance quote in one flow"
+                  ],
+                  "painPoints": [
+                    "Financing handled outside the dealer, revenue lost"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "admn",
+                      "name": "Dealer Sales Administration",
+                      "description": "Quotes, purchase agreements, sales contracts and invoices for used-car dealers (Administratiepakket), with margin-scheme VAT handling and export to accounting…",
+                      "how": "Quote and agreement."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "finc",
+                      "name": "Vehicle Financing Referral",
+                      "description": "Lets dealers offer car financing to buyers through the financing partner (Financial Lease Partner since October 2025), with quotes, application hand-off and…",
+                      "how": "Financing referral."
+                    }
+                  ]
+                },
+                {
+                  "id": "register-transfer",
+                  "title": "Register the new owner with RDW",
+                  "keyFacts": [
+                    "Tenaamstellen and vrijwaren from the dossier",
+                    "Driving licence check"
+                  ],
+                  "painPoints": [
+                    "RDW downtime on busy Saturdays"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rdwt",
+                      "name": "RDW Transaction Services",
+                      "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK…",
+                      "how": "RDW transactions."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "iden",
+                      "name": "Customer Account, Identity and Entitlements",
+                      "description": "Accounts for 11,000+ business customers: companies, branches, users, roles, module subscriptions and RDW company authorisations, with single sign-on across…",
+                      "how": "RDW authorisation."
+                    }
+                  ]
+                },
+                {
+                  "id": "invoice-and-close",
+                  "title": "Invoice and close the dossier",
+                  "keyFacts": [
+                    "Margin-scheme invoice",
+                    "Export to bookkeeping"
+                  ],
+                  "painPoints": [
+                    "VAT errors on margin cars"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "admn",
+                      "name": "Dealer Sales Administration",
+                      "description": "Quotes, purchase agreements, sales contracts and invoices for used-car dealers (Administratiepakket), with margin-scheme VAT handling and export to accounting…",
+                      "how": "Invoice."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "bill",
+                      "name": "Subscription and Transaction Billing",
+                      "description": "Prices and bills the mixed revenue model: monthly module subscriptions (e.g. Occasion Manager, Finnik Zakelijk), per-report and per-transaction fees (damage…",
+                      "how": "Transaction fees."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "dosr",
+                      "name": "Vehicle Dossier and Workflow Hub",
+                      "description": "The MijnVWE core: a dossier per vehicle that collects data, reports, documents and actions from purchase to delivery, and launches RDW transactions,…",
+                      "how": "Dossier closed."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "RDW information and transaction services"
+          ]
+        },
+        {
+          "id": "dealer-group-steer-multi-site-performance",
+          "name": "Steer Multi-site Dealer Performance",
+          "type": "outcome-based-stream",
+          "description": "Dealer holdings and formulas steer stock, pricing and sales across branches with one view and consistent rules.",
+          "outcomes": [
+            "Group-wide stand-time reduction",
+            "Consistent pricing discipline",
+            "Lower tooling cost per branch"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "occm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "iden",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mins",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "b2bt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "group-steer-multi-site-performance-flow",
+              "title": "Group steering cycle",
+              "description": "Group director reviews and steers branches.",
+              "steps": [
+                {
+                  "id": "consolidate-stock",
+                  "title": "Consolidate stock across branches",
+                  "keyFacts": [
+                    "Group stock and signal list"
+                  ],
+                  "painPoints": [
+                    "Each branch uses its own tools"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "occm",
+                      "name": "Occasion Manager Stock and Pricing",
+                      "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid…",
+                      "how": "Group stock view."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "iden",
+                      "name": "Customer Account, Identity and Entitlements",
+                      "description": "Accounts for 11,000+ business customers: companies, branches, users, roles, module subscriptions and RDW company authorisations, with single sign-on across…",
+                      "how": "Branches and roles."
+                    }
+                  ]
+                },
+                {
+                  "id": "compare-branches",
+                  "title": "Compare branches with the market",
+                  "keyFacts": [
+                    "Share and stand-time per branch area"
+                  ],
+                  "painPoints": [
+                    "No neutral benchmark"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mins",
+                      "name": "Market Insights and Performance Dashboards",
+                      "description": "Marktinzicht: RDW-register based market reports, the online Market Performance Manager dashboard and custom data files for importers, dealer groups and…",
+                      "how": "Benchmarks."
+                    }
+                  ]
+                },
+                {
+                  "id": "rebalance",
+                  "title": "Rebalance stock between branches and the trade",
+                  "keyFacts": [
+                    "Move cars to where demand is"
+                  ],
+                  "painPoints": [
+                    "Inter-branch transfers handled by phone"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "b2bt",
+                      "name": "B2B Trade and Stock Exchange",
+                      "description": "Trader-to-trader marketplace functions: Voorraad Nederland (dealer stock visible to the trade) and the XRAY XBS trading platform, with hand-off to the auction…",
+                      "how": "Trade exchange."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rdwt",
+                      "name": "RDW Transaction Services",
+                      "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK…",
+                      "how": "Transfers."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "assess-and-price-vehicle-damage",
+          "name": "Assess and Price Vehicle Damage",
+          "type": "outcome-based-stream",
+          "description": "Dealers and lease companies turn photos of damage into a reliable repair estimate that feeds purchase price or settlement.",
+          "outcomes": [
+            "Repair estimates in minutes",
+            "Fewer disputes",
+            "Accurate reconditioning budgets"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "dmgc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vidn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tapp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vhis",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "and-price-vehicle-damage-flow",
+              "title": "Photo to estimate",
+              "description": "User captures damage and receives an estimate.",
+              "steps": [
+                {
+                  "id": "capture-damage",
+                  "title": "Capture damage photos",
+                  "keyFacts": [
+                    "Guided photo capture"
+                  ],
+                  "painPoints": [
+                    "Inconsistent photos"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dmgc",
+                      "name": "Damage Calculation",
+                      "description": "Estimates repair cost from photos and part catalogues so dealers and lease companies can price repairs into purchase decisions. Delivered with DAT Nederland:…",
+                      "how": "Damage capture."
+                    }
+                  ]
+                },
+                {
+                  "id": "calculate-repair",
+                  "title": "Calculate repair cost",
+                  "keyFacts": [
+                    "AI recognition with exact parts per VIN"
+                  ],
+                  "painPoints": [
+                    "Wrong parts for the edition"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dmgc",
+                      "name": "Damage Calculation",
+                      "description": "Estimates repair cost from photos and part catalogues so dealers and lease companies can price repairs into purchase decisions. Delivered with DAT Nederland:…",
+                      "how": "weDAT calculation."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vidn",
+                      "name": "Vehicle Identity and Specification",
+                      "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW…",
+                      "how": "Edition and options."
+                    }
+                  ]
+                },
+                {
+                  "id": "apply-estimate",
+                  "title": "Apply the estimate",
+                  "keyFacts": [
+                    "Estimate deducted from offer or charged to driver"
+                  ],
+                  "painPoints": [
+                    "Estimates not linked to valuation"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tapp",
+                      "name": "Trade-in Appraisal Reports",
+                      "description": "Finnik Zakelijk taxation and purchase reports: a guided trade-in inspection that combines RDW, NAP, manufacturer, SilverDAT, damage and market-price data into…",
+                      "how": "Appraisal."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vhis",
+                      "name": "Vehicle History Intelligence",
+                      "description": "Assembles what happened to a vehicle: international damage history (insurer claims, damage trade, WOK status, BPM changes; NL, DE, EU, US and more),…",
+                      "how": "Prior damage context."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "DAT Nederland (SilverDAT / weDAT)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Trade and Fleet Journeys",
+      "description": "Traders, importers/exporters and lease companies.",
+      "streams": [
+        {
+          "id": "trader-import-or-export-a-vehicle",
+          "name": "Import or Export a Vehicle Across Borders",
+          "type": "outcome-based-stream",
+          "description": "From buying a car abroad or selling one to a foreign buyer to a vehicle that is legally registered, taxed and documented at its destination.",
+          "outcomes": [
+            "Correct BPM paid or refunded",
+            "Fewer days between purchase and registration",
+            "Complete export documentation"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "bpmc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "valu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vidn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "impx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mats",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "import-or-export-a-vehicle-flow",
+              "title": "Cross-border trade",
+              "description": "Trader handles BPM, inspection and documents.",
+              "steps": [
+                {
+                  "id": "calculate-bpm",
+                  "title": "Calculate BPM or remaining BPM",
+                  "keyFacts": [
+                    "Forfaitaire table, koerslijst or taxation report"
+                  ],
+                  "painPoints": [
+                    "Tariffs change yearly",
+                    "Choosing the wrong method costs money"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bpmc",
+                      "name": "BPM and Vehicle Tax Calculation",
+                      "description": "Calculates Dutch BPM (registration tax) for imported vehicles and remaining BPM for exports, using forfaitaire tables, valuation reports or the koerslijst…",
+                      "how": "BPM calculation and taxation report."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "valu",
+                      "name": "Valuation Engine",
+                      "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by…",
+                      "how": "Market value evidence."
+                    }
+                  ]
+                },
+                {
+                  "id": "identify-and-inspect",
+                  "title": "Identify the vehicle and its type approval",
+                  "keyFacts": [
+                    "VIN identification report and type approval data"
+                  ],
+                  "painPoints": [
+                    "Foreign specification mismatches"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "vidn",
+                      "name": "Vehicle Identity and Specification",
+                      "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW…",
+                      "how": "Specification and type approval."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "impx",
+                      "name": "Import and Export Documents",
+                      "description": "Paperwork for cross-border vehicle trade: export accompanying documents (EAD), vehicle identification reports (VKR), type-approval declarations, German…",
+                      "how": "VKR and type-approval declaration."
+                    }
+                  ]
+                },
+                {
+                  "id": "file-documents",
+                  "title": "File customs and registration documents",
+                  "keyFacts": [
+                    "EAD export declaration, German registration letter, green card"
+                  ],
+                  "painPoints": [
+                    "Paper processes and counter visits"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "impx",
+                      "name": "Import and Export Documents",
+                      "description": "Paperwork for cross-border vehicle trade: export accompanying documents (EAD), vehicle identification reports (VKR), type-approval declarations, German…",
+                      "how": "Trade documents."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rdwt",
+                      "name": "RDW Transaction Services",
+                      "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK…",
+                      "how": "Import registration or export sign-off."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mats",
+                      "name": "Plates and Materials Webshop",
+                      "description": "Webshop and HQ counter for trade materials: license plates, export plates, stickers, safes and the export shop, plus short-term insurance products (green card)…",
+                      "how": "Export plates."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "Belastingdienst",
+            "Dutch Customs (Douane)"
+          ]
+        },
+        {
+          "id": "lease-remarket-returned-vehicles",
+          "name": "Remarket Returned Lease and Rental Vehicles",
+          "type": "outcome-based-stream",
+          "description": "From a vehicle coming off lease or rental to a sale at the best achievable value through retail dealers, the trade or auction.",
+          "outcomes": [
+            "Higher remarketing proceeds versus book value",
+            "Shorter time from return to sale",
+            "Transparent damage settlement"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "dmgc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vhis",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "valu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mktd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "b2bt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "remarket-returned-vehicles-flow",
+              "title": "Return to resale",
+              "description": "Lease company inspects, values and sells returned vehicles.",
+              "steps": [
+                {
+                  "id": "inspect-return",
+                  "title": "Inspect the returned vehicle",
+                  "keyFacts": [
+                    "Damage captured with photos and calculated"
+                  ],
+                  "painPoints": [
+                    "Disputes with drivers about damage"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dmgc",
+                      "name": "Damage Calculation",
+                      "description": "Estimates repair cost from photos and part catalogues so dealers and lease companies can price repairs into purchase decisions. Delivered with DAT Nederland:…",
+                      "how": "Damage calculation."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vhis",
+                      "name": "Vehicle History Intelligence",
+                      "description": "Assembles what happened to a vehicle: international damage history (insurer claims, damage trade, WOK status, BPM changes; NL, DE, EU, US and more),…",
+                      "how": "History."
+                    }
+                  ]
+                },
+                {
+                  "id": "value-batch",
+                  "title": "Value the batch of returns",
+                  "keyFacts": [
+                    "Trade and retail values per car"
+                  ],
+                  "painPoints": [
+                    "Residual value assumptions out of date"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "valu",
+                      "name": "Valuation Engine",
+                      "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by…",
+                      "how": "Values."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mktd",
+                      "name": "Market and Transaction Data Lake",
+                      "description": "Collects national and international used-car advertisements, RDW ownership changes and more than 30 years of vehicle and transaction history into an analysable…",
+                      "how": "Demand per model."
+                    }
+                  ]
+                },
+                {
+                  "id": "choose-channel",
+                  "title": "Choose channel and sell",
+                  "keyFacts": [
+                    "Trade stock exchange or auction partner"
+                  ],
+                  "painPoints": [
+                    "Fragmented buyer base"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "b2bt",
+                      "name": "B2B Trade and Stock Exchange",
+                      "description": "Trader-to-trader marketplace functions: Voorraad Nederland (dealer stock visible to the trade) and the XRAY XBS trading platform, with hand-off to the auction…",
+                      "how": "Trade platform and auction hand-off."
+                    }
+                  ]
+                },
+                {
+                  "id": "deregister-transfer",
+                  "title": "Transfer ownership",
+                  "keyFacts": [
+                    "Vrijwaren and transfer to the buyer"
+                  ],
+                  "painPoints": [
+                    "Fines after sale if indemnification is late"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rdwt",
+                      "name": "RDW Transaction Services",
+                      "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK…",
+                      "how": "RDW transactions."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "Online auction partner (ATC / Autorola)"
+          ]
+        },
+        {
+          "id": "lease-keep-fleet-data-and-registrations-current",
+          "name": "Keep Fleet Data and Registrations Current",
+          "type": "outcome-based-stream",
+          "description": "Lease and rental companies keep thousands of vehicles registered, compliant and correctly described in their own systems.",
+          "outcomes": [
+            "Accurate fleet master data",
+            "No missed APK or registration actions",
+            "Less manual RDW work"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "fenr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vapi",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "dgov",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "iden",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "keep-fleet-data-and-registrations-curren-flow",
+              "title": "Fleet administration",
+              "description": "Fleet administrator keeps the fleet register and RDW actions in sync.",
+              "steps": [
+                {
+                  "id": "enrich-fleet",
+                  "title": "Enrich the fleet list",
+                  "keyFacts": [
+                    "Plate files enriched with current characteristics"
+                  ],
+                  "painPoints": [
+                    "Master data drifts from RDW reality"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fenr",
+                      "name": "Vehicle File Enrichment",
+                      "description": "Batch enrichment of customer plate lists with current vehicle characteristics (Voertuigkenmerken), for fleet audits, insurer portfolios and data companies.",
+                      "how": "Batch enrichment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rdwc",
+                      "name": "RDW Registry Connector and Vehicle Register",
+                      "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously…",
+                      "how": "Register."
+                    }
+                  ]
+                },
+                {
+                  "id": "integrate-systems",
+                  "title": "Integrate vehicle data in fleet systems",
+                  "keyFacts": [
+                    "Plate API in quoting and fleet software"
+                  ],
+                  "painPoints": [
+                    "Different data per system"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "vapi",
+                      "name": "Vehicle Data API Gateway",
+                      "description": "Commercial API surface for vehicle data: Interdata (XML web service by plate, with RDW, VWE, Autotelex, Audacon, Jato, SilverDAT, environmental and road-tax…",
+                      "how": "Data API."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "dgov",
+                      "name": "Data Licensing and Compliance Governance",
+                      "description": "Enforces the conditions under which vehicle data may be used: RDW provider obligations, partner licence terms (DAT, Jato, Autotelex, insurers), GDPR purpose…",
+                      "how": "Licence terms."
+                    }
+                  ]
+                },
+                {
+                  "id": "bulk-transactions",
+                  "title": "Run RDW transactions in bulk",
+                  "keyFacts": [
+                    "Registrations, APK sign-off and transfers via API"
+                  ],
+                  "painPoints": [
+                    "One-by-one web forms do not scale"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rdwt",
+                      "name": "RDW Transaction Services",
+                      "description": "Official RDW transactions for the trade: registration in a new name (tenaamstellen), indemnification (vrijwaren, ORV/ORVB2B), license plate applications, APK…",
+                      "how": "Transaction API."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "iden",
+                      "name": "Customer Account, Identity and Entitlements",
+                      "description": "Accounts for 11,000+ business customers: companies, branches, users, roles, module subscriptions and RDW company authorisations, with single sign-on across…",
+                      "how": "Authorisations and users."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Data Client Journeys",
+      "description": "Enterprises that consume vehicle data.",
+      "streams": [
+        {
+          "id": "data-client-integrate-vehicle-data",
+          "name": "Integrate Trusted Vehicle Data into a Product",
+          "type": "outcome-based-stream",
+          "description": "Software vendors, insurers and data companies embed plate-based vehicle data in their own applications under clear licence terms.",
+          "outcomes": [
+            "Shorter integration time",
+            "High API availability",
+            "Licence-compliant use"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "dgov",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vapi",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "iden",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vidn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bill",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "client-integrate-vehicle-data-flow",
+              "title": "Contract to production",
+              "description": "Developer integrates and operates the data feed.",
+              "steps": [
+                {
+                  "id": "choose-data",
+                  "title": "Choose data categories and licence",
+                  "keyFacts": [
+                    "Interdata categories: RDW, VWE, Autotelex, Jato, SilverDAT"
+                  ],
+                  "painPoints": [
+                    "Unclear which source may be used for which purpose"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "dgov",
+                      "name": "Data Licensing and Compliance Governance",
+                      "description": "Enforces the conditions under which vehicle data may be used: RDW provider obligations, partner licence terms (DAT, Jato, Autotelex, insurers), GDPR purpose…",
+                      "how": "Licence and purpose."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vapi",
+                      "name": "Vehicle Data API Gateway",
+                      "description": "Commercial API surface for vehicle data: Interdata (XML web service by plate, with RDW, VWE, Autotelex, Audacon, Jato, SilverDAT, environmental and road-tax…",
+                      "how": "Category catalogue."
+                    }
+                  ]
+                },
+                {
+                  "id": "build-integration",
+                  "title": "Build and test the integration",
+                  "keyFacts": [
+                    "XSD/JSON schemas, test keys, SoapUI examples"
+                  ],
+                  "painPoints": [
+                    "Legacy XML/SOAP for modern teams"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "vapi",
+                      "name": "Vehicle Data API Gateway",
+                      "description": "Commercial API surface for vehicle data: Interdata (XML web service by plate, with RDW, VWE, Autotelex, Audacon, Jato, SilverDAT, environmental and road-tax…",
+                      "how": "Developer portal and gateway."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "iden",
+                      "name": "Customer Account, Identity and Entitlements",
+                      "description": "Accounts for 11,000+ business customers: companies, branches, users, roles, module subscriptions and RDW company authorisations, with single sign-on across…",
+                      "how": "API credentials."
+                    }
+                  ]
+                },
+                {
+                  "id": "run-production",
+                  "title": "Run in production",
+                  "keyFacts": [
+                    "Metered usage and invoices"
+                  ],
+                  "painPoints": [
+                    "Unexpected bills",
+                    "RDW outages ripple into client apps"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rdwc",
+                      "name": "RDW Registry Connector and Vehicle Register",
+                      "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously…",
+                      "how": "Register availability."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vidn",
+                      "name": "Vehicle Identity and Specification",
+                      "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW…",
+                      "how": "Specification."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "bill",
+                      "name": "Subscription and Transaction Billing",
+                      "description": "Prices and bills the mixed revenue model: monthly module subscriptions (e.g. Occasion Manager, Finnik Zakelijk), per-report and per-transaction fees (damage…",
+                      "how": "Usage billing."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "data-client-understand-market-and-demand",
+          "name": "Understand the Market and Find Demand",
+          "type": "outcome-based-stream",
+          "description": "Importers, dealer groups and franchise formulas see market share, sales and stand-time, and target owners likely to change cars.",
+          "outcomes": [
+            "Better allocation and pricing decisions",
+            "More conversions from outreach",
+            "Faster reporting cycles"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "mins",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mktd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "cool",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "dgov",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "client-understand-market-and-demand-flow",
+              "title": "Question to action",
+              "description": "Analyst turns market data into decisions and campaigns.",
+              "steps": [
+                {
+                  "id": "monitor-market",
+                  "title": "Monitor registrations and share",
+                  "keyFacts": [
+                    "RDW-based dashboards by brand, model and region"
+                  ],
+                  "painPoints": [
+                    "Monthly spreadsheets arrive too late"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mins",
+                      "name": "Market Insights and Performance Dashboards",
+                      "description": "Marktinzicht: RDW-register based market reports, the online Market Performance Manager dashboard and custom data files for importers, dealer groups and…",
+                      "how": "Market Performance Manager."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mktd",
+                      "name": "Market and Transaction Data Lake",
+                      "description": "Collects national and international used-car advertisements, RDW ownership changes and more than 30 years of vehicle and transaction history into an analysable…",
+                      "how": "Market data."
+                    }
+                  ]
+                },
+                {
+                  "id": "benchmark-dealers",
+                  "title": "Benchmark dealer performance",
+                  "keyFacts": [
+                    "Occasion prestatiemeter per postcode area"
+                  ],
+                  "painPoints": [
+                    "No local competitor view"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mins",
+                      "name": "Market Insights and Performance Dashboards",
+                      "description": "Marktinzicht: RDW-register based market reports, the online Market Performance Manager dashboard and custom data files for importers, dealer groups and…",
+                      "how": "Occasion performance meter."
+                    }
+                  ]
+                },
+                {
+                  "id": "target-owners",
+                  "title": "Target likely switchers",
+                  "keyFacts": [
+                    "Owners likely to change car in 1–2 months"
+                  ],
+                  "painPoints": [
+                    "Privacy constraints on owner data"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cool",
+                      "name": "Change-of-Ownership Lead Scoring",
+                      "description": "Data-science model that predicts which vehicle owners are likely to change cars in the next one to two months, delivered as lead lists to dealers and importers…",
+                      "how": "Lead scoring."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "dgov",
+                      "name": "Data Licensing and Compliance Governance",
+                      "description": "Enforces the conditions under which vehicle data may be used: RDW provider obligations, partner licence terms (DAT, Jato, Autotelex, insurers), GDPR purpose…",
+                      "how": "Purpose checks."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Consumer Journeys",
+      "description": "Private motorists.",
+      "streams": [
+        {
+          "id": "consumer-check-a-car-before-buying",
+          "name": "Check a Car Before Buying It",
+          "type": "outcome-based-stream",
+          "description": "A private buyer checks a used car by plate before paying, to avoid odometer fraud, hidden damage or overpaying.",
+          "outcomes": [
+            "Fewer bad private purchases",
+            "Paid report conversion",
+            "Trust in the Finnik brand"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "fnnk",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "vhis",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "valu",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "check-a-car-before-buying-flow",
+              "title": "Plate to decision",
+              "description": "Consumer checks a car with Finnik.",
+              "steps": [
+                {
+                  "id": "free-check",
+                  "title": "Run a free plate check",
+                  "keyFacts": [
+                    "Basic RDW data free in the app"
+                  ],
+                  "painPoints": [
+                    "Too much jargon"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fnnk",
+                      "name": "Finnik Consumer Plate Check",
+                      "description": "The Finnik consumer app and web check: basic vehicle data for free by plate, a paid full report (history, odometer, value) for private buyers, and the funnel…",
+                      "how": "Finnik app."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rdwc",
+                      "name": "RDW Registry Connector and Vehicle Register",
+                      "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously…",
+                      "how": "Basics."
+                    }
+                  ]
+                },
+                {
+                  "id": "buy-report",
+                  "title": "Buy the full report",
+                  "keyFacts": [
+                    "History, odometer judgement and value in one report"
+                  ],
+                  "painPoints": [
+                    "Unsure whether a report is worth paying for"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fnnk",
+                      "name": "Finnik Consumer Plate Check",
+                      "description": "The Finnik consumer app and web check: basic vehicle data for free by plate, a paid full report (history, odometer, value) for private buyers, and the funnel…",
+                      "how": "Paid report."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "vhis",
+                      "name": "Vehicle History Intelligence",
+                      "description": "Assembles what happened to a vehicle: international damage history (insurer claims, damage trade, WOK status, BPM changes; NL, DE, EU, US and more),…",
+                      "how": "History."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "valu",
+                      "name": "Valuation Engine",
+                      "description": "Calculates trade-in, retail and maximum purchase values per vehicle from specification, mileage, history, options and live market comparables. Shared by…",
+                      "how": "Value estimate."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            "App stores and payment providers"
+          ]
+        },
+        {
+          "id": "consumer-prepare-a-car-for-foreign-travel",
+          "name": "Prepare a Car for Driving Abroad",
+          "type": "outcome-based-stream",
+          "description": "A motorist gets the right environmental sticker, vignette or temporary insurance before a trip.",
+          "outcomes": [
+            "Documents arrive before departure",
+            "No fines in low-emission zones"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "ctrv",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rdwc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mats",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "prepare-a-car-for-foreign-travel-flow",
+              "title": "Order to delivery",
+              "description": "Consumer orders travel documents.",
+              "steps": [
+                {
+                  "id": "check-eligibility",
+                  "title": "Check what the car needs",
+                  "keyFacts": [
+                    "Emission class decides the sticker"
+                  ],
+                  "painPoints": [
+                    "Confusing foreign rules"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ctrv",
+                      "name": "Consumer Travel and Vehicle Documents",
+                      "description": "Consumer webshop for vehicle travel documents: German and French environmental stickers, the Swiss vignette, one-day insurance, export green cards and the…",
+                      "how": "Eligibility by plate."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rdwc",
+                      "name": "RDW Registry Connector and Vehicle Register",
+                      "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously…",
+                      "how": "Emission data."
+                    }
+                  ]
+                },
+                {
+                  "id": "order-and-receive",
+                  "title": "Order and receive documents",
+                  "keyFacts": [
+                    "Online or through retail partners"
+                  ],
+                  "painPoints": [
+                    "Postal delays before holidays"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ctrv",
+                      "name": "Consumer Travel and Vehicle Documents",
+                      "description": "Consumer webshop for vehicle travel documents: German and French environmental stickers, the Swiss vignette, one-day insurance, export green cards and the…",
+                      "how": "Ordering."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mats",
+                      "name": "Plates and Materials Webshop",
+                      "description": "Webshop and HQ counter for trade materials: license plates, export plates, stickers, safes and the export shop, plus short-term insurance products (green card)…",
+                      "how": "Fulfilment."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1387 @@
+{
+  "metadata": {
+    "domainId": "vehicle-data-and-dealer-saas-platform",
+    "title": "Vehicle Data and Dealer SaaS Platform Data Assets",
+    "description": "Catalog of RDW-derived vehicle facts, partner history data, market and valuation data, dealer and trade operations, and accounts/governance, with RDW provider, partner-licence, GDPR and fiscal governance.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Vehicle Facts",
+      "description": "Authoritative facts about vehicles.",
+      "subGroups": [
+        {
+          "name": "Registry and Specification",
+          "description": "",
+          "assets": [
+            {
+              "id": "vehicle-registration-record",
+              "name": "Vehicle Registration Record",
+              "kind": "reference-data",
+              "description": "RDW-derived registration, technical, APK, WOK and status facts per plate, with change history.",
+              "businessMeaning": "What the authority knows about the vehicle.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "vehicle-owner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Products via licensed purposes",
+              "systemOfRecordBrickId": "rdwc",
+              "ownerTeamId": "vehicle-data-core",
+              "stewardTeamIds": [
+                "data-products-and-apis",
+                "dealer-sales-and-marketing",
+                "rdw-services",
+                "valuation-and-market-data"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "vehicle-registration-record api",
+                  "description": "Access to vehicle registration record through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per RDW provider terms",
+                "residency": "eu",
+                "sharingPolicy": "Only for licensed purposes under RDW provider terms; owner identity never exposed to consumers."
+              }
+            },
+            {
+              "id": "vehicle-specification",
+              "name": "Vehicle Specification",
+              "kind": "reference-data",
+              "description": "Normalised make, model, edition, options, emissions and prices with source lineage.",
+              "businessMeaning": "Exactly which vehicle it is.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "partner-licence"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "All products",
+              "systemOfRecordBrickId": "vidn",
+              "ownerTeamId": "vehicle-data-core",
+              "stewardTeamIds": [
+                "data-products-and-apis",
+                "vehicle-intelligence"
+              ],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "vehicle-specification api",
+                  "description": "Access to vehicle specification through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Indefinite",
+                "residency": "eu",
+                "sharingPolicy": "Per partner licence (DAT, Autotelex, Jato)."
+              }
+            }
+          ]
+        },
+        {
+          "name": "History and Condition",
+          "description": "",
+          "assets": [
+            {
+              "id": "damage-history",
+              "name": "Damage History",
+              "kind": "event-data",
+              "description": "International damage events from insurers and the damage trade, WOK status and BPM changes per VIN.",
+              "businessMeaning": "What damage the vehicle had.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "partner-licence"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Paid reports",
+              "systemOfRecordBrickId": "vhis",
+              "ownerTeamId": "vehicle-intelligence",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "damage-history api",
+                  "description": "Access to damage history through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per source licence",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "maintenance-history",
+              "name": "Maintenance History",
+              "kind": "event-data",
+              "description": "Manufacturer service records per VIN.",
+              "businessMeaning": "Whether the car was maintained.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "partner-licence"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Paid reports",
+              "systemOfRecordBrickId": "vhis",
+              "ownerTeamId": "vehicle-intelligence",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "maintenance-history api",
+                  "description": "Access to maintenance history through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per source licence",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "odometer-reading",
+              "name": "Odometer Reading and Judgement",
+              "kind": "event-data",
+              "description": "NAP odometer judgement (logical/illogical) and readings.",
+              "businessMeaning": "Whether the mileage is credible.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Reports and appraisals",
+              "systemOfRecordBrickId": "vhis",
+              "ownerTeamId": "vehicle-intelligence",
+              "stewardTeamIds": [
+                "consumer-finnik"
+              ],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "odometer-reading api",
+                  "description": "Access to odometer reading and judgement through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per RDW provider terms",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "battery-health-report",
+              "name": "EV Battery Health Report",
+              "kind": "event-data",
+              "description": "Battery state-of-health measurements and certificates.",
+              "businessMeaning": "How healthy the EV battery is.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Dealers and buyers",
+              "systemOfRecordBrickId": "evsh",
+              "ownerTeamId": "vehicle-intelligence",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-specification"
+              ],
+              "stores": [
+                {
+                  "storeId": "vehicle-register-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "battery-health-report api",
+                  "description": "Access to ev battery health report through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "damage-calculation",
+              "name": "Damage Calculation",
+              "kind": "transactional-data",
+              "description": "Repair estimates with photos, parts and labour.",
+              "businessMeaning": "What repairing the damage costs.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "partner-licence"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Dealer or lessor tenant",
+              "systemOfRecordBrickId": "dmgc",
+              "ownerTeamId": "vehicle-intelligence",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-specification"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-object-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "damage-calculation api",
+                  "description": "Access to damage calculation through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Market, Value and Tax",
+      "description": "Market observations, valuations and tax.",
+      "subGroups": [
+        {
+          "name": "Market Data",
+          "description": "",
+          "assets": [
+            {
+              "id": "market-advertisement-observation",
+              "name": "Market Advertisement Observation",
+              "kind": "analytical-data",
+              "description": "Observed national and international adverts with price, mileage and stand-time.",
+              "businessMeaning": "What comparable cars are offered for.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "portal-data-agreements"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Valuation, pricing, insights",
+              "systemOfRecordBrickId": "mktd",
+              "ownerTeamId": "valuation-and-market-data",
+              "stewardTeamIds": [
+                "stock-and-pricing"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "market-warehouse-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "market-advertisement-observation api",
+                  "description": "Access to market advertisement observation through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "vehicle-transaction-history",
+              "name": "Vehicle Transaction History",
+              "kind": "analytical-data",
+              "description": "Ownership changes and sales events over 30+ years.",
+              "businessMeaning": "When and how often cars change hands.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [
+                "vehicle-owner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Analytics only, aggregated outputs",
+              "systemOfRecordBrickId": "mktd",
+              "ownerTeamId": "valuation-and-market-data",
+              "stewardTeamIds": [
+                "market-insights-and-data-science"
+              ],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "market-warehouse-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "vehicle-transaction-history api",
+                  "description": "Access to vehicle transaction history through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per RDW provider terms",
+                "residency": "eu",
+                "sharingPolicy": "Aggregated outputs only."
+              }
+            },
+            {
+              "id": "market-insight-dataset",
+              "name": "Market Insight Dataset",
+              "kind": "analytical-data",
+              "description": "Aggregated registrations, sales and shares by brand, model, dealer and region.",
+              "businessMeaning": "How the market and each dealer perform.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Subscribing clients",
+              "systemOfRecordBrickId": "mins",
+              "ownerTeamId": "market-insights-and-data-science",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-transaction-history",
+                "market-advertisement-observation"
+              ],
+              "stores": [
+                {
+                  "storeId": "market-warehouse-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "market-insight-dataset api",
+                  "description": "Access to market insight dataset through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Aggregated, client-specific scopes."
+              }
+            },
+            {
+              "id": "ownership-change-score",
+              "name": "Ownership Change Score",
+              "kind": "analytical-data",
+              "description": "Probability that a vehicle changes owner in 1–2 months.",
+              "businessMeaning": "Who is likely to be in the market soon.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [
+                "vehicle-owner"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Lead-list clients under purpose limitation",
+              "systemOfRecordBrickId": "cool",
+              "ownerTeamId": "market-insights-and-data-science",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-transaction-history"
+              ],
+              "stores": [
+                {
+                  "storeId": "market-warehouse-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "ownership-change-score api",
+                  "description": "Access to ownership change score through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "3 months per score",
+                "residency": "eu",
+                "sharingPolicy": "Only under documented purpose and opt-out rules."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Value and Tax",
+          "description": "",
+          "assets": [
+            {
+              "id": "valuation-record",
+              "name": "Valuation Record",
+              "kind": "transactional-data",
+              "description": "Issued valuations with inputs and model version.",
+              "businessMeaning": "What the car was worth when valued.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Requesting tenant; aggregated for accuracy",
+              "systemOfRecordBrickId": "valu",
+              "ownerTeamId": "valuation-and-market-data",
+              "stewardTeamIds": [
+                "stock-and-pricing",
+                "trade-and-tax"
+              ],
+              "derivedFromAssetIds": [
+                "market-advertisement-observation",
+                "vehicle-specification",
+                "damage-history"
+              ],
+              "stores": [
+                {
+                  "storeId": "market-warehouse-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "valuation-record api",
+                  "description": "Access to valuation record through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "bpm-calculation",
+              "name": "BPM Calculation and Taxation Report",
+              "kind": "transactional-data",
+              "description": "BPM and remaining-BPM calculations and signed taxation reports.",
+              "businessMeaning": "What registration tax applies.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "trader"
+              ],
+              "legalTags": [
+                "tax-law",
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Trader and appraiser",
+              "systemOfRecordBrickId": "bpmc",
+              "ownerTeamId": "trade-and-tax",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "valuation-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "transactions-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "bpm-calculation api",
+                  "description": "Access to bpm calculation and taxation report through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "At least 7 years (fiscal)",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "purchase-appraisal-report",
+              "name": "Purchase Appraisal Report",
+              "kind": "transactional-data",
+              "description": "Trade-in appraisals with photos, condition and offer.",
+              "businessMeaning": "Why the dealer offered this price.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "seller"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Dealer tenant",
+              "systemOfRecordBrickId": "tapp",
+              "ownerTeamId": "stock-and-pricing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "valuation-record",
+                "damage-history"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-object-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "purchase-appraisal-report api",
+                  "description": "Access to purchase appraisal report through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dealer and Trade Operations",
+      "description": "Data created while dealers and traders work.",
+      "subGroups": [
+        {
+          "name": "Dealer Operations",
+          "description": "",
+          "assets": [
+            {
+              "id": "vehicle-dossier",
+              "name": "Vehicle Dossier",
+              "kind": "transactional-data",
+              "description": "Dealer dossier with timeline, documents and actions per vehicle.",
+              "businessMeaning": "Everything the dealer did with this car.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "dealer-employee",
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Dealer tenant",
+              "systemOfRecordBrickId": "dosr",
+              "ownerTeamId": "dealer-sales-and-marketing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "vehicle-dossier api",
+                  "description": "Access to vehicle dossier through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "dealer-stock-item",
+              "name": "Dealer Stock Item",
+              "kind": "transactional-data",
+              "description": "Stock with cost, target margin, prices and signals.",
+              "businessMeaning": "What the dealer owns and at what margin.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Dealer tenant",
+              "systemOfRecordBrickId": "occm",
+              "ownerTeamId": "stock-and-pricing",
+              "stewardTeamIds": [
+                "dealer-sales-and-marketing",
+                "trade-and-tax"
+              ],
+              "derivedFromAssetIds": [
+                "vehicle-dossier"
+              ],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "dealer-stock-item api",
+                  "description": "Access to dealer stock item through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "advertisement-listing",
+              "name": "Advertisement Listing",
+              "kind": "transactional-data",
+              "description": "Adverts and channel delivery status.",
+              "businessMeaning": "Where each car is advertised.",
+              "status": "active",
+              "tags": [],
+              "classification": "public",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Public once published",
+              "systemOfRecordBrickId": "advf",
+              "ownerTeamId": "dealer-sales-and-marketing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "dealer-stock-item"
+              ],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "advertisement-listing api",
+                  "description": "Access to advertisement listing through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "2 years after sale",
+                "residency": "eu",
+                "sharingPolicy": "Published to channels."
+              }
+            },
+            {
+              "id": "sales-lead",
+              "name": "Sales Lead",
+              "kind": "transactional-data",
+              "description": "Enquiries from websites and portals.",
+              "businessMeaning": "Who is interested in which car.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "prospect"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Dealer tenant",
+              "systemOfRecordBrickId": "dweb",
+              "ownerTeamId": "dealer-sales-and-marketing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sales-lead api",
+                  "description": "Access to sales lead through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "2 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "sales-document",
+              "name": "Sales Document",
+              "kind": "transactional-data",
+              "description": "Quotes, purchase agreements and invoices.",
+              "businessMeaning": "The legal record of a sale.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer",
+                "seller"
+              ],
+              "legalTags": [
+                "gdpr",
+                "tax-law"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Dealer tenant",
+              "systemOfRecordBrickId": "admn",
+              "ownerTeamId": "dealer-sales-and-marketing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sales-document api",
+                  "description": "Access to sales document through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years (fiscal)",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "financing-application",
+              "name": "Financing Application",
+              "kind": "transactional-data",
+              "description": "Financing quotes and applications handed to the lender.",
+              "businessMeaning": "Which buyer applied for credit.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "sensitive",
+              "dataSubjects": [
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "wft"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Dealer and lender",
+              "systemOfRecordBrickId": "finc",
+              "ownerTeamId": "dealer-sales-and-marketing",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "dealer-ops-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "financing-application api",
+                  "description": "Access to financing application through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per lender agreement",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the financing partner only."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transactions and Trade",
+          "description": "",
+          "assets": [
+            {
+              "id": "rdw-transaction-record",
+              "name": "RDW Transaction Record",
+              "kind": "transactional-data",
+              "description": "Submitted RDW transactions with responses and proof.",
+              "businessMeaning": "Proof of official registration actions.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "vehicle-owner",
+                "dealer-employee"
+              ],
+              "legalTags": [
+                "gdpr",
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Submitting company",
+              "systemOfRecordBrickId": "rdwt",
+              "ownerTeamId": "rdw-services",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "transactions-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "rdw-transaction-record api",
+                  "description": "Access to rdw transaction record through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Per RDW provider terms",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "import-export-document",
+              "name": "Import/Export Document",
+              "kind": "transactional-data",
+              "description": "EAD, VKR, type approval declarations and foreign registration letters.",
+              "businessMeaning": "Legal cross-border paperwork.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "trader"
+              ],
+              "legalTags": [
+                "customs",
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Trader and trade desk",
+              "systemOfRecordBrickId": "impx",
+              "ownerTeamId": "trade-and-tax",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "bpm-calculation"
+              ],
+              "stores": [
+                {
+                  "storeId": "transactions-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "import-export-document api",
+                  "description": "Access to import/export document through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "trade-offer",
+              "name": "Trade Offer",
+              "kind": "transactional-data",
+              "description": "Trade listings, offers and deals between professionals.",
+              "businessMeaning": "Who offered what to whom.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Trade participants",
+              "systemOfRecordBrickId": "b2bt",
+              "ownerTeamId": "trade-and-tax",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "dealer-stock-item"
+              ],
+              "stores": [
+                {
+                  "storeId": "transactions-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "trade-offer api",
+                  "description": "Access to trade offer through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "webshop-order",
+              "name": "Webshop Order",
+              "kind": "transactional-data",
+              "description": "Trade and consumer orders for plates, stickers, vignettes and insurance.",
+              "businessMeaning": "What was ordered and delivered.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "dealer-employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Order desk",
+              "systemOfRecordBrickId": "mats",
+              "ownerTeamId": "rdw-services",
+              "stewardTeamIds": [
+                "consumer-finnik"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "transactions-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "webshop-order api",
+                  "description": "Access to webshop order through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years (fiscal)",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "enrichment-batch",
+              "name": "Enrichment Batch",
+              "kind": "transactional-data",
+              "description": "Client plate files and enriched results.",
+              "businessMeaning": "Which records a client enriched.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [
+                "vehicle-owner"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Submitting client",
+              "systemOfRecordBrickId": "fenr",
+              "ownerTeamId": "data-products-and-apis",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "vehicle-registration-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-object-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "enrichment-batch api",
+                  "description": "Access to enrichment batch through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "30 days after delivery",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "consumer-vehicle-report",
+              "name": "Consumer Vehicle Report",
+              "kind": "transactional-data",
+              "description": "Purchased Finnik reports and receipts.",
+              "businessMeaning": "What a consumer learned about a car.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Consumer",
+              "systemOfRecordBrickId": "fnnk",
+              "ownerTeamId": "consumer-finnik",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "damage-history",
+                "odometer-reading",
+                "valuation-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "consumer-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "consumer-vehicle-report api",
+                  "description": "Access to consumer vehicle report through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "2 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Accounts, Billing and Governance",
+      "description": "Commercial and compliance backbone.",
+      "subGroups": [
+        {
+          "name": "Accounts and Governance",
+          "description": "",
+          "assets": [
+            {
+              "id": "customer-account",
+              "name": "Customer Account",
+              "kind": "master-data",
+              "description": "Companies, branches, users, roles, subscriptions and RDW authorisations.",
+              "businessMeaning": "Who the customer is and what they may do.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "dealer-employee",
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr",
+                "rdw-provider-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account admins and support",
+              "systemOfRecordBrickId": "iden",
+              "ownerTeamId": "platform-and-commerce",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "accounts-billing-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "customer-account api",
+                  "description": "Access to customer account through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Contract + 2 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "subscription-and-usage-ledger",
+              "name": "Subscription and Usage Ledger",
+              "kind": "transactional-data",
+              "description": "Subscriptions, billable events and invoices.",
+              "businessMeaning": "What each customer owes.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "client-contact"
+              ],
+              "legalTags": [
+                "tax-law",
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Finance",
+              "systemOfRecordBrickId": "bill",
+              "ownerTeamId": "platform-and-commerce",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [
+                "customer-account"
+              ],
+              "stores": [
+                {
+                  "storeId": "accounts-billing-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "subscription-and-usage-ledger api",
+                  "description": "Access to subscription and usage ledger through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "7 years (fiscal)",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            },
+            {
+              "id": "data-licence-and-consent-register",
+              "name": "Data Licence and Consent Register",
+              "kind": "governance-data",
+              "description": "Source licences, client purposes and the access audit log.",
+              "businessMeaning": "Whether a data use is allowed and who did what.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr",
+                "rdw-provider-terms",
+                "partner-licence"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Compliance",
+              "systemOfRecordBrickId": "dgov",
+              "ownerTeamId": "data-governance-enabling",
+              "stewardTeamIds": [],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "compliance-audit-log",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "data-licence-and-consent-register api",
+                  "description": "Access to data licence and consent register through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal; customers see their own data."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "vehicle-register-db",
+      "name": "Vehicle Register DB",
+      "kind": "operational-database",
+      "description": "Plate-keyed RDW register mirror, specifications and history events.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "market-warehouse-db",
+      "name": "Market Data Warehouse",
+      "kind": "analytical-store",
+      "description": "Adverts, ownership changes, transactions, valuations and insight cubes.",
+      "technology": "columnar-warehouse",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "dealer-ops-db",
+      "name": "Dealer Operations DB",
+      "kind": "operational-database",
+      "description": "Dossiers, stock, adverts, leads, sales documents and appraisals per dealer tenant.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "transactions-db",
+      "name": "Transactions and Trade DB",
+      "kind": "operational-database",
+      "description": "RDW transactions, BPM cases, trade documents, trade offers and orders.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "accounts-billing-db",
+      "name": "Accounts and Billing DB",
+      "kind": "operational-database",
+      "description": "Accounts, users, authorisations, subscriptions, usage and invoices.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "document-object-store",
+      "name": "Document and Photo Store",
+      "kind": "object-store",
+      "description": "Reports, photos, PDFs and certificates.",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "consumer-db",
+      "name": "Consumer DB",
+      "kind": "operational-database",
+      "description": "Finnik reports and consumer orders.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "compliance-audit-log",
+      "name": "Compliance Audit Log",
+      "kind": "append-only-log",
+      "description": "Immutable data-access audit trail and licence register.",
+      "technology": "append-only-store",
+      "status": "active",
+      "classification": "restricted"
+    }
+  ]
+}

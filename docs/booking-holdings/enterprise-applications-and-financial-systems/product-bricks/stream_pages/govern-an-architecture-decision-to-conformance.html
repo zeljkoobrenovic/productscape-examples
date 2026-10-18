@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Govern an Architecture Decision to Conformance — Stream (Enterprise Applications and Financial Systems)</title>
+
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+
+    <style>
+
+        .links-group {
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .links-group-title {
+            font-size: 12px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .links-group-description {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .link-entry { margin-bottom: 16px; }
+        .link-entry:last-child { margin-bottom: 0; }
+
+        .link-entry-title {
+            color: #1d4ed8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-entry-title:hover { text-decoration: underline; }
+
+        .link-entry-copy {
+            color: #4b5563;
+            font-size: 13px;
+            margin: 4px 0 8px;
+            line-height: 1.45;
+        }
+
+        .link-embed {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            margin-top: 4px;
+        }
+
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page {
+            margin: 20px;
+        }
+
+        .nav-strip {
+            margin: 2px 20px 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .nav-link {
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        .nav-link.active {
+            border-bottom: 4px solid blue;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .header-meta {
+            font-size: 90%;
+            color: grey;
+        }
+
+        .header-title {
+            font-size: 50px;
+            line-height: 1.05;
+        }
+
+        .header-copy {
+            font-size: 16px;
+            color: grey;
+            margin-top: 6px;
+            max-width: 950px;
+        }
+
+        .activity-summary {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            background: #fff;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: blue;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            color: inherit;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #dbe2ea;
+            padding: 4px;
+            flex: 0 0 auto;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #315b7c;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .card-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .list li {
+            margin-bottom: 6px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            color: #374151;
+            font-size: 12px;
+        }
+
+        .pill img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 90%;
+        }
+
+        .dependency-diagram {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+            overflow-x: auto;
+        }
+
+        .flow-title {
+            font-size: 24px;
+            color: #315b7c;
+            margin-bottom: 6px;
+        }
+
+        .flow-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .flow-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .flow-step-card {
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fbfdff;
+        }
+
+        .flow-step-number {
+            font-size: 11px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-title {
+            font-size: 18px;
+            color: #315b7c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta-item {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }
+
+        .flow-step-meta-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
+        }
+
+        .flow-step-dependencies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .flow-matrix-wrap {
+            overflow-x: auto;
+        }
+
+        .flow-matrix {
+            width: 100%;
+            min-width: 1080px;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 90%;
+        }
+
+        .flow-matrix th,
+        .flow-matrix td {
+            border: 1px solid #dbe2ea;
+            vertical-align: top;
+            padding: 10px 12px;
+        }
+
+        .flow-matrix th {
+            background: #f8fafc;
+            text-align: left;
+        }
+
+        .flow-dependency-col {
+            min-width: 250px;
+            width: 250px;
+        }
+
+        .flow-dependency-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .flow-dependency-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            flex: 0 0 auto;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+
+        .flow-step-col {
+            min-width: 220px;
+        }
+
+        .flow-step-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .flow-dependency-name {
+            font-weight: bold;
+            color: #315b7c;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .flow-insight-row th {
+            background: #f1f5f9;
+            color: #315b7c;
+        }
+
+        .flow-insight-row td {
+            background: #f8fafc;
+        }
+
+        .flow-insight-list {
+            margin: 0;
+            padding-left: 16px;
+            line-height: 1.45;
+        }
+
+        .flow-insight-list li {
+            margin-bottom: 5px;
+        }
+
+        .flow-cell-empty {
+            background: #fbfdff;
+            color: #9ca3af;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .flow-cell-active {
+            background: #eef6ff;
+        }
+
+        .flow-cell-copy {
+            color: #374151;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .flow-cell-copy:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-cell-bricks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .flow-cell-brick {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+        }
+
+        .flow-cell-brick-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            flex: 0 0 auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+    <script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+</head>
+
+<body onload="initTab('home')" onhashchange="initTab()">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../teams/index.html">Teams</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+
+<div id="breadcrumbs" style="margin-left: 20px"></div>
+
+<script src="../shared_data.js"></script>
+<script>
+    const config = {"domains": [{"id": "enterprise-applications-and-financial-systems", "name": "Enterprise Applications and Financial Systems", "description": "The Enterprise Applications and Financial Systems domain covers Booking Holdings' global finance ecosystem as seen by its architecture function: the SAP S/4HANA finance core and high-volume subledger, payments-to-ledger for card and alternative payment methods, partner settlement, source-to-pay, tax and treasury, close and SOX controls, finance data and integration, and the architecture governance that converges brand finance technology onto one compliant, scalable platform."}]};
+    const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
+    const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
+    const currentStream = {"id": "govern-an-architecture-decision-to-conformance", "name": "Govern an Architecture Decision to Conformance", "icon": "govern-an-architecture-decision-to-conformance.png", "type": "outcome-based-stream", "description": "Take an architecturally significant question from intake to a recorded decision with cost-benefit options and then verify delivery conforms. Aims to raise decision velocity without compromising controls or resilience.", "group": "Platform Evolution and Governance", "rootGroup": "Platform Evolution and Governance", "flows": [{"id": "govern-an-architecture-decision-to-conformance-flow", "title": "Question to conforming delivery", "description": "Intake, analyse, decide, record and check conformance.", "steps": [{"id": "intake", "title": "Intake and triage the decision", "keyFacts": ["Intake classifies impact: SOX, regulatory, cost, cross-brand"], "painPoints": ["Unclear who decides"], "dependencies": [{"type": "brick", "id": "adrr", "name": "Architecture Decision Records and Review Board", "description": "Intake, option analysis, decision records and review-board workflow with decision rights and SLAs.", "how": "Intake and triage."}]}, {"id": "analyse-options", "title": "Analyse options with cost and benefit", "keyFacts": ["Options use reusable patterns and portfolio cost data", "BITS view: business, information, technical, solution"], "painPoints": ["Options lack cost data"], "dependencies": [{"type": "brick", "id": "apmx", "name": "Application Portfolio and Technology ROI", "description": "Inventory of finance and enterprise applications with cost, ownership, lifecycle and ROI tracking.", "how": "Supplies cost and lifecycle."}, {"type": "brick", "id": "tsrm", "name": "Target-State Architecture and Dependency Map", "description": "Target-state blueprints, transition states and cross-programme dependency map.", "how": "Shows dependencies and target-state fit."}, {"type": "brick", "id": "stdg", "name": "Standards, Patterns and Conformance Checks", "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.", "how": "Supplies patterns."}]}, {"id": "assess-controls", "title": "Assess control and access impact", "keyFacts": ["Changes to financial systems assessed for SoD and SOX impact"], "painPoints": ["Control impact discovered after go-live"], "dependencies": [{"type": "brick", "id": "sodc", "name": "Access Governance and Segregation of Duties", "description": "Role design, access provisioning, SoD conflict rules and periodic access reviews for financial systems.", "how": "Assesses access and SoD impact."}]}, {"id": "decide-and-record", "title": "Decide and record", "keyFacts": ["Decision rights and review-board SLAs", "Decision record with rationale and expiry"], "painPoints": ["Decisions made in meetings and not recorded"], "dependencies": [{"type": "brick", "id": "adrr", "name": "Architecture Decision Records and Review Board", "description": "Intake, option analysis, decision records and review-board workflow with decision rights and SLAs.", "how": "Records decision."}]}, {"id": "check-conformance", "title": "Check delivery conformance", "keyFacts": ["Conformance checks at design and release", "Exceptions time-boxed"], "painPoints": ["Exceptions become permanent"], "dependencies": [{"type": "brick", "id": "stdg", "name": "Standards, Patterns and Conformance Checks", "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.", "how": "Runs conformance checks."}, {"type": "brick", "id": "tsrm", "name": "Target-State Architecture and Dependency Map", "description": "Target-state blueprints, transition states and cross-programme dependency map.", "how": "Updates target state."}]}]}], "outcomes": ["Shorter decision lead time", "Fewer re-opened decisions", "Delivery conforms to agreed target state and financial boundaries"], "brickDependencies": [{"targetBrickId": "adrr", "type": "composition"}, {"targetBrickId": "stdg", "type": "composition"}, {"targetBrickId": "apmx", "type": "composition"}, {"targetBrickId": "tsrm", "type": "composition"}, {"targetBrickId": "sodc", "type": "composition"}], "externalSystemsThisStreamDependsOn": [], "externalSystemsDependingOnThisStream": [], "owningTeams": []};
+    const related_bricks = [{"id": "adrr", "name": "Architecture Decision Records and Review Board", "type": "full-stack", "status": "invest", "description": "Workflow and register for architecture decisions on financial systems and enterprise applications: intake of business drivers, BITS (business, information, technical, solution) requirements, options with cost-benefit and risk analysis for (S)VP audiences, review-board scheduling, the Senior Director's final decision rights on mandatory global standards, and follow-up of decision outcomes. Targets decision velocity and fewer unresolved cross-programme dependencies.", "links": [], "layers": [{"layer": "ui", "description": "Finance workspace screens and embedded views.", "modules": [{"id": "module-adrr-workspace", "name": "Decision Workspace", "type": "web-component", "description": "Draft, review and approve decisions; option comparison and cost-benefit summaries for senior stakeholders.", "dependencies": {"modules": [{"moduleId": "module-adrr-api", "type": "uses", "description": "Reads and writes decisions."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-adrr-api", "name": "Decision Register API", "type": "api", "description": "Query decisions by system, programme, standard or status; link decisions to changes and controls.", "dependencies": {"modules": [{"moduleId": "module-adrr-core", "type": "uses", "description": "Serves decisions."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-adrr-sla-reminder", "name": "Decision SLA Monitor", "type": "daemon", "description": "Flags decisions and dependencies open past their SLA and escalates.", "dependencies": {"modules": [{"moduleId": "module-adrr-core", "type": "uses", "description": "Reads open decisions."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-adrr-board-flow", "name": "Review Board Workflow", "type": "stateless-service", "description": "Routes decisions by materiality: team-level, architecture board, or senior-director decision rights; tracks SLAs.", "dependencies": {"modules": [{"moduleId": "module-adrr-core", "type": "uses", "description": "Updates decision status."}, {"moduleId": "module-stdg-api", "type": "uses", "description": "Checks applicable standards.", "targetBrickId": "stdg"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-adrr-core", "name": "Decision Record Store", "type": "stateful-service", "description": "Versioned ADRs with context, BITS requirements, options, decision, rationale, consequences and review dates."}]}], "dataDependencies": [{"assetId": "architecture-decision-record", "moduleIds": ["module-adrr-core", "module-adrr-api", "module-adrr-board-flow"], "role": "own", "description": "System of record for architecture decisions."}, {"assetId": "architecture-standard-and-pattern", "moduleIds": ["module-adrr-board-flow"], "role": "read", "description": "Applicable standards for each decision."}], "brickDependencies": [{"targetBrickId": "stdg", "moduleId": "module-stdg-api", "sourceModuleId": "module-adrr-board-flow", "type": "governance", "description": "Decisions cite and can amend standards."}, {"targetBrickId": "apmx", "moduleId": "module-apmx-api", "sourceModuleId": "module-adrr-api", "type": "data", "description": "Decisions reference applications and their cost/ROI profile."}, {"targetBrickId": "tsrm", "moduleId": "module-tsrm-api", "sourceModuleId": "module-adrr-api", "type": "data", "description": "Decisions are placed on the target-state and dependency map."}, {"targetBrickId": "ctlm", "moduleId": "module-ctlm-api", "sourceModuleId": "module-adrr-api", "type": "control", "description": "Decisions affecting SOX-relevant systems trigger control impact assessment."}], "externalSystemsThisBrickDependsOn": [{"system": "Collaboration and ticketing tools (assumed)", "type": "platform", "interface": "Webhooks", "description": "Link decisions to delivery tickets and documents.", "sourceModuleId": "module-adrr-api"}], "externalSystemsDependingOnThisBrick": [{"system": "Brand and FinTech engineering teams", "type": "consumer", "interface": "Decision workspace", "description": "Request and consume decisions.", "moduleId": "module-adrr-workspace"}], "domain": "Architecture Governance and Portfolio", "group": "Architecture Decisioning"}, {"id": "stdg", "name": "Standards, Patterns and Conformance Checks", "type": "service", "status": "invest", "description": "Catalogue of mandatory global standards and reusable patterns for enterprise applications and financial systems (canonical financial events, idempotent posting, subledger-to-GL reconciliation, clean-core SAP extension, SoD-by-design, data residency, resilience tiers) with automated and attested conformance checks, waivers and expiry. Moves teams from tactical workarounds toward reusable designs.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-stdg-api", "name": "Standards and Conformance API", "type": "api", "description": "Lookup of applicable standards per system and submission of conformance results.", "dependencies": {"modules": [{"moduleId": "module-stdg-core", "type": "uses", "description": "Reads standards and results."}]}}, {"id": "module-stdg-catalogue-console", "name": "Standards Catalogue Console", "type": "backoffice-interface", "description": "Authoring, versioning and publishing of standards, patterns and waivers.", "dependencies": {"modules": [{"moduleId": "module-stdg-core", "type": "uses", "description": "Maintains catalogue."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-stdg-scanner", "name": "Conformance Scanner", "type": "daemon", "description": "Runs automated checks (interface contracts, SAP custom-code clean-core rules, resilience tier tags) and records results.", "dependencies": {"modules": [{"moduleId": "module-stdg-core", "type": "uses", "description": "Writes conformance results."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-stdg-core", "name": "Standards and Waiver Register", "type": "stateful-service", "description": "Standards, patterns, applicability rules, conformance results, waivers and expiry dates."}]}], "dataDependencies": [{"assetId": "architecture-standard-and-pattern", "moduleIds": ["module-stdg-core", "module-stdg-api", "module-stdg-catalogue-console"], "role": "own", "description": "System of record for standards, patterns and waivers."}, {"assetId": "application-portfolio-inventory", "moduleIds": ["module-stdg-scanner"], "role": "read", "description": "Scope of conformance checks."}], "brickDependencies": [{"targetBrickId": "apmx", "moduleId": "module-apmx-api", "sourceModuleId": "module-stdg-scanner", "type": "data", "description": "Uses the application inventory to scope checks."}, {"targetBrickId": "adrr", "moduleId": "module-adrr-api", "sourceModuleId": "module-stdg-catalogue-console", "type": "governance", "description": "Standards are approved through decision records."}, {"targetBrickId": "ctlm", "moduleId": "module-ctlm-api", "sourceModuleId": "module-stdg-api", "type": "control", "description": "SOX-relevant standard breaches feed control monitoring."}], "externalSystemsThisBrickDependsOn": [{"system": "Source control and CI pipelines", "type": "platform", "interface": "CI checks", "description": "Automated conformance in delivery pipelines.", "sourceModuleId": "module-stdg-scanner"}, {"system": "SAP code-inspection tooling (ATC)", "type": "platform", "interface": "Check results", "description": "Clean-core custom-code checks.", "sourceModuleId": "module-stdg-scanner"}], "externalSystemsDependingOnThisBrick": [{"system": "Engineering teams across brands", "type": "consumer", "interface": "Standards API", "description": "Look up and attest conformance.", "moduleId": "module-stdg-api"}], "domain": "Architecture Governance and Portfolio", "group": "Architecture Decisioning"}, {"id": "apmx", "name": "Application Portfolio and Technology ROI", "type": "full-stack", "status": "sustaining", "description": "Inventory of enterprise and financial applications across brands with ownership, lifecycle, capability mapping, run cost, licence and contract data, risk (SOX relevance, vendor end of support) and the value cases of multi-year transformation programmes, so the function can show portfolio ROI and retire duplicate brand finance technology.", "links": [], "layers": [{"layer": "ui", "description": "Finance workspace screens and embedded views.", "modules": [{"id": "module-apmx-portfolio-ui", "name": "Portfolio Explorer", "type": "web-component", "description": "Capability maps, lifecycle and cost views, duplication heat-maps and programme value tracking.", "dependencies": {"modules": [{"moduleId": "module-apmx-api", "type": "uses", "description": "Reads portfolio."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-apmx-api", "name": "Portfolio API", "type": "api", "description": "Applications, capabilities, costs and programme value data for other architecture tools.", "dependencies": {"modules": [{"moduleId": "module-apmx-core", "type": "uses", "description": "Serves portfolio."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-apmx-cost-loader", "name": "Cost and Contract Loader", "type": "daemon", "description": "Monthly load of cloud, licence and contract costs per application.", "dependencies": {"modules": [{"moduleId": "module-apmx-core", "type": "uses", "description": "Writes costs."}, {"moduleId": "module-s2pp-api", "type": "uses", "description": "Reads software contracts.", "targetBrickId": "s2pp"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-apmx-core", "name": "Portfolio and Value Register", "type": "stateful-service", "description": "Applications, capabilities, lifecycle states, costs, risks and programme benefit baselines vs. realised value."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-apmx-ea-tool-adapter", "name": "EA Tool Adapter", "type": "integration", "description": "Sync with an enterprise-architecture management tool if one is used."}]}], "dataDependencies": [{"assetId": "application-portfolio-inventory", "moduleIds": ["module-apmx-core", "module-apmx-api", "module-apmx-cost-loader"], "role": "own", "description": "System of record for the enterprise application portfolio."}, {"assetId": "supplier-master-and-contract", "moduleIds": ["module-apmx-cost-loader"], "role": "read", "description": "Software vendor contracts."}, {"assetId": "plan-and-forecast-dataset", "moduleIds": ["module-apmx-api"], "role": "read", "description": "Programme budgets and savings plans."}], "brickDependencies": [{"targetBrickId": "s2pp", "moduleId": "module-s2pp-api", "sourceModuleId": "module-apmx-cost-loader", "type": "data", "description": "Software contracts and spend."}, {"targetBrickId": "fpna", "moduleId": "module-fpna-api", "sourceModuleId": "module-apmx-api", "type": "data", "description": "Programme budgets and savings baselines."}, {"targetBrickId": "tsrm", "moduleId": "module-tsrm-api", "sourceModuleId": "module-apmx-api", "type": "data", "description": "Feeds current-state inventory to the target-state map."}], "externalSystemsThisBrickDependsOn": [{"system": "EA management tool (e.g. LeanIX-class, assumed)", "type": "platform", "interface": "Vendor API", "description": "Optional portfolio tooling.", "sourceModuleId": "module-apmx-ea-tool-adapter"}, {"system": "Cloud cost management", "type": "data", "interface": "Cost export", "description": "Cloud run cost per application.", "sourceModuleId": "module-apmx-cost-loader"}], "externalSystemsDependingOnThisBrick": [{"system": "Technology and finance leadership", "type": "consumer", "interface": "Portfolio explorer", "description": "Portfolio and ROI reviews.", "moduleId": "module-apmx-portfolio-ui"}], "domain": "Architecture Governance and Portfolio", "group": "Portfolio and Target State"}, {"id": "tsrm", "name": "Target-State Architecture and Dependency Map", "type": "service", "status": "invest", "description": "Versioned current-state, transition and target-state architectures for the finance ecosystem, with cross-programme and cross-brand dependency maps, so ambiguity and unresolved dependencies on the most complex initiatives (S/4HANA convergence, merchant-model growth, brand onboarding) are visible and owned.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-tsrm-api", "name": "Target-State API", "type": "api", "description": "Architecture states, transition plateaus and dependencies by programme and brand.", "dependencies": {"modules": [{"moduleId": "module-tsrm-core", "type": "uses", "description": "Serves states."}]}}, {"id": "module-tsrm-modeling-console", "name": "Architecture Modeling Console", "type": "backoffice-interface", "description": "Architects model plateaus, dependencies and convergence roadmaps.", "dependencies": {"modules": [{"moduleId": "module-tsrm-core", "type": "uses", "description": "Maintains models."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-tsrm-dependency-analyzer", "name": "Dependency Risk Analyzer", "type": "stateless-service", "description": "Finds unresolved, circular or late dependencies across programmes and surfaces them for decisions.", "dependencies": {"modules": [{"moduleId": "module-tsrm-core", "type": "uses", "description": "Reads models."}, {"moduleId": "module-adrr-api", "type": "uses", "description": "Raises decision requests.", "targetBrickId": "adrr"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-tsrm-core", "name": "Architecture State Repository", "type": "stateful-service", "description": "Versioned architecture models, plateaus, roadmap milestones and dependency graph."}]}], "dataDependencies": [{"assetId": "application-portfolio-inventory", "moduleIds": ["module-tsrm-core"], "role": "read", "description": "Current-state applications."}, {"assetId": "architecture-decision-record", "moduleIds": ["module-tsrm-dependency-analyzer", "module-tsrm-core"], "role": "read", "description": "Decisions shaping the target state."}], "brickDependencies": [{"targetBrickId": "apmx", "moduleId": "module-apmx-api", "sourceModuleId": "module-tsrm-modeling-console", "type": "data", "description": "Current-state inventory."}, {"targetBrickId": "adrr", "moduleId": "module-adrr-api", "sourceModuleId": "module-tsrm-dependency-analyzer", "type": "governance", "description": "Unresolved dependencies become decision requests."}, {"targetBrickId": "bonb", "moduleId": "module-bonb-api", "sourceModuleId": "module-tsrm-api", "type": "data", "description": "Tracks brand onboarding progress toward target state."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Programme leadership (transformation and convergence programmes)", "type": "consumer", "interface": "Target-State API", "description": "Roadmap and dependency status for steering.", "moduleId": "module-tsrm-api"}], "domain": "Architecture Governance and Portfolio", "group": "Portfolio and Target State"}, {"id": "sodc", "name": "Access Governance and Segregation of Duties", "type": "service", "status": "sustaining", "description": "Role design, access requests, periodic access reviews and segregation-of-duties rule sets for SAP and connected financial applications, plus firefighter (emergency) access logging. Provides the IT general controls evidence that SOX 404 testing relies on.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-sodc-api", "name": "Access and SoD API", "type": "api", "description": "Checks proposed role assignments and system designs against SoD rules; exposes access-review status.", "dependencies": {"modules": [{"moduleId": "module-sodc-core", "type": "uses", "description": "Evaluates rules."}]}}, {"id": "module-sodc-review-console", "name": "Access Review Console", "type": "backoffice-interface", "description": "Managers and control owners certify access and remediate conflicts.", "dependencies": {"modules": [{"moduleId": "module-sodc-core", "type": "uses", "description": "Reads and records certifications."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-sodc-usage-collector", "name": "Role and Usage Collector", "type": "daemon", "description": "Collects user-role assignments and transaction usage from SAP and SaaS finance tenants.", "dependencies": {"modules": [{"moduleId": "module-sodc-core", "type": "uses", "description": "Writes assignments and usage."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-sodc-core", "name": "Ruleset and Access Register", "type": "stateful-service", "description": "SoD ruleset, role catalogue, assignment history, conflicts and mitigating controls."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-sodc-iam-adapter", "name": "Identity and GRC Adapter", "type": "integration", "description": "Connector to the corporate identity provider and SAP GRC access control."}]}], "dataDependencies": [{"assetId": "user-access-and-sod-ruleset", "moduleIds": ["module-sodc-core", "module-sodc-api", "module-sodc-review-console"], "role": "own", "description": "System of record for SoD rules, role design and access certifications."}], "brickDependencies": [{"targetBrickId": "ctlm", "moduleId": "module-ctlm-api", "sourceModuleId": "module-sodc-api", "type": "control", "description": "Publishes access-review completion and SoD conflicts as control evidence."}, {"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-sodc-usage-collector", "type": "data", "description": "Reads SAP role assignments and usage."}, {"targetBrickId": "stdg", "moduleId": "module-stdg-api", "sourceModuleId": "module-sodc-api", "type": "governance", "description": "Applies the mandatory access and SoD standards defined in the standards catalogue."}], "externalSystemsThisBrickDependsOn": [{"system": "Corporate identity provider", "type": "platform", "interface": "SCIM / SAML", "description": "Source of user identities and joiner-mover-leaver events.", "sourceModuleId": "module-sodc-iam-adapter"}, {"system": "SAP GRC Access Control", "type": "platform", "interface": "GRC API", "description": "Risk analysis and firefighter logging in SAP.", "sourceModuleId": "module-sodc-iam-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "Internal audit and external auditor", "type": "consumer", "interface": "Access review reports", "description": "Test ITGC access controls.", "moduleId": "module-sodc-review-console"}], "domain": "Close, Reporting and Controls", "group": "Controls and Regulatory Compliance"}];
+    const linked_products = [{"id": "archg", "name": "Architecture Governance Service", "icon": "archg.png", "type": "Internal enabling service", "whyUsed": "Architecture Decision Records and Review Board as part of Architecture Governance Service."}, {"id": "grcon", "name": "Controls and Regulatory Compliance Hub", "icon": "grcon.png", "type": "Controls product", "whyUsed": "Access Governance and Segregation of Duties as part of Controls and Regulatory Compliance Hub."}];
+    const related_teams = [{"teamId": "eaof", "teamName": "Architecture Office and Standards", "teamType": "enabling", "groupId": "eafs", "groupName": "Enterprise Architecture \u2014 Applications and Financial Systems", "role": "related", "roleLabel": "Related team"}, {"teamId": "aptg", "teamName": "Portfolio and Target-State Architecture", "teamType": "enabling", "groupId": "eafs", "groupName": "Enterprise Architecture \u2014 Applications and Financial Systems", "role": "related", "roleLabel": "Related team"}, {"teamId": "grcx", "teamName": "GRC and Controls Engineering", "teamType": "complicated-subsystem", "groupId": "rtrc", "groupName": "Close, Reporting and Controls", "role": "related", "roleLabel": "Related team"}];
+    const supported_jobs = [{"customerId": "tlrd", "customerName": "Technology and FinTech Leadership (CTO, SVP FinTech, brand CTOs)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-tlrd-portrait.jpg", "productId": "archg", "productName": "Architecture Governance Service", "productIcon": "archg.png", "jobId": "tlrd-decide", "jobName": "Make high-stakes platform decisions on clear cost-benefit options", "jobWhatItIs": "Decide build-versus-buy, convergence and sequencing questions for finance and enterprise platforms.", "jobOutcome": "Decisions are taken quickly, recorded once and stay valid, with cost, risk and control impact understood up front.", "supportRationale": "Decision record template captures drivers, options and BITS requirements.", "usedInSteps": [{"step": "Frame the decision", "description": "Turn a programme problem into a decision question with business drivers and constraints.", "howItSupports": "Decision record template captures drivers, options and BITS requirements.", "media": []}, {"step": "Compare options", "description": "See costed options against standards, target state and dependencies.", "howItSupports": "Portfolio and target-state data feed option analysis.", "media": []}, {"step": "Decide and communicate", "description": "Approve at the review board and inform affected teams.", "howItSupports": "Review board workflow with decision rights and notifications.", "media": []}, {"step": "Check the decision holds", "description": "Verify delivery conforms and revisit only on new evidence.", "howItSupports": "Conformance checks flag drift from the decision.", "media": []}]}, {"customerId": "tlrd", "customerName": "Technology and FinTech Leadership (CTO, SVP FinTech, brand CTOs)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-tlrd-portrait.jpg", "productId": "archg", "productName": "Architecture Governance Service", "productIcon": "archg.png", "jobId": "tlrd-converge", "jobName": "Converge brand finance stacks without stalling delivery", "jobWhatItIs": "Move brands from bespoke finance integrations and ledgers to shared platforms while product roadmaps continue.", "jobOutcome": "Fewer duplicate systems and integrations, with no brand roadmap blocked by the migration.", "supportRationale": "Target-state decisions recorded and visible.", "usedInSteps": [{"step": "Agree the convergence target", "description": "Set the target-state and sequencing for each brand.", "howItSupports": "Target-state decisions recorded and visible.", "media": []}]}, {"customerId": "bfin", "customerName": "Brand Finance Engineering Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-bfin-portrait.jpg", "productId": "archg", "productName": "Architecture Governance Service", "productIcon": "archg.png", "jobId": "bfin-build", "jobName": "Build finance features within clear, stable standards", "jobWhatItIs": "Design and deliver brand finance features (new products, markets, payment flows) knowing which patterns, platforms and controls apply, and getting a decision quickly when they do not.", "jobOutcome": "Features ship on the brand cadence, pass review on first submission and do not need rework for compliance later.", "supportRationale": "The standards catalogue lists mandatory and recommended patterns with examples.", "usedInSteps": [{"step": "Find the applicable standard or pattern", "description": "Look up the mandatory standards and reusable patterns for the change.", "howItSupports": "The standards catalogue lists mandatory and recommended patterns with examples.", "media": []}, {"step": "Request a decision where no pattern fits", "description": "Raise a decision record with options and get a time-boxed review.", "howItSupports": "The review board workflow tracks the decision against a service level.", "media": []}, {"step": "Pass conformance and release", "description": "Show the delivered design matches the decision and standards.", "howItSupports": "Automated conformance checks give feedback before release.", "media": []}]}, {"customerId": "icfr", "customerName": "SOX and Internal Controls Lead", "customerGroup": "Controls and Assurance", "customerIcon": "customer-icfr-portrait.jpg", "productId": "archg", "productName": "Architecture Governance Service", "productIcon": "archg.png", "jobId": "icfr-change", "jobName": "Approve financial-system change without opening control gaps", "jobWhatItIs": "Let engineering teams change SOX-relevant systems quickly while proving that controls, access and data completeness still hold.", "jobOutcome": "Changes ship on the engineering cadence with control impact assessed up front and no post-release control failures.", "supportRationale": "Architecture decision records carry a mandatory SOX impact section and reviewer.", "usedInSteps": [{"step": "Assess control impact at design time", "description": "Review the architecture decision for effects on in-scope controls, interfaces and reports.", "howItSupports": "Architecture decision records carry a mandatory SOX impact section and reviewer.", "media": []}, {"step": "Agree control requirements as standards", "description": "Turn recurring control needs into reusable patterns rather than one-off conditions.", "howItSupports": "Standards and patterns encode control requirements such as completeness checks and SoD.", "media": []}, {"step": "Verify conformance before go-live", "description": "Confirm the delivered change implements the agreed controls and access model.", "howItSupports": "Conformance checks and access governance verify the change before release.", "media": []}]}, {"customerId": "icfr", "customerName": "SOX and Internal Controls Lead", "customerGroup": "Controls and Assurance", "customerIcon": "customer-icfr-portrait.jpg", "productId": "grcon", "productName": "Controls and Regulatory Compliance Hub", "productIcon": "grcon.png", "jobId": "icfr-change", "jobName": "Approve financial-system change without opening control gaps", "jobWhatItIs": "Let engineering teams change SOX-relevant systems quickly while proving that controls, access and data completeness still hold.", "jobOutcome": "Changes ship on the engineering cadence with control impact assessed up front and no post-release control failures.", "supportRationale": "Architecture decision records carry a mandatory SOX impact section and reviewer.", "usedInSteps": [{"step": "Assess control impact at design time", "description": "Review the architecture decision for effects on in-scope controls, interfaces and reports.", "howItSupports": "Architecture decision records carry a mandatory SOX impact section and reviewer.", "media": []}, {"step": "Agree control requirements as standards", "description": "Turn recurring control needs into reusable patterns rather than one-off conditions.", "howItSupports": "Standards and patterns encode control requirements such as completeness checks and SoD.", "media": []}, {"step": "Verify conformance before go-live", "description": "Confirm the delivered change implements the agreed controls and access model.", "howItSupports": "Conformance checks and access governance verify the change before release.", "media": []}]}];
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {
+            htmlLabels: false
+        }
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function dedupe(items, keyFn) {
+        const seen = new Set();
+        const ordered = [];
+        items.forEach(item => {
+            const key = keyFn(item);
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            ordered.push(item);
+        });
+        return ordered;
+    }
+
+    function getFlows() {
+        return currentStream.flows || [];
+    }
+
+    function getFlowDependencies(flow) {
+        const dependencyIndex = new Map();
+        (flow.steps || []).forEach(step => {
+            (step.dependencies || []).forEach(dependency => {
+                if ((dependency.type || 'brick') !== 'brick') {
+                    return;
+                }
+                const key = [dependency.type || 'dependency', dependency.id || dependency.name || 'unknown'].join('::');
+                if (!dependencyIndex.has(key)) {
+                    dependencyIndex.set(key, dependency);
+                }
+            });
+        });
+        return Array.from(dependencyIndex.values());
+    }
+
+    function getStepDependency(step, dependency) {
+        return (step.dependencies || []).find(item => (item.type || '') === (dependency.type || '') && (item.id || '') === (dependency.id || '')) || null;
+    }
+
+    function getPrimaryActors() {
+        const streamJobs = currentStream.supportedCustomerJobs || [];
+        const allJobs = streamJobs.length ? streamJobs : supported_jobs;
+        return dedupe(allJobs.map(item => item.customerName || item.customerGroup || '').filter(Boolean), item => item);
+    }
+
+    function summarizeFlow(flow) {
+        const steps = flow.steps || [];
+        const firstStep = steps[0] || {};
+        const lastStep = steps[steps.length - 1] || {};
+        return {
+            actor: flow.primaryActor || firstStep.actor || '',
+            trigger: flow.trigger || firstStep.trigger || '',
+            result: flow.successSignal || flow.outcome || lastStep.successSignal || lastStep.output || ''
+        };
+    }
+
+    function renderStepMeta(label, value) {
+        if (!value) {
+            return '';
+        }
+        return '<div class="flow-step-meta-item"><div class="flow-step-meta-label">' + escapeHtml(label) + '</div><div class="flow-step-copy">' + escapeHtml(value) + '</div></div>';
+    }
+
+    function flowDependencyIconFile(dependency) {
+        const dependencyId = dependency.id || '';
+        const linkedBrick = related_bricks.find(brick => brick.id === dependencyId) || all_bricks.find(brick => brick.id === dependencyId) || {};
+        return dependency.icon || linkedBrick.icon || (dependencyId ? dependencyId + '.png' : 'brick.png');
+    }
+
+    function renderFlowDependencyIcon(dependency, className) {
+        return '<img class="' + escapeHtml(className) + '" src="../icons/' + escapeHtml(flowDependencyIconFile(dependency)) + '" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+    }
+
+    function renderStepDependencyPills(step) {
+        const dependencies = step.dependencies || [];
+        if (!dependencies.length) {
+            return '<div class="muted">No step-specific dependencies listed.</div>';
+        }
+
+        return '<div class="flow-step-dependencies">' + dependencies.map(dep => {
+            const label = dep.name || dep.id || 'Dependency';
+            const kind = 'Brick';
+            return '<span class="flow-cell-brick">' + renderFlowDependencyIcon(dep, 'flow-cell-brick-icon') + '<span>' + escapeHtml(kind + ': ' + label) + '</span></span>';
+        }).join('') + '</div>';
+    }
+
+    function simplifySupportCopy(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return '';
+        }
+        const simplified = text.replace(/^Supports .*? by helping users help /i, 'Facilitate ');
+        return simplified;
+    }
+</script>
+
+<div id="Header"></div>
+
+<div class="page">
+    <div class="tab" id="primary_tabs">
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
+    </div>
+
+    <div id="tab_content_home" class="tabcontent"></div>
+    <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_links" class="tabcontent"></div>
+
+
+</div>
+
+<script>
+    function streamMetaPath(stream) {
+        const parts = [];
+        if (stream.group) {
+            parts.push(stream.group);
+        }
+        if (stream.rootGroup && stream.rootGroup !== stream.group) {
+            parts.push(stream.rootGroup);
+        }
+        if (!parts.length) {
+            parts.push('Stream');
+        }
+        return parts.join(' / ');
+    }
+
+    let headerHtml = '<div class="nav-strip">';
+    allStreams.forEach(item => {
+        headerHtml += '<a class="nav-link" href="' + escapeHtml(item.id) + '.html">';
+        headerHtml += '<img src="../icons/' + escapeHtml(item.icon || 'stream.png') + '" class="' + (item.id === currentStream.id ? 'tab-image-selected' : 'tab-image') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+        headerHtml += '</a>';
+    });
+    headerHtml += '</div>';
+
+    headerHtml += '<div class="page">';
+    headerHtml += '<div class="header">';
+    headerHtml += '<img class="header-icon" src="../icons/' + escapeHtml(currentStream.icon || 'stream.png') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+    headerHtml += '<div>';
+    headerHtml += '<div class="header-meta">';
+    headerHtml += '<div class="page-type-badge">Stream</div>';
+    headerHtml += escapeHtml(streamMetaPath(currentStream)) + ' / <span style="color:blue;font-weight:bold;">' + escapeHtml((currentStream.id || '').toUpperCase()) + '</span></div>';
+    headerHtml += '<div class="header-title">' + escapeHtml(currentStream.name || currentStream.id) + '</div>';
+    headerHtml += '<div class="header-copy">' + escapeHtml(currentStream.description || '') + '</div>';
+    headerHtml += '</div></div></div>';
+    document.getElementById('Header').innerHTML = headerHtml;
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const primaryActors = getPrimaryActors();
+        let html = '';
+
+        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
+        if (!flows.length) {
+            html += '<div class="muted">No flows listed for this stream.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            flows.forEach(flow => {
+                const summary = summarizeFlow(flow);
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
+                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
+                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Outcomes</div>';
+        if (!(currentStream.outcomes || []).length) {
+            html += '<div class="muted">No outcomes listed for this stream.</div>';
+        } else {
+            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
+        if (!related_bricks.length) {
+            html += '<div class="muted">No linked product bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            related_bricks.forEach(brick => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../landing_pages/' + escapeHtml(brick.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml((brick.group || brick.domain || 'Product Brick')) + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../icons/' + escapeHtml(brick.id) + '.png" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+                html += '<div class="card-title">' + escapeHtml(brick.name || brick.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(brick.description || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Linked Products</div>';
+        if (!linked_products.length) {
+            html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            linked_products.forEach(product => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../product-deployments/landing_pages/' + escapeHtml(product.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml(product.type || 'Product') + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../../product-deployments/icons/' + escapeHtml(product.icon) + '" alt="" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+                html += '<div class="card-title">' + escapeHtml(product.name || product.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(product.whyUsed || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Related Teams</div>';
+        if (!related_teams.length) {
+            html += '<div class="muted">No teams were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            related_teams.forEach(team => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml(team.roleLabel || team.teamType || 'Team') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!supported_jobs.length) {
+            html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            supported_jobs.forEach(job => {
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.supportRationale) {
+                    html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
+                }
+                if ((job.usedInSteps || []).length) {
+                    html += '<ul class="list">' + job.usedInSteps.map(step => '<li>' + escapeHtml(step.step || step.description || '') + '</li>').join('') + '</ul>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function renderFlows() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        let html = '';
+
+        document.getElementById('tab_flows').innerHTML = 'Flow Narratives (' + flows.length + ')';
+
+        flows.forEach(flow => {
+            const dependenciesInFlow = getFlowDependencies(flow);
+            const summary = summarizeFlow(flow);
+            html += '<div class="group">';
+            html += '<div class="section-title">Flow</div>';
+            html += '<div class="flow-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+            html += '<div class="flow-description">' + escapeHtml(flow.description || '') + '</div>';
+            if (summary.actor || summary.trigger || summary.result) {
+                html += '<div class="card" style="margin-bottom:16px;">';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Primary actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '<div class="section-title">Dependency Traceability</div>';
+            html += '<div class="flow-matrix-wrap">';
+            html += '<table class="flow-matrix">';
+            html += '<thead>';
+            html += '<tr><th class="flow-dependency-col"></th>';
+            (flow.steps || []).forEach((step, index) => {
+                html += '<th class="flow-step-col"><div class="flow-step-label">Step ' + (index + 1) + '</div><div class="card-title">' + escapeHtml(step.title || step.id) + '</div></th>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right">Key Facts</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkblue">';
+                if ((step.keyFacts || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.keyFacts.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No key facts listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right; color: darkred">Pain Points</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkred">';
+                if ((step.painPoints || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.painPoints.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No pain points listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+            html += '</thead><tbody>';
+
+            dependenciesInFlow.forEach(dependency => {
+                const dependencyTypeLabel = 'Product Brick';
+                html += '<tr>';
+                html += '<td>';
+                html += '<div class="flow-dependency-header">';
+                html += renderFlowDependencyIcon(dependency, 'flow-dependency-icon');
+                html += '<div>';
+                html += '<a class="flow-dependency-name" href="../landing_pages/' + escapeHtml(dependency.id) + '.html">' + escapeHtml(dependency.name || dependency.id) + '</a>';
+                if (dependency.interface) {
+                    html += '<div class="muted">' + escapeHtml(dependency.interface) + '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+                html += '</td>';
+                (flow.steps || []).forEach(step => {
+                    const stepDependency = getStepDependency(step, dependency);
+                    if (!stepDependency) {
+                        html += '<td class="flow-cell-empty">-</td>';
+                        return;
+                    }
+                    html += '<td class="flow-cell-active">';
+                    html += '<div class="flow-cell-copy">' + escapeHtml(simplifySupportCopy(stepDependency.how || stepDependency.description || 'Supports this step.')) + '</div>';
+                    html += '</td>';
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        document.getElementById('tab_content_flows').innerHTML = html;
+    }
+
+    function renderLinks() {
+        // Grouped links from config: [{group, description, links: [{label, link,
+        // description, embedLink?, embedHeight?}]}]. embedLink renders an iframe
+        // (default height 400px) while the label still opens `link` directly.
+        const groups = currentStream.links || [];
+        let html = '<div class="page">';
+        let count = 0;
+        if (!groups.length) {
+            html += '<div class="muted">No links are configured for this stream.</div>';
+        }
+        groups.forEach(group => {
+            html += '<div class="links-group">';
+            html += '<div class="links-group-title">' + escapeHtml(group.group || 'Links') + '</div>';
+            if (group.description) {
+                html += '<div class="links-group-description">' + escapeHtml(group.description) + '</div>';
+            }
+            (group.links || []).forEach(link => {
+                count++;
+                html += '<div class="link-entry">';
+                html += '<a class="link-entry-title" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(link.link || '#') + '">'
+                    + escapeHtml(link.label || link.link || 'Reference') + ' &#8599;</a>';
+                if (link.description) {
+                    html += '<div class="link-entry-copy">' + escapeHtml(link.description) + '</div>';
+                }
+                if (link.embedLink) {
+                    const embedHeight = Number(link.embedHeight) || 400;
+                    html += '<iframe class="link-embed" loading="lazy" src="' + escapeHtml(link.embedLink)
+                        + '" style="height: ' + embedHeight + 'px" title="' + escapeHtml(link.label || 'Embedded link') + '"></iframe>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_links').innerHTML = html;
+        const linksTab = document.getElementById('tab_links');
+        if (linksTab) {
+            linksTab.textContent = 'Links (' + count + ')';
+        }
+    }
+
+    renderHome();
+    renderFlows();
+    renderLinks();
+</script>
+
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Enterprise Applications and Financial Systems Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Streams Index"
+    },
+    {
+      "label": "Govern an Architecture Decision to Conformance"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+
+
+</body>
+</html>

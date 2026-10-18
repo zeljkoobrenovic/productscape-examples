@@ -1,0 +1,2157 @@
+{
+  "metadata": {
+    "domainId": "enterprise-applications-and-financial-systems",
+    "title": "Product Streams",
+    "description": "Outcome-based finance streams across Booking Holdings brands: booking-to-revenue, commission-to-cash, partner payouts, disputes, procure-to-pay, tax, treasury, close, SEC reporting, planning, brand convergence and architecture governance.",
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1075531/000107553126000009/bkng-20251231.htm",
+      "https://s201.q4cdn.com/865305287/files/doc_financials/2025/q4/Q4-25-BKNG-Earnings-Release.pdf",
+      "https://www.bookingholdings.com/about/financial-services/",
+      "https://www.businesswire.com/news/home/20250114445080/en",
+      "https://www.themuse.com/jobs/bookingcom/sap-fi-specialist-18567f"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Steps name the bricks they depend on; personas are documented in customers.json JTBD steps. Flow detail is modeled from public disclosures and common practice, not Booking internal documentation."
+  },
+  "rootGroups": [
+    {
+      "name": "Order-to-Cash and Money Movement",
+      "description": "How traveler payments, partner commissions and payouts become correct ledger entries.",
+      "streams": [
+        {
+          "id": "merchant-booking-to-recognised-revenue",
+          "name": "Merchant Booking to Recognised Revenue",
+          "type": "outcome-based-stream",
+          "description": "From a traveler paying a brand at booking time to cash, deferred liability and revenue landing correctly in the general ledger. Merchant bookings were 70% of gross bookings in 2025 (63% in 2024), so this is now the dominant finance flow.",
+          "outcomes": [
+            "Every merchant booking is traceable from payment to revenue",
+            "Deferred merchant bookings reconcile to the subledger at every close",
+            "Revenue is recognised at the right time and on the right basis (gross or net)"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "fint",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pevt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rrec",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tfnd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "psrc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "glco",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "merchant-booking-to-recognised-revenue-flow",
+              "title": "Merchant booking to ledger",
+              "description": "A brand publishes a confirmed merchant booking and its payment; finance books the liability, recognises revenue on performance and reconciles cash.",
+              "steps": [
+                {
+                  "id": "publish-booking-event",
+                  "title": "Publish the booking as a canonical finance event",
+                  "keyFacts": [
+                    "Brands publish confirmed, modified and cancelled bookings in one canonical event model",
+                    "Event carries brand, legal entity, currency, partner and business model (merchant or agency)"
+                  ],
+                  "painPoints": [
+                    "Each brand historically sent its own file format",
+                    "Late or duplicated events break downstream counts"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fint",
+                      "name": "Finance Integration Hub",
+                      "description": "Canonical event, API and file backbone that carries booking, payment and partner events from brands into finance systems.",
+                      "how": "Validates and carries the booking event with replay."
+                    }
+                  ]
+                },
+                {
+                  "id": "capture-payment",
+                  "title": "Capture the traveler payment and its settlement",
+                  "keyFacts": [
+                    "Card-not-present card and alternative payment method events arrive from multiple PSPs",
+                    "Local payment methods in Asian markets added through the Antom partnership (Jan 2025)"
+                  ],
+                  "painPoints": [
+                    "Each PSP and APM reports fees, FX and timing differently",
+                    "Settlement arrives days after capture"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pevt",
+                      "name": "Payment Event Ingestion and Normalisation",
+                      "description": "Ingests authorisation, capture, refund and settlement events and PSP files for card-not-present cards and alternative payment methods into one canonical model.",
+                      "how": "Normalises authorisation, capture and settlement events per payment method."
+                    }
+                  ]
+                },
+                {
+                  "id": "post-to-subledger",
+                  "title": "Post the booking and payment to the contract-account subledger",
+                  "keyFacts": [
+                    "FI-CA/BRIM absorbs line-item volumes that the general ledger cannot",
+                    "Postings keyed by contract account per traveler booking"
+                  ],
+                  "painPoints": [
+                    "Subledger volumes grow with room nights (1,235M in 2025)",
+                    "Mapping errors surface only at summarisation"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Creates contract-account documents for booking and payment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tfnd",
+                      "name": "Traveler Funds and Deferred Merchant Bookings Ledger",
+                      "description": "Tracks traveler cash received before performance (deferred merchant bookings) and its release on stay, cancellation or refund.",
+                      "how": "Records cash received as a deferred merchant booking liability."
+                    }
+                  ]
+                },
+                {
+                  "id": "recognise-revenue",
+                  "title": "Recognise revenue on performance",
+                  "keyFacts": [
+                    "Merchant revenue recognised at check-in or travel date, net of partner cost where Booking is agent",
+                    "Cancellations reverse the liability rather than revenue"
+                  ],
+                  "painPoints": [
+                    "Principal-versus-agent judgement differs by product (stays, flights, cars)",
+                    "Policy changes need re-runs across open bookings"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rrec",
+                      "name": "Revenue Recognition Engine",
+                      "description": "Applies ASC 606 policy to merchant, agency and advertising transactions: principal/agent, timing at check-in or travel date, cancellations.",
+                      "how": "Applies ASC 606 policy and produces the revenue schedule."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tfnd",
+                      "name": "Traveler Funds and Deferred Merchant Bookings Ledger",
+                      "description": "Tracks traveler cash received before performance (deferred merchant bookings) and its release on stay, cancellation or refund.",
+                      "how": "Releases the liability as performance occurs."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-cash",
+                  "title": "Reconcile booking, payment and settlement",
+                  "keyFacts": [
+                    "Three-way match of booking, captured payment and PSP/bank settlement",
+                    "Fees and FX split out to the right accounts"
+                  ],
+                  "painPoints": [
+                    "Unmatched items age and become write-offs",
+                    "Manual break handling during close"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "psrc",
+                      "name": "Payment and PSP Settlement Reconciliation",
+                      "description": "Three-way matching of booking, payment and PSP/bank settlement, with fee and FX breakdown and break management.",
+                      "how": "Matches and manages breaks."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pevt",
+                      "name": "Payment Event Ingestion and Normalisation",
+                      "description": "Ingests authorisation, capture, refund and settlement events and PSP files for card-not-present cards and alternative payment methods into one canonical model.",
+                      "how": "Supplies settlement lines and fees."
+                    }
+                  ]
+                },
+                {
+                  "id": "summarise-to-ledger",
+                  "title": "Summarise to the general ledger",
+                  "keyFacts": [
+                    "Subledger totals summarised to the S/4HANA ledger through Central Finance",
+                    "Deferred merchant bookings stood at $5.3bn on 31 Dec 2025"
+                  ],
+                  "painPoints": [
+                    "Subledger-to-GL differences found late in close"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "glco",
+                      "name": "General Ledger and Central Finance Hub",
+                      "description": "SAP S/4HANA general ledger fed through Central Finance; the single global book of record for all brands and legal entities.",
+                      "how": "Receives summarised postings per entity and account."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Summarises and proves completeness to the ledger."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Brand booking platforms (Booking.com, Priceline, Agoda)",
+              "type": "data",
+              "description": "Source of booking events."
+            },
+            {
+              "system": "Payment service providers and acquirers",
+              "type": "data",
+              "description": "Authorisation, capture and settlement reports for cards and APMs."
+            },
+            {
+              "system": "SAP S/4HANA and FI-CA/BRIM",
+              "type": "platform",
+              "description": "System of record for subledger and ledger."
+            }
+          ],
+          "icon": "merchant-booking-to-recognised-revenue.png"
+        },
+        {
+          "id": "agency-commission-invoice-to-cash",
+          "name": "Agency Commission Invoice to Cash",
+          "type": "outcome-based-stream",
+          "description": "Booking.com agency bookings are paid by the traveler to the property; Booking earns commission it must invoice and collect. Agency revenue was $7,968M in 2025 (down 6.5% as volume shifts to merchant).",
+          "outcomes": [
+            "Commission invoices are complete and correct for every stayed booking",
+            "Fewer partner disputes and faster collection",
+            "Commission revenue and receivables reconcile to the ledger"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "fint",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pinv",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "itax",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "psrc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "glco",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "agency-commission-invoice-to-cash-flow",
+              "title": "Stayed agency booking to collected commission",
+              "description": "Commission is accrued on stay, invoiced periodically per partner, taxed, collected and reconciled.",
+              "steps": [
+                {
+                  "id": "accrue-commission",
+                  "title": "Accrue commission on stayed bookings",
+                  "keyFacts": [
+                    "Commission accrues per booking once the stay is completed",
+                    "No-shows and cancellations adjust the base"
+                  ],
+                  "painPoints": [
+                    "Partners mark no-shows late",
+                    "Changed stays alter the commission base after accrual"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fint",
+                      "name": "Finance Integration Hub",
+                      "description": "Canonical event, API and file backbone that carries booking, payment and partner events from brands into finance systems.",
+                      "how": "Delivers stay and change events."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Books commission receivable per partner contract account."
+                    }
+                  ]
+                },
+                {
+                  "id": "calculate-invoice-tax",
+                  "title": "Determine tax on the commission invoice",
+                  "keyFacts": [
+                    "VAT treatment depends on partner location and business status",
+                    "Invoice must meet local invoicing rules"
+                  ],
+                  "painPoints": [
+                    "Partner VAT IDs missing or invalid",
+                    "E-invoicing mandates vary by country"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "itax",
+                      "name": "Indirect Tax Determination and Reporting",
+                      "description": "Determines VAT/GST, digital services taxes and travel transaction taxes per jurisdiction and produces returns and platform reports such as DAC7.",
+                      "how": "Determines VAT and invoice requirements."
+                    }
+                  ]
+                },
+                {
+                  "id": "issue-invoice",
+                  "title": "Issue the periodic commission invoice",
+                  "keyFacts": [
+                    "Invoices issued per partner per period with booking-level detail",
+                    "Partners see invoice in the partner extranet"
+                  ],
+                  "painPoints": [
+                    "Disputes when partner and Booking stay data differ"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pinv",
+                      "name": "Partner Commission Invoicing and Collections",
+                      "description": "Generates agency commission invoices to accommodation partners, applies tax, collects via direct debit or bank transfer and runs dunning.",
+                      "how": "Generates and issues invoices."
+                    }
+                  ]
+                },
+                {
+                  "id": "collect",
+                  "title": "Collect via direct debit or bank transfer and dun overdue items",
+                  "keyFacts": [
+                    "Direct debit where mandated; otherwise bank transfer",
+                    "Dunning and, where possible, netting against merchant payouts"
+                  ],
+                  "painPoints": [
+                    "Small balances across many partners are costly to chase",
+                    "Payment references often missing"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pinv",
+                      "name": "Partner Commission Invoicing and Collections",
+                      "description": "Generates agency commission invoices to accommodation partners, applies tax, collects via direct debit or bank transfer and runs dunning.",
+                      "how": "Runs collection and dunning."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "psrc",
+                      "name": "Payment and PSP Settlement Reconciliation",
+                      "description": "Three-way matching of booking, payment and PSP/bank settlement, with fee and FX breakdown and break management.",
+                      "how": "Matches incoming bank receipts to open invoices."
+                    }
+                  ]
+                },
+                {
+                  "id": "post-and-close",
+                  "title": "Clear receivables and report to the ledger",
+                  "keyFacts": [
+                    "Cleared items summarised to the general ledger",
+                    "Aged receivables feed bad-debt reserves"
+                  ],
+                  "painPoints": [
+                    "Unapplied cash distorts ageing"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "glco",
+                      "name": "General Ledger and Central Finance Hub",
+                      "description": "SAP S/4HANA general ledger fed through Central Finance; the single global book of record for all brands and legal entities.",
+                      "how": "Receives summarised receivable and revenue postings."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Partner extranet (Booking.com for partners)",
+              "type": "channel",
+              "description": "Partner sees invoices and disputes."
+            },
+            {
+              "system": "Banks and direct-debit schemes",
+              "type": "data",
+              "description": "Collections and bank statements."
+            }
+          ],
+          "icon": "agency-commission-invoice-to-cash.png"
+        },
+        {
+          "id": "partner-payout-on-time-and-accurate",
+          "name": "Partner Payout On Time and Accurate",
+          "type": "outcome-based-stream",
+          "description": "For merchant bookings the brand holds traveler funds and pays partners the net amount. Payouts must be correct, on time, funded from the right entity and, where an e-money institution holds the funds, safeguarded until paid.",
+          "outcomes": [
+            "Partners are paid the right net amount on the agreed date",
+            "Fewer payout failures and partner support contacts",
+            "Safeguarding and cash positions stay accurate"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "pout",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bnkc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tfnd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "trcm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "regr",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "partner-payout-on-time-and-accurate-flow",
+              "title": "Merchant booking to partner payout",
+              "description": "Net payout is calculated from performed bookings, funded, paid by bank transfer or virtual card and confirmed.",
+              "steps": [
+                {
+                  "id": "calculate-net-payout",
+                  "title": "Calculate the net payout per partner",
+                  "keyFacts": [
+                    "Gross booking value minus commission and payment fees",
+                    "Payout timing commonly tied to check-in date"
+                  ],
+                  "painPoints": [
+                    "Partner bank details change frequently",
+                    "Adjustments for cancellations after payout"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pout",
+                      "name": "Partner Payout Orchestration",
+                      "description": "Calculates net partner payouts for merchant bookings (gross minus commission and fees) and schedules bank transfer or virtual-card payment.",
+                      "how": "Computes net payable per partner and period."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tfnd",
+                      "name": "Traveler Funds and Deferred Merchant Bookings Ledger",
+                      "description": "Tracks traveler cash received before performance (deferred merchant bookings) and its release on stay, cancellation or refund.",
+                      "how": "Supplies performed bookings whose liability can be released."
+                    }
+                  ]
+                },
+                {
+                  "id": "fund-the-run",
+                  "title": "Fund the payout run from the right entity and currency",
+                  "keyFacts": [
+                    "Payout entity and currency follow partner contract",
+                    "Treasury tops up accounts and hedges FX"
+                  ],
+                  "painPoints": [
+                    "Unexpected currency shortfalls delay runs"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "trcm",
+                      "name": "Treasury, Cash and FX Hedge Management",
+                      "description": "Daily global cash position, cash forecasting, FX exposure capture and hedge accounting for EUR and GBP exposures.",
+                      "how": "Positions cash and FX for the run."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "regr",
+                      "name": "E-Money Safeguarding and Regulatory Reporting",
+                      "description": "Safeguarded-funds calculation and regulatory returns for BHFS licensed e-money institutions.",
+                      "how": "Checks safeguarding before releasing client funds."
+                    }
+                  ]
+                },
+                {
+                  "id": "pay-the-partner",
+                  "title": "Pay by bank transfer or virtual card",
+                  "keyFacts": [
+                    "Bank transfer through host-to-host or SWIFT; virtual cards for some partners",
+                    "Payment status returned by banks"
+                  ],
+                  "painPoints": [
+                    "Rejected payments for invalid bank details",
+                    "Bank cut-off times differ by country"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bnkc",
+                      "name": "Bank Connectivity and Payment Factory",
+                      "description": "Host-to-host and SWIFT connectivity, payment file generation, bank statement intake and payment status for payouts and supplier payments.",
+                      "how": "Generates payment files and tracks status."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pout",
+                      "name": "Partner Payout Orchestration",
+                      "description": "Calculates net partner payouts for merchant bookings (gross minus commission and fees) and schedules bank transfer or virtual-card payment.",
+                      "how": "Selects payout method per partner."
+                    }
+                  ]
+                },
+                {
+                  "id": "confirm-and-post",
+                  "title": "Confirm payment and post to subledger",
+                  "keyFacts": [
+                    "Paid items cleared on partner contract accounts",
+                    "Returned payments re-queued with partner notification"
+                  ],
+                  "painPoints": [
+                    "Returned payments age without owners"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Clears partner payable items."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "bnkc",
+                      "name": "Bank Connectivity and Payment Factory",
+                      "description": "Host-to-host and SWIFT connectivity, payment file generation, bank statement intake and payment status for payouts and supplier payments.",
+                      "how": "Feeds bank statement confirmations."
+                    }
+                  ]
+                },
+                {
+                  "id": "report-safeguarding",
+                  "title": "Report safeguarded funds",
+                  "keyFacts": [
+                    "BHFS entities are licensed and regulated e-money institutions",
+                    "Safeguarded balances reconciled daily"
+                  ],
+                  "painPoints": [
+                    "Different regulators and reporting templates per entity"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "regr",
+                      "name": "E-Money Safeguarding and Regulatory Reporting",
+                      "description": "Safeguarded-funds calculation and regulatory returns for BHFS licensed e-money institutions.",
+                      "how": "Calculates and reports safeguarding."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Banks and SWIFT network",
+              "type": "data",
+              "description": "Payout execution and statements."
+            },
+            {
+              "system": "Virtual card issuing provider",
+              "type": "service",
+              "description": "Issues virtual cards for card payouts."
+            },
+            {
+              "system": "E-money regulators (e.g. Central Bank of Ireland)",
+              "type": "regulator",
+              "description": "Safeguarding and regulatory returns."
+            }
+          ],
+          "icon": "partner-payout-on-time-and-accurate.png"
+        },
+        {
+          "id": "refund-and-chargeback-to-ledger",
+          "name": "Refund and Chargeback to Ledger",
+          "type": "outcome-based-stream",
+          "description": "Cancellations, refunds and card-scheme chargebacks must be traced back to the original booking and payment so that liability, revenue, fees and losses are booked correctly.",
+          "outcomes": [
+            "Every refund and chargeback is linked to its booking and payment",
+            "Lower unrecovered dispute losses",
+            "No unexplained refund breaks at close"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "cbkf",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pevt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rrec",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "psrc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "refund-and-chargeback-to-ledger-flow",
+              "title": "Dispute or refund to ledger",
+              "description": "A refund or chargeback arrives, is linked, decided, accounted and reconciled.",
+              "steps": [
+                {
+                  "id": "receive-dispute",
+                  "title": "Receive refund instruction or chargeback notification",
+                  "keyFacts": [
+                    "Refunds triggered by cancellation policies; chargebacks by card schemes via PSPs",
+                    "APMs have their own dispute rules"
+                  ],
+                  "painPoints": [
+                    "Chargeback reason codes differ by scheme and method",
+                    "Notifications arrive after the stay"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pevt",
+                      "name": "Payment Event Ingestion and Normalisation",
+                      "description": "Ingests authorisation, capture, refund and settlement events and PSP files for card-not-present cards and alternative payment methods into one canonical model.",
+                      "how": "Normalises refund and dispute events."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "cbkf",
+                      "name": "Refund, Chargeback and Dispute Accounting",
+                      "description": "Accounts for refunds, chargebacks, representments and write-offs, and links each dispute to its booking and payment.",
+                      "how": "Opens a dispute case."
+                    }
+                  ]
+                },
+                {
+                  "id": "link-to-booking",
+                  "title": "Link to the original booking and payment",
+                  "keyFacts": [
+                    "Case linked to booking, payment and partner payout",
+                    "Determines whether partner already paid"
+                  ],
+                  "painPoints": [
+                    "Missing links when bookings were modified"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cbkf",
+                      "name": "Refund, Chargeback and Dispute Accounting",
+                      "description": "Accounts for refunds, chargebacks, representments and write-offs, and links each dispute to its booking and payment.",
+                      "how": "Resolves booking and payment links."
+                    }
+                  ]
+                },
+                {
+                  "id": "decide-and-represent",
+                  "title": "Decide liability and represent where justified",
+                  "keyFacts": [
+                    "Evidence assembled for representment",
+                    "Liability allocated to traveler, partner or brand"
+                  ],
+                  "painPoints": [
+                    "Evidence deadlines are short"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cbkf",
+                      "name": "Refund, Chargeback and Dispute Accounting",
+                      "description": "Accounts for refunds, chargebacks, representments and write-offs, and links each dispute to its booking and payment.",
+                      "how": "Manages representment and liability decision."
+                    }
+                  ]
+                },
+                {
+                  "id": "account",
+                  "title": "Account for refund, chargeback, fee and loss",
+                  "keyFacts": [
+                    "Refund reverses deferred liability or revenue",
+                    "Losses and scheme fees booked separately"
+                  ],
+                  "painPoints": [
+                    "Revenue reversal rules differ for merchant and agency"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rrec",
+                      "name": "Revenue Recognition Engine",
+                      "description": "Applies ASC 606 policy to merchant, agency and advertising transactions: principal/agent, timing at check-in or travel date, cancellations.",
+                      "how": "Reverses or adjusts revenue."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Posts refund, fee and loss items."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile",
+                  "title": "Reconcile with PSP settlements",
+                  "keyFacts": [
+                    "Chargeback debits matched to cases",
+                    "Unmatched debits escalated"
+                  ],
+                  "painPoints": [
+                    "PSP netting hides individual debits"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "psrc",
+                      "name": "Payment and PSP Settlement Reconciliation",
+                      "description": "Three-way matching of booking, payment and PSP/bank settlement, with fee and FX breakdown and break management.",
+                      "how": "Matches dispute debits to cases."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Card schemes",
+              "type": "network",
+              "description": "Chargeback rules and reason codes."
+            },
+            {
+              "system": "Payment service providers and acquirers",
+              "type": "data",
+              "description": "Dispute notifications and settlement debits."
+            }
+          ],
+          "icon": "refund-and-chargeback-to-ledger.png"
+        }
+      ]
+    },
+    {
+      "name": "Enterprise Operations",
+      "description": "Procurement, tax and treasury flows that run the company.",
+      "streams": [
+        {
+          "id": "procure-to-pay-a-supplier",
+          "name": "Procure to Pay a Supplier",
+          "type": "outcome-based-stream",
+          "description": "Employees buy goods and services through negotiated, compliant channels and suppliers are paid correctly and on time. Procurement optimisation is one of the named levers of the Transformation Program.",
+          "outcomes": [
+            "More spend under negotiated contracts",
+            "Touchless invoice processing",
+            "No duplicate or fraudulent supplier payments"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "s2pp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "apin",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "itax",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bnkc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "coam",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "procure-to-pay-a-supplier-flow",
+              "title": "Need to paid invoice",
+              "description": "Request, source, order, receive, invoice, match and pay.",
+              "steps": [
+                {
+                  "id": "request",
+                  "title": "Raise a purchase request through guided intake",
+                  "keyFacts": [
+                    "Guided intake routes to catalogue, contract or sourcing",
+                    "Coding from the global chart of accounts"
+                  ],
+                  "painPoints": [
+                    "Off-contract buying when intake is slow"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "s2pp",
+                      "name": "Procurement and Supplier Management",
+                      "description": "Intake, sourcing, contracts, supplier onboarding and purchase orders under negotiated and compliant buying channels.",
+                      "how": "Guided intake and approval."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "coam",
+                      "name": "Chart of Accounts and Financial Master Data",
+                      "description": "Governed global chart of accounts, cost centres, profit centres and brand/entity mappings used by every posting source.",
+                      "how": "Provides cost centre and account codes."
+                    }
+                  ]
+                },
+                {
+                  "id": "source-and-contract",
+                  "title": "Source and contract with a vetted supplier",
+                  "keyFacts": [
+                    "Supplier onboarding with sanctions, tax and bank checks",
+                    "Contract terms captured for matching"
+                  ],
+                  "painPoints": [
+                    "Duplicate suppliers across brands"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "s2pp",
+                      "name": "Procurement and Supplier Management",
+                      "description": "Intake, sourcing, contracts, supplier onboarding and purchase orders under negotiated and compliant buying channels.",
+                      "how": "Sourcing, onboarding and contract repository."
+                    }
+                  ]
+                },
+                {
+                  "id": "order-and-receive",
+                  "title": "Issue purchase order and confirm receipt",
+                  "keyFacts": [
+                    "PO issued from approved request",
+                    "Receipt or service confirmation recorded"
+                  ],
+                  "painPoints": [
+                    "Services rarely receipted on time"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "s2pp",
+                      "name": "Procurement and Supplier Management",
+                      "description": "Intake, sourcing, contracts, supplier onboarding and purchase orders under negotiated and compliant buying channels.",
+                      "how": "Issues PO and records receipt."
+                    }
+                  ]
+                },
+                {
+                  "id": "capture-invoice",
+                  "title": "Capture and match the invoice",
+                  "keyFacts": [
+                    "E-invoice and PDF capture",
+                    "Two- or three-way match against PO and receipt",
+                    "Tax validated on invoice"
+                  ],
+                  "painPoints": [
+                    "Country e-invoicing mandates multiply formats",
+                    "Exceptions routed manually"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "apin",
+                      "name": "Accounts Payable and E-Invoice Automation",
+                      "description": "Captures supplier invoices (including mandated e-invoice formats), matches to PO and receipt, routes exceptions and releases payment runs.",
+                      "how": "Captures and matches invoices."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "itax",
+                      "name": "Indirect Tax Determination and Reporting",
+                      "description": "Determines VAT/GST, digital services taxes and travel transaction taxes per jurisdiction and produces returns and platform reports such as DAC7.",
+                      "how": "Validates VAT on supplier invoices."
+                    }
+                  ]
+                },
+                {
+                  "id": "pay",
+                  "title": "Release payment run",
+                  "keyFacts": [
+                    "Payment run per entity and currency",
+                    "Bank status fed back to AP"
+                  ],
+                  "painPoints": [
+                    "Changed supplier bank details are a fraud vector"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "apin",
+                      "name": "Accounts Payable and E-Invoice Automation",
+                      "description": "Captures supplier invoices (including mandated e-invoice formats), matches to PO and receipt, routes exceptions and releases payment runs.",
+                      "how": "Proposes and releases payment run."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "bnkc",
+                      "name": "Bank Connectivity and Payment Factory",
+                      "description": "Host-to-host and SWIFT connectivity, payment file generation, bank statement intake and payment status for payouts and supplier payments.",
+                      "how": "Executes payments through banks."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Supplier networks and e-invoicing access points",
+              "type": "data",
+              "description": "Electronic invoice exchange."
+            },
+            {
+              "system": "Banks",
+              "type": "data",
+              "description": "Supplier payment execution."
+            }
+          ],
+          "icon": "procure-to-pay-a-supplier.png"
+        },
+        {
+          "id": "indirect-tax-determination-to-filing",
+          "name": "Indirect Tax Determination to Filing",
+          "type": "outcome-based-stream",
+          "description": "Determine VAT/GST, digital services taxes (1.5%-10% of in-jurisdiction revenue) and travel transaction taxes on every relevant transaction, then report and file. Indirect tax is a material exposure: a $337M 2024 accrual settled Italian indirect tax matters.",
+          "outcomes": [
+            "Correct tax on every transaction",
+            "On-time, complete returns and platform reports",
+            "Lower tax exposure and penalties"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "itax",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "gtax",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fdbx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "entm",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "indirect-tax-determination-to-filing-flow",
+              "title": "Transaction to tax return",
+              "description": "Determine, record, aggregate, file and provision taxes.",
+              "steps": [
+                {
+                  "id": "determine",
+                  "title": "Determine tax at transaction time",
+                  "keyFacts": [
+                    "Rules by jurisdiction, supply type and business model",
+                    "Merchant and agency models have different tax bases"
+                  ],
+                  "painPoints": [
+                    "Rules change frequently",
+                    "Location evidence incomplete"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "itax",
+                      "name": "Indirect Tax Determination and Reporting",
+                      "description": "Determines VAT/GST, digital services taxes and travel transaction taxes per jurisdiction and produces returns and platform reports such as DAC7.",
+                      "how": "Determines tax per transaction."
+                    }
+                  ]
+                },
+                {
+                  "id": "record",
+                  "title": "Record tax lines in the subledger",
+                  "keyFacts": [
+                    "Tax lines posted with jurisdiction and rate",
+                    "Entity determines filing obligation"
+                  ],
+                  "painPoints": [
+                    "Mismatched entity and jurisdiction"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Posts tax lines."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "entm",
+                      "name": "Legal Entity, Intercompany and FX Accounting",
+                      "description": "Legal entity register, intercompany matching and settlement, and FX revaluation across EUR, GBP, USD and local currencies.",
+                      "how": "Provides entity and registration data."
+                    }
+                  ]
+                },
+                {
+                  "id": "aggregate",
+                  "title": "Aggregate and reconcile tax data",
+                  "keyFacts": [
+                    "Tax data reconciled to ledger before filing",
+                    "DST and DAC7 need revenue and partner data by jurisdiction"
+                  ],
+                  "painPoints": [
+                    "Data spread over brands and systems"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fdbx",
+                      "name": "Finance Data Platform (FinDB)",
+                      "description": "Governed analytical store of ledger, subledger, payment and booking finance data with lineage to source.",
+                      "how": "Provides reconciled analytical datasets."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "itax",
+                      "name": "Indirect Tax Determination and Reporting",
+                      "description": "Determines VAT/GST, digital services taxes and travel transaction taxes per jurisdiction and produces returns and platform reports such as DAC7.",
+                      "how": "Builds return-ready aggregates."
+                    }
+                  ]
+                },
+                {
+                  "id": "file",
+                  "title": "File returns and platform reports",
+                  "keyFacts": [
+                    "VAT returns, DST returns and DAC7 platform reports",
+                    "Audit trail kept per filing"
+                  ],
+                  "painPoints": [
+                    "Different formats and deadlines per country"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "itax",
+                      "name": "Indirect Tax Determination and Reporting",
+                      "description": "Determines VAT/GST, digital services taxes and travel transaction taxes per jurisdiction and produces returns and platform reports such as DAC7.",
+                      "how": "Generates returns and reports."
+                    }
+                  ]
+                },
+                {
+                  "id": "provision",
+                  "title": "Feed the tax provision",
+                  "keyFacts": [
+                    "Indirect-tax exposures and accruals feed quarterly provision",
+                    "Pillar Two data drawn from same entity view"
+                  ],
+                  "painPoints": [
+                    "Disputes and audits outlast the systems that created the data"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "gtax",
+                      "name": "Tax Provision and Global Minimum Tax",
+                      "description": "Quarterly income tax provision and Pillar Two top-up tax data by jurisdiction from ledger and entity data.",
+                      "how": "Consumes exposures for provision and Pillar Two."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Tax authorities",
+              "type": "regulator",
+              "description": "Returns, reports and audits."
+            },
+            {
+              "system": "Tax content provider",
+              "type": "data",
+              "description": "Rates and rules by jurisdiction."
+            }
+          ],
+          "icon": "indirect-tax-determination-to-filing.png"
+        },
+        {
+          "id": "cash-positioning-and-fx-hedging",
+          "name": "Cash Positioning and FX Hedging",
+          "type": "outcome-based-stream",
+          "description": "Know global cash every morning and protect it against FX moves. Principal exposures are EUR and GBP; Booking uses derivatives to limit FX impact.",
+          "outcomes": [
+            "Daily global cash visibility",
+            "FX exposures hedged within policy",
+            "Safeguarded and operating cash kept apart"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "trcm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bnkc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "entm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "regr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fdbx",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "cash-positioning-and-fx-hedging-flow",
+              "title": "Bank statements to hedge decision",
+              "description": "Collect balances, forecast, compute exposure, hedge and account.",
+              "steps": [
+                {
+                  "id": "collect-balances",
+                  "title": "Collect bank balances and statements",
+                  "keyFacts": [
+                    "Statements from all banks and entities",
+                    "Intraday where available"
+                  ],
+                  "painPoints": [
+                    "Missing statements from smaller banks"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bnkc",
+                      "name": "Bank Connectivity and Payment Factory",
+                      "description": "Host-to-host and SWIFT connectivity, payment file generation, bank statement intake and payment status for payouts and supplier payments.",
+                      "how": "Retrieves statements."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "trcm",
+                      "name": "Treasury, Cash and FX Hedge Management",
+                      "description": "Daily global cash position, cash forecasting, FX exposure capture and hedge accounting for EUR and GBP exposures.",
+                      "how": "Builds the cash position."
+                    }
+                  ]
+                },
+                {
+                  "id": "separate-safeguarded",
+                  "title": "Separate safeguarded funds from operating cash",
+                  "keyFacts": [
+                    "E-money entities safeguard client funds"
+                  ],
+                  "painPoints": [
+                    "Mixing increases regulatory risk"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "regr",
+                      "name": "E-Money Safeguarding and Regulatory Reporting",
+                      "description": "Safeguarded-funds calculation and regulatory returns for BHFS licensed e-money institutions.",
+                      "how": "Supplies safeguarded positions."
+                    }
+                  ]
+                },
+                {
+                  "id": "forecast",
+                  "title": "Forecast cash including payouts and collections",
+                  "keyFacts": [
+                    "Partner payouts and traveler receipts drive the forecast",
+                    "Deferred merchant bookings indicate future payouts"
+                  ],
+                  "painPoints": [
+                    "Forecast accuracy drops in peak season"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "trcm",
+                      "name": "Treasury, Cash and FX Hedge Management",
+                      "description": "Daily global cash position, cash forecasting, FX exposure capture and hedge accounting for EUR and GBP exposures.",
+                      "how": "Forecasts cash."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "fdbx",
+                      "name": "Finance Data Platform (FinDB)",
+                      "description": "Governed analytical store of ledger, subledger, payment and booking finance data with lineage to source.",
+                      "how": "Supplies booking and payout trends."
+                    }
+                  ]
+                },
+                {
+                  "id": "hedge",
+                  "title": "Compute exposure and execute hedges",
+                  "keyFacts": [
+                    "Exposures by currency and entity",
+                    "Hedges executed within policy"
+                  ],
+                  "painPoints": [
+                    "Exposure data assembled from spreadsheets"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "trcm",
+                      "name": "Treasury, Cash and FX Hedge Management",
+                      "description": "Daily global cash position, cash forecasting, FX exposure capture and hedge accounting for EUR and GBP exposures.",
+                      "how": "Calculates exposure and records hedges."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "entm",
+                      "name": "Legal Entity, Intercompany and FX Accounting",
+                      "description": "Legal entity register, intercompany matching and settlement, and FX revaluation across EUR, GBP, USD and local currencies.",
+                      "how": "Provides entity and intercompany balances."
+                    }
+                  ]
+                },
+                {
+                  "id": "account-hedges",
+                  "title": "Account for hedges and revaluation",
+                  "keyFacts": [
+                    "Hedge accounting entries posted",
+                    "FX revaluation at period end"
+                  ],
+                  "painPoints": [
+                    "Ineffective hedges discovered late"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "entm",
+                      "name": "Legal Entity, Intercompany and FX Accounting",
+                      "description": "Legal entity register, intercompany matching and settlement, and FX revaluation across EUR, GBP, USD and local currencies.",
+                      "how": "Posts revaluation."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "trcm",
+                      "name": "Treasury, Cash and FX Hedge Management",
+                      "description": "Daily global cash position, cash forecasting, FX exposure capture and hedge accounting for EUR and GBP exposures.",
+                      "how": "Generates hedge accounting entries."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Banks",
+              "type": "data",
+              "description": "Balances and statements."
+            },
+            {
+              "system": "Trading platforms and market data",
+              "type": "data",
+              "description": "FX rates and dealing."
+            }
+          ],
+          "icon": "cash-positioning-and-fx-hedging.png"
+        }
+      ]
+    },
+    {
+      "name": "Record-to-Report and Assurance",
+      "description": "Closing, reporting, planning and proving control.",
+      "streams": [
+        {
+          "id": "record-to-report-month-end-close",
+          "name": "Record-to-Report Month-End Close",
+          "type": "outcome-based-stream",
+          "description": "Close the books across brands and entities on a fixed calendar with reconciled balances and controlled journals.",
+          "outcomes": [
+            "Shorter, predictable close",
+            "Fewer post-close adjustments",
+            "Reconciled balance sheet"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "clse",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "glco",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "entm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "cnsl",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ctlm",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "record-to-report-month-end-close-flow",
+              "title": "Period end to closed books",
+              "description": "Cut off, summarise, reconcile, eliminate, review and lock.",
+              "steps": [
+                {
+                  "id": "cut-off",
+                  "title": "Cut off subledgers and summarise",
+                  "keyFacts": [
+                    "Subledgers closed and summarised to GL",
+                    "Close calendar per entity"
+                  ],
+                  "painPoints": [
+                    "Late summarisation shifts the calendar"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Closes and summarises."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "clse",
+                      "name": "Close Orchestration and Account Reconciliation",
+                      "description": "Close calendar, task orchestration, balance-sheet reconciliations and journal approvals across entities.",
+                      "how": "Tracks close tasks."
+                    }
+                  ]
+                },
+                {
+                  "id": "post-adjustments",
+                  "title": "Post accruals and adjustments",
+                  "keyFacts": [
+                    "Manual journals approved with evidence",
+                    "Recurring accruals automated"
+                  ],
+                  "painPoints": [
+                    "Manual journals are the largest error source"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "glco",
+                      "name": "General Ledger and Central Finance Hub",
+                      "description": "SAP S/4HANA general ledger fed through Central Finance; the single global book of record for all brands and legal entities.",
+                      "how": "Records journals."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ctlm",
+                      "name": "Control Monitoring and Audit Evidence",
+                      "description": "SOX control library, automated control monitoring and evidence collection for management testing and external audit.",
+                      "how": "Enforces journal approval controls."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile",
+                  "title": "Reconcile balance-sheet accounts",
+                  "keyFacts": [
+                    "Reconciliations by risk rating",
+                    "Subledger-to-GL proofs"
+                  ],
+                  "painPoints": [
+                    "Aged unreconciled items"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "clse",
+                      "name": "Close Orchestration and Account Reconciliation",
+                      "description": "Close calendar, task orchestration, balance-sheet reconciliations and journal approvals across entities.",
+                      "how": "Runs reconciliations."
+                    }
+                  ]
+                },
+                {
+                  "id": "intercompany",
+                  "title": "Match intercompany and revalue FX",
+                  "keyFacts": [
+                    "Intercompany matched before consolidation",
+                    "FX revaluation run"
+                  ],
+                  "painPoints": [
+                    "Mismatches between entities in different systems"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "entm",
+                      "name": "Legal Entity, Intercompany and FX Accounting",
+                      "description": "Legal entity register, intercompany matching and settlement, and FX revaluation across EUR, GBP, USD and local currencies.",
+                      "how": "Matches intercompany and revalues."
+                    }
+                  ]
+                },
+                {
+                  "id": "consolidate",
+                  "title": "Consolidate and review results",
+                  "keyFacts": [
+                    "Eliminations and group results",
+                    "Flux review by brand"
+                  ],
+                  "painPoints": [
+                    "Late changes after consolidation"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cnsl",
+                      "name": "Consolidation and External Reporting",
+                      "description": "Group consolidation, eliminations and SEC 10-Q/10-K reporting packages.",
+                      "how": "Consolidates the group."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "SAP S/4HANA",
+              "type": "platform",
+              "description": "General ledger."
+            },
+            {
+              "system": "Close and reconciliation SaaS (BlackLine, assumed)",
+              "type": "platform",
+              "description": "Reported in a third-party listing; assumption."
+            }
+          ],
+          "icon": "record-to-report-month-end-close.png"
+        },
+        {
+          "id": "quarterly-sec-reporting-and-sox-attestation",
+          "name": "Quarterly SEC Reporting and SOX Attestation",
+          "type": "outcome-based-stream",
+          "description": "Produce 10-Q and 10-K financial statements and sustain an effective internal control over financial reporting, which management and Deloitte concluded was effective at 31 Dec 2025 (SOX 404(b)).",
+          "outcomes": [
+            "On-time filings with no restatements",
+            "Effective ICFR without material weaknesses",
+            "Lower cost of evidence"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "cnsl",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ctlm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sodc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "clse",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fmet",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "quarterly-sec-reporting-and-sox-attestation-flow",
+              "title": "Quarter end to filing and attestation",
+              "description": "Report, test, evidence and sign off.",
+              "steps": [
+                {
+                  "id": "draft-statements",
+                  "title": "Draft statements and disclosures",
+                  "keyFacts": [
+                    "Consolidated statements and segment data",
+                    "Disclosure items such as merchant vs agency revenue and deferred merchant bookings"
+                  ],
+                  "painPoints": [
+                    "Disclosure data assembled from many sources"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cnsl",
+                      "name": "Consolidation and External Reporting",
+                      "description": "Group consolidation, eliminations and SEC 10-Q/10-K reporting packages.",
+                      "how": "Generates statements."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "fmet",
+                      "name": "Finance Metrics and Management Reporting",
+                      "description": "Single definitions of finance metrics and the management reports and dashboards built on them.",
+                      "how": "Provides governed metrics like gross bookings and room nights."
+                    }
+                  ]
+                },
+                {
+                  "id": "test-controls",
+                  "title": "Test key controls",
+                  "keyFacts": [
+                    "Management testing of key controls",
+                    "Automated controls tested once per change"
+                  ],
+                  "painPoints": [
+                    "Manual testing effort scales with control count"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ctlm",
+                      "name": "Control Monitoring and Audit Evidence",
+                      "description": "SOX control library, automated control monitoring and evidence collection for management testing and external audit.",
+                      "how": "Runs testing and monitoring."
+                    }
+                  ]
+                },
+                {
+                  "id": "review-access",
+                  "title": "Review access and segregation of duties",
+                  "keyFacts": [
+                    "Quarterly access reviews",
+                    "SoD conflicts remediated or mitigated"
+                  ],
+                  "painPoints": [
+                    "Reviewers rubber-stamp large lists"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sodc",
+                      "name": "Access Governance and Segregation of Duties",
+                      "description": "Role design, access provisioning, SoD conflict rules and periodic access reviews for financial systems.",
+                      "how": "Generates reviews and conflict reports."
+                    }
+                  ]
+                },
+                {
+                  "id": "provide-evidence",
+                  "title": "Provide evidence to the external auditor",
+                  "keyFacts": [
+                    "Evidence packaged per control",
+                    "Reconciliation sign-offs linked"
+                  ],
+                  "painPoints": [
+                    "Repeated evidence requests"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ctlm",
+                      "name": "Control Monitoring and Audit Evidence",
+                      "description": "SOX control library, automated control monitoring and evidence collection for management testing and external audit.",
+                      "how": "Packages evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "clse",
+                      "name": "Close Orchestration and Account Reconciliation",
+                      "description": "Close calendar, task orchestration, balance-sheet reconciliations and journal approvals across entities.",
+                      "how": "Provides reconciliation sign-offs."
+                    }
+                  ]
+                },
+                {
+                  "id": "sign-off",
+                  "title": "Sub-certify and sign off",
+                  "keyFacts": [
+                    "Sub-certifications from brands and functions",
+                    "CEO/CFO certification"
+                  ],
+                  "painPoints": [
+                    "Late deficiency findings"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ctlm",
+                      "name": "Control Monitoring and Audit Evidence",
+                      "description": "SOX control library, automated control monitoring and evidence collection for management testing and external audit.",
+                      "how": "Tracks deficiencies and sub-certifications."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "SEC EDGAR",
+              "type": "regulator",
+              "description": "Filing destination."
+            },
+            {
+              "system": "External auditor",
+              "type": "partner",
+              "description": "ICFR attestation."
+            }
+          ],
+          "icon": "quarterly-sec-reporting-and-sox-attestation.png"
+        },
+        {
+          "id": "plan-forecast-and-review-performance",
+          "name": "Plan, Forecast and Review Performance",
+          "type": "outcome-based-stream",
+          "description": "Build budgets and rolling forecasts on governed actuals and review brand performance with one set of metric definitions.",
+          "outcomes": [
+            "Faster forecast cycles",
+            "One version of the numbers in reviews",
+            "Better forecast accuracy"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "fpna",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fdbx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fmet",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "cnsl",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "plan-forecast-and-review-performance-flow",
+              "title": "Actuals to performance review",
+              "description": "Load actuals, plan, forecast and review.",
+              "steps": [
+                {
+                  "id": "load-actuals",
+                  "title": "Load consolidated actuals",
+                  "keyFacts": [
+                    "Actuals from consolidation and the data platform"
+                  ],
+                  "painPoints": [
+                    "Actuals restated after load"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cnsl",
+                      "name": "Consolidation and External Reporting",
+                      "description": "Group consolidation, eliminations and SEC 10-Q/10-K reporting packages.",
+                      "how": "Provides consolidated actuals."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "fdbx",
+                      "name": "Finance Data Platform (FinDB)",
+                      "description": "Governed analytical store of ledger, subledger, payment and booking finance data with lineage to source.",
+                      "how": "Provides detailed drivers."
+                    }
+                  ]
+                },
+                {
+                  "id": "plan",
+                  "title": "Build the budget and driver plans",
+                  "keyFacts": [
+                    "Drivers: room nights, ADR, take rate, marketing"
+                  ],
+                  "painPoints": [
+                    "Driver definitions differ between brands"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fpna",
+                      "name": "Planning, Forecasting and Performance Management",
+                      "description": "Budgets, rolling forecasts and brand performance reviews on governed actuals.",
+                      "how": "Hosts plans and drivers."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "fmet",
+                      "name": "Finance Metrics and Management Reporting",
+                      "description": "Single definitions of finance metrics and the management reports and dashboards built on them.",
+                      "how": "Defines drivers consistently."
+                    }
+                  ]
+                },
+                {
+                  "id": "forecast",
+                  "title": "Run rolling forecasts",
+                  "keyFacts": [
+                    "Monthly reforecast",
+                    "Scenario models for FX and demand"
+                  ],
+                  "painPoints": [
+                    "Forecast built in spreadsheets outside the tool"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fpna",
+                      "name": "Planning, Forecasting and Performance Management",
+                      "description": "Budgets, rolling forecasts and brand performance reviews on governed actuals.",
+                      "how": "Runs forecasts and scenarios."
+                    }
+                  ]
+                },
+                {
+                  "id": "review",
+                  "title": "Review performance with leadership",
+                  "keyFacts": [
+                    "Brand reviews on shared dashboards"
+                  ],
+                  "painPoints": [
+                    "Debates about whose number is right"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "fmet",
+                      "name": "Finance Metrics and Management Reporting",
+                      "description": "Single definitions of finance metrics and the management reports and dashboards built on them.",
+                      "how": "Serves governed reports."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Planning SaaS (OneStream, assumed)",
+              "type": "platform",
+              "description": "Reported in a third-party listing; assumption."
+            }
+          ],
+          "icon": "plan-forecast-and-review-performance.png"
+        }
+      ]
+    },
+    {
+      "name": "Platform Evolution and Governance",
+      "description": "How the finance platform converges and how architecture decisions are made and enforced.",
+      "streams": [
+        {
+          "id": "onboard-a-brand-onto-the-global-finance-core",
+          "name": "Onboard a Brand onto the Global Finance Core",
+          "type": "outcome-based-stream",
+          "description": "Converge a brand's (or an acquisition's) finance technology onto the global platform: canonical events, master data, subledger and ledger, with a target state and standards agreed up front.",
+          "outcomes": [
+            "Shorter brand onboarding",
+            "Fewer bespoke integrations",
+            "Lower run cost of duplicate finance technology"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "bonb",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "fint",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "coam",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "glco",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "brim",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tsrm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stdg",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "onboard-a-brand-onto-the-global-finance-core-flow",
+              "title": "Brand decision to live on the core",
+              "description": "Assess, decide, map, integrate, parallel-run and decommission.",
+              "steps": [
+                {
+                  "id": "assess",
+                  "title": "Assess the brand's current finance landscape",
+                  "keyFacts": [
+                    "Inventory of systems, interfaces and cost",
+                    "Dependencies on brand booking and payment systems"
+                  ],
+                  "painPoints": [
+                    "Inventories are out of date"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tsrm",
+                      "name": "Target-State Architecture and Dependency Map",
+                      "description": "Target-state blueprints, transition states and cross-programme dependency map.",
+                      "how": "Maps current and target state."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stdg",
+                      "name": "Standards, Patterns and Conformance Checks",
+                      "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.",
+                      "how": "Defines conformance gates."
+                    }
+                  ]
+                },
+                {
+                  "id": "map-master-data",
+                  "title": "Map accounts, entities and partners",
+                  "keyFacts": [
+                    "Local accounts mapped to the global chart"
+                  ],
+                  "painPoints": [
+                    "Local reporting needs drive exceptions"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "coam",
+                      "name": "Chart of Accounts and Financial Master Data",
+                      "description": "Governed global chart of accounts, cost centres, profit centres and brand/entity mappings used by every posting source.",
+                      "how": "Provides the global chart and mapping governance."
+                    }
+                  ]
+                },
+                {
+                  "id": "integrate",
+                  "title": "Publish canonical finance events from the brand",
+                  "keyFacts": [
+                    "Brand adapter kit with mappings and test harness"
+                  ],
+                  "painPoints": [
+                    "Brand teams are matrixed and have their own roadmaps"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bonb",
+                      "name": "Brand Finance Adapter Kit",
+                      "description": "Reusable adapters, mappings and test harnesses that let a brand publish finance events in the canonical model without bespoke integration.",
+                      "how": "Supplies adapters and tests."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "fint",
+                      "name": "Finance Integration Hub",
+                      "description": "Canonical event, API and file backbone that carries booking, payment and partner events from brands into finance systems.",
+                      "how": "Receives events."
+                    }
+                  ]
+                },
+                {
+                  "id": "parallel-run",
+                  "title": "Parallel-run subledger and ledger",
+                  "keyFacts": [
+                    "Results compared with the legacy ledger for at least one close"
+                  ],
+                  "painPoints": [
+                    "Differences hard to explain"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "brim",
+                      "name": "High-Volume Transaction Subledger (FI-CA/BRIM)",
+                      "description": "SAP FI-CA/BRIM contract-account subledger that absorbs booking-scale transaction volumes and summarises them to the general ledger.",
+                      "how": "Posts brand transactions."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "glco",
+                      "name": "General Ledger and Central Finance Hub",
+                      "description": "SAP S/4HANA general ledger fed through Central Finance; the single global book of record for all brands and legal entities.",
+                      "how": "Records brand ledger."
+                    }
+                  ]
+                },
+                {
+                  "id": "decommission",
+                  "title": "Cut over and decommission legacy",
+                  "keyFacts": [
+                    "Legacy systems retired with archive"
+                  ],
+                  "painPoints": [
+                    "Legacy kept alive for reporting"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tsrm",
+                      "name": "Target-State Architecture and Dependency Map",
+                      "description": "Target-state blueprints, transition states and cross-programme dependency map.",
+                      "how": "Tracks retirement."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stdg",
+                      "name": "Standards, Patterns and Conformance Checks",
+                      "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.",
+                      "how": "Confirms conformance."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Brand finance systems (legacy ERPs)",
+              "type": "platform",
+              "description": "Systems being converged."
+            }
+          ],
+          "icon": "onboard-a-brand-onto-the-global-finance-core.png"
+        },
+        {
+          "id": "govern-an-architecture-decision-to-conformance",
+          "name": "Govern an Architecture Decision to Conformance",
+          "type": "outcome-based-stream",
+          "description": "Take an architecturally significant question from intake to a recorded decision with cost-benefit options and then verify delivery conforms. Aims to raise decision velocity without compromising controls or resilience.",
+          "outcomes": [
+            "Shorter decision lead time",
+            "Fewer re-opened decisions",
+            "Delivery conforms to agreed target state and financial boundaries"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "adrr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stdg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "apmx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tsrm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "sodc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "govern-an-architecture-decision-to-conformance-flow",
+              "title": "Question to conforming delivery",
+              "description": "Intake, analyse, decide, record and check conformance.",
+              "steps": [
+                {
+                  "id": "intake",
+                  "title": "Intake and triage the decision",
+                  "keyFacts": [
+                    "Intake classifies impact: SOX, regulatory, cost, cross-brand"
+                  ],
+                  "painPoints": [
+                    "Unclear who decides"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "adrr",
+                      "name": "Architecture Decision Records and Review Board",
+                      "description": "Intake, option analysis, decision records and review-board workflow with decision rights and SLAs.",
+                      "how": "Intake and triage."
+                    }
+                  ]
+                },
+                {
+                  "id": "analyse-options",
+                  "title": "Analyse options with cost and benefit",
+                  "keyFacts": [
+                    "Options use reusable patterns and portfolio cost data",
+                    "BITS view: business, information, technical, solution"
+                  ],
+                  "painPoints": [
+                    "Options lack cost data"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "apmx",
+                      "name": "Application Portfolio and Technology ROI",
+                      "description": "Inventory of finance and enterprise applications with cost, ownership, lifecycle and ROI tracking.",
+                      "how": "Supplies cost and lifecycle."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tsrm",
+                      "name": "Target-State Architecture and Dependency Map",
+                      "description": "Target-state blueprints, transition states and cross-programme dependency map.",
+                      "how": "Shows dependencies and target-state fit."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stdg",
+                      "name": "Standards, Patterns and Conformance Checks",
+                      "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.",
+                      "how": "Supplies patterns."
+                    }
+                  ]
+                },
+                {
+                  "id": "assess-controls",
+                  "title": "Assess control and access impact",
+                  "keyFacts": [
+                    "Changes to financial systems assessed for SoD and SOX impact"
+                  ],
+                  "painPoints": [
+                    "Control impact discovered after go-live"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "sodc",
+                      "name": "Access Governance and Segregation of Duties",
+                      "description": "Role design, access provisioning, SoD conflict rules and periodic access reviews for financial systems.",
+                      "how": "Assesses access and SoD impact."
+                    }
+                  ]
+                },
+                {
+                  "id": "decide-and-record",
+                  "title": "Decide and record",
+                  "keyFacts": [
+                    "Decision rights and review-board SLAs",
+                    "Decision record with rationale and expiry"
+                  ],
+                  "painPoints": [
+                    "Decisions made in meetings and not recorded"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "adrr",
+                      "name": "Architecture Decision Records and Review Board",
+                      "description": "Intake, option analysis, decision records and review-board workflow with decision rights and SLAs.",
+                      "how": "Records decision."
+                    }
+                  ]
+                },
+                {
+                  "id": "check-conformance",
+                  "title": "Check delivery conformance",
+                  "keyFacts": [
+                    "Conformance checks at design and release",
+                    "Exceptions time-boxed"
+                  ],
+                  "painPoints": [
+                    "Exceptions become permanent"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "stdg",
+                      "name": "Standards, Patterns and Conformance Checks",
+                      "description": "Mandatory global standards and reusable patterns with automated and manual conformance checks.",
+                      "how": "Runs conformance checks."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tsrm",
+                      "name": "Target-State Architecture and Dependency Map",
+                      "description": "Target-state blueprints, transition states and cross-programme dependency map.",
+                      "how": "Updates target state."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [],
+          "icon": "govern-an-architecture-decision-to-conformance.png"
+        }
+      ]
+    }
+  ]
+}

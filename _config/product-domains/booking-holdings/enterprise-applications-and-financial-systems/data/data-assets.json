@@ -1,0 +1,1716 @@
+{
+  "metadata": {
+    "domainId": "enterprise-applications-and-financial-systems",
+    "title": "Enterprise Applications and Financial Systems Data Assets",
+    "description": "Catalog of the finance data that Booking Holdings' enterprise applications and financial systems own: ledger and master data, booking and subledger records, payments and partner settlement, procurement, tax, treasury, close and reporting, controls, analytics, and architecture knowledge. Governance reflects SOX, GDPR, PCI DSS (tokenised), EU e-money safeguarding, VAT/DAC7 and SEC reporting obligations; stores and vendors marked assumed are not publicly confirmed.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Ledger and Master Data",
+      "description": "The accounting record and the reference data that structures it.",
+      "subGroups": [
+        {
+          "name": "Ledger",
+          "description": "Journals and the structures they post to.",
+          "assets": [
+            {
+              "id": "general-ledger-journal",
+              "name": "General Ledger Journal",
+              "kind": "transactional-record",
+              "description": "Line-item universal journal across all legal entities, ledgers and currencies, including Central Finance replicated postings from brand and legacy systems.",
+              "businessMeaning": "The book of record for every reported number.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "statutory-accounting"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Finance and auditors only",
+              "systemOfRecordBrickId": "glco",
+              "ownerTeamId": "ledg",
+              "stewardTeamIds": [
+                "clsr",
+                "sbrv"
+              ],
+              "derivedFromAssetIds": [
+                "contract-account-subledger-posting",
+                "revenue-recognition-schedule",
+                "ap-invoice-and-payment"
+              ],
+              "stores": [
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "journal posting api",
+                  "description": "Validated, balanced postings from subledgers and adapters."
+                },
+                {
+                  "type": "event",
+                  "name": "journal-posted",
+                  "description": "Posting notifications for close and analytics."
+                }
+              ],
+              "governance": {
+                "retention": "10 years (statutory and SOX)",
+                "residency": "eu",
+                "sharingPolicy": "Finance and auditors only; read access by role via SoD-checked roles."
+              }
+            },
+            {
+              "id": "chart-of-accounts-and-financial-master-data",
+              "name": "Chart of Accounts and Financial Master Data",
+              "kind": "reference-data",
+              "description": "Global chart of accounts, brand mappings, cost centres, profit centres, segments and posting rules governed centrally.",
+              "businessMeaning": "The shared vocabulary that makes brand numbers comparable.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Published to all finance systems",
+              "systemOfRecordBrickId": "coam",
+              "ownerTeamId": "ledg",
+              "stewardTeamIds": [
+                "fhub",
+                "fdpl",
+                "clsr"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "serving"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "master data api",
+                  "description": "Lookup and validation of accounts and mappings."
+                },
+                {
+                  "type": "event",
+                  "name": "master-data-changed",
+                  "description": "Approved changes distributed to subscribers."
+                }
+              ],
+              "governance": {
+                "retention": "Life of the entity plus 10 years",
+                "residency": "eu",
+                "sharingPolicy": "Published to all finance systems; changes only via governed workflow."
+              }
+            },
+            {
+              "id": "legal-entity-and-intercompany-register",
+              "name": "Legal Entity and Intercompany Register",
+              "kind": "reference-data",
+              "description": "Legal entities, functional currencies, intercompany agreements, transfer-pricing rules and FX rates used for revaluation.",
+              "businessMeaning": "Who owes whom inside the group, in which currency.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "transfer-pricing"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Finance, tax and treasury only.",
+              "systemOfRecordBrickId": "entm",
+              "ownerTeamId": "ledg",
+              "stewardTeamIds": [
+                "taxt",
+                "trea",
+                "clsr"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "entity and fx api",
+                  "description": "Entity attributes, intercompany partners and rates."
+                }
+              ],
+              "governance": {
+                "retention": "Life of the entity plus 10 years",
+                "residency": "eu",
+                "sharingPolicy": "Finance, tax and treasury only."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order-to-Cash and Revenue Data",
+      "description": "Booking, subledger, revenue and traveller-funds data that turn transactions into revenue.",
+      "subGroups": [
+        {
+          "name": "Bookings and Subledger",
+          "description": "High-volume transactional finance data.",
+          "assets": [
+            {
+              "id": "booking-financial-event",
+              "name": "Booking Financial Event",
+              "kind": "event",
+              "description": "Canonical finance view of a booking lifecycle event (created, modified, cancelled, stayed) from any brand: amounts, currencies, merchant or agency model, entity, partner and tax attributes.",
+              "businessMeaning": "The single finance contract every brand emits.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "traveller",
+                "partner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Personal fields minimised to pseudonymous IDs",
+              "systemOfRecordBrickId": "fint",
+              "ownerTeamId": "fhub",
+              "stewardTeamIds": [
+                "sbrv",
+                "p2lg",
+                "fdpl"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "finance-event-streams",
+                  "role": "event-source"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "booking-financial-event",
+                  "description": "Versioned event schema per lifecycle change."
+                },
+                {
+                  "type": "file",
+                  "name": "brand batch extract",
+                  "description": "Fallback file feed for brands not yet event-enabled."
+                }
+              ],
+              "governance": {
+                "retention": "7 years after stay date; traveller identifiers pseudonymised after 24 months",
+                "residency": "eu",
+                "sharingPolicy": "Personal fields minimised to pseudonymous IDs; brands publish, finance consumes."
+              }
+            },
+            {
+              "id": "contract-account-subledger-posting",
+              "name": "Contract Account Subledger Posting",
+              "kind": "transactional-record",
+              "description": "FI-CA contract-account documents for travellers, partners and payment providers: receivables, payables, clearing and dunning at booking volume.",
+              "businessMeaning": "The open-item truth behind each partner and payment balance.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "partner",
+                "traveller"
+              ],
+              "legalTags": [
+                "sox",
+                "gdpr"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Finance operations by role",
+              "systemOfRecordBrickId": "brim",
+              "ownerTeamId": "sbrv",
+              "stewardTeamIds": [
+                "ledg",
+                "ptst",
+                "p2lg"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "payment-transaction-and-settlement-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "fica-contract-accounts",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "contract account api",
+                  "description": "Balances, open items and clearing."
+                },
+                {
+                  "type": "event",
+                  "name": "subledger-summarised",
+                  "description": "Aggregated postings transferred to the GL."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Finance operations by role; summarised to GL."
+              }
+            },
+            {
+              "id": "revenue-recognition-schedule",
+              "name": "Revenue Recognition Schedule",
+              "kind": "derived-record",
+              "description": "Per-booking performance obligations, gross-versus-net and merchant-versus-agency treatment, recognition dates and cancellation reversals under ASC 606.",
+              "businessMeaning": "When and how much revenue each booking earns.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "asc-606"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Accounting and audit only.",
+              "systemOfRecordBrickId": "rrec",
+              "ownerTeamId": "sbrv",
+              "stewardTeamIds": [
+                "ledg",
+                "clsr"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "contract-account-subledger-posting"
+              ],
+              "stores": [
+                {
+                  "storeId": "fica-contract-accounts",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "revenue schedule api",
+                  "description": "Schedules and recognition events by booking."
+                },
+                {
+                  "type": "event",
+                  "name": "revenue-recognised",
+                  "description": "Daily recognition batch result."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Accounting and audit only."
+              }
+            },
+            {
+              "id": "deferred-merchant-bookings-balance",
+              "name": "Deferred Merchant Bookings Balance",
+              "kind": "derived-record",
+              "description": "Cash received from travellers before the stay, by entity, currency and expected recognition date, with refund exposure. Reported at $5,270M at 31 December 2025 (10-K).",
+              "businessMeaning": "The liability the company holds for travellers until services are delivered.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "emd2"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Accounting, treasury and safeguarding reporting.",
+              "systemOfRecordBrickId": "tfnd",
+              "ownerTeamId": "sbrv",
+              "stewardTeamIds": [
+                "grcx",
+                "trea",
+                "clsr"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "payment-transaction-and-settlement-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "fica-contract-accounts",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "deferred bookings api",
+                  "description": "Balance and roll-forward by entity and currency."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Accounting, treasury and safeguarding reporting."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payments and Settlement Data",
+      "description": "Money in from travellers and money out to partners.",
+      "subGroups": [
+        {
+          "name": "Payments-to-Ledger",
+          "description": "Payment events, settlement and disputes from PSPs and acquirers.",
+          "assets": [
+            {
+              "id": "payment-transaction-and-settlement-record",
+              "name": "Payment Transaction and Settlement Record",
+              "kind": "transactional-record",
+              "description": "Normalised card-not-present and alternative-payment-method transactions, captures, refunds, fees, interchange and PSP settlement-batch lines. Card data is tokenised; only network tokens and last four digits are held.",
+              "businessMeaning": "What was charged, what was settled and what it cost.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "traveller"
+              ],
+              "legalTags": [
+                "pci-dss",
+                "gdpr",
+                "psd2",
+                "sox"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Tokenised only",
+              "systemOfRecordBrickId": "pevt",
+              "ownerTeamId": "p2lg",
+              "stewardTeamIds": [
+                "sbrv",
+                "fdpl"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "payments-operational-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-event-streams",
+                  "role": "event-source"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "payment-settled",
+                  "description": "Normalised settlement line."
+                },
+                {
+                  "type": "file",
+                  "name": "psp settlement file",
+                  "description": "Raw PSP and acquirer reports ingested daily."
+                }
+              ],
+              "governance": {
+                "retention": "10 years for accounting fields; payment personal data per PCI and GDPR minimisation",
+                "residency": "eu",
+                "sharingPolicy": "Tokenised only; no PAN in finance systems."
+              }
+            },
+            {
+              "id": "reconciliation-match-result",
+              "name": "Reconciliation Match Result",
+              "kind": "derived-record",
+              "description": "Three-way match outcome between booking, payment and PSP settlement, with break reason, ageing and resolution.",
+              "businessMeaning": "Proof that every payment reached the ledger.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Finance operations, payments and controls.",
+              "systemOfRecordBrickId": "psrc",
+              "ownerTeamId": "p2lg",
+              "stewardTeamIds": [
+                "sbrv",
+                "grcx"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "payment-transaction-and-settlement-record",
+                "contract-account-subledger-posting"
+              ],
+              "stores": [
+                {
+                  "storeId": "payments-operational-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "match result api",
+                  "description": "Breaks and match status."
+                },
+                {
+                  "type": "event",
+                  "name": "break-raised",
+                  "description": "Unmatched item requiring work."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Finance operations, payments and controls."
+              }
+            },
+            {
+              "id": "chargeback-and-refund-case",
+              "name": "Chargeback and Refund Case",
+              "kind": "transactional-record",
+              "description": "Refund, chargeback, representment and dispute cases with scheme reason codes, liability allocation between company and partner, and accounting outcome.",
+              "businessMeaning": "Who bears each lost or returned payment.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "traveller",
+                "partner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "sox",
+                "pci-dss"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Payments, customer service and finance by role.",
+              "systemOfRecordBrickId": "cbkf",
+              "ownerTeamId": "p2lg",
+              "stewardTeamIds": [
+                "ptst",
+                "sbrv"
+              ],
+              "derivedFromAssetIds": [
+                "payment-transaction-and-settlement-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "payments-operational-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "dispute case api",
+                  "description": "Case lifecycle and accounting outcome."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Payments, customer service and finance by role."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Partner Settlement",
+          "description": "Invoices to and payouts for accommodation and travel partners.",
+          "assets": [
+            {
+              "id": "partner-commission-invoice",
+              "name": "Partner Commission Invoice",
+              "kind": "transactional-record",
+              "description": "Monthly commission invoices to agency-model partners with lines per stay, tax, credit notes and collection status.",
+              "businessMeaning": "What partners owe the company for agency bookings.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "partner"
+              ],
+              "legalTags": [
+                "sox",
+                "vat",
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Partner sees own invoices",
+              "systemOfRecordBrickId": "pinv",
+              "ownerTeamId": "ptst",
+              "stewardTeamIds": [
+                "sbrv",
+                "taxt"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "indirect-tax-determination-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "partner-settlement-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "fica-contract-accounts",
+                  "role": "subledger"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "commission invoice api",
+                  "description": "Invoices and status for partner extranets."
+                },
+                {
+                  "type": "file",
+                  "name": "e-invoice",
+                  "description": "Statutory e-invoice formats where mandated."
+                }
+              ],
+              "governance": {
+                "retention": "10 years (tax)",
+                "residency": "eu",
+                "sharingPolicy": "Partner sees own invoices; finance and tax internally."
+              }
+            },
+            {
+              "id": "partner-payout-instruction",
+              "name": "Partner Payout Instruction",
+              "kind": "transactional-record",
+              "description": "Payout instructions for merchant-model partners: amount net of commission, currency, method (bank transfer, virtual card), value date and status.",
+              "businessMeaning": "What the company owes each partner and when it is paid.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "partner"
+              ],
+              "legalTags": [
+                "sox",
+                "psd2",
+                "emd2"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Treasury, settlement operations and partner self-service.",
+              "systemOfRecordBrickId": "pout",
+              "ownerTeamId": "ptst",
+              "stewardTeamIds": [
+                "trea",
+                "sbrv"
+              ],
+              "derivedFromAssetIds": [
+                "contract-account-subledger-posting",
+                "partner-bank-and-payout-details"
+              ],
+              "stores": [
+                {
+                  "storeId": "partner-settlement-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-event-streams",
+                  "role": "event-source"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "payout api",
+                  "description": "Create and track payouts."
+                },
+                {
+                  "type": "event",
+                  "name": "payout-status-changed",
+                  "description": "Executed, returned or failed."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Treasury, settlement operations and partner self-service."
+              }
+            },
+            {
+              "id": "partner-bank-and-payout-details",
+              "name": "Partner Bank and Payout Details",
+              "kind": "master-data",
+              "description": "Partner beneficiary bank accounts, verification status, payout preferences and DAC7-relevant seller identifiers. Encrypted at field level; changes need verification.",
+              "businessMeaning": "Where money goes, and the most fraud-sensitive partner data.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "sensitive",
+              "dataSubjects": [
+                "partner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "dac7",
+                "aml"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Need-to-know",
+              "systemOfRecordBrickId": "pout",
+              "ownerTeamId": "ptst",
+              "stewardTeamIds": [
+                "taxt",
+                "grcx"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "partner-settlement-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "beneficiary api",
+                  "description": "Verified beneficiary lookups only."
+                }
+              ],
+              "governance": {
+                "retention": "Relationship plus 7 years",
+                "residency": "eu",
+                "sharingPolicy": "Need-to-know; every change audited and dual-verified."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enterprise Operations Data",
+      "description": "Procurement, payables, tax and treasury.",
+      "subGroups": [
+        {
+          "name": "Source-to-Pay",
+          "description": "Suppliers, contracts and payables.",
+          "assets": [
+            {
+              "id": "supplier-master-and-contract",
+              "name": "Supplier Master and Contract",
+              "kind": "master-data",
+              "description": "Supplier records, risk screening, contracts, rate cards and approved catalogues across group entities.",
+              "businessMeaning": "Who we buy from and on what terms.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "supplier-contact"
+              ],
+              "legalTags": [
+                "gdpr",
+                "sox"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Procurement and finance.",
+              "systemOfRecordBrickId": "s2pp",
+              "ownerTeamId": "stpy",
+              "stewardTeamIds": [
+                "ledg"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "procurement-saas",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "supplier api",
+                  "description": "Supplier and contract lookup."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus 7 years",
+                "residency": "eu",
+                "sharingPolicy": "Procurement and finance."
+              }
+            },
+            {
+              "id": "ap-invoice-and-payment",
+              "name": "AP Invoice and Payment",
+              "kind": "transactional-record",
+              "description": "Supplier invoices (including e-invoices), matching results, approvals and payment runs.",
+              "businessMeaning": "What we owe suppliers and what we paid.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "vat",
+                "e-invoicing"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "AP and finance.",
+              "systemOfRecordBrickId": "apin",
+              "ownerTeamId": "stpy",
+              "stewardTeamIds": [
+                "ledg",
+                "ptst"
+              ],
+              "derivedFromAssetIds": [
+                "supplier-master-and-contract"
+              ],
+              "stores": [
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "procurement-saas",
+                  "role": "capture"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "invoice api",
+                  "description": "Invoice status and matching."
+                },
+                {
+                  "type": "file",
+                  "name": "e-invoice network",
+                  "description": "Peppol and country clearance formats."
+                }
+              ],
+              "governance": {
+                "retention": "10 years (tax)",
+                "residency": "eu",
+                "sharingPolicy": "AP and finance."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tax and Treasury",
+          "description": "Tax determination, provisions and cash.",
+          "assets": [
+            {
+              "id": "indirect-tax-determination-record",
+              "name": "Indirect Tax Determination Record",
+              "kind": "derived-record",
+              "description": "Per-transaction VAT, travel transaction and digital-services-tax determination with jurisdiction, rule version, basis and evidence; also DAC7 platform-seller reporting extracts.",
+              "businessMeaning": "Which tax applies, where, and why.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "partner"
+              ],
+              "legalTags": [
+                "vat",
+                "dst",
+                "dac7",
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tax and authorised auditors",
+              "systemOfRecordBrickId": "itax",
+              "ownerTeamId": "taxt",
+              "stewardTeamIds": [
+                "ptst",
+                "fdpl"
+              ],
+              "derivedFromAssetIds": [
+                "booking-financial-event",
+                "partner-commission-invoice"
+              ],
+              "stores": [
+                {
+                  "storeId": "s4-hana-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "tax determination api",
+                  "description": "Real-time and batch determination."
+                },
+                {
+                  "type": "file",
+                  "name": "tax return extract",
+                  "description": "Jurisdiction filing extracts."
+                }
+              ],
+              "governance": {
+                "retention": "10 years or local statute, whichever longer",
+                "residency": "eu",
+                "sharingPolicy": "Tax and authorised auditors; filings to authorities."
+              }
+            },
+            {
+              "id": "tax-provision-and-pillar-two-dataset",
+              "name": "Tax Provision and Pillar Two Dataset",
+              "kind": "derived-record",
+              "description": "Current and deferred tax provision and OECD Pillar Two GloBE effective-tax-rate calculations by jurisdiction and entity.",
+              "businessMeaning": "Group tax expense and minimum-tax top-up exposure.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "pillar-two"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tax and external audit.",
+              "systemOfRecordBrickId": "gtax",
+              "ownerTeamId": "taxt",
+              "stewardTeamIds": [
+                "clsr"
+              ],
+              "derivedFromAssetIds": [
+                "general-ledger-journal",
+                "legal-entity-and-intercompany-register"
+              ],
+              "stores": [
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "provision workpaper",
+                  "description": "Quarterly provision pack."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Tax and external audit."
+              }
+            },
+            {
+              "id": "cash-position-and-fx-exposure",
+              "name": "Cash Position and FX Exposure",
+              "kind": "derived-record",
+              "description": "Daily bank balances, forecasted flows (traveller receipts, partner payouts, supplier runs), FX exposures by currency (principally EUR and GBP per 10-K) and hedge deals.",
+              "businessMeaning": "How much cash we have, where, in which currency, and how it is protected.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "emir"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Treasury, CFO office.",
+              "systemOfRecordBrickId": "trcm",
+              "ownerTeamId": "trea",
+              "stewardTeamIds": [
+                "ptst",
+                "grcx"
+              ],
+              "derivedFromAssetIds": [
+                "partner-payout-instruction",
+                "deferred-merchant-bookings-balance",
+                "ap-invoice-and-payment"
+              ],
+              "stores": [
+                {
+                  "storeId": "treasury-workstation",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "cash position api",
+                  "description": "Position and exposure by entity and currency."
+                },
+                {
+                  "type": "file",
+                  "name": "bank statements",
+                  "description": "MT940/camt.053 statements ingested daily."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Treasury, CFO office."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Close, Reporting and Controls Data",
+      "description": "Close, external reporting, planning and controls evidence.",
+      "subGroups": [
+        {
+          "name": "Close and Reporting",
+          "description": "Reconciliations, consolidated statements and plans.",
+          "assets": [
+            {
+              "id": "account-reconciliation-and-close-task",
+              "name": "Account Reconciliation and Close Task",
+              "kind": "workflow-record",
+              "description": "Balance-sheet reconciliations, close checklists, journal approvals and their sign-offs per period.",
+              "businessMeaning": "Proof each balance was checked before results are released.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Accounting, controls and audit.",
+              "systemOfRecordBrickId": "clse",
+              "ownerTeamId": "clsr",
+              "stewardTeamIds": [
+                "grcx"
+              ],
+              "derivedFromAssetIds": [
+                "general-ledger-journal",
+                "reconciliation-match-result"
+              ],
+              "stores": [
+                {
+                  "storeId": "close-consolidation-saas",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "close status api",
+                  "description": "Task and reconciliation status per period."
+                }
+              ],
+              "governance": {
+                "retention": "10 years",
+                "residency": "eu",
+                "sharingPolicy": "Accounting, controls and audit."
+              }
+            },
+            {
+              "id": "consolidated-financial-statement",
+              "name": "Consolidated Financial Statement",
+              "kind": "reporting-output",
+              "description": "Consolidated and segment results, eliminations, disclosures and 10-K/10-Q data with XBRL tagging.",
+              "businessMeaning": "The numbers the company publishes.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox",
+                "sec-reporting"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Material non-public information until filed",
+              "systemOfRecordBrickId": "cnsl",
+              "ownerTeamId": "clsr",
+              "stewardTeamIds": [
+                "fdpl",
+                "taxt"
+              ],
+              "derivedFromAssetIds": [
+                "general-ledger-journal",
+                "legal-entity-and-intercompany-register"
+              ],
+              "stores": [
+                {
+                  "storeId": "close-consolidation-saas",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "consolidation pack",
+                  "description": "Period packs and disclosures."
+                },
+                {
+                  "type": "api",
+                  "name": "reported results api",
+                  "description": "Released results for management reporting."
+                }
+              ],
+              "governance": {
+                "retention": "Permanent for filed statements",
+                "residency": "eu",
+                "sharingPolicy": "Material non-public information until filed; insider list controls."
+              }
+            },
+            {
+              "id": "plan-and-forecast-dataset",
+              "name": "Plan and Forecast Dataset",
+              "kind": "analytical-dataset",
+              "description": "Annual plan, rolling forecasts, scenarios and driver assumptions by brand, entity and cost centre.",
+              "businessMeaning": "What we expect to happen and what we commit to.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "mnpi"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "FP&A and leadership",
+              "systemOfRecordBrickId": "fpna",
+              "ownerTeamId": "pfmg",
+              "stewardTeamIds": [
+                "fdpl"
+              ],
+              "derivedFromAssetIds": [
+                "consolidated-financial-statement",
+                "finance-analytical-dataset"
+              ],
+              "stores": [
+                {
+                  "storeId": "close-consolidation-saas",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "plan api",
+                  "description": "Plan and forecast versions."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "FP&A and leadership; MNPI handling."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Controls and Regulatory",
+          "description": "SOX, access and e-money safeguarding.",
+          "assets": [
+            {
+              "id": "user-access-and-sod-ruleset",
+              "name": "User Access and SoD Ruleset",
+              "kind": "governance-record",
+              "description": "Role design, segregation-of-duties rules, provisioning history, firefighter access and periodic certifications across finance applications.",
+              "businessMeaning": "Who can do what in finance systems.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "sox",
+                "gdpr"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Controls, IT security and audit.",
+              "systemOfRecordBrickId": "sodc",
+              "ownerTeamId": "grcx",
+              "stewardTeamIds": [
+                "ledg"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "grc-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "access risk api",
+                  "description": "SoD check before provisioning."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Controls, IT security and audit."
+              }
+            },
+            {
+              "id": "sox-control-and-evidence-record",
+              "name": "SOX Control and Evidence Record",
+              "kind": "governance-record",
+              "description": "Key controls, owners, test procedures, results, deficiencies, remediation and links to evidence for ICFR.",
+              "businessMeaning": "Evidence that controls over financial reporting work.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Internal audit, controls owners, external auditor.",
+              "systemOfRecordBrickId": "ctlm",
+              "ownerTeamId": "grcx",
+              "stewardTeamIds": [
+                "clsr",
+                "eaof"
+              ],
+              "derivedFromAssetIds": [
+                "user-access-and-sod-ruleset",
+                "account-reconciliation-and-close-task"
+              ],
+              "stores": [
+                {
+                  "storeId": "grc-store",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "control status api",
+                  "description": "Control and test status."
+                }
+              ],
+              "governance": {
+                "retention": "7 years",
+                "residency": "eu",
+                "sharingPolicy": "Internal audit, controls owners, external auditor."
+              }
+            },
+            {
+              "id": "safeguarded-funds-position",
+              "name": "Safeguarded Funds Position",
+              "kind": "regulatory-record",
+              "description": "Daily relevant-funds calculation and safeguarding account reconciliation for BHFS e-money institutions, with regulatory return extracts.",
+              "businessMeaning": "Proof that customer funds held by licensed entities are protected.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "emd2",
+                "psd2",
+                "sox"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Regulated-entity finance and compliance",
+              "systemOfRecordBrickId": "regr",
+              "ownerTeamId": "grcx",
+              "stewardTeamIds": [
+                "trea",
+                "sbrv"
+              ],
+              "derivedFromAssetIds": [
+                "deferred-merchant-bookings-balance",
+                "cash-position-and-fx-exposure"
+              ],
+              "stores": [
+                {
+                  "storeId": "grc-store",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-document-archive",
+                  "role": "archive"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "regulatory return",
+                  "description": "Periodic returns to the supervising authority."
+                }
+              ],
+              "governance": {
+                "retention": "Per licence conditions (minimum 5 years)",
+                "residency": "eu",
+                "sharingPolicy": "Regulated-entity finance and compliance; regulators on request."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Finance Analytics and Architecture Data",
+      "description": "Shared analytical data and the architecture knowledge base.",
+      "subGroups": [
+        {
+          "name": "Finance Analytics",
+          "description": "Reconciled analytical data and metric definitions.",
+          "assets": [
+            {
+              "id": "finance-analytical-dataset",
+              "name": "Finance Analytical Dataset",
+              "kind": "analytical-dataset",
+              "description": "Reconciled, ledger-tied analytical tables (bookings, revenue, payments, costs) at transaction grain for analytics and management reporting.",
+              "businessMeaning": "One reconciled analytical truth instead of brand spreadsheets.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "traveller",
+                "partner"
+              ],
+              "legalTags": [
+                "gdpr",
+                "sox"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Role-based",
+              "systemOfRecordBrickId": "fdbx",
+              "ownerTeamId": "fdpl",
+              "stewardTeamIds": [
+                "pfmg",
+                "clsr"
+              ],
+              "derivedFromAssetIds": [
+                "general-ledger-journal",
+                "booking-financial-event",
+                "payment-transaction-and-settlement-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sql access",
+                  "description": "Governed SQL access by data product."
+                },
+                {
+                  "type": "file",
+                  "name": "extract",
+                  "description": "Scheduled extracts to SaaS tenants."
+                }
+              ],
+              "governance": {
+                "retention": "7 years; personal fields pseudonymised",
+                "residency": "eu",
+                "sharingPolicy": "Role-based; MNPI fenced before results release."
+              }
+            },
+            {
+              "id": "finance-metric-definition",
+              "name": "Finance Metric Definition",
+              "kind": "reference-data",
+              "description": "Certified metric definitions (gross bookings, take rate, merchant mix, DSO, close days) with lineage to ledger and source data.",
+              "businessMeaning": "One definition per number.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Published internally.",
+              "systemOfRecordBrickId": "fmet",
+              "ownerTeamId": "fdpl",
+              "stewardTeamIds": [
+                "pfmg",
+                "eaof"
+              ],
+              "derivedFromAssetIds": [
+                "finance-analytical-dataset"
+              ],
+              "stores": [
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "metric catalog api",
+                  "description": "Definitions and lineage."
+                }
+              ],
+              "governance": {
+                "retention": "Life of metric",
+                "residency": "eu",
+                "sharingPolicy": "Published internally."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Architecture Knowledge",
+          "description": "Decisions, standards and portfolio.",
+          "assets": [
+            {
+              "id": "architecture-decision-record",
+              "name": "Architecture Decision Record",
+              "kind": "governance-record",
+              "description": "Decisions with context, options, cost-benefit, risks, control impact, decision rights and status, linked to programmes and applications.",
+              "businessMeaning": "Why the landscape looks the way it does.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Internal",
+              "systemOfRecordBrickId": "adrr",
+              "ownerTeamId": "eaof",
+              "stewardTeamIds": [
+                "aptg",
+                "grcx"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "architecture-repository",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "decision api",
+                  "description": "Decisions by programme, application or standard."
+                }
+              ],
+              "governance": {
+                "retention": "Permanent",
+                "residency": "eu",
+                "sharingPolicy": "Internal; shared with auditors when a control relies on it."
+              }
+            },
+            {
+              "id": "architecture-standard-and-pattern",
+              "name": "Architecture Standard and Pattern",
+              "kind": "reference-data",
+              "description": "Mandatory standards, guidelines and reusable patterns for enterprise applications and financial systems, with conformance rules and waivers.",
+              "businessMeaning": "The rules every finance build follows.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Internal, all engineering.",
+              "systemOfRecordBrickId": "stdg",
+              "ownerTeamId": "eaof",
+              "stewardTeamIds": [
+                "fhub",
+                "grcx"
+              ],
+              "derivedFromAssetIds": [
+                "architecture-decision-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "architecture-repository",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "standards api",
+                  "description": "Standards and machine-checkable rules."
+                }
+              ],
+              "governance": {
+                "retention": "Permanent with version history",
+                "residency": "eu",
+                "sharingPolicy": "Internal, all engineering."
+              }
+            },
+            {
+              "id": "application-portfolio-inventory",
+              "name": "Application Portfolio Inventory",
+              "kind": "reference-data",
+              "description": "Enterprise and finance applications across brands with owner, lifecycle, cost, SOX relevance, capability mapping and target-state disposition (tolerate, invest, migrate, eliminate).",
+              "businessMeaning": "What we run, what it costs, and where it is going.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "sox"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Internal",
+              "systemOfRecordBrickId": "apmx",
+              "ownerTeamId": "aptg",
+              "stewardTeamIds": [
+                "eaof",
+                "fdpl"
+              ],
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "architecture-repository",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "finance-lakehouse",
+                  "role": "analytical-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "portfolio api",
+                  "description": "Applications, capabilities and dispositions."
+                }
+              ],
+              "governance": {
+                "retention": "Permanent with history",
+                "residency": "eu",
+                "sharingPolicy": "Internal; cost fields restricted to leadership."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "s4-hana-db",
+      "name": "S/4HANA Finance Database (HANA)",
+      "kind": "operational-database",
+      "description": "SAP S/4HANA universal journal (ACDOCA) and finance master data on SAP HANA, reached through Central Finance replication from brand and legacy ledgers. Run in SAP RISE private cloud (assumed).",
+      "technology": "SAP HANA",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "fica-contract-accounts",
+      "name": "FI-CA Contract Accounting Store",
+      "kind": "operational-database",
+      "description": "SAP FI-CA/BRIM contract accounts, posting documents and convergent invoicing tables for high-volume booking, payment and partner transactions.",
+      "technology": "SAP HANA (FI-CA/BRIM)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "finance-event-streams",
+      "name": "Finance Event Streams",
+      "kind": "event-stream",
+      "description": "Durable topics carrying booking-financial, payment-settlement, payout and tax events from brands and payment services into the finance core.",
+      "technology": "Managed event streaming (Kafka-compatible)",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "finance-lakehouse",
+      "name": "Finance Lakehouse (FinDB)",
+      "kind": "analytical-store",
+      "description": "Governed analytical store for finance-grade, reconciled datasets and metric definitions. FinDB is named only in a third-party job listing, so its role here is assumed.",
+      "technology": "Cloud lakehouse / warehouse",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "payments-operational-db",
+      "name": "Payments-to-Ledger Operational DB",
+      "kind": "operational-database",
+      "description": "Normalised payment, settlement-file, match-result and dispute records before posting to the subledger.",
+      "technology": "Relational database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "partner-settlement-db",
+      "name": "Partner Settlement DB",
+      "kind": "operational-database",
+      "description": "Commission invoices, payout instructions and tokenised partner bank details, with payout status history.",
+      "technology": "Relational database with field-level encryption",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "treasury-workstation",
+      "name": "Treasury Management System",
+      "kind": "saas-tenant",
+      "description": "Treasury workstation tenant holding bank balances, cash positions, FX exposures and hedge deals.",
+      "technology": "Treasury management SaaS (vendor not disclosed)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "close-consolidation-saas",
+      "name": "Close and Consolidation SaaS Tenants",
+      "kind": "saas-tenant",
+      "description": "Account reconciliation / close task tenant and consolidation / planning tenant. BlackLine and OneStream appear in a third-party listing, so the vendors are assumed.",
+      "technology": "Vendor SaaS (assumed BlackLine, OneStream)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "procurement-saas",
+      "name": "Source-to-Pay SaaS Tenant",
+      "kind": "saas-tenant",
+      "description": "Procurement, supplier onboarding, contract and invoice-capture tenant integrated with S/4HANA AP.",
+      "technology": "Source-to-pay SaaS (vendor not disclosed)",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "grc-store",
+      "name": "GRC and Controls Repository",
+      "kind": "operational-database",
+      "description": "Control library, SoD rulesets, access certifications, test results and audit evidence references.",
+      "technology": "SAP GRC plus controls repository (assumed)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "finance-document-archive",
+      "name": "Finance Document Archive",
+      "kind": "object-store",
+      "description": "Immutable WORM archive of invoices, statements, filings and evidence packs for statutory and SOX retention.",
+      "technology": "Object storage with retention lock",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "architecture-repository",
+      "name": "Architecture Repository",
+      "kind": "operational-database",
+      "description": "Decision records, standards, pattern catalog, application portfolio and target-state models.",
+      "technology": "EA repository tool plus docs-as-code (assumed)",
+      "status": "active",
+      "classification": "internal"
+    }
+  ]
+}

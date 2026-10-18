@@ -1,0 +1,434 @@
+{
+  "schemaVersion": "1.0",
+  "domainId": "enterprise-applications-and-financial-systems",
+  "status": "ready",
+  "title": "Following the money: how a travel company's financial systems work",
+  "updated": "2026-10-18",
+  "audience": "A curious adult from a different field who has never worked in accounting, payments or enterprise software. No knowledge of bookkeeping, SAP or software architecture is assumed.",
+  "scope": "An introduction to the financial systems behind a large online travel company: how a booking turns into payments, payouts, revenue, taxes and published financial statements, and why the software that does this needs deliberate design. Booking Holdings (Booking.com, Priceline, Agoda, KAYAK, OpenTable) is the running context, and facts about it come from its public filings and job postings. The guesthouse booking, the people and the amounts in the walkthrough are fictional. Traveler-facing apps, marketing and human-resources systems are outside this guide. Accounting and tax rules differ by country; the explanation describes general patterns for a United States-listed company that operates heavily in Europe.",
+  "learningGoals": [
+    "Explain why a travel booking creates many separate financial records, not one.",
+    "Distinguish the agency model from the merchant model and say why the difference changes the finance work.",
+    "Explain why money received from a traveler is not yet revenue, and when it becomes revenue.",
+    "Describe what reconciliation and the month-end close are, and why auditors care about them.",
+    "Explain why a company with several brands needs shared standards and an architecture function for its financial systems."
+  ],
+  "introduction": {
+    "whatItIs": "When someone books a hotel room online, they see one screen and one price. Behind that screen, a chain of records starts moving: a card payment, money arriving days later from a payment company, a debt owed to the hotel, a tax that may be due in another country, a commission the company earns only when the guest actually stays, and finally a line in a report that investors and regulators read.\n\nThe financial systems of a travel company are the software and the agreed rules that keep all those records correct, connected and explainable. Enterprise applications is the broader name for the large business software packages, such as accounting, purchasing and treasury systems, that a company runs on.",
+    "whyItMatters": "Booking Holdings reported about 186 billion US dollars of gross bookings and 26.9 billion dollars of revenue for 2025. At that size, a rounding rule, a missing record or a late payment to hotels is multiplied millions of times. Hotels depend on being paid on time. Tax authorities expect the right tax in the right country. Investors and the law expect published numbers that can be traced back to individual transactions.\n\nThe visible product is the booking. The financial systems are what make the booking trustworthy as a business.",
+    "familiarComparison": "Think of a group of friends settling shared costs after a holiday. Someone paid for the apartment, someone else for dinners, one person still owes money, and a refund for a cancelled boat trip has not arrived yet. To settle up fairly you need a list of every payment, an agreement on who owes what, and a moment when you check the list against everyone's bank statements.",
+    "whereComparisonBreaks": "Friends settle once. A travel company settles continuously, in dozens of currencies, with millions of hotels and travelers, under accounting standards and tax laws that decide exactly when money counts as income. It must also prove to outside auditors that its process for keeping the list is reliable, not just that the final numbers look plausible."
+  },
+  "participants": [
+    {
+      "name": "The traveler",
+      "role": "Books and pays for a stay, sometimes at booking time and sometimes at the property.",
+      "caresAbout": "A clear price, a familiar way to pay (a card, a digital wallet or a local payment method), and a quick, correct refund if plans change."
+    },
+    {
+      "name": "The property or travel partner",
+      "role": "Provides the room, flight, car or table, and is paid by the traveler or by the platform depending on the arrangement.",
+      "caresAbout": "Being paid the right amount on time, understanding deductions, and receiving correct commission invoices and tax documents."
+    },
+    {
+      "name": "The brands and their payments teams",
+      "role": "Run the booking sites and apps and the payment services behind them. Booking Holdings describes its financial-services arm as a number of licensed and regulated electronic-money institutions that support the brands.",
+      "caresAbout": "Launching new payment methods and markets quickly, keeping payment costs and fraud losses low, and not being blocked by finance."
+    },
+    {
+      "name": "Finance teams",
+      "role": "Controllers, accountants, tax and treasury specialists, and the people who pay partners and suppliers. They own the official numbers.",
+      "caresAbout": "Closing the books on time, numbers they can explain line by line, the right tax in every country, and knowing where the company's cash is."
+    },
+    {
+      "name": "Auditors, regulators and investors",
+      "role": "Outside parties who rely on the published numbers. An independent audit firm tests both the numbers and the controls that produce them.",
+      "caresAbout": "Evidence that the numbers are complete and accurate, and that the process producing them cannot easily be bypassed or manipulated."
+    },
+    {
+      "name": "Enterprise architects and engineering teams",
+      "role": "Decide how the systems fit together, and build and run them. In a company with several brands, engineers often sit in each brand, while a central architecture team sets shared standards.",
+      "caresAbout": "Clear decisions and standards, fewer one-off integrations, systems that can grow with the business, and changes that do not break financial controls."
+    }
+  ],
+  "participantsOverview": {
+    "illustrationPrompt": "A friendly map of who is involved when a traveler books a guesthouse room through an online travel company. Left: a traveler with a phone. Right: a small guesthouse owner. Center: one large rounded box labeled 'Travel company' containing three smaller boxes labeled 'Payments', 'Finance' and 'Architecture'. Top left: an auditor with a magnifying glass. Top right: a regulator building. Arrows, each with exactly one label: traveler to Payments 'pays'; Payments to guesthouse owner 'payout'; guesthouse owner to Finance, dashed, 'commission invoice (agency)'; Finance up to auditor 'reports and evidence'; regulator down to the Travel company box 'rules'. Architecture has short arrows only to Payments and Finance, labeled 'shared standards'; no arrow connects Architecture to the regulator. Keep labels short and legible; no other text. Do not draw any real company logos or brand marks; use generic icons only. Check: the 'pays' arrow ends at the Payments box (not Finance); the 'reports and evidence' arrow starts at the Finance box (not Payments).",
+    "media": [
+      {
+        "id": "participants-overview",
+        "type": "image",
+        "src": "media/participants-overview.jpg",
+        "title": "The people involved",
+        "alt": "Map: the traveler pays the Payments team of the travel company; Payments sends the payout to the guesthouse owner, who sends a commission invoice to Finance in the agency case; Architecture gives shared standards to Payments and Finance; the company sends reports and evidence to the auditor; the regulator sets rules for the company.",
+        "caption": "Who pays, who is paid, who checks and who sets the rules around a single booking."
+      }
+    ]
+  },
+  "concepts": [
+    {
+      "term": "Ledger and journal entry",
+      "meaning": "A ledger is the company's official record of money: what it owns, what it owes, what it earns and what it spends. Each change is written as a journal entry that records the amount twice, as a debit to one account and a credit to another, so the books always balance.",
+      "example": "When a traveler's 300 euros arrives, one entry increases 'cash at bank' by 300 and increases 'money owed onward' by 300. Nothing has been earned yet; the company simply holds money it owes to others.",
+      "whyItMatters": "Every published number is a sum of journal entries. If an entry is missing, duplicated or posted to the wrong account, the error flows straight into the financial statements.",
+      "illustrationPrompt": "Simple teaching scene: a large open book labeled 'Ledger' with two columns labeled 'Debit' and 'Credit'. A single card showing '300 EUR' is split into two equal halves, one placed in each column, with a small level balance scale between them. Labels: 'Cash at bank' on the left half, 'Owed onward' on the right half. Clean and friendly, no other text.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-ledger-and-journal-entry.jpg",
+          "title": "Ledger and journal entry",
+          "alt": "An open ledger book with Debit and Credit columns: 300 euros of cash at bank on the left balances 300 euros owed onward on the right, with a level scale between them.",
+          "caption": "One payment, two equal entries: the cash arrives, and so does the obligation to pass it on."
+        }
+      ]
+    },
+    {
+      "term": "Agency model and merchant model",
+      "meaning": "In the agency model the traveler pays the property directly, usually at the stay, and the travel company later invoices the property for its commission. In the merchant model the travel company takes the traveler's payment itself, holds it, and pays the property after deducting its share.",
+      "example": "Under agency, a guesthouse charges the guest 300 euros at checkout and later receives an invoice for 45 euros of commission. Under merchant, the platform collects the 300 euros at booking and later pays the guesthouse 255 euros.",
+      "whyItMatters": "The two models create completely different financial work. Agency means invoicing partners and collecting from them. Merchant means handling travelers' payments, refunds and disputes, holding money and paying partners. Booking Holdings reports that 70 percent of its gross bookings were on a merchant basis in 2025, up from 63 percent in 2024, so the merchant workload is growing fast.",
+      "illustrationPrompt": "Side-by-side comparison in two panels labeled 'Agency' and 'Merchant'. Three characters appear in each panel: a traveler with a backpack, a small guesthouse with its owner, and a generic travel platform shown as a plain laptop icon labeled 'Platform'. Agency panel: one arrow from the traveler to the guesthouse labeled '300', and one arrow from the guesthouse owner to the Platform labeled '45 commission'. The traveler has no arrow to the Platform. Merchant panel: one arrow from the traveler to the Platform labeled '300', and one arrow from the Platform to the guesthouse owner labeled '255'. The guesthouse sends nothing to the traveler. Arrowheads must clearly point in these directions. Only these labels. Do not draw any real company logos or brand marks; use generic icons only.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-agency-model-and-merchant-model.jpg",
+          "title": "Agency model and merchant model",
+          "alt": "Two panels. Agency: the traveler pays the guesthouse 300, and the guesthouse pays the platform 45 commission. Merchant: the traveler pays the platform 300, and the platform pays the guesthouse 255.",
+          "caption": "Same stay, same amounts, but who holds the money and who invoices whom is reversed."
+        }
+      ]
+    },
+    {
+      "term": "Revenue recognition",
+      "meaning": "The rules that decide when, and how much of, the money that flows through a company counts as its own income. Under the accounting standard used by US-listed companies, revenue is recorded when the company has delivered what it promised, not when the cash arrives.",
+      "example": "A traveler books in March for a stay in July and pays immediately. The company has the cash in March, but its promise (arranging the stay) is fulfilled around July, so its commission counts as revenue then. If the booking is cancelled with a full refund, it never becomes revenue.",
+      "whyItMatters": "Receiving money and earning money are different events. Systems must keep track of millions of bookings waiting to be earned, and must change the record whenever a booking is changed or cancelled.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-revenue-recognition.jpg",
+          "title": "Revenue recognition",
+          "alt": "Two scenes. In March a traveler pays and the coin goes into a box labeled Cash held. In July, when the stay happens, the commission moves into a box labeled Revenue.",
+          "caption": "Cash arrives at booking; the platform's share becomes revenue only when the stay is delivered."
+        }
+      ]
+    },
+    {
+      "term": "Deferred merchant bookings",
+      "meaning": "Money the company has received from travelers for trips that have not happened yet. It is recorded as something the company owes, because most of it will be paid to partners or refunded.",
+      "example": "Booking Holdings reported about 5.3 billion dollars of deferred merchant bookings at the end of 2025, up from about 4.0 billion a year earlier.",
+      "whyItMatters": "This is a large, constantly changing pool of other people's money. Finance must be able to say, at any moment, how much is held, for which bookings, and in which legal entity and currency. Regulated payment entities may also have to safeguard customer funds, meaning keep them separate and protected.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-deferred-merchant-bookings.jpg",
+          "title": "Deferred merchant bookings",
+          "alt": "A traveler drops a card payment into a jar labeled Deferred bookings, owed for future trips; arrows lead out to a payout to a partner and a refund.",
+          "caption": "Money held for trips that have not happened yet leaves either as a partner payout or as a refund."
+        }
+      ]
+    },
+    {
+      "term": "Subledger and general ledger",
+      "meaning": "The general ledger holds totals by account and is the source for financial statements. A subledger holds the detail underneath one area, such as every booking-level payment, refund and payout, and periodically passes summarized totals to the general ledger.",
+      "example": "A subledger might hold tens of millions of individual booking payments for a month. The general ledger receives a few thousand summarized entries, each traceable back to the detailed records.",
+      "whyItMatters": "Putting every booking directly into the general ledger would make it slow and unreadable. Keeping detail in a subledger keeps the main books manageable, but only if every summary can be traced back to its details. Booking.com's finance-systems job postings mention SAP's high-volume contract accounting and billing tools (FI-CA and BRIM) for this kind of work.",
+      "illustrationPrompt": "A funnel diagram: at the top, a wide pile of many small receipt cards labeled 'Subledger: every booking'; they flow down through a funnel labeled 'summarize' into a single neat book at the bottom labeled 'General ledger'. A thin dotted line runs from the book back up to one specific receipt card, labeled 'trace back'. Only these labels.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-subledger-and-general-ledger.jpg",
+          "title": "Subledger and general ledger",
+          "alt": "Many booking receipts labeled Subledger: every booking pour through a funnel labeled summarize into a single General ledger book, with a dotted trace-back line to one receipt.",
+          "caption": "Detail stays in the subledger; summaries go to the general ledger, and every summary must trace back."
+        }
+      ]
+    },
+    {
+      "term": "Payment service provider, settlement and chargeback",
+      "meaning": "A payment service provider processes card and other online payments for a merchant. When a card is used online without being physically present (a card-not-present payment), the provider authorizes it and, days later, settles: it sends the money minus fees, usually as one batch with a file listing what is included. A chargeback is when the cardholder's bank reverses a payment because the cardholder disputes it.",
+      "example": "A traveler pays 300 euros on Monday. On Thursday the provider deposits a single amount covering thousands of payments, after fees. Two months later the traveler's bank reverses the 300 euros because the traveler says the room was not as described.",
+      "whyItMatters": "The money does not arrive when, or in the amount, that the booking screen suggests. Alternative payment methods such as digital wallets and local bank transfers each have their own timing and file formats. Booking.com, for example, announced a partnership in 2025 with Ant International's Antom to add local payment methods in Asian markets. Each new method adds work to finance's ability to match money to bookings.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-payment-service-provider-settlement-and-chargeback.jpg",
+          "title": "Payment service provider, settlement and chargeback",
+          "alt": "A timeline: on Monday a traveler pays 300 through a payment provider; on Thursday the provider sends a batch of thousands of payments minus fees, with a settlement file, to the company bank account; two months later 300 is reversed to the traveler's bank.",
+          "caption": "The money arrives later, in bulk and net of fees, and can still be taken back months afterwards."
+        }
+      ],
+      "illustrationPrompt": "Three-part timeline left to right with headings 'Monday: payment', 'Thursday: settlement', 'Two months later: chargeback'. Part 1: a traveler pays 300 euros on a phone; an arrow goes to a box labeled 'Payment provider'. Part 2: one arrow from 'Payment provider' to a box labeled 'Company bank account', carrying a bundle labeled 'Batch: thousands of payments, minus fees', plus a document labeled 'Settlement file'. Part 3: one arrow from 'Company bank account' to a bank labeled 'Traveler's bank', labeled '300 reversed (dispute)'. Money in part 3 leaves the company; no arrow points back toward the company in part 3. Only these labels. Do not draw any real company logos or brand marks; use generic icons only. The traveler has no caption or name label."
+    },
+    {
+      "term": "Reconciliation",
+      "meaning": "Checking that two records that should agree actually do agree, and explaining any difference.",
+      "example": "Finance compares the bookings it expected to be paid, the provider's settlement file, and the amount that actually reached the bank account. If 1,000 euros is missing, someone must find out whether it is a fee, a chargeback, a timing difference or an error.",
+      "whyItMatters": "Reconciliation is how a company knows its records match reality. Unexplained differences that pile up become a risk to the published numbers and a sign that money may be leaking.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-reconciliation.jpg",
+          "title": "Reconciliation",
+          "alt": "Records show 10,000 euros expected and a settlement file of 9,000; an analyst finds a 1,000 euro difference and sorts its possible causes (fee, timing, chargeback, error) before checking the bank.",
+          "caption": "Reconciliation finds the difference and, more importantly, explains it."
+        }
+      ]
+    },
+    {
+      "term": "Month-end close and internal controls",
+      "meaning": "The close is the routine at the end of each month and quarter in which finance completes the records, reconciles accounts, makes adjustments and produces the period's financial statements. Internal controls are the checks built into that process, such as approvals, reconciliations and restricted access, that prevent or catch errors and fraud.",
+      "example": "No one person may both create a new supplier and approve payments to it. That separation of duties is a control. The system's access rules enforce it, and auditors test that the rule actually works.",
+      "whyItMatters": "In the United States, the Sarbanes-Oxley Act requires listed companies' management to report on these controls, and for large companies an independent auditor attests to them. Booking Holdings reported its internal control over financial reporting as effective for 2025, with an auditor's attestation. Any change to a financial system can affect a control, so system changes are part of compliance work.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-month-end-close-and-internal-controls.jpg",
+          "title": "Month-end close and internal controls",
+          "alt": "Left: one person both creates a supplier and approves payments, leading to a chest marked potential errors or fraud. Right: two people split those steps through a locked control, leading to verified payouts.",
+          "caption": "Separation of duties is a control the system enforces and auditors test."
+        }
+      ]
+    },
+    {
+      "term": "Architecture decision and target state",
+      "meaning": "An architecture decision is a recorded choice about how systems fit together, such as which system is the official source for a type of record. The target state is the agreed picture of where the whole set of systems should be in several years. Architecture standards are the rules teams follow to move toward it.",
+      "example": "A decision might say: every brand sends booking financial events in one common format to one integration hub, and only the central subledger calculates revenue. A brand that wants its own revenue calculator would need an explicit, time-limited exception.",
+      "whyItMatters": "Without shared decisions, each brand or team solves the same problem differently, and finance spends its time translating between versions. With them, work can move faster without weakening controls. That is the job of the enterprise architecture function in this domain.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-architecture-decision-and-target-state.jpg",
+          "title": "Architecture decision and target state",
+          "alt": "Left: two brands send differently formatted data to one stressed person doing translation work. Right: both brands send a shared format through an integration hub to one revenue calculator under a shared standard.",
+          "caption": "A shared decision replaces recurring translation work with one consistent flow."
+        }
+      ]
+    }
+  ],
+  "historyNote": "These turning points explain present practice in large listed companies like Booking Holdings. They are a selection, not a complete history, and the lessons attached to them are teaching interpretations.",
+  "history": [
+    {
+      "period": "1990s: integrated business software",
+      "change": "Large companies moved from separate departmental programs to integrated enterprise resource planning (ERP) systems, in which accounting, purchasing and other functions share one database. SAP became one of the most widely used suppliers.",
+      "whyItMatters": "Finance came to expect one set of shared master records, such as accounts, suppliers and legal entities. Much of today's architecture work is about keeping those shared records consistent as companies grow and acquire."
+    },
+    {
+      "period": "2002: controls become a legal duty",
+      "change": "After major accounting scandals, the United States passed the Sarbanes-Oxley Act. It made executives personally certify financial reports and required reporting on internal control over financial reporting.",
+      "whyItMatters": "Financial systems stopped being only about efficiency. How a system controls who can change what, and what evidence it keeps, became a legal and audit concern.",
+      "sourceUrl": "https://www.congress.gov/bill/107th-congress/house-bill/3763"
+    },
+    {
+      "period": "2015 to 2019: payment regulation and strong authentication in Europe",
+      "change": "The EU's revised Payment Services Directive (PSD2) was adopted in 2015, and its requirement for strong customer authentication of online payments was phased in from 2019.",
+      "whyItMatters": "Online payments gained extra steps, more payment options and more regulated players. Finance systems had to handle more payment types, providers and rules, and further EU changes are being prepared.",
+      "sourceUrl": "https://eur-lex.europa.eu/eli/dir/2015/2366/oj"
+    },
+    {
+      "period": "2016 onward: modernizing Booking.com's accounting core",
+      "change": "According to Booking.com job postings, its financial-systems team ran SAP on the in-memory HANA database, moved to SAP Simple Finance in February 2016, and began moving toward SAP S/4HANA in 2019 using SAP Central Finance as a bridge.",
+      "whyItMatters": "Moving a company's core accounting system is a multi-year program that must keep the books running during the move. Decisions made at that stage shape the finance landscape for a decade.",
+      "sourceUrl": "https://www.efinancialcareers.com/jobs-Netherlands-Amsterdam-SAP_FI_Specialist_FinTech.id24600255"
+    },
+    {
+      "period": "2024 to 2025: from agency to merchant",
+      "change": "Booking Holdings' share of gross bookings handled on a merchant basis rose to 70 percent in 2025 from 63 percent in 2024. The company also ran a Transformation Program that includes modernizing processes and systems and optimizing procurement.",
+      "whyItMatters": "More bookings now involve the company handling travelers' money, refunds and partner payouts itself. That multiplies payment, reconciliation and payout volumes while the company is also trying to lower costs.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1075531/000107553126000009/bkng-20251231.htm"
+    }
+  ],
+  "walkthrough": {
+    "title": "Lena books three nights at Casa Azul in Lisbon",
+    "setup": "This is a fictional teaching case with illustrative amounts and simplified timing. Lena, who lives in Germany, books three nights at Casa Azul, a small guesthouse in Lisbon, through a large online travel platform. The booking is on the merchant model: Lena pays the platform when she books, in March, for a stay in July. The total is 300 euros, and the platform's share is 15 percent, or 45 euros. Joana runs Casa Azul. Priya is a controller in the platform's finance team. Tom is an enterprise architect.",
+    "illustrationPrompt": "A left-to-right comic strip in five panels with the same characters throughout. 1: Lena (traveler) pays on a phone, label 'March: pays 300'. 2: a bank building receives one bundle from a payment company, label 'Settlement, minus fees'. 3: Lena changes her plans and gets money back, label 'Exception: 100 refunded'. 4: Joana (guesthouse owner) receives money, label 'July: payout 170'. 5: Priya (finance) ticks a checklist next to a report, label 'Month-end close'. Only these labels; friendly and clear. Do not draw any real company logos or brand marks; use generic icons only. The payment company is a plain generic building icon labeled 'Payment provider'.",
+    "steps": [
+      {
+        "title": "Lena books and pays",
+        "whatHappens": "Lena pays 300 euros by card. The payment service provider authorizes the payment. The booking system sends a booking event to finance: who booked, which property, which legal entity of the platform, the amount, the currency and the stay dates.",
+        "whyItMatters": "From this moment the platform holds money that belongs, for now, partly to Lena and mostly to Casa Azul. The event is the raw material for every later financial record, so it must be complete and mean the same thing in every brand."
+      },
+      {
+        "title": "The money arrives, but not as one payment",
+        "whatHappens": "Three days later the provider deposits one large amount covering many thousands of payments, minus its fees, together with a settlement file. Finance systems match Lena's 300 euros in the file to her booking and match the deposit to the bank statement. The 300 euros is recorded as cash held and as an amount owed (deferred merchant bookings), not as income.",
+        "whyItMatters": "This three-way match of booking, provider file and bank is reconciliation. If it fails at scale, nobody can say with certainty how much travelers' money the company holds.",
+        "watchOut": "If a new local payment method is launched before its settlement files can be matched automatically, its payments pile up as unexplained items that people must investigate by hand."
+      },
+      {
+        "title": "Lena shortens her stay",
+        "whatHappens": "In May, Lena changes her booking to two nights. Under the property's policy she receives 100 euros back. The refund is sent through the provider, the amount held for the booking drops to 200 euros, and the expected payout to Casa Azul and the platform's future share are recalculated.",
+        "whyItMatters": "This is the exception that makes the work hard. Every record built so far must be adjusted consistently, in the payment records, the subledger and the expected payout, or the books will no longer agree with the money.",
+        "watchOut": "If the refund is processed in the payment system but the booking change reaches finance late, the subledger briefly shows the old amount. Reconciliation will flag the difference, and someone must explain it before the month closes."
+      },
+      {
+        "title": "Lena stays and revenue is recognized",
+        "whatHappens": "Lena stays in July. The platform has now delivered what it promised, so its share of the reduced booking, 30 euros, becomes revenue. The remaining 170 euros becomes a payable to Casa Azul. Tax systems work out which taxes apply to the platform's fee and in which country.",
+        "whyItMatters": "Cash arrived in March, but income is recorded in July. The rules connect the financial record to the real service, not to the moment money moved."
+      },
+      {
+        "title": "Joana is paid",
+        "whatHappens": "The payout system groups all of Casa Azul's completed stays, applies deductions, and sends Joana 170 euros for Lena's stay by bank transfer, with a statement explaining the amount.",
+        "whyItMatters": "For Joana this payout is what matters most. A late or unexplained payment damages trust and creates calls to support. For the platform, the payout clears the amount it owed and must be matched to the bank once again."
+      },
+      {
+        "title": "The month closes and the quarter is reported",
+        "whatHappens": "At the end of July, the subledger sends summarized entries to the general ledger. Priya's team reconciles accounts, reviews unexplained differences, and confirms that controls ran, for example that no one changed payout bank details without a second approval. At quarter end, the results of all brands and legal entities are combined (consolidated) into the published statements.",
+        "whyItMatters": "Lena's booking is now part of one line in a report read by investors and auditors. Auditors can pick that line and ask to see the evidence all the way back to her booking."
+      },
+      {
+        "title": "An architecture question appears",
+        "whatHappens": "Priya notices that another brand in the group records partial refunds differently, so its numbers need manual adjustment every month. She raises it with Tom. Tom brings it to the architecture review: should every brand send refund events in the shared format to the central subledger, and by when? The options are compared on cost, risk and benefit, the decision is recorded, and conformance is tracked.",
+        "whyItMatters": "One-off workarounds are cheap once and expensive forever. A recorded decision and a shared standard turn a recurring manual fix into a design that scales, without weakening controls."
+      }
+    ],
+    "outcome": "Lena got a correct refund, Joana was paid the right amount on time, the platform earned its fee when the stay happened, and the published numbers could be traced back to individual bookings. Success here means that money, records and promises stayed in step through a change of plans, across systems built by different teams.",
+    "media": [
+      {
+        "id": "walkthrough-overview",
+        "type": "image",
+        "src": "media/walkthrough-overview.jpg",
+        "title": "Lena books three nights at Casa Azul in Lisbon",
+        "alt": "Five panels: Lena pays 300 in March; the payment provider settles to the bank minus fees; Lena gets 100 refunded after changing plans; Casa Azul receives a 170 payout in July; a controller completes the month-end close.",
+        "caption": "Lena's booking from payment to close, including the refund that changes every later record."
+      }
+    ]
+  },
+  "valueAndIncentives": [
+    {
+      "title": "Why the company invests in this",
+      "explanation": "Correct, fast financial systems let the company pay partners reliably, publish numbers on time, meet tax and regulatory duties, and understand its own performance. Weak systems show up as manual work, delayed closes, tax penalties, payment losses and audit findings.",
+      "example": "Booking Holdings recorded a 337 million dollar accrual in 2024 to settle certain Italian indirect-tax matters. Not every tax dispute is a systems problem, but correct tax determination and records are the first line of defense."
+    },
+    {
+      "title": "Who pays and what it costs",
+      "explanation": "Financial systems are internal: no traveler pays for them directly. They are funded from the company's operating budget through software licenses, cloud computing, and the engineers and finance staff who run them. Their return is measured in avoided costs, reduced risk and the ability to grow without hiring in proportion.",
+      "example": "Booking Holdings' Transformation Program, which includes modernizing processes and systems, delivered about 250 million dollars of savings in 2025, according to its annual report."
+    },
+    {
+      "title": "Where interests pull apart",
+      "explanation": "Payments and brand teams want to launch quickly. Finance and controls teams want every new flow to be reconciled and controlled from day one. Each brand has its own history and preferred tools, while the group benefits from shared platforms. Software vendors want customers on their full suite, while the company wants freedom to choose.",
+      "example": "A brand wants to accept a popular new wallet in a market next month, but finance cannot yet match that wallet's settlement files. The architecture function helps both sides agree on the smallest design that lets the launch go ahead without unreconciled money building up."
+    }
+  ],
+  "challenges": [
+    {
+      "title": "Very high volume with very little room for error",
+      "whyHard": "Hundreds of millions of bookings a year each create several financial records. A small error rate still produces a large number of exceptions.",
+      "tradeOff": "Detailed, booking-level records give traceability but are expensive to store and process; heavy summarization is cheaper but makes errors hard to find.",
+      "example": "A rounding difference of one cent per booking on currency conversion becomes a noticeable, unexplained amount over a quarter.",
+      "commonApproach": "Keep detail in a high-volume subledger, summarize into the general ledger, and automate reconciliation with clear rules. The limitation is that the subledger and its data feeds become critical systems that must never fall behind."
+    },
+    {
+      "title": "Many brands, many histories",
+      "whyHard": "Brands grew separately or were acquired, each with its own booking platform, payment setup and sometimes its own finance tools. The same concept, such as a cancellation fee, may be recorded differently in each.",
+      "tradeOff": "Forcing every brand onto one platform at once is risky and slow. Leaving them separate keeps duplicated costs and manual adjustment forever.",
+      "example": "The architecture question in Lena's case: one brand's partial refunds needed manual correction every month.",
+      "commonApproach": "Define a shared event format and target state, connect brands through adapters, and retire duplicate systems step by step. This works only if decisions are recorded and enforced, which needs senior backing across brands."
+    },
+    {
+      "title": "Payments keep changing",
+      "whyHard": "New wallets, local payment methods and regulations keep arriving, each with its own timing, fees, refund rules and dispute processes.",
+      "tradeOff": "Waiting until finance is fully ready slows the business; launching first leaves unreconciled money and control gaps.",
+      "example": "A new payment method's settlement file arrives in a format the matching rules do not understand, so its payments stay unexplained.",
+      "commonApproach": "Treat 'finance ready' as part of a payment launch: a standard checklist and a translation layer that turns each provider's data into one common format. The cost is upfront work for every new method."
+    },
+    {
+      "title": "Changing systems without breaking controls",
+      "whyHard": "Financial controls live inside system configuration: who may approve what, which checks run automatically, what evidence is kept. Modernizing a system can quietly remove a control.",
+      "tradeOff": "Strict change approval protects the audit but slows delivery; loose change processes speed delivery but risk audit findings.",
+      "example": "A new payout tool lets support staff edit partner bank details without the second approval the old system required.",
+      "commonApproach": "Build controls into architecture standards and review significant changes for control impact early rather than at the end. This needs architects and controls specialists to share a vocabulary."
+    },
+    {
+      "title": "Taxes that depend on where and who",
+      "whyHard": "Value-added tax, digital services taxes, tourist taxes and reporting rules for platforms differ by country and change often. Booking Holdings notes digital services taxes ranging from 1.5 to 10 percent of revenues in the countries that apply them.",
+      "tradeOff": "Hard-coding rules in each system is quick but goes stale; a central tax engine is consistent but becomes a dependency for every flow.",
+      "example": "Lena's stay may involve a Lisbon tourist tax, while value-added tax on the platform's fee follows separate rules about where that service is supplied.",
+      "commonApproach": "Determine tax in one shared service fed by complete booking data and keep a record of each decision. Its limitation is that it is only as good as the data it receives."
+    }
+  ],
+  "misconceptions": [
+    {
+      "belief": "When a traveler pays, the company has earned that money.",
+      "reality": "Most of the payment is owed to the property or may be refunded. The company's own revenue is only its share, and it counts as revenue when the stay is delivered."
+    },
+    {
+      "belief": "Financial systems are just accounting software you buy and install.",
+      "reality": "The purchased packages are only part of it. Much of the difficulty lies in the connections between booking, payment, payout, tax and accounting systems, and in agreeing what each record means."
+    },
+    {
+      "belief": "If the totals look right, the books are right.",
+      "reality": "Controllers and auditors need to show that totals are built from complete, correct details through a controlled process. Matching totals can hide errors that cancel each other out."
+    },
+    {
+      "belief": "Enterprise architecture is drawing diagrams.",
+      "reality": "In this domain it is mainly making and enforcing decisions: which system is the source of truth, which standards are mandatory, and which multi-year investments are worth their cost."
+    }
+  ],
+  "takeaways": [
+    "One booking creates a chain of records: payment, settlement, amounts owed, revenue, payout, tax and reporting. Financial systems keep that chain connected.",
+    "Money received is not money earned. Revenue follows delivery of the service, and changes to bookings must flow through every record.",
+    "Reconciliation and controls are how a company proves its records match reality, and auditors test both.",
+    "The shift from agency to merchant bookings multiplies payment, refund and payout work for finance.",
+    "In a multi-brand company, shared decisions, standards and a target state turn recurring workarounds into designs that scale."
+  ],
+  "knowledgeChecks": [
+    {
+      "question": "Lena paid 300 euros in March for a July stay. Why does the platform not record 300 euros of revenue in March?",
+      "answer": "Because most of the money is owed to Casa Azul or may be refunded, and the platform earns only its share, when the stay is delivered in July.",
+      "explanation": "The 300 euros is recorded as cash held and an amount owed (deferred merchant bookings). Lena's change of plans reduced the booking, which shows why recording revenue early would have been wrong."
+    },
+    {
+      "question": "A payment provider deposited less than the bookings finance expected to be paid. Name two harmless explanations and one that needs urgent attention.",
+      "answer": "Harmless: provider fees deducted from the deposit, or payments that will settle in the next batch. Urgent: payments that went missing, or chargebacks nobody has recorded.",
+      "explanation": "Reconciliation compares expected bookings, the provider's settlement file and the bank. Fees and timing differences are normal and explainable; unexplained gaps may mean lost money or broken data feeds."
+    },
+    {
+      "question": "Why does shifting from agency to merchant bookings increase the work for financial systems?",
+      "answer": "Under merchant, the company collects travelers' payments, holds the money, processes refunds and disputes, and pays partners, instead of only invoicing commission.",
+      "explanation": "Each of those steps creates records that must be reconciled and controlled. With 70 percent of gross bookings on a merchant basis, these flows dominate the workload."
+    },
+    {
+      "question": "A brand team proposes building its own revenue calculation to launch faster. What should an architecture review ask?",
+      "answer": "What it costs and risks compared with using the shared subledger, how it would be reconciled and controlled, and whether any exception should be time-limited with a plan to converge.",
+      "explanation": "A local shortcut can be reasonable, but without a recorded decision it becomes a permanent second version of the truth that finance must translate every month, as with the refund problem in Lena's case."
+    }
+  ],
+  "nextQuestions": [
+    "Which system is the official source of truth for revenue, for amounts owed to partners, and for cash, and who decides?",
+    "How many manual adjustments are made at each month-end close, and which upstream problems cause them?",
+    "What does a new payment method need from finance before it can launch?",
+    "Which brands still run their own finance tools, and what is the plan for each?",
+    "How are financial controls reviewed when a system changes?"
+  ],
+  "furtherReading": [
+    {
+      "title": "Booking Holdings Form 10-K for 2025",
+      "url": "https://www.sec.gov/Archives/edgar/data/1075531/000107553126000009/bkng-20251231.htm",
+      "whyRead": "The primary source for the merchant and agency figures, deferred merchant bookings, the Transformation Program, tax matters and the internal-control conclusion used in this tutorial."
+    },
+    {
+      "title": "Booking Holdings Financial Services",
+      "url": "https://www.bookingholdings.com/about/financial-services/",
+      "whyRead": "Shows how the group describes the licensed electronic-money institutions that support its brands' payment products."
+    },
+    {
+      "title": "Sarbanes-Oxley Act of 2002",
+      "url": "https://www.congress.gov/bill/107th-congress/house-bill/3763",
+      "whyRead": "The law behind management's reporting on internal control over financial reporting."
+    },
+    {
+      "title": "Directive (EU) 2015/2366 on payment services (PSD2)",
+      "url": "https://eur-lex.europa.eu/eli/dir/2015/2366/oj",
+      "whyRead": "The European payment rules that introduced strong customer authentication and shape online card payments."
+    }
+  ]
+}

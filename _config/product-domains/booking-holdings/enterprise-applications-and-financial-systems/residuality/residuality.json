@@ -1,0 +1,391 @@
+{
+  "metadata": {
+    "domainId": "enterprise-applications-and-financial-systems",
+    "title": "Enterprise Applications and Financial Systems Residuality Stress Test",
+    "description": "How Booking Holdings' finance and enterprise-application architecture must change under payment and tax regulation, vendor deadlines, brand M&A, the merchant shift, AI and PSP failures.",
+    "modelVersion": "1.0",
+    "naiveArchitecture": "Each brand runs its own ledger feeds, payout logic, tax rules and reconciliations; brand data is mapped into SAP by spreadsheets and point-to-point interfaces; architecture decisions are made per programme with no shared record.",
+    "residualArchitecture": "A clean-core global finance hub fed by canonical financial events through one integration hub and adapter kit; a high-volume subledger, traveler-funds ledger and automated payments-to-ledger reconciliation; tax determination and e-invoicing as shared services; entity- and jurisdiction-tagged finance data; control evidence captured by default; and a governed decision record, standards and portfolio that make each change repeatable."
+  },
+  "stressors": [
+    {
+      "id": "psd3psr",
+      "name": "PSD3 and the Payment Services Regulation change EU payment flows",
+      "group": "Regulation",
+      "detection": "Final PSD3/PSR texts, EBA technical standards, BHFS licence conditions; named as a risk in the FY2025 10-K.",
+      "attractor": "Each brand patches its own payment and safeguarding logic; reconciliation breaks and regulatory reports are assembled by hand.",
+      "businessReaction": "Model regulated flows once: payment events carry entity, licence and safeguarding attributes; safeguarding and regulatory reporting read from the reconciled ledger.",
+      "residue": "A canonical payment event with regulatory attributes and an entity-aware safeguarding ledger.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "pevt",
+          "effect": "Regulatory attributes on every payment event."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "regr",
+          "effect": "Rule-driven safeguarding and reports."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "tfnd",
+          "effect": "Traveler funds per licensed entity."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "pymt/pymt-co-2",
+          "effect": "Launch time at risk from re-certification."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "adyen",
+          "effect": "PSP reporting must carry new data."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-psd3psr.jpg",
+          "title": "Residuality stressor illustration: PSD3 and the Payment Services Regulation change EU payment flows",
+          "alt": "Illustration of the residuality stressor 'PSD3 and the Payment Services Regulation change EU payment flows', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "vida",
+      "name": "EU VAT in the Digital Age mandates e-invoicing and platform deemed-supplier rules",
+      "group": "Regulation",
+      "detection": "Adoption and member-state transposition of ViDA; named in the FY2025 10-K as a complexity and cost risk.",
+      "attractor": "Tax logic is copied into each brand's invoicing; e-invoice formats are bolted on per country; filings miss deadlines.",
+      "businessReaction": "Central tax determination as a service for commission, merchant and supplier invoices; e-invoice exchange through the integration hub.",
+      "residue": "One tax determination service and one e-invoice gateway used by order-to-cash and procure-to-pay.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "itax",
+          "effect": "Deemed-supplier and e-reporting rules."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "pinv",
+          "effect": "E-invoices for commission."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "apin",
+          "effect": "Inbound e-invoices."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "fint",
+          "effect": "E-invoice exchange."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "txtr/txtr-co-1",
+          "effect": "Determination accuracy under new rules."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-vida.jpg",
+          "title": "Residuality stressor illustration: EU VAT in the Digital Age mandates e-invoicing and platform deemed-supplier rules",
+          "alt": "Illustration of the residuality stressor 'EU VAT in the Digital Age mandates e-invoicing and platform deemed-supplier rules', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "pillartwo",
+      "name": "Global minimum tax and digital services taxes keep multiplying",
+      "group": "Regulation",
+      "detection": "OECD Pillar Two adoption, new DSTs (1.5%–10% of in-jurisdiction revenue per the 10-K), tax authority audits.",
+      "attractor": "Tax provision runs in spreadsheets fed by manual extracts; each new tax becomes a project.",
+      "businessReaction": "Entity-level, jurisdiction-tagged datasets in the finance data platform feed provision and top-up tax calculations.",
+      "residue": "Jurisdiction and entity dimensions on every finance dataset; a reusable tax data mart.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "gtax",
+          "effect": "Pillar Two calculations."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "entm",
+          "effect": "Entity attributes."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "fdbx",
+          "effect": "Tax data mart."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "txtr/txtr-bo-1",
+          "effect": "Exposure and penalties."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-pillartwo.jpg",
+          "title": "Residuality stressor illustration: Global minimum tax and digital services taxes keep multiplying",
+          "alt": "Illustration of the residuality stressor 'Global minimum tax and digital services taxes keep multiplying', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "brandacq",
+      "name": "Booking Holdings acquires or carves out a brand",
+      "group": "Corporate",
+      "detection": "M&A announcements, board approvals, integration mandates.",
+      "attractor": "Another ERP and payout engine run in parallel for years; consolidation relies on spreadsheet mappings.",
+      "businessReaction": "Onboard through the brand adapter kit: map to the global chart of accounts, stream canonical events, consolidate from day one, retire the legacy stack on a dated plan.",
+      "residue": "A repeatable brand onboarding pattern with canonical events, mapping templates and a retirement playbook.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "bonb",
+          "effect": "Onboarding pattern."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "coam",
+          "effect": "Account mapping."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "cnsl",
+          "effect": "Day-one consolidation."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "onboard-a-brand-onto-the-global-finance-core",
+          "effect": "Becomes repeatable."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "bfin/bfin-co-1",
+          "effect": "Onboarding effort."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "in-house-build",
+          "effect": "Legacy brand stack retired."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-brandacq.jpg",
+          "title": "Residuality stressor illustration: Booking Holdings acquires or carves out a brand",
+          "alt": "Illustration of the residuality stressor 'Booking Holdings acquires or carves out a brand', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "sapeol",
+      "name": "SAP mainstream maintenance deadlines and RISE commercial terms force the S/4HANA timeline",
+      "group": "Vendor",
+      "detection": "SAP maintenance announcements, contract renewal windows, RISE pricing.",
+      "attractor": "Big-bang migration under deadline pressure; custom code copied as-is; run cost rises with no simplification.",
+      "businessReaction": "Keep the clean core: Central Finance as the hub, extensions outside the core behind APIs, a dated decommission plan per legacy system.",
+      "residue": "Clean-core standard, extension patterns and a portfolio view of run cost per application.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "glco",
+          "effect": "Clean core."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "stdg",
+          "effect": "Extension standards."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "apmx",
+          "effect": "Run-cost and decommission tracking."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "tlrd/tlrd-bo-1",
+          "effect": "Portfolio simplification."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "sap",
+          "effect": "Negotiating leverage."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "oracle",
+          "effect": "Benchmark alternative."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-sapeol.jpg",
+          "title": "Residuality stressor illustration: SAP mainstream maintenance deadlines and RISE commercial terms force the S/4HANA timeline",
+          "alt": "Illustration of the residuality stressor 'SAP mainstream maintenance deadlines and RISE commercial terms force the S/4HANA timeline', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "merchantshift",
+      "name": "The agency-to-merchant shift accelerates",
+      "group": "Market",
+      "detection": "Merchant share of gross bookings (70% in 2025, 63% in 2024) and merchant revenue growth (+25.5% in 2025); deferred merchant bookings at $5.27bn.",
+      "attractor": "Subledger volumes, payout liabilities and reconciliation breaks grow faster than the teams; close slips.",
+      "businessReaction": "Scale the subledger and payments-to-ledger for merchant volumes; automate payout liability tracking and three-way matching.",
+      "residue": "A volume-proof merchant flow: event-driven subledger, automated reconciliation and a traveler-funds ledger.",
+      "status": "already-survived",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "brim",
+          "effect": "Volume headroom."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "psrc",
+          "effect": "Automated matching."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "pout",
+          "effect": "Payout scale."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "tfnd",
+          "effect": "Liability tracking."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "ctrl/ctrl-co-1",
+          "effect": "Close speed under volume."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "pset/pset-co-1",
+          "effect": "Payout timeliness."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-merchantshift.jpg",
+          "title": "Residuality stressor illustration: The agency-to-merchant shift accelerates",
+          "alt": "Illustration of the residuality stressor 'The agency-to-merchant shift accelerates', showing its signal, attractor, business response, and surviving residue."
+        }
+      ],
+      "reusesResidueIds": [
+        "brandacq",
+        "sapeol"
+      ]
+    },
+    {
+      "id": "aiagents",
+      "name": "AI agents book trips and run finance tasks",
+      "group": "Technology",
+      "detection": "Connected Trip and AI-assisted booking (10-K); AI in finance operations; auditor guidance on AI in controls.",
+      "attractor": "AI tools are added per team with no lineage or control evidence; auditors cannot rely on them.",
+      "businessReaction": "Allow AI in finance through governed data, logged decisions and control evidence; treat agent-created bookings as normal canonical events.",
+      "residue": "Governed AI patterns: lineage from finance data platform, decision logging and evidence capture in control monitoring.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "ctlm",
+          "effect": "AI evidence."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "fdbx",
+          "effect": "Lineage."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "adrr",
+          "effect": "AI usage decisions."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "icfr/icfr-co-2",
+          "effect": "Evidence readiness."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "fldr/fldr-bo-2",
+          "effect": "Savings from automation."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-aiagents.jpg",
+          "title": "Residuality stressor illustration: AI agents book trips and run finance tasks",
+          "alt": "Illustration of the residuality stressor 'AI agents book trips and run finance tasks', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "pspoutage",
+      "name": "A major PSP or acquirer has an outage or settlement-file failure",
+      "group": "Dependency",
+      "detection": "PSP incident notices, missing or malformed settlement files, sudden unmatched volumes.",
+      "attractor": "Unreconciled balances pile up, payouts stop, the close is late and controls fail.",
+      "businessReaction": "Treat settlement files as contracts with completeness checks, replay and quarantine; reconcile per PSP with tolerance rules; keep payouts funded from the traveler-funds ledger.",
+      "residue": "Settlement completeness controls, replayable ingestion and per-PSP reconciliation.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "pevt",
+          "effect": "Replayable ingestion."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "psrc",
+          "effect": "Per-PSP tolerance."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "bnkc",
+          "effect": "Fallback payment routes."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "pymt/pymt-bo-1",
+          "effect": "Unreconciled value."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "adyen",
+          "effect": "Dependency."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "stripe",
+          "effect": "Dependency."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-pspoutage.jpg",
+          "title": "Residuality stressor illustration: A major PSP or acquirer has an outage or settlement-file failure",
+          "alt": "Illustration of the residuality stressor 'A major PSP or acquirer has an outage or settlement-file failure', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    }
+  ]
+}

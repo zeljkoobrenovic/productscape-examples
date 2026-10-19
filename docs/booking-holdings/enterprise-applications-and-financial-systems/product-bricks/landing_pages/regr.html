@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "regr", "name": "E-Money Safeguarding and Regulatory Reporting", "type": "service", "status": "invest", "description": "Calculates and evidences daily safeguarding of customer funds held by the Booking Holdings Financial Services e-money institutions (e.g. the Central Bank of Ireland-licensed Irish entity), and produces prudential and regulatory returns. Prepares for PSD3 / PSR changes named as a risk in the FY2025 10-K.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-regr-api", "name": "Safeguarding and Returns API", "type": "api", "description": "Exposes the daily safeguarding position, breaches and filed returns.", "dependencies": {"modules": [{"moduleId": "module-regr-core", "type": "uses", "description": "Reads positions."}]}}, {"id": "module-regr-console", "name": "Regulatory Reporting Console", "type": "backoffice-interface", "description": "Compliance and finance review, sign off and submit returns.", "dependencies": {"modules": [{"moduleId": "module-regr-core", "type": "uses", "description": "Reviews and approves returns."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-regr-daily-calc", "name": "Daily Safeguarding Calculator", "type": "daemon", "description": "Computes relevant funds per entity from subledger balances and compares with safeguarded bank balances.", "dependencies": {"modules": [{"moduleId": "module-regr-core", "type": "uses", "description": "Writes daily positions."}, {"moduleId": "module-tfnd-api", "type": "uses", "description": "Reads traveller funds held.", "targetBrickId": "tfnd"}, {"moduleId": "module-trcm-api", "type": "uses", "description": "Reads safeguarding account balances.", "targetBrickId": "trcm"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-regr-core", "name": "Safeguarding Position Store", "type": "stateful-service", "description": "Daily per-entity relevant funds, safeguarded balances, shortfalls, reconciliations and return versions."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-regr-regulator-adapter", "name": "Regulator Submission Adapter", "type": "integration", "description": "Formats and submits returns to supervisory portals."}]}], "dataDependencies": [{"assetId": "safeguarded-funds-position", "moduleIds": ["module-regr-core", "module-regr-api", "module-regr-daily-calc"], "role": "own", "description": "System of record for daily safeguarding positions and returns."}, {"assetId": "deferred-merchant-bookings-balance", "moduleIds": ["module-regr-daily-calc"], "role": "read", "description": "Traveller funds held in advance of stay."}, {"assetId": "cash-position-and-fx-exposure", "moduleIds": ["module-regr-daily-calc"], "role": "read", "description": "Safeguarding account balances."}], "brickDependencies": [{"targetBrickId": "tfnd", "moduleId": "module-tfnd-api", "sourceModuleId": "module-regr-daily-calc", "type": "data", "description": "Relevant funds come from the traveller-funds ledger."}, {"targetBrickId": "trcm", "moduleId": "module-trcm-api", "sourceModuleId": "module-regr-daily-calc", "type": "data", "description": "Safeguarding account balances come from treasury."}, {"targetBrickId": "entm", "moduleId": "module-entm-api", "sourceModuleId": "module-regr-daily-calc", "type": "data", "description": "Entity scope and licence attributes."}, {"targetBrickId": "ctlm", "moduleId": "module-ctlm-api", "sourceModuleId": "module-regr-api", "type": "control", "description": "Safeguarding reconciliations are controls with evidence."}], "externalSystemsThisBrickDependsOn": [{"system": "Central Bank of Ireland and other EU supervisors", "type": "regulator", "interface": "Regulatory reporting portals", "description": "Receive prudential and safeguarding returns from licensed e-money entities.", "sourceModuleId": "module-regr-regulator-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "BHFS compliance officers", "type": "consumer", "interface": "Safeguarding dashboard", "description": "Daily oversight of safeguarding compliance.", "moduleId": "module-regr-console"}], "domain": "Close, Reporting and Controls", "group": "Controls and Regulatory Compliance"};
-    const relatedTeams = [{"teamId": "grcx", "teamName": "GRC and Controls Engineering", "teamType": "complicated-subsystem", "groupId": "rtrc", "groupName": "Close, Reporting and Controls", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "grcon", "name": "Controls and Regulatory Compliance Hub", "icon": "grcon.png", "type": "Controls product", "whyUsed": "E-Money Safeguarding and Regulatory Reporting as part of Controls and Regulatory Compliance Hub."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

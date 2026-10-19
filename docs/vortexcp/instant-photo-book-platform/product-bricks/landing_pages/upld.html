@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "upld", "name": "Upload from Computer, Dropbox and Google Drive", "type": "integration", "status": "sustaining", "description": "Lets web customers upload photos from a computer folder or connect Dropbox and Google Drive and pick folders or albums, the route PastBook promotes for people whose photos are not on the phone or Facebook. Cloud connections are OAuth-based with the narrowest scope the providers allow, tokens are stored encrypted and revoked after the book is produced or on request, and fetches run asynchronously so a 3,000-photo holiday folder does not block the browser. Files arrive over encrypted connections, are checked for supported formats and size, and are handed to media storage with their EXIF intact so the curation engine can group by time and place.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-upld-web", "name": "Upload and Cloud Picker", "type": "web-component", "description": "Drag-and-drop computer upload with progress, and Dropbox and Google Drive folder pickers with photo counts and select-all per folder.", "dependencies": {"modules": [{"moduleId": "module-upld-api", "type": "uses", "description": "Picker starts uploads and cloud fetch jobs through the Upload API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-upld-api", "name": "Upload API", "type": "api", "description": "API for resumable browser uploads, cloud connection start and callback, folder listing and fetch job status.", "dependencies": {"modules": [{"moduleId": "module-upld-connection-store", "type": "delegates", "description": "API stores connections and fetch jobs in the connection store."}, {"moduleId": "module-upld-fetch-queue", "type": "uses", "description": "API enqueues folder fetch jobs."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-upld-fetch-queue", "name": "Cloud Fetch Queue", "type": "message-queue", "description": "Queue of Dropbox and Google Drive folder fetch jobs with retry and provider rate-limit backoff."}, {"id": "module-upld-fetch-consumer", "name": "Cloud Fetch Worker", "type": "message-consumer", "description": "Downloads files from the connected drive in batches, validates format and size, preserves EXIF and registers them as photo assets.", "dependencies": {"modules": [{"moduleId": "module-upld-fetch-queue", "type": "processes", "description": "Worker consumes fetch jobs from the queue."}, {"moduleId": "module-upld-dropbox-adapter", "type": "uses", "description": "Worker downloads Dropbox files through the adapter."}, {"moduleId": "module-upld-gdrive-adapter", "type": "uses", "description": "Worker downloads Google Drive files through the adapter."}, {"moduleId": "module-upld-connection-store", "type": "processes", "description": "Worker updates job progress and token refresh state."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-upld-connection-store", "name": "Cloud Connection Store", "type": "stateful-service", "description": "Owns cloud drive connections (provider, encrypted tokens, scope, expiry), selected folders and fetch job state per customer."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-upld-dropbox-adapter", "name": "Dropbox Adapter", "type": "integration", "description": "Dropbox API adapter: OAuth, folder listing, thumbnail and file download with cursor paging and rate-limit handling."}, {"id": "module-upld-gdrive-adapter", "name": "Google Drive Adapter", "type": "integration", "description": "Google Drive API adapter: OAuth with drive.readonly scope, folder and photo listing, media download and token refresh."}]}], "dataDependencies": [{"assetId": "photo-source-connection", "moduleIds": ["module-upld-connection-store", "module-upld-api"], "role": "own", "description": "System of record for Dropbox and Google Drive connections and fetch jobs."}, {"assetId": "photo-asset", "moduleIds": ["module-upld-fetch-consumer"], "role": "write", "description": "Creates photo assets for uploaded and fetched files."}], "brickDependencies": [{"targetBrickId": "medi", "moduleId": "module-medi-api", "sourceModuleId": "module-upld-fetch-consumer", "type": "documents", "description": "Stores fetched and uploaded originals as photo assets."}, {"targetBrickId": "intg", "moduleId": "module-intg-cloud-drive-adapter", "sourceModuleId": "module-upld-dropbox-adapter", "type": "integration", "description": "Obtains app credentials, OAuth broker endpoints and rate-limit policy for Dropbox and Google Drive from the gateway."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-upld-api", "type": "identity", "description": "Resolves the signed-in customer who owns the upload session and cloud connection."}, {"targetBrickId": "priv", "moduleId": "module-priv-api", "sourceModuleId": "module-upld-api", "type": "regulation", "description": "Records consent for the cloud connection and schedules token revocation and file deletion after production."}], "externalSystemsThisBrickDependsOn": [{"system": "Dropbox", "type": "integration", "interface": "Dropbox API v2", "description": "OAuth, folder listing and file download from the customer's Dropbox.", "sourceModuleId": "module-upld-dropbox-adapter"}, {"system": "Google Drive", "type": "integration", "interface": "Google Drive API v3", "description": "OAuth, folder listing and media download from the customer's Google Drive.", "sourceModuleId": "module-upld-gdrive-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Consumer App and Web Creator", "group": "Web Creator"};
-    const relatedTeams = [{"teamId": "web-creator-team", "teamName": "Web Creator", "teamType": "stream-aligned", "groupId": "peng", "groupName": "Product and Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "web-photo-book-creator", "name": "Web Photo Book Creator", "icon": "web-photo-book-creator.png", "type": "Web Application (pastbook.com)", "whyUsed": "Drag-and-drop upload from the computer plus Dropbox and Google Drive pickers, indexed by timestamp and location. Folder picker and import from Dropbox or Google Drive into the photo set."}, {"id": "photo-posters", "name": "Photo Posters", "icon": "photo-posters.png", "type": "Printed Product (large format)", "whyUsed": "Uploads the full-resolution original needed for large format. Imports the full-resolution original for large-format posters."}];
     const supportedJobs = [{"customerId": "trvl", "customerName": "Traveller and Milestone Celebrant", "customerGroup": "Memory Keepers", "customerIcon": "customer-trvl-portrait.jpg", "productId": "web-photo-book-creator", "productName": "Web Photo Book Creator", "productIcon": "web-photo-book-creator.png", "jobId": "jtbd-trvl-1", "jobName": "Print the trip or milestone as a large hardcover right after the event", "jobWhatItIs": "Turn a single event, three weeks of travel, a wedding weekend, a graduation or a baby's first year, into a Large Hardcover book ordered within days of the event ending, before the energy to make it disappears. The job is to collect photos from several people and devices, let the engine structure the event into days and places, check the preview, choose the format and pages and get the book delivered in time for the moment it is meant for.", "jobOutcome": "A Large Hardcover of the event is ordered within a week of the event ending, with photos from every source in one book, at a page count and price the customer chose knowingly, and delivered within the published window for their country.", "supportRationale": "Brings the camera roll by date and location, computer uploads and Dropbox or Google Drive folders into one indexed photo set with timestamps and locations.", "usedInSteps": [{"step": "Gather photos from the phone, the camera and the partner", "description": "Import the trip from the camera roll by date and location, add the camera's files from a computer upload or a Dropbox or Google Drive folder, and pull in the partner's or the guests' photos from a shared folder, all over encrypted connections. The friction is that each source has its own path; the job needs them to converge into one indexed set with timestamps and locations.", "howItSupports": "Brings the camera roll by date and location, computer uploads and Dropbox or Google Drive folders into one indexed photo set with timestamps and locations.", "media": []}]}, {"customerId": "gftr", "customerName": "Seasonal Gift Giver", "customerGroup": "Memory Keepers", "customerIcon": "customer-gftr-portrait.jpg", "productId": "photo-posters", "productName": "Photo Posters", "productIcon": "photo-posters.png", "jobId": "jtbd-gftr-1", "jobName": "Get a personalised gift delivered before the date", "jobWhatItIs": "Turn a year of family photos into a printed present that reaches the recipient, often at another address, before Christmas, Mother's Day or a birthday. The job covers knowing the last safe order date for the recipient's country, building the Year in Review book or calendar from the phone in a minute, adding a dedication, paying with the seasonal discount, shipping to the recipient and watching the tracking until it is delivered.", "jobOutcome": "The gift is ordered before the published order-by date, produced within the promised production time, delivered to the recipient's address inside the published window for that country and before the occasion, and the giver never has to explain a missing present.", "supportRationale": "Imports the camera roll by date, album or Yearbook mode and from Dropbox or Google Drive, with timestamps that make a Year in Review possible.", "usedInSteps": [{"step": "Gather the year's photos of the recipient's favourite people", "description": "From the phone camera roll by date or album, from a Facebook year, or from a shared family album, the giver pulls the photos of the grandchildren or of the couple that the recipient will want to see, without sorting through thousands of screenshots.", "howItSupports": "Imports the camera roll by date, album or Yearbook mode and from Dropbox or Google Drive, with timestamps that make a Year in Review possible.", "media": []}]}, {"customerId": "gftr", "customerName": "Seasonal Gift Giver", "customerGroup": "Memory Keepers", "customerIcon": "customer-gftr-portrait.jpg", "productId": "photo-posters", "productName": "Photo Posters", "productIcon": "photo-posters.png", "jobId": "jtbd-gftr-3", "jobName": "Give when I have no photos: gift cards and shared albums", "jobWhatItIs": "Give a PastBook present when the photos are on someone else's phone: a gift card so the new parents make their own first-year book, or an album the family fills together before the giver orders the book. The job includes buying the card in the right currency, helping a less technical recipient install the app and redeem it, and coming back next year.", "jobOutcome": "The gift card is bought and delivered before the occasion, redeemed by the recipient for a product they chose themselves, and the giver is reminded in time for the next occasion, so a present without photos still ends as a printed book.", "supportRationale": "Imports a shared phone album or a Dropbox or Google Drive folder that the family has filled together.", "usedInSteps": [{"step": "Collect the photos the family holds", "description": "For a first-year book of a nephew, the giver asks the parents to share an album from their phone or a Google Drive folder, so the photos exist in one place before anyone builds a book.", "howItSupports": "Imports a shared phone album or a Dropbox or Google Drive folder that the family has filled together.", "media": []}]}, {"customerId": "trvl", "customerName": "Traveller and Milestone Celebrant", "customerGroup": "Memory Keepers", "customerIcon": "customer-trvl-portrait.jpg", "productId": "photo-posters", "productName": "Photo Posters", "productIcon": "photo-posters.png", "jobId": "jtbd-trvl-1", "jobName": "Print the trip or milestone as a large hardcover right after the event", "jobWhatItIs": "Turn a single event, three weeks of travel, a wedding weekend, a graduation or a baby's first year, into a Large Hardcover book ordered within days of the event ending, before the energy to make it disappears. The job is to collect photos from several people and devices, let the engine structure the event into days and places, check the preview, choose the format and pages and get the book delivered in time for the moment it is meant for.", "jobOutcome": "A Large Hardcover of the event is ordered within a week of the event ending, with photos from every source in one book, at a page count and price the customer chose knowingly, and delivered within the published window for their country.", "supportRationale": "Brings the camera roll by date and location, computer uploads and Dropbox or Google Drive folders into one indexed photo set with timestamps and locations.", "usedInSteps": [{"step": "Gather photos from the phone, the camera and the partner", "description": "Import the trip from the camera roll by date and location, add the camera's files from a computer upload or a Dropbox or Google Drive folder, and pull in the partner's or the guests' photos from a shared folder, all over encrypted connections. The friction is that each source has its own path; the job needs them to converge into one indexed set with timestamps and locations.", "howItSupports": "Brings the camera roll by date and location, computer uploads and Dropbox or Google Drive folders into one indexed photo set with timestamps and locations.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

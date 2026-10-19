@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "tour-operator-erp-platform", "name": "Tour Operator ERP Platform", "description": "Covers the ERP-style software platform that tour operators, group and coach travel providers, tailor-made travel specialists, destination management companies, and travel agencies run their business on: travel product and contract management, visual tour building and quoting, bookings and departures, group operations such as seat allocation, room lists and guide assignment, supplier and reseller portals, real-time bookable customer websites, traveler portals and apps, payments, invoicing, accounting and guarantee-fund compliance, marketing, quality, and business intelligence across the Benelux and wider European travel trade."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "reseller-agent-profile", "name": "Reseller Agent Profile", "kind": "master-data", "description": "Master record of a retail travel agency, affiliated agent, or independent home-based agent (ZRA-style) that books a tenant's products through the Reseller and Agent Portal (rsel): agency legal entity, licence and guarantee-fund membership, commission scheme and net-rate agreements, portal users and roles, branding on client documents, invoicing preference (agency-collect or direct), and booking and commission history. Governs which products a reseller may see and at which conditions.", "businessMeaning": "The distribution partner ledger: who may sell the operator's products, at which commission, and how their bookings are invoiced and documented.", "status": "active", "tags": ["sales-and-booking"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr", "fiscal-retention-nl"], "securityCriticality": "medium", "accessScope": "sales and finance staff of the owning tenant; each reseller manages its own users and sees its own bookings and commission statements", "systemOfRecordBrickId": "rsel", "ownerTeamId": "web-and-channels", "stewardTeamIds": ["payments-and-invoicing"], "derivedFromAssetIds": [], "stores": [{"storeId": "booking-db", "role": "system-of-record"}, {"storeId": "tenant-identity-db", "role": "projection"}, {"storeId": "travel-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "reseller-profile api", "description": "Reseller onboarding, product entitlement, commission scheme, and user management API used by the reseller portal, booking authorisation, and commission statement generation."}, {"type": "event", "name": "reseller lifecycle events", "description": "Reseller activated, entitlement changed, commission scheme changed, and reseller suspended events consumed by the portal, invoicing, and channel reporting."}], "governance": {"retention": "agreement period plus 7 years for commission statements and agency-collect settlements; portal user accounts removed 90 days after deactivation", "residency": "eu", "sharingPolicy": "internal to the tenant and the reseller itself; commission conditions never shown to travelers or other resellers"}, "rootGroup": "Sales and Booking Data", "group": "Customers and Resellers"};
+    const currentAsset = {"id": "reseller-agent-profile", "name": "Reseller Agent Profile", "kind": "master-data", "description": "Master record of a retail travel agency, affiliated agent, or independent home-based agent (ZRA-style) that books a tenant's products through the Reseller and Agent Portal (rsel): agency legal entity, licence and guarantee-fund membership, commission scheme and net-rate agreements, portal users and roles, branding on client documents, invoicing preference (agency-collect or direct), and booking and commission history. Governs which products a reseller may see and at which conditions.", "businessMeaning": "The distribution partner ledger: who may sell the operator's products, at which commission, and how their bookings are invoiced and documented.", "status": "active", "tags": ["sales-and-booking"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr", "fiscal-retention-nl"], "securityCriticality": "medium", "accessScope": "sales and finance staff of the owning tenant; each reseller manages its own users and sees its own bookings and commission statements", "systemOfRecordBrickId": "rsel", "derivedFromAssetIds": [], "stores": [{"storeId": "booking-db", "role": "system-of-record"}, {"storeId": "tenant-identity-db", "role": "projection"}, {"storeId": "travel-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "reseller-profile api", "description": "Reseller onboarding, product entitlement, commission scheme, and user management API used by the reseller portal, booking authorisation, and commission statement generation."}, {"type": "event", "name": "reseller lifecycle events", "description": "Reseller activated, entitlement changed, commission scheme changed, and reseller suspended events consumed by the portal, invoicing, and channel reporting."}], "governance": {"retention": "agreement period plus 7 years for commission statements and agency-collect settlements; portal user accounts removed 90 days after deactivation", "residency": "eu", "sharingPolicy": "internal to the tenant and the reseller itself; commission conditions never shown to travelers or other resellers"}, "rootGroup": "Sales and Booking Data", "group": "Customers and Resellers"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "rsel", "name": "Reseller and Agent Portal", "role": "own", "description": "System of record for the Reseller Agent Profile asset and commission statements."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "web-and-channels", "teamName": "Web and Channels", "teamType": "stream-aligned", "groupName": "Sales and Booking Group"};
-    const stewardTeams = [{"teamId": "payments-and-invoicing", "teamName": "Payments and Invoicing", "teamType": "stream-aligned", "groupName": "Finance and Insight Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

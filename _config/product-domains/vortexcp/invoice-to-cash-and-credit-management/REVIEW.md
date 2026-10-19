@@ -41,7 +41,7 @@ Updated: 2026-09-06
 
 - Twenty-four bricks span four durable root areas and meaningful subgroups. Their 105 modules use all six supported layers.
 - Eight outcome streams include corrected invoices, delayed or reversed payments, dispute holds, plan reassessment, accepted adviser handoff and service recovery.
-- Twenty-four logical assets identify a primary owning team and system-of-record brick. External ERP, housing and bank authorities are distinguished from owned operational projections.
+- Twenty-four logical assets identify a system-of-record brick. External ERP, housing and bank authorities are distinguished from owned operational projections.
 - Shared foundations include scoped access, audit, retention, integration acceptance, service recovery and usage-cost evidence.
 - Proposed implementation details are explicitly separated from public product descriptions.
 
@@ -59,36 +59,6 @@ No P1 boundary or missing-core-capability defect identified. Cross-file integrit
 
 Connect the adapter modules in the initial draft, then confirm contract details before narrowing the proposed APIs or external system roles. Preserve the current explicit financial-state and case-hold boundaries.
 
-## Teams Review
-
-Updated: 2026-09-06
-
-### Operating-model assessment
-
-- Eight teams have distinct missions and exactly one primary owner is intended for each brick.
-- Teams range from eight to ten FTE with domain-specific role mixes; six group leadership FTE yield a 78-FTE scenario, not a POM headcount claim.
-- Invoicing owns recipient preferences and delivery recovery; Payment owns initiation and returns; Integration owns creditor setup and source-sensitive matching.
-- Collections controls permitted treatment, Sustainable Support owns plans and referrals, and Decision Intelligence owns controlled recommendations and outcome evidence.
-- Shared Trust and Platform teams retain controls and recovery accountability. No autonomous payer decision-maker is represented as staff.
-
-### Ownership findings
-
-No orphaned, duplicated or mission-incompatible ownership identified in the inventory. Confirm the complete ownership and asset cross-check below before implementation.
-
-### Topology and staffing findings
-
-- **P2 — Specialist capacity is assumed.** Evidence: teams/teams.json, supt and trst. Two support specialists and one privacy specialist may not cover the eventual country and creditor mix. Validate workload, professional responsibilities and partner capacity before staffing.
-- **P2 — On-call coverage must be designed.** Evidence: teams/teams.json, plat/payt/intg; product-bricks/product-bricks.json, oper/paym/conn. Shared reliability supplements product-team ownership. A 78-FTE scenario does not by itself demonstrate a sustainable service rotation.
-- **P3 — Integration spans onboarding and matching.** Evidence: intg owns conn/tnan/mtch. This is intentional because source and provider reference quality determines acceptance. Split only if discovery shows incompatible workload or operational cadence.
-
-### Strategy alignment findings
-
-Every persona has an accountable team relationship and a product surface. Team descriptions reuse existing customer KPI names. External advisers, creditors and bank operations remain outside proposed software-team staffing.
-
-### Edit backlog
-
-Use edit-teams after capacity discovery to adjust supt, trst and plat. Preserve unique brick ownership and update data-asset owner and steward links together.
-
 ## Balance Audit
 
 Updated: 2026-09-06
@@ -101,8 +71,7 @@ Integrity: **passed**. Overall: **mature outside-in domain model**, with commerc
 | Personas | 9 | 4 | Buyer, operator, payer and representative responsibilities separated |
 | Bricks | 24 | 20 | Four root areas, eleven subgroups, supported layered modules |
 | Streams | 8 | 10 | Every job and brick has an outcome path |
-| Data assets | 24 | 17 | Every asset has one owning brick and matching owner team |
-| Teams | 8 | 24 | Intentional smaller scenario for the bounded SaaS domain |
+| Data assets | 24 | 17 | Every asset has one owning brick |
 | Landscape entries | 10 | 11 | POM anchor plus nine alternatives, including substitutes |
 | Sourced insights | 14 | 8 | All source, persona, job and KPI references resolve |
 
@@ -110,18 +79,18 @@ Integrity: **passed**. Overall: **mature outside-in domain model**, with commerc
 
 None remaining. The final audit confirmed:
 
-- All nine personas have product and team coverage; all eighteen jobs connect to existing streams.
+- All nine personas have product coverage; all eighteen jobs connect to existing streams.
 - All nine adoption journeys use Trigger, Discovery, Evaluation, Trial, Engagement and Retention.
 - All eighteen KPI trees have four levels and two children per internal node; 270 node IDs and every strategy metric reference are consistent.
-- Every brick is in a stream, deployed for a product and assigned to exactly one primary team.
-- Every asset has a matching system-of-record brick, team owner, valid store and valid stewardship references.
+- Every brick is in a stream, and deployed for a product.
+- Every asset has a matching system-of-record brick and valid store references.
 - Stream composition matches its flow steps; each product's deployed set includes its required shared dependencies.
 - The runtime dependency graph has no cycle; external adapters have explicit internal callers.
 - All fourteen insights resolve their sources, personas, jobs and KPI nodes.
 
 ### P2 — remaining discovery, not structural blockers
 
-Validate commercial packaging, pilot baselines, customer interviews, local policies and staffing capacity as detailed in the three reviews. Shared service participation is not a claim about feature entitlements. Candidate stressors are not reported incidents or proof of resilience.
+Validate commercial packaging, pilot baselines, customer interviews, and local policies as detailed in the two reviews. Shared service participation is not a claim about feature entitlements. Candidate stressors are not reported incidents or proof of resilience.
 
 ### P3 — polish and evidence limits
 

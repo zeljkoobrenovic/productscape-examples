@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "entm", "name": "Legal Entity, Intercompany and FX Accounting", "type": "service", "status": "sustaining", "description": "Maintains the legal-entity register (including the licensed e-money entities of Booking Holdings Financial Services), intercompany agreements and settlement, transfer-pricing charges and daily FX rates and revaluation. With EUR and GBP as the principal FX exposures (10-K FY2025), correct revaluation and intercompany elimination drive both close quality and tax outcomes.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-entm-api", "name": "Entity and Intercompany API", "type": "api", "description": "Exposes entities, intercompany relationships, open intercompany balances and FX rates.", "dependencies": {"modules": [{"moduleId": "module-entm-core", "type": "uses", "description": "Reads the entity and intercompany register."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-entm-ic-matching", "name": "Intercompany Matching Job", "type": "daemon", "description": "Matches intercompany payables and receivables across entities and flags mismatches before close.", "dependencies": {"modules": [{"moduleId": "module-entm-core", "type": "uses", "description": "Reads open items."}, {"moduleId": "module-entm-fx-reval", "type": "uses", "description": "Uses revalued balances."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-entm-fx-reval", "name": "FX Rate and Revaluation Service", "type": "service", "description": "Loads daily rates and runs month-end foreign-currency revaluation for open items and balances."}, {"id": "module-entm-core", "name": "Legal Entity and Intercompany Register", "type": "stateful-service", "description": "Register of legal entities, licences, functional currencies, intercompany agreements and transfer-pricing rules."}]}, {"layer": "integration", "description": "Adapters to SAP, providers, banks and authorities.", "modules": [{"id": "module-entm-rates-adapter", "name": "Market Rate Feed Adapter", "type": "integration", "description": "Imports reference exchange rates from a market-data provider."}]}], "dataDependencies": [{"assetId": "legal-entity-and-intercompany-register", "moduleIds": ["module-entm-core", "module-entm-api", "module-entm-ic-matching"], "role": "own", "description": "System of record for entities, intercompany agreements and transfer-pricing rules."}, {"assetId": "general-ledger-journal", "moduleIds": ["module-entm-fx-reval", "module-entm-ic-matching"], "role": "read-write", "description": "Reads balances and posts revaluation and intercompany entries."}], "brickDependencies": [{"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-entm-fx-reval", "type": "data", "description": "Posts revaluation and intercompany settlement entries to the ledger."}, {"targetBrickId": "trcm", "moduleId": "module-trcm-api", "sourceModuleId": "module-entm-core", "type": "context", "description": "Shares entity bank structure and receives hedge designations for FX exposure."}], "externalSystemsThisBrickDependsOn": [{"system": "Market data provider (FX reference rates)", "type": "data", "interface": "Rate file / API", "description": "Daily reference rates for revaluation.", "sourceModuleId": "module-entm-rates-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "Tax and transfer-pricing advisers", "type": "consumer", "interface": "Entity and Intercompany API", "description": "Entity and intercompany data for transfer-pricing documentation.", "moduleId": "module-entm-api"}], "domain": "Global Finance Core", "group": "Ledger and Accounting Core"};
-    const relatedTeams = [{"teamId": "ledg", "teamName": "Ledger Core", "teamType": "platform", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "fcore", "name": "Global Finance Core", "icon": "fcore.png", "type": "Internal finance platform", "whyUsed": "Legal Entity, Intercompany and FX Accounting as part of Global Finance Core."}];
     const supportedJobs = [{"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "fldr-steer", "jobName": "Steer the company on one trusted global financial view", "jobWhatItIs": "Run monthly performance reviews, quarterly guidance and capital allocation from consolidated, brand-comparable numbers.", "jobOutcome": "Leadership decides on the same numbers the auditors and investors will see, without reconciling spreadsheets.", "supportRationale": "Orchestrated close across entities with reconciled subledgers.", "usedInSteps": [{"step": "Close and consolidate the period", "description": "Get every brand and entity closed and consolidated on schedule.", "howItSupports": "Orchestrated close across entities with reconciled subledgers.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "ctrl-close", "jobName": "Close the books fast and clean every month and quarter", "jobWhatItIs": "Complete entity closes, reconciliations, consolidation and reporting within the calendar.", "jobOutcome": "Consolidated results are final on schedule with reconciled balances and no late audit adjustments.", "supportRationale": "Close orchestration with task dependencies and status.", "usedInSteps": [{"step": "Run the close calendar", "description": "Sequence tasks across entities and teams and track completion.", "howItSupports": "Close orchestration with task dependencies and status.", "media": []}, {"step": "Reconcile balance sheet accounts", "description": "Match subledgers, banks and intercompany and resolve exceptions.", "howItSupports": "Automated matching and exception queues.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

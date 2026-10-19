@@ -134,7 +134,7 @@ risk exposure, acquisition benefits, evidenced exit claims). Meetings and report
 counts are workload diagnostics, not success measures.
 
 Customer KPI pyramids contain measurable definitions, with exact names reused by
-strategy horizons and team charters. Leaf `currentValue` fields are null: no private
+strategy horizons. Leaf `currentValue` fields are null: no private
 baseline is supplied. Targets follow baseline agreement. Pyramids express diagnostic
 relationships, not automatic additive formulas or proof of causality. Operational
 customer trees have deeper drivers; three-level governance and business trees avoid
@@ -143,8 +143,8 @@ invented causal precision. No statistics from company marketing become fund retu
 ## Evidence and assumptions
 
 `INPUT.md` is a design brief, not independent evidence of a deployed capability.
-All personas, product names, channels, modules, stores, ownership assignments, and
-horizons are proposed constructs. No private implementation or actual staffing was supplied.
+All personas, product names, channels, modules, stores, and horizons are proposed
+constructs. No private implementation was supplied.
 
 Public context checked on 11 September 2026:
 
@@ -165,18 +165,15 @@ The competition file distinguishes peer operating models from specialist service
 substitutes. It contains no unsourced market shares, prices, or performance rankings.
 Insights separate source observations from proposed implications.
 
-## Delivery and ownership assumptions
+## Delivery assumptions
 
-Bricks are ownable capabilities delivered through configured workflows, artifacts,
-and optional software modules. They do not imply one microservice or staffed squad
-each. Shared layer/team vocabularies follow toolkit contracts. Brick status `invest`
+Bricks are capabilities delivered through configured workflows, artifacts,
+and optional software modules. They do not imply one microservice each. Shared
+layer vocabularies follow toolkit contracts. Brick status `invest`
 denotes a proposed priority, not deployment maturity.
 
-Five logical responsibility teams cover investment technology, CTO partnership,
-specialist accelerators, portfolio intelligence, and value evidence/exit. People may
-hold multiple responsibilities; staffing counts are omitted. Each brick and asset
-has one accountable owner. IC, board, and company management retain decision rights.
-The Technology Principal owns the product across these five responsibility areas.
+IC, board, and company management retain decision rights. The Technology Principal
+owns the product.
 
 Deployment channels are proposed fund, company, peer-learning, and approved-reporting
 workspaces. Vendor, hosting, identity, and integration choices are unverified. GitHub,

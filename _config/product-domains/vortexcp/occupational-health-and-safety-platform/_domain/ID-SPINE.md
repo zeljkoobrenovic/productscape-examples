@@ -93,74 +93,46 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 wrkr→worker-record,organisation-unit-and-workstation; orgs→organisation-unit-and-workstation,worker-record; hris→hris-import-batch,worker-record; expo→exposure-and-risk-profile,organisation-unit-and-workstation; surv→surveillance-schedule,exposure-and-risk-profile,country-regulation-rule; schd→convocation-and-appointment,surveillance-schedule; noti→notification-message,convocation-and-appointment; cons→consultation-record,fitness-opinion,occupational-medical-file; ques→questionnaire-response,consultation-record; devs→device-measurement,consultation-record; tele→teleconsultation-session,consultation-record; vacc→vaccination-and-campaign-record,worker-record; dmst→occupational-medical-file,medical-document; mdoc→medical-document,fitness-opinion; conf→consent-and-access-grant,occupational-medical-file; risk→risk-assessment,exposure-and-risk-profile; hazs→hazardous-situation-report,corrective-action; insp→inspection-and-audit-record,corrective-action; actn→corrective-action,risk-assessment; chem→chemical-product-and-sds,exposure-and-risk-profile; acci→work-accident-event,occupational-disease-case,worker-record; rcaa→event-analysis-and-statistic,work-accident-event; nreg→national-declaration-form,work-accident-event,occupational-disease-case; epor→portal-session-and-request,convocation-and-appointment,medical-document; mpor→portal-session-and-request,fitness-opinion,corrective-action; dash→kpi-snapshot,surveillance-schedule; rept→annual-activity-report,kpi-snapshot; cohm→collective-health-indicator,exposure-and-risk-profile; iden→user-account-and-role,consent-and-access-grant; cfgr→tenant-configuration,country-regulation-rule; regc→country-regulation-rule,surveillance-schedule; audt→audit-trail-entry,occupational-medical-file; host→tenant-configuration,audit-trail-entry; intg→integration-connection,notification-message,device-measurement; impl→implementation-project,hris-import-batch,tenant-configuration; supp→support-ticket,tenant-configuration.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `worker-record` → workforce-and-surveillance
-- `organisation-unit-and-workstation` → workforce-and-surveillance
-- `hris-import-batch` → integrations
-- `exposure-and-risk-profile` → workforce-and-surveillance
-- `surveillance-schedule` → workforce-and-surveillance
-- `convocation-and-appointment` → workforce-and-surveillance
-- `notification-message` → workforce-and-surveillance
-- `consultation-record` → clinical-consultation
-- `fitness-opinion` → clinical-consultation
-- `questionnaire-response` → clinical-consultation
-- `device-measurement` → clinical-consultation
-- `teleconsultation-session` → clinical-consultation
-- `vaccination-and-campaign-record` → clinical-consultation
-- `occupational-medical-file` → medical-records-and-confidentiality
-- `medical-document` → medical-records-and-confidentiality
-- `consent-and-access-grant` → medical-records-and-confidentiality
-- `risk-assessment` → risk-and-prevention
-- `hazardous-situation-report` → risk-and-prevention
-- `inspection-and-audit-record` → risk-and-prevention
-- `corrective-action` → risk-and-prevention
-- `chemical-product-and-sds` → risk-and-prevention
-- `work-accident-event` → accidents-and-occupational-diseases
-- `occupational-disease-case` → accidents-and-occupational-diseases
-- `event-analysis-and-statistic` → accidents-and-occupational-diseases
-- `national-declaration-form` → accidents-and-occupational-diseases
-- `portal-session-and-request` → portals-and-self-service
-- `kpi-snapshot` → analytics-and-reporting
-- `annual-activity-report` → analytics-and-reporting
-- `collective-health-indicator` → analytics-and-reporting
-- `user-account-and-role` → platform-core-and-security
-- `tenant-configuration` → platform-core-and-security
-- `audit-trail-entry` → platform-core-and-security
-- `country-regulation-rule` → regulatory-content
-- `integration-connection` → integrations
-- `implementation-project` → implementation-and-migration
-- `support-ticket` → support-and-account-management
+- `worker-record`
+- `organisation-unit-and-workstation`
+- `hris-import-batch`
+- `exposure-and-risk-profile`
+- `surveillance-schedule`
+- `convocation-and-appointment`
+- `notification-message`
+- `consultation-record`
+- `fitness-opinion`
+- `questionnaire-response`
+- `device-measurement`
+- `teleconsultation-session`
+- `vaccination-and-campaign-record`
+- `occupational-medical-file`
+- `medical-document`
+- `consent-and-access-grant`
+- `risk-assessment`
+- `hazardous-situation-report`
+- `inspection-and-audit-record`
+- `corrective-action`
+- `chemical-product-and-sds`
+- `work-accident-event`
+- `occupational-disease-case`
+- `event-analysis-and-statistic`
+- `national-declaration-form`
+- `portal-session-and-request`
+- `kpi-snapshot`
+- `annual-activity-report`
+- `collective-health-indicator`
+- `user-account-and-role`
+- `tenant-configuration`
+- `audit-trail-entry`
+- `country-regulation-rule`
+- `integration-connection`
+- `implementation-project`
+- `support-ticket`
 
 36 assets. Medical assets (occupational-medical-file, consultation-record, fitness-opinion, questionnaire-response, device-measurement, teleconsultation-session, vaccination-and-campaign-record, medical-document, occupational-disease-case) are health data under medical secrecy: highest personal-data level, HDS hosting, physician-only access.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Kitry does not publish headcount; model the company at about 70 people with small teams (3–7 people) that mix software engineers, occupational health professionals and implementation consultants.
-
-Org group "Occupational Health Product Group":
-- `workforce-and-surveillance` (stream-aligned) owns wrkr, orgs, expo, surv, schd, noti
-- `clinical-consultation` (stream-aligned) owns cons, ques, devs, tele, vacc
-- `medical-records-and-confidentiality` (complicated-subsystem) owns dmst, mdoc, conf
-
-Org group "Workplace Safety Product Group":
-- `risk-and-prevention` (stream-aligned) owns risk, hazs, insp, actn, chem
-- `accidents-and-occupational-diseases` (stream-aligned) owns acci, rcaa, nreg
-
-Org group "Experience and Insight Group":
-- `portals-and-self-service` (stream-aligned) owns epor, mpor
-- `analytics-and-reporting` (stream-aligned) owns dash, rept, cohm
-
-Org group "Platform Group":
-- `platform-core-and-security` (platform) owns iden, cfgr, audt, host
-- `integrations` (platform) owns hris, intg
-- `regulatory-content` (enabling) owns regc; occupational health lawyers and content specialists for FR/BE/LU/NL
-
-Org group "Customer Services Group":
-- `implementation-and-migration` (enabling) owns impl; customer dependencies on kimp, ohsm, hsem, hrad
-- `support-and-account-management` (enabling) owns supp; customer dependencies on kimp, ohsm, ocph, hsem
-
-12 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "fint", "name": "FinanceTables Financial Statements", "type": "full-stack", "status": "sustaining", "description": "Finance-grade statements inside the dashboard: profit and loss, balance sheet, budget-versus-actual and management statements built from an account hierarchy with sign rules, subtotals, variance columns and drill-through to the underlying rows. FinanceTables gives FP&A analysts and controllers the layout they expect from a finance system (indented account trees, bold subtotals, percentage-of-revenue columns, period comparisons) on top of Tableau data, and exports the statement to Excel or a scheduled PDF. It reuses the SuperTables grid for rendering and, when combined with InputTables and WriteBackExtreme, turns the statement into a budget entry surface.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-fint-ext", "name": "FinanceTables Extension", "type": "web-component", "description": "Statement view with account tree, period columns, variance and percentage columns, expand and collapse and drill-through to detail rows.", "dependencies": {"modules": [{"moduleId": "module-fint-bff", "type": "uses", "description": "Extension fetches computed statements and hierarchy metadata through the BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-fint-bff", "name": "FinanceTables BFF", "type": "bff", "description": "Serves statement layouts, hierarchy definitions and computed statement frames to the extension.", "dependencies": {"modules": [{"moduleId": "module-fint-model", "type": "delegates", "description": "BFF delegates hierarchy and layout persistence to the statement model service."}, {"moduleId": "module-fint-calc", "type": "uses", "description": "BFF invokes the calculation service to compute subtotals and variances."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-fint-calc", "name": "Statement Calculation Service", "type": "stateless-service", "description": "Rolls dashboard rows up the account hierarchy, applies sign rules, computes subtotals, variances and ratios per period without owning state.", "dependencies": {"modules": [{"moduleId": "module-fint-model", "type": "uses", "description": "Calculation reads hierarchy and rules from the statement model."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-fint-model", "name": "Statement Model Service", "type": "stateful-service", "description": "Owns account hierarchies, sign conventions, subtotal rules, statement templates (P&L, balance sheet, budget report) and their mapping to dashboard fields."}]}], "dataDependencies": [{"assetId": "financial-statement-model", "moduleIds": ["module-fint-model", "module-fint-bff"], "role": "own", "description": "System of record for account hierarchies, statement templates and sign rules."}, {"assetId": "dashboard-data-snapshot", "moduleIds": ["module-fint-calc"], "role": "read", "description": "Reads the worksheet rows that feed the statement."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-fint-ext", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell, settings persistence, theming and Tableau Extensions API bindings."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-fint-ext", "type": "data", "description": "Reads the fact rows (accounts, periods, amounts) that the statement rolls up through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "sptb", "moduleId": "module-sptb-bff", "sourceModuleId": "module-fint-ext", "type": "runtime", "description": "Renders statements with the SuperTables grid engine, formatting and Excel export."}, {"targetBrickId": "rndr", "moduleId": "module-rndr-api", "sourceModuleId": "module-fint-bff", "type": "rendering", "description": "Exports statements to Excel and PDF for board packs and scheduled distribution."}, {"targetBrickId": "wbdb", "moduleId": "module-wbdb-api", "sourceModuleId": "module-fint-calc", "type": "data", "description": "Reads budget and forecast records entered through InputTables or WriteBackExtreme to build budget-versus-actual statements."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-fint-ext", "type": "licensing", "description": "On every extension load checks the organisation's plan and records the anonymous unique user token that meters active users over a rolling 12 months."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Cloud, Tableau Server and Tableau Desktop", "type": "channel", "interface": "Tableau Extensions API", "description": "Hosts the statement view inside finance dashboards.", "sourceModuleId": "module-fint-ext"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Products", "group": "Write-back and Collaboration"};
-    const relatedTeams = [{"teamId": "write-back-and-planning", "teamName": "Write-back and Planning", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "financetables", "name": "FinanceTables", "icon": "financetables.png", "type": "B2B Dashboard Extension", "whyUsed": "Builds P&Ls, budget reports and management statements from dashboard data."}];
     const supportedJobs = [{"customerId": "plnr", "customerName": "Planning and Finance Contributor", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-plnr-portrait.jpg", "productId": "financetables", "productName": "FinanceTables", "productIcon": "financetables.png", "jobId": "jtbd-plnr-3", "jobName": "Produce P&Ls and management statements from the dashboard data", "jobWhatItIs": "At month-end, turn the actuals and the submitted forecast into the P&L, budget-versus-actual report and management statement the leadership team expects, with the account hierarchy, subtotals, sign conventions and comparison columns, and get it into the board deck and the mailbox without rebuilding it in Excel.", "jobOutcome": "A finance statement produced from the same governed data in minutes, consistent across dashboard, deck and email, and reused every month without manual rework.", "supportRationale": "Renders the account hierarchy as a P&L or management statement with the configured layout.", "usedInSteps": [{"step": "Configure the statement layout", "description": "Map the chart of accounts to a FinanceTables layout with subtotals, sign flips, currency and comparison columns for actual, budget, forecast and variance, and save it as the monthly template.", "howItSupports": "Renders the account hierarchy as a P&L or management statement with the configured layout.", "media": []}, {"step": "Review and annotate the statement", "description": "Check totals against the ledger, add variance comments through write-back that appear in the statement, and mark the statement as reviewed.", "howItSupports": "Shows the statement with linked comments for review.", "media": []}, {"step": "Export to the board deck", "description": "Export the statement and supporting charts to PowerPoint with VizSlides and to PDF and Excel for the finance meeting, with the period and filters stated.", "howItSupports": "Produces VizSlides, PDF and Excel exports of the finance statement.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

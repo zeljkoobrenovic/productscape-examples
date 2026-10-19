@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pric", "name": "Dynamic Pricing and Incentives", "type": "service", "status": "sustaining", "description": "Calculates upfront fares, surge multipliers, discounts, and driver incentives based on demand, supply, market rules, and product type.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "Dynamic Pricing and Matching in Ride-Hailing Platforms", "link": "https://www.uber.com/blog/research/dynamic-pricing-and-matching-in-ride-hailing-platforms/", "description": "Explains the algorithmic relationship between dynamic pricing, matching, waiting, and welfare."}, {"label": "Under the Hood of Uber's Experimentation Platform", "link": "https://www.uber.com/en-US/blog/xp/", "description": "Relevant to pricing guardrails, launch control, and measuring treatment effects safely."}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-quote-api", "name": "Quote API", "type": "api", "description": "Returns fares, expected wait, and available product options.", "dependencies": {"modules": [{"moduleId": "module-quote-and-fare-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-incentive-and-surge-logic", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-experimentation-and-guardrails", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-marketplace-pricing-events", "name": "Marketplace Pricing Events", "type": "message-consumer", "description": "Broadcasts pricing and incentive state changes.", "dependencies": {"modules": [{"moduleId": "module-quote-and-fare-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-incentive-and-surge-logic", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-experimentation-and-guardrails", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-quote-and-fare-engine", "name": "Quote and Fare Engine", "type": "service", "description": "Calculates rider-facing pricing and fee composition."}, {"id": "module-incentive-and-surge-logic", "name": "Incentive and Surge Logic", "type": "service", "description": "Adjusts driver and rider economics based on marketplace conditions."}, {"id": "module-experimentation-and-guardrails", "name": "Experimentation and Guardrails", "type": "service", "description": "Applies pricing experiments and policy limits without losing operator control."}]}], "dataDependencies": [{"assetId": "dynamic-pricing-and-incentives", "moduleIds": ["module-quote-and-fare-engine", "module-incentive-and-surge-logic", "module-experimentation-and-guardrails"], "role": "own", "description": "Acts as the primary owning brick for Dynamic Pricing And Incentives."}, {"assetId": "driver-onboarding-and-compliance", "moduleIds": ["module-quote-and-fare-engine", "module-incentive-and-surge-logic", "module-experimentation-and-guardrails"], "role": "read", "description": "Reads Driver Onboarding And Compliance to support domain workflows."}], "brickDependencies": [{"targetBrickId": "data", "moduleId": "module-reporting-feed", "sourceModuleId": "module-marketplace-pricing-events", "type": "analytics", "description": "Depends on Marketplace Intelligence and Analytics for demand and conversion feedback."}, {"targetBrickId": "expm", "moduleId": "module-experiment-assignment-api", "sourceModuleId": "module-quote-api", "type": "experimentation", "description": "Depends on Experimentation and ML Decisioning Platform for controlled launches, policy tests, and pricing treatments."}, {"targetBrickId": "payx", "moduleId": "module-payments-platform-api", "sourceModuleId": "module-quote-api", "type": "billing", "description": "Depends on Payments Platform and Ledger for fee orchestration, settlement alignment, and refund-sensitive fare controls."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Marketplace Controls and Special Flows", "group": "liquidity-and-pricing"};
-    const relatedTeams = [{"teamId": "driver-growth", "teamName": "Driver Growth and Earnings", "teamType": "stream-aligned", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-controls-liquidity-and-pricing", "teamName": "Marketplace and Trust Controls Dynamic Pricing and Incentives", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-controls-portfolio-insights", "teamName": "Marketplace and Trust Controls Experience Quality", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-controls-enablement", "teamName": "Marketplace and Trust Controls Reliability and Adoption", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "rapp", "name": "Rider Mobility App", "icon": "", "type": "B2C Mobility", "whyUsed": "Provides upfront fares and product choice logic riders use to decide whether to book."}];
     const supportedJobs = [{"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "book", "jobName": "Book a reliable ride for a time-sensitive trip", "jobWhatItIs": "Turn a need to get somewhere into a completed ride with predictable pickup, travel time, and payment.", "jobOutcome": "A completed trip that feels fast, safe, and worth the price paid.", "supportRationale": "Provides upfront fares, surge logic, and product-level tradeoffs such as price versus wait time.", "usedInSteps": [{"step": "Define the trip and compare options", "description": "Choose pickup, destination, trip timing, and whether standard, premium, reserve, share, or airport-specific options best fit the moment.", "howItSupports": "Provides upfront fares, surge logic, and product-level tradeoffs such as price versus wait time.", "media": [{"type": "image", "src": "media/jbtd-ridu-book-1.jpg", "title": "Urban Time-Sensitive Rider JTBD step 1: Define the trip and compare options", "alt": "Enterprise infographic for step 1 of the job \"Book a reliable ride for a time-sensitive trip\": Define the trip and compare options."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

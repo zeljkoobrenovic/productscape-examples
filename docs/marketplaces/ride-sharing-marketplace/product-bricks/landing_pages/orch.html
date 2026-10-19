@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "orch", "name": "Reserve, Share and Airport Orchestration", "type": "full-stack", "status": "invest", "description": "Handles scheduled trips, shared-ride routing logic, and constrained pickup or drop-off operations such as airports and shuttles.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "How We Built Uber Engineering's Highest Query per Second Service Using Go", "link": "https://www.uber.com/en-CI/blog/go-geofence-highest-query-per-second-service/", "description": "Relevant to airport, venue, and neighborhood operating rules expressed as geofences."}, {"label": "ETA Phone Home: How Uber Engineers an Efficient Route", "link": "https://www.uber.com/en-US/blog/engineering-routing-engine/", "description": "Important for pooled routing, scheduled pickup timing, and special-trip feasibility."}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-operations-workspace", "name": "Operations Workspace", "type": "web-component", "description": "Operator interface for constrained trip flows and scheduling controls.", "dependencies": {"modules": [{"moduleId": "module-special-trip-rules-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-special-trip-rules-api", "name": "Special Trip Rules API", "type": "api", "description": "Returns reserve, pooling, and location-specific operating rules.", "dependencies": {"modules": [{"moduleId": "module-scheduled-trip-planner", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-shared-ride-orchestrator", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-airport-and-venue-operations-rules", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-scheduled-trip-planner", "name": "Scheduled Trip Planner", "type": "service", "description": "Manages future trips, supply reservation, and pre-trip reminders."}, {"id": "module-shared-ride-orchestrator", "name": "Shared Ride Orchestrator", "type": "service", "description": "Coordinates pooled routing, rider sequencing, and detour controls.", "dependencies": {"modules": [{"moduleId": "module-airport-and-venue-operations-rules", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-airport-and-venue-operations-rules", "name": "Airport and Venue Operations Rules", "type": "service", "description": "Applies pickup-lane, queue, and access logic for constrained environments."}]}], "dataDependencies": [{"assetId": "trip-request-and-intent-capture", "moduleIds": ["module-scheduled-trip-planner", "module-shared-ride-orchestrator", "module-airport-and-venue-operations-rules"], "role": "read", "description": "Reads Trip Request And Intent Capture to support domain workflows."}, {"assetId": "eta-maps-and-routing-intelligence", "moduleIds": ["module-scheduled-trip-planner", "module-shared-ride-orchestrator", "module-airport-and-venue-operations-rules"], "role": "read", "description": "Reads Eta Maps And Routing Intelligence to support domain workflows."}], "brickDependencies": [{"targetBrickId": "disp", "moduleId": "module-dispatch-decision-api", "sourceModuleId": "module-special-trip-rules-api", "type": "dispatch", "description": "Depends on Dispatch and Matching Engine to allocate supply to special trip flows."}, {"targetBrickId": "etar", "moduleId": "module-eta-and-routing-api", "sourceModuleId": "module-special-trip-rules-api", "type": "routing", "description": "Depends on ETA, Maps and Routing Intelligence for scheduling and pooled routing logic."}, {"targetBrickId": "mapp", "moduleId": "module-mobile-experience-sdk", "sourceModuleId": "module-scheduled-trip-planner", "type": "mobile-surface", "description": "Depends on Mobile App Experience Platform for rider and driver-facing special-trip messaging, sequencing, and realtime updates."}, {"targetBrickId": "capi", "moduleId": "module-client-experience-api", "sourceModuleId": "module-special-trip-rules-api", "type": "client-api", "description": "Depends on Client API Composition and Server-Driven Experience to assemble reserve, pooling, and airport-specific panels without hardcoding all flow variants in the apps."}, {"targetBrickId": "infr", "moduleId": "module-edge-and-traffic-control-apis", "sourceModuleId": "module-special-trip-rules-api", "type": "runtime", "description": "Depends on Service Runtime and Reliability Foundation for resilient operations in high-volume airport and scheduled-trip flows."}], "externalSystemsThisBrickDependsOn": [{"system": "Airports and venue operating systems", "type": "partner", "interface": "Access and rules feeds", "description": "Provides local operating constraints, queue rules, and pickup-zone definitions.", "sourceModuleId": "module-airport-and-venue-operations-rules"}], "externalSystemsDependingOnThisBrick": [], "domain": "Marketplace Controls and Special Flows", "group": "special-trip-orchestration"};
-    const relatedTeams = [{"teamId": "fleet-programs", "teamName": "Business and Fleet Programs", "teamType": "stream-aligned", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-dispatch", "teamName": "Marketplace Dispatch and Pricing", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}, {"teamId": "reserve-airport", "teamName": "Reserve and Airport Experience", "teamType": "stream-aligned", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "rider-growth-operations-excellence", "teamName": "Rider Growth and Trip Experience Service Quality", "teamType": "enabling", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

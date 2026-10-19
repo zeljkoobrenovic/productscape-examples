@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pout", "name": "Partner Payout Orchestration", "type": "full-stack", "status": "invest", "description": "Calculates and schedules payouts to partners for merchant-model bookings, net of commission, by bank transfer or virtual card, honouring partner payout terms, currencies, holds and fraud checks. With 70% of gross bookings on a merchant basis in 2025 (63% in 2024), payout accuracy and timing are a primary partner experience and working-capital lever.", "links": [], "layers": [{"layer": "ui", "description": "Operator and finance-user screens.", "modules": [{"id": "module-pout-ui", "name": "Payout Operations Console", "type": "web-component", "description": "Payout calendar, holds, failed payouts and partner bank-detail changes.", "dependencies": {"modules": [{"moduleId": "module-pout-api", "type": "uses", "description": "Reads and acts on payouts."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-pout-api", "name": "Partner Payout API", "type": "api", "description": "Payout schedules, statements and status for partner extranets and finance.", "dependencies": {"modules": [{"moduleId": "module-pout-core", "type": "uses", "description": "Reads payouts."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-pout-scheduler", "name": "Payout Scheduler", "type": "daemon", "description": "Batches instructions by currency, method and cut-off and releases them to the payment factory.", "dependencies": {"modules": [{"moduleId": "module-pout-core", "type": "uses", "description": "Reads due instructions."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-pout-calculator", "name": "Payout Calculation Service", "type": "stateless-service", "description": "Computes payable amounts per booking net of commission, taxes and adjustments.", "dependencies": {"modules": [{"moduleId": "module-pout-core", "type": "uses", "description": "Creates payout instructions."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-pout-core", "name": "Payout Instruction Store", "type": "stateful-service", "description": "Payout instructions, partner payout details, holds and status history."}]}], "dataDependencies": [{"assetId": "partner-payout-instruction", "moduleIds": ["module-pout-core", "module-pout-calculator", "module-pout-scheduler", "module-pout-api"], "role": "own", "description": "System of record for partner payout instructions."}, {"assetId": "partner-bank-and-payout-details", "moduleIds": ["module-pout-core", "module-pout-ui"], "role": "own", "description": "Partner bank accounts and payout preferences with change control."}], "brickDependencies": [{"targetBrickId": "tfnd", "moduleId": "module-tfnd-api", "sourceModuleId": "module-pout-calculator", "type": "data", "description": "Releases traveler funds held for the booking."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-pout-calculator", "type": "data", "description": "Reads partner balances from the subledger."}, {"targetBrickId": "bnkc", "moduleId": "module-bnkc-api", "sourceModuleId": "module-pout-scheduler", "type": "composition", "description": "Sends payment files through the payment factory."}, {"targetBrickId": "trcm", "moduleId": "module-trcm-api", "sourceModuleId": "module-pout-scheduler", "type": "context", "description": "Aligns payout batches with liquidity and FX funding."}], "externalSystemsThisBrickDependsOn": [{"system": "Virtual card issuing provider (assumed)", "type": "service", "interface": "VCC issuing API", "description": "Issues virtual cards for card-based partner payouts.", "sourceModuleId": "module-pout-scheduler"}], "externalSystemsDependingOnThisBrick": [{"system": "Partner extranets", "type": "channel-consumer", "interface": "Partner Payout API", "description": "Partners see payout statements and status.", "moduleId": "module-pout-api"}], "domain": "Money Movement and Settlement", "group": "Partner Settlement"};
-    const relatedTeams = [{"teamId": "ptst", "teamName": "Partner Settlement", "teamType": "stream-aligned", "groupId": "mmov", "groupName": "Money Movement Finance", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "pstlm", "name": "Partner Settlement Platform", "icon": "pstlm.png", "type": "Internal finance operations product", "whyUsed": "Partner Payout Orchestration as part of Partner Settlement Platform."}];
     const supportedJobs = [{"customerId": "pset", "customerName": "Partner Settlement and Receivables Operations Lead", "customerGroup": "Finance Operations", "customerIcon": "customer-pset-portrait.jpg", "productId": "pstlm", "productName": "Partner Settlement Platform", "productIcon": "pstlm.png", "jobId": "pset-payout", "jobName": "Pay every accommodation and travel partner the right amount on time", "jobWhatItIs": "Turn completed merchant bookings into correct, funded and traceable partner payouts.", "jobOutcome": "Every partner receives the expected amount on the expected date, and every payout is reconciled to the ledger.", "supportRationale": "Subledger balances and deferred bookings drive amounts due.", "usedInSteps": [{"step": "Determine what is owed", "description": "Calculate amounts due per partner from completed stays, cancellations and adjustments.", "howItSupports": "Subledger balances and deferred bookings drive amounts due.", "media": []}, {"step": "Validate payout details", "description": "Check bank details, payout method and sanctions screening before release.", "howItSupports": "Payout orchestration validates details and holds suspicious changes.", "media": []}, {"step": "Release and fund payout runs", "description": "Batch payouts by currency and method and confirm funding with treasury.", "howItSupports": "Payment factory and treasury funding checks.", "media": []}, {"step": "Confirm and reconcile", "description": "Process bank confirmations and returns and reconcile payouts to the ledger.", "howItSupports": "Bank status feeds clear subledger items.", "media": []}]}, {"customerId": "txtr", "customerName": "Tax and Treasury Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-txtr-portrait.jpg", "productId": "pstlm", "productName": "Partner Settlement Platform", "productIcon": "pstlm.png", "jobId": "txtr-cash", "jobName": "Know and protect global cash and FX exposure every day", "jobWhatItIs": "Have one daily view of cash across banks, entities and brands, forecast payouts and hedge currency exposure.", "jobOutcome": "Treasury funds payouts and hedges EUR and GBP exposure from a reliable same-day position.", "supportRationale": "Payout schedules expose the outflows treasury must fund.", "usedInSteps": [{"step": "Forecast partner payouts and collections", "description": "Anticipate merchant-model payouts and commission receipts by currency.", "howItSupports": "Payout schedules expose the outflows treasury must fund.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

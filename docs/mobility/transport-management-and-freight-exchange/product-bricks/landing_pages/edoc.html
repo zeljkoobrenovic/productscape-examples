@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "edoc", "name": "e-Documents (eCMR, POD)", "type": "full-stack", "status": "invest", "description": "Digital transport documents for European road freight: eCMR consignment notes signed at loading and unloading, POD capture with photos and reservations, and a legally compliant long-term archive. A link-based signing surface works without any app install, removing paper from the settlement path and shortening the POD-to-invoice cycle from days to minutes.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-edoc-sign-web", "name": "eCMR Signing Surface", "type": "web-component", "description": "Link-based mobile-web surface where drivers, loaders, and consignees sign eCMRs and record reservations \u2014 no app install required.", "dependencies": {"modules": [{"moduleId": "module-edoc-api", "type": "uses", "description": "Signing surface reads document state and submits signatures through the document API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-edoc-api", "name": "Transport Document API", "type": "api", "description": "API for creating eCMRs, capturing signatures and PODs, and retrieving archived documents.", "dependencies": {"modules": [{"moduleId": "module-edoc-archive", "type": "delegates", "description": "Interface module delegates document persistence and retrieval to the archive."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-edoc-ocr-consumer", "name": "Document Digitization Consumer", "type": "message-consumer", "description": "Extracts structured data from scanned paper CMRs and POD photos uploaded by carriers still on paper.", "dependencies": {"modules": [{"moduleId": "module-edoc-archive", "type": "processes", "description": "Asynchronous module attaches extracted data to archived documents."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-edoc-archive", "name": "Document Archive", "type": "stateful-service", "description": "Owns transport documents, signature trails, reservations, and retention-compliant archival state."}]}], "dataDependencies": [{"assetId": "transport-document", "moduleIds": ["module-edoc-archive", "module-edoc-ocr-consumer"], "role": "own", "description": "System of record for eCMRs, PODs, signature trails, and archived transport documents."}], "brickDependencies": [{"targetBrickId": "texe", "moduleId": "module-texe-api", "sourceModuleId": "module-edoc-api", "type": "data", "description": "Links documents to execution records and reports POD completion back to orchestration."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-edoc-api", "type": "identity", "description": "Resolves organizations, users, roles, and entitlements from the identity backbone."}], "externalSystemsThisBrickDependsOn": [{"system": "Qualified trust service providers", "type": "service", "interface": "eIDAS Signature API", "description": "Provides qualified electronic signatures and timestamps that keep eCMRs legally valid across eCMR-protocol countries.", "sourceModuleId": "module-edoc-api"}], "externalSystemsDependingOnThisBrick": [], "domain": "Execution and Visibility", "group": "Connected Execution"};
-    const relatedTeams = [{"teamId": "settlement", "teamName": "Settlement", "teamType": "stream-aligned", "groupId": "cing", "groupName": "Commercial and Insight Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "transport-execution", "teamName": "Transport Execution", "teamType": "stream-aligned", "groupId": "exeg", "groupName": "Execution Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "carrier-companion", "name": "Carrier Portal and Mobile App", "icon": "ownr.png", "type": "B2B Portal and Mobile", "whyUsed": "Gives back-office staff a browser view of eCMRs and PODs captured in the field. Captures signed eCMRs and proof of delivery at the dock, feeding settlement without paper."}];
     const supportedJobs = [{"customerId": "cdsp", "customerName": "Carrier Dispatcher", "customerGroup": "Carriers", "customerIcon": "cdsp.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-cdsp-1", "jobName": "Keep every truck loaded in both directions", "jobWhatItIs": "Plan each truck's week so outbound contract legs pair with paying return loads: publish upcoming free capacity, pull matched backhaul offers, vet counterparties, and book without phone marathons.", "jobOutcome": "Empty kilometers drop toward the structural minimum and weekly revenue per truck rises without adding vehicles.", "supportRationale": "Carries the booked spot leg through digital order, status, and document flow.", "usedInSteps": [{"step": "Book and execute digitally", "description": "Agree terms in-platform, receive the transport order digitally, and run the leg with the same statuses and eCMR as contract freight.", "howItSupports": "Carries the booked spot leg through digital order, status, and document flow.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-1-4.png", "title": "Carrier Dispatcher JTBD step 4: Book and execute digitally", "alt": "Enterprise infographic for step 4 of the job \"Keep every truck loaded in both directions\": Book and execute digitally."}]}]}, {"customerId": "cdsp", "customerName": "Carrier Dispatcher", "customerGroup": "Carriers", "customerIcon": "cdsp.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-cdsp-2", "jobName": "Win and execute enterprise shipper contracts digitally", "jobWhatItIs": "Get onto enterprise routing guides and stay there: respond to tenders, receive orders straight into dispatch, send statuses and eCMR automatically, and build the performance record that wins the next award.", "jobOutcome": "A growing base of contract lanes with enterprise shippers, executed digitally at a cost small fleets could not otherwise afford.", "supportRationale": "Delivers transport orders digitally with all references, and returns acceptance with driver and plate details.", "usedInSteps": [{"step": "Receive orders straight into dispatch", "description": "Take awarded-lane transport orders by API or portal directly into the dispatch board \u2014 no re-typing from emailed PDFs, no missed tenders in a shared inbox.", "howItSupports": "Delivers transport orders digitally with all references, and returns acceptance with driver and plate details.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-2-2.png", "title": "Carrier Dispatcher JTBD step 2: Receive orders straight into dispatch", "alt": "Enterprise infographic for step 2 of the job \"Win and execute enterprise shipper contracts digitally\": Receive orders straight into dispatch."}]}, {"step": "Send statuses and e-documents automatically", "description": "Let telematics feed pickup, in-transit, and delivery statuses automatically, with eCMR signed digitally at both ends \u2014 keeping shippers informed without drivers on the phone.", "howItSupports": "Automates status milestones and digital eCMR/POD capture through the connectivity gateway.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-2-3.png", "title": "Carrier Dispatcher JTBD step 3: Send statuses and e-documents automatically", "alt": "Enterprise infographic for step 3 of the job \"Win and execute enterprise shipper contracts digitally\": Send statuses and e-documents automatically."}]}, {"step": "Settle cleanly and defend the record", "description": "Close loads with matched documents into self-billing, and keep the punctuality and acceptance record visible \u2014 the evidence that wins renewals and better lanes.", "howItSupports": "Runs self-billing from execution data, eliminating invoice disputes on contract lanes.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-2-4.png", "title": "Carrier Dispatcher JTBD step 4: Settle cleanly and defend the record", "alt": "Enterprise infographic for step 4 of the job \"Win and execute enterprise shipper contracts digitally\": Settle cleanly and defend the record."}]}]}, {"customerId": "cdsp", "customerName": "Carrier Dispatcher", "customerGroup": "Carriers", "customerIcon": "cdsp.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-cdsp-3", "jobName": "Get paid on time and safely", "jobWhatItIs": "Protect the company's cash: screen payers before hauling, secure risky deals with payment guarantees, invoice cleanly with matched documents, and escalate collections with leverage when payers stall.", "jobOutcome": "Days sales outstanding falls, write-offs approach zero, and no load is hauled for a counterparty who was never going to pay.", "supportRationale": "Builds document-complete invoices or self-billing statements straight from execution records.", "usedInSteps": [{"step": "Invoice with matched documents", "description": "Generate invoices from executed orders with eCMR and POD attached, or let self-billing do it \u2014 removing the missing-paperwork excuse from every payment delay.", "howItSupports": "Builds document-complete invoices or self-billing statements straight from execution records.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-3-3.png", "title": "Carrier Dispatcher JTBD step 3: Invoice with matched documents", "alt": "Enterprise infographic for step 3 of the job \"Get paid on time and safely\": Invoice with matched documents."}]}, {"step": "Chase and escalate with leverage", "description": "Track receivables, trigger structured reminders, and escalate persistent non-payers to collections \u2014 with the network's trust score as consequence for bad behavior.", "howItSupports": "Monitors receivables and runs the dunning and collections workflow.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-3-4.png", "title": "Carrier Dispatcher JTBD step 4: Chase and escalate with leverage", "alt": "Enterprise infographic for step 4 of the job \"Get paid on time and safely\": Chase and escalate with leverage."}]}]}, {"customerId": "ownr", "customerName": "Owner-Operator", "customerGroup": "Carriers", "customerIcon": "ownr.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-ownr-1", "jobName": "Find a good return load before driving home empty", "jobWhatItIs": "From the cab, near the delivery point, find freight going home: get matched offers, judge the rate quickly against the lane's going price, negotiate, book, and load \u2014 often within a couple of hours.", "jobOutcome": "The truck comes home loaded at a fair rate, and empty return trips become the exception instead of the rule.", "supportRationale": "Provides the digital order, status updates, and eCMR/POD capture on the phone.", "usedInSteps": [{"step": "Execute with digital documents", "description": "Run the load with digital transport order and eCMR, so proof of delivery exists the moment the goods land \u2014 and payment can't stall on lost paper.", "howItSupports": "Provides the digital order, status updates, and eCMR/POD capture on the phone.", "media": [{"type": "image", "src": "media/jbtd-ownr-jtbd-ownr-1-4.png", "title": "Owner-Operator JTBD step 4: Execute with digital documents", "alt": "Enterprise infographic for step 4 of the job \"Find a good return load before driving home empty\": Execute with digital documents."}]}, {"step": "Execute with digital documents", "description": "Run the load with digital transport order and eCMR, so proof of delivery exists the moment the goods land \u2014 and payment can't stall on lost paper.", "howItSupports": "Turns the completed, documented load into a clean invoice immediately.", "media": [{"type": "image", "src": "media/jbtd-ownr-jtbd-ownr-1-4.png", "title": "Owner-Operator JTBD step 4: Execute with digital documents", "alt": "Enterprise infographic for step 4 of the job \"Find a good return load before driving home empty\": Execute with digital documents."}]}]}, {"customerId": "ownr", "customerName": "Owner-Operator", "customerGroup": "Carriers", "customerIcon": "ownr.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-ownr-2", "jobName": "Avoid fraudsters and bad payers", "jobWhatItIs": "Protect a business with no buffer from the exchange's dark side: check every counterparty's trust profile, prefer guaranteed or verified loads, keep bulletproof delivery evidence, and report bad actors so they can't hunt the next victim.", "jobOutcome": "No hauled-but-unpaid loads, no phantom counterparties, and the confidence to accept good offers from unknown companies.", "supportRationale": "Captures signed eCMR, timestamps, and delivery photos as tamper-proof evidence.", "usedInSteps": [{"step": "Keep bulletproof delivery evidence", "description": "Use digital eCMR and photo-documented handover so any dispute is settled by records, not by who shouts longer in which language.", "howItSupports": "Captures signed eCMR, timestamps, and delivery photos as tamper-proof evidence.", "media": [{"type": "image", "src": "media/jbtd-ownr-jtbd-ownr-2-3.png", "title": "Owner-Operator JTBD step 3: Keep bulletproof delivery evidence", "alt": "Enterprise infographic for step 3 of the job \"Avoid fraudsters and bad payers\": Keep bulletproof delivery evidence."}]}, {"step": "Keep bulletproof delivery evidence", "description": "Use digital eCMR and photo-documented handover so any dispute is settled by records, not by who shouts longer in which language.", "howItSupports": "Links evidence to the invoice so disputes collapse quickly.", "media": [{"type": "image", "src": "media/jbtd-ownr-jtbd-ownr-2-3.png", "title": "Owner-Operator JTBD step 3: Keep bulletproof delivery evidence", "alt": "Enterprise infographic for step 3 of the job \"Avoid fraudsters and bad payers\": Keep bulletproof delivery evidence."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

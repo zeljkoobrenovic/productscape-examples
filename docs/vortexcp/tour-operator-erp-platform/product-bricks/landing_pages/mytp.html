@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "mytp", "name": "Traveler Portal and My-Trip App", "type": "full-stack", "status": "invest", "description": "Personal 'my trip' portal ('booking inzien' pages) where travellers see their booking, approve quotes, pay deposits and balances, complete passenger details and wishes, download documents and follow trip updates; extended to mobile through the Travelia and Appit partner apps and Hubby eSIM offers. Self-service here directly lowers the operator's handling time.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-mytp-web", "name": "My Trip Portal", "type": "web-component", "description": "Traveler-facing portal with booking overview, payment status and pay action, passenger detail forms, document downloads, itinerary and trip updates.", "dependencies": {"modules": [{"moduleId": "module-mytp-bff", "type": "uses", "description": "Portal UI calls the traveler BFF."}]}}, {"id": "module-mytp-mobile", "name": "Traveler App Bridge", "type": "mobile-component", "description": "Mobile trip view delivered through the Travelia and Appit partner apps: itinerary, documents, notifications and in-trip information.", "dependencies": {"modules": [{"moduleId": "module-mytp-bff", "type": "uses", "description": "App bridge syncs trip data through the traveler BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-mytp-bff", "name": "Traveler Portal BFF", "type": "bff", "description": "Backend-for-frontend aggregating booking, payment, passenger, document and update data for an authenticated traveler.", "dependencies": {"modules": [{"moduleId": "module-mytp-trip-view", "type": "delegates", "description": "Trip view aggregation is delegated to the stateless trip view service."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-mytp-notification-consumer", "name": "Trip Update Notification Consumer", "type": "message-consumer", "description": "Consumes booking, document, payment and departure events and sends portal and app notifications to the affected travellers.", "dependencies": {"modules": [{"moduleId": "module-mytp-partner-app-adapter", "type": "uses", "description": "Consumer pushes app notifications through the partner app adapter."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-mytp-trip-view", "name": "Trip View Aggregator", "type": "stateless-service", "description": "Composes the traveler's trip view from booking, itinerary, documents and payment status without owning state."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-mytp-partner-app-adapter", "name": "Partner App and eSIM Adapter", "type": "integration", "description": "Connector that publishes trip data to Travelia and Appit apps and offers Hubby eSIM products for the destination."}]}], "dataDependencies": [{"assetId": "booking-file", "moduleIds": ["module-mytp-trip-view", "module-mytp-bff"], "role": "read", "description": "Reads the traveler's bookings for the portal and app."}, {"assetId": "travel-document", "moduleIds": ["module-mytp-trip-view"], "role": "read", "description": "Lists and serves documents for download."}, {"assetId": "payment-transaction", "moduleIds": ["module-mytp-bff"], "role": "read", "description": "Shows payment status and history to the traveler."}], "brickDependencies": [{"targetBrickId": "book", "moduleId": "module-book-api", "sourceModuleId": "module-mytp-trip-view", "type": "data", "description": "Reads the traveler's booking files."}, {"targetBrickId": "docs", "moduleId": "module-docs-api", "sourceModuleId": "module-mytp-trip-view", "type": "documents", "description": "Lists and downloads travel documents for the booking."}, {"targetBrickId": "invc", "moduleId": "module-invc-api", "sourceModuleId": "module-mytp-bff", "type": "payment", "description": "Shows open amounts and obtains payment links for deposits and balances."}, {"targetBrickId": "pass", "moduleId": "module-pass-api", "sourceModuleId": "module-mytp-bff", "type": "data", "description": "Writes passenger details and wishes entered by the traveler."}, {"targetBrickId": "vtbl", "moduleId": "module-vtbl-api", "sourceModuleId": "module-mytp-bff", "type": "data", "description": "Shows and accepts proposals linked to the traveler."}, {"targetBrickId": "intg", "moduleId": "module-intg-connector-framework", "sourceModuleId": "module-mytp-partner-app-adapter", "type": "integration", "description": "Runs partner app and eSIM connectors on the shared connector framework."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-mytp-bff", "type": "identity", "description": "Resolves traveler accounts and booking access tokens from the identity and tenant backbone before serving requests."}], "externalSystemsThisBrickDependsOn": [{"system": "Travelia and Appit traveler apps", "type": "channel", "interface": "Trip data API", "description": "Partner mobile apps that present itineraries, documents and notifications to travellers.", "sourceModuleId": "module-mytp-partner-app-adapter"}, {"system": "Hubby eSIM", "type": "service", "interface": "eSIM offer API", "description": "Destination eSIM products offered to travellers in the portal and app.", "sourceModuleId": "module-mytp-partner-app-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Operations and Traveler Service", "group": "Traveler Experience"};
-    const relatedTeams = [{"teamId": "tour-builder", "teamName": "Tour Builder", "teamType": "stream-aligned", "groupId": "sbkg", "groupName": "Sales and Booking Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "traveler-experience", "teamName": "Traveler Experience", "teamType": "stream-aligned", "groupId": "optg", "groupName": "Operations and Traveler Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "traveler-portal-and-app", "name": "Traveler Portal and My-Trip App", "icon": "trav.png", "type": "B2B2C Portal and Mobile", "whyUsed": "The my-trip home: booking status, payments, documents and contact with the operator. The traveler's in-trip companion with itinerary, documents, payments and messages. Backs the my-trip data shown in Travelia and Appit apps."}];
     const supportedJobs = [{"customerId": "trav", "customerName": "Traveler and Booker", "customerGroup": "Travelers and Trade Partners", "customerIcon": "customer-trav-portrait.jpg", "productId": "traveler-portal-and-app", "productName": "Traveler Portal and My-Trip App", "productIcon": "trav.png", "jobId": "jtbd-trav-1", "jobName": "Find, book and pay for the right trip with confidence", "jobWhatItIs": "Choose the right departure, room and options or accept a tailor-made proposal, understand exactly what is included and what the package-travel rules and guarantee-fund cover mean, and complete the booking and deposit payment in one sitting without needing to call.", "jobOutcome": "A confirmed booking with the deposit paid, a clear invoice and payment schedule, and the certainty that the trip, price and conditions are exactly as chosen.", "supportRationale": "Provides the visual proposal and the online approval and change loop.", "usedInSteps": [{"step": "Approve the proposal or start the booking", "description": "For tailor-made trips, review the visual online proposal on the booking-inzien page, ask for changes, and approve; for fixed departures, start the booking and enter travelers and wishes.", "howItSupports": "Provides the visual proposal and the online approval and change loop.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-1-2.png", "title": "Traveler and Booker JTBD step 2: Approve the proposal or start the booking", "alt": "Enterprise infographic for step 2 of the job \"Find, book and pay for the right trip with confidence\": Approve the proposal or start the booking."}]}, {"step": "Pay the deposit and receive confirmation", "description": "Pay the deposit through iDEAL, card or a Mollie payment link, receive the confirmation and invoice immediately, and see the balance due date.", "howItSupports": "Issues the invoice and payment link and records the payment on the booking.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-1-4.png", "title": "Traveler and Booker JTBD step 4: Pay the deposit and receive confirmation", "alt": "Enterprise infographic for step 4 of the job \"Find, book and pay for the right trip with confidence\": Pay the deposit and receive confirmation."}]}, {"step": "Pay the deposit and receive confirmation", "description": "Pay the deposit through iDEAL, card or a Mollie payment link, receive the confirmation and invoice immediately, and see the balance due date.", "howItSupports": "Sends the confirmation and opens the my-trip portal with the payment schedule.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-1-4.png", "title": "Traveler and Booker JTBD step 4: Pay the deposit and receive confirmation", "alt": "Enterprise infographic for step 4 of the job \"Find, book and pay for the right trip with confidence\": Pay the deposit and receive confirmation."}]}]}, {"customerId": "trav", "customerName": "Traveler and Booker", "customerGroup": "Travelers and Trade Partners", "customerIcon": "customer-trav-portrait.jpg", "productId": "traveler-portal-and-app", "productName": "Traveler Portal and My-Trip App", "productIcon": "trav.png", "jobId": "jtbd-trav-2", "jobName": "Manage my booking and documents myself", "jobWhatItIs": "Between booking and departure, see the booking, pay the balance, add or change passengers, seats, rooms, excursions and dietary needs, and download vouchers, tickets and the itinerary, all without calling the office.", "jobOutcome": "The traveler sees and manages everything about the trip in the my-trip portal or app, pays on time, and departs with correct documents and honoured wishes.", "supportRationale": "Provides the traveler portal and app with booking overview, payments and documents.", "usedInSteps": [{"step": "Activate the my-trip portal", "description": "Open the booking-inzien page or the customer portal from the confirmation email, log in, and see the booking, payments and next steps.", "howItSupports": "Provides the traveler portal and app with booking overview, payments and documents.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-2-1.png", "title": "Traveler and Booker JTBD step 1: Activate the my-trip portal", "alt": "Enterprise infographic for step 1 of the job \"Manage my booking and documents myself\": Activate the my-trip portal."}]}, {"step": "Complete passenger details and wishes", "description": "Enter passport data, seat preferences, room sharing, dietary requirements and emergency contacts once, and see them reflected in the booking.", "howItSupports": "Captures passenger data and wishes through the portal into the booking file.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-2-2.png", "title": "Traveler and Booker JTBD step 2: Complete passenger details and wishes", "alt": "Enterprise infographic for step 2 of the job \"Manage my booking and documents myself\": Complete passenger details and wishes."}]}, {"step": "Pay the balance and add extras", "description": "Pay the balance when reminded, add excursions, insurance or an eSIM, and see the updated invoice.", "howItSupports": "Runs balance reminders, payment links and updated invoices for extras.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-2-3.png", "title": "Traveler and Booker JTBD step 3: Pay the balance and add extras", "alt": "Enterprise infographic for step 3 of the job \"Manage my booking and documents myself\": Pay the balance and add extras."}]}, {"step": "Download documents and itinerary", "description": "Receive a notification when documents are ready, download vouchers, tickets and the day-by-day itinerary from the portal or app, and share them with fellow travelers.", "howItSupports": "Publishes travel documents and the itinerary to the portal and app.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-2-4.png", "title": "Traveler and Booker JTBD step 4: Download documents and itinerary", "alt": "Enterprise infographic for step 4 of the job \"Manage my booking and documents myself\": Download documents and itinerary."}]}]}, {"customerId": "trav", "customerName": "Traveler and Booker", "customerGroup": "Travelers and Trade Partners", "customerIcon": "customer-trav-portrait.jpg", "productId": "traveler-portal-and-app", "productName": "Traveler Portal and My-Trip App", "productIcon": "trav.png", "jobId": "jtbd-trav-3", "jobName": "Travel informed and share feedback", "jobWhatItIs": "During the trip, have the itinerary, practical information, guide contact and changes at hand in the app, stay connected with an eSIM, raise problems while they can still be fixed, and afterwards share honest feedback through the survey and a public review.", "jobOutcome": "The traveler feels looked after during the trip, problems are solved on the spot, and the feedback loop leads to a review and a next booking.", "supportRationale": "Sends pre-departure information and offers eSIM and app activation.", "usedInSteps": [{"step": "Get ready for departure", "description": "Receive pickup point, departure time, guide name and packing information through the app and messages, and activate the eSIM before leaving.", "howItSupports": "Sends pre-departure information and offers eSIM and app activation.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-3-1.png", "title": "Traveler and Booker JTBD step 1: Get ready for departure", "alt": "Enterprise infographic for step 1 of the job \"Travel informed and share feedback\": Get ready for departure."}]}, {"step": "Follow the trip in the app", "description": "See the daily programme, hotel details and changes in the app, and message the guide or the office when something is unclear.", "howItSupports": "Keeps the itinerary current in the app and provides messaging with the office and guide.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-3-2.png", "title": "Traveler and Booker JTBD step 2: Follow the trip in the app", "alt": "Enterprise infographic for step 2 of the job \"Travel informed and share feedback\": Follow the trip in the app."}]}, {"step": "Raise a problem and get it solved", "description": "Report a wrong room, a missed transfer or a health issue through the app or guide and see it handled while still travelling.", "howItSupports": "Logs complaints and in-trip issues and tracks their resolution.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-3-3.png", "title": "Traveler and Booker JTBD step 3: Raise a problem and get it solved", "alt": "Enterprise infographic for step 3 of the job \"Travel informed and share feedback\": Raise a problem and get it solved."}]}, {"step": "Share feedback and rebook", "description": "Complete the post-trip survey, leave a Trustpilot review, and use the customer portal to see past bookings and book the next trip.", "howItSupports": "Sends the survey and review request after the trip.", "media": [{"type": "image", "src": "media/jbtd-trav-jtbd-trav-3-4.png", "title": "Traveler and Booker JTBD step 4: Share feedback and rebook", "alt": "Enterprise infographic for step 4 of the job \"Travel informed and share feedback\": Share feedback and rebook."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

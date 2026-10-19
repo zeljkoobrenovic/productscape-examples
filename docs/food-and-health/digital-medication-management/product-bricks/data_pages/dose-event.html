@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "digital-medication-management", "name": "Digital Medication Management", "description": "The Digital Medication Management domain covers the patient, carer, care-provider, and pharmacy workflows required to run an automated medicine-dispensing and remote medication-management service for home care and supported living \u2014 spanning the in-home dispensing device, pharmacy multi-dose pouch logistics, remote adherence monitoring, missed-dose alarm escalation, care-team portals, and the regulated medical-device software platform behind them."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "dose-event", "name": "Dose Event", "kind": "event", "description": "Each dispense occasion: reminder, confirmation, release outcome, and any miss \u2014 the source of adherence truth.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["patient"], "legalTags": ["gdpr"], "securityCriticality": "critical", "accessScope": "device, care-team, and analytics access", "businessMeaning": "Immutable record of every medication occasion.", "status": "active", "stores": [{"storeId": "dose-event-topic", "role": "stream"}, {"storeId": "dose-ledger-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "dose-event api", "description": "Access interface for dose-event api."}], "ownerTeamId": "dispensing-safety-team", "stewardTeamIds": ["adherence-and-alarms-team", "data-and-analytics-team"], "derivedFromAssetIds": [], "governance": {"retention": "retained for the care relationship plus regulated period", "residency": "eu", "sharingPolicy": "strictly controlled care-team access"}, "rootGroup": "Dispensing and Adherence Data", "group": "Dose Events"};
+    const currentAsset = {"id": "dose-event", "name": "Dose Event", "kind": "event", "description": "Each dispense occasion: reminder, confirmation, release outcome, and any miss \u2014 the source of adherence truth.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["patient"], "legalTags": ["gdpr"], "securityCriticality": "critical", "accessScope": "device, care-team, and analytics access", "businessMeaning": "Immutable record of every medication occasion.", "status": "active", "stores": [{"storeId": "dose-event-topic", "role": "stream"}, {"storeId": "dose-ledger-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "dose-event api", "description": "Access interface for dose-event api."}], "derivedFromAssetIds": [], "governance": {"retention": "retained for the care relationship plus regulated period", "residency": "eu", "sharingPolicy": "strictly controlled care-team access"}, "rootGroup": "Dispensing and Adherence Data", "group": "Dose Events"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "disp", "name": "Dose Dispensing Engine and Mechanism", "role": "own", "description": "System of record for each dispense event: what was released, when, and the confirmation outcome."}, {"id": "remd", "name": "Patient Reminder and Confirmation Experience", "role": "write", "description": "Writes reminder and confirmation status onto the dose event."}];
     const consumingBricks = [{"id": "adhr", "name": "Adherence Tracking and Dose Ledger", "role": "read", "description": "Reads dose events as the source for the adherence ledger."}, {"id": "alrm", "name": "Missed-Dose Alarm and Escalation Engine", "role": "read", "description": "Reads dose events to detect unconfirmed occasions."}, {"id": "recon", "name": "Order-to-Dispense Reconciliation", "role": "read", "description": "Reads dispensed dose events for reconciliation."}];
-    const ownerTeam = {"teamId": "dispensing-safety-team", "teamName": "Patient Dispensing Experience", "teamType": "stream-aligned", "groupName": "In-Home Dispensing"};
-    const stewardTeams = [{"teamId": "adherence-and-alarms-team", "teamName": "Adherence and Alarms", "teamType": "stream-aligned", "groupName": "Remote Care and Monitoring"}, {"teamId": "data-and-analytics-team", "teamName": "Data Platform and Analytics", "teamType": "platform", "groupName": "Deployment, Fleet and Platform Foundation"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

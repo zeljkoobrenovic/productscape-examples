@@ -15,4 +15,4 @@ Improvement pass on 2026-05-01:
 
 - Converted product brick and capability evidence files to the list shape expected by the product-bricks generator.
 - Added focused evidence tabs for the highest-leverage bricks and all modeled product capabilities.
-- Added customer persona SVG icons so generated customer, team, release, and initiative pages can use domain-specific assets instead of generic fallbacks.
+- Added customer persona SVG icons so generated customer, release, and initiative pages can use domain-specific assets instead of generic fallbacks.

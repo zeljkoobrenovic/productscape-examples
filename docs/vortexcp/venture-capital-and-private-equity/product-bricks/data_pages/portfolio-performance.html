@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "venture-capital-and-private-equity", "name": "Venture Capital and Private Equity", "description": "Vortex-informed software investment products connecting fund investors, founders, and portfolio management through capital, active ownership, and realized value."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "portfolio-performance", "name": "Portfolio Performance", "kind": "logical-object", "description": "Proposed logical data asset. Company reporting period, currency, business perimeter, organic/acquired cohorts, KPI definitions, source exports, reconciliations, and restatement versions.", "classification": "confidential", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "high", "accessScope": "Only authorized users within the relevant company, investment, and fund scope; separate approvals for finance, personal, and technical evidence.", "businessMeaning": "Company reporting period, currency, business perimeter, organic/acquired cohorts, KPI definitions, source exports, reconciliations, and restatement versions.", "status": "planned", "stores": [{"storeId": "management-data", "role": "system-of-record"}], "interfaces": [{"type": "workflow", "name": "Portfolio Performance Evidence evidence contract", "description": "Proposed permissioned record and controlled import/export boundary; no production API is claimed."}], "ownerTeamId": "fund-finance", "stewardTeamIds": [], "derivedFromAssetIds": [], "governance": {"retention": "Proposed policy pending record-owner confirmation: Keep historical performance and definition versions needed to explain decisions and reports; minimize underlying personal data.", "residency": "Unverified. Select and document contractual storage and transfer locations before implementation.", "sharingPolicy": "Share only the minimum authorized company/fund evidence under applicable agreements. No automatic access across competing portfolio companies or funds. Legal applicability and schedules remain to be confirmed."}, "rootGroup": "Fund and Investor Services", "group": "Evidence and valuation"};
+    const currentAsset = {"id": "portfolio-performance", "name": "Portfolio Performance", "kind": "logical-object", "description": "Proposed logical data asset. Company reporting period, currency, business perimeter, organic/acquired cohorts, KPI definitions, source exports, reconciliations, and restatement versions.", "classification": "confidential", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "high", "accessScope": "Only authorized users within the relevant company, investment, and fund scope; separate approvals for finance, personal, and technical evidence.", "businessMeaning": "Company reporting period, currency, business perimeter, organic/acquired cohorts, KPI definitions, source exports, reconciliations, and restatement versions.", "status": "planned", "stores": [{"storeId": "management-data", "role": "system-of-record"}], "interfaces": [{"type": "workflow", "name": "Portfolio Performance Evidence evidence contract", "description": "Proposed permissioned record and controlled import/export boundary; no production API is claimed."}], "derivedFromAssetIds": [], "governance": {"retention": "Proposed policy pending record-owner confirmation: Keep historical performance and definition versions needed to explain decisions and reports; minimize underlying personal data.", "residency": "Unverified. Select and document contractual storage and transfer locations before implementation.", "sharingPolicy": "Share only the minimum authorized company/fund evidence under applicable agreements. No automatic access across competing portfolio companies or funds. Legal applicability and schedules remain to be confirmed."}, "rootGroup": "Fund and Investor Services", "group": "Evidence and valuation"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "perf", "name": "Portfolio Performance Evidence", "role": "own", "description": "Accountable business record for this capability; legal registers, administrator books, and bank records retain their external authority."}];
     const consumingBricks = [{"id": "exit", "name": "Exit Readiness and Buyer Process", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "plan", "name": "Value Creation Planning", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "gtmx", "name": "Commercial Acceleration", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "inte", "name": "Acquisition Integration", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "govn", "name": "Board Governance and Action Tracking", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "esgg", "name": "Fund-specific Sustainability Stewardship", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}, {"id": "valu", "name": "Valuation Review and Attribution", "role": "read", "description": "Uses the reviewed portfolio performance evidence record through its owning capability; no duplicate system of record."}];
-    const ownerTeam = {"teamId": "fund-finance", "teamName": "Fund Finance and Investor Service", "teamType": "platform", "groupName": "Fund Service and Stewardship"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

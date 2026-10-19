@@ -490,7 +490,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -503,12 +502,10 @@
     const config = {"domains": [{"id": "enterprise-applications-and-financial-systems", "name": "Enterprise Applications and Financial Systems", "description": "The Enterprise Applications and Financial Systems domain covers Booking Holdings' global finance ecosystem as seen by its architecture function: the SAP S/4HANA finance core and high-volume subledger, payments-to-ledger for card and alternative payment methods, partner settlement, source-to-pay, tax and treasury, close and SOX controls, finance data and integration, and the architecture governance that converges brand finance technology onto one compliant, scalable platform."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "general-ledger-journal", "name": "General Ledger Journal", "kind": "transactional-record", "description": "Line-item universal journal across all legal entities, ledgers and currencies, including Central Finance replicated postings from brand and legacy systems.", "businessMeaning": "The book of record for every reported number.", "status": "active", "tags": [], "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["sox", "statutory-accounting"], "securityCriticality": "critical", "accessScope": "Finance and auditors only", "systemOfRecordBrickId": "glco", "ownerTeamId": "ledg", "stewardTeamIds": ["clsr", "sbrv"], "derivedFromAssetIds": ["contract-account-subledger-posting", "revenue-recognition-schedule", "ap-invoice-and-payment"], "stores": [{"storeId": "s4-hana-db", "role": "system-of-record"}, {"storeId": "finance-lakehouse", "role": "analytical-copy"}, {"storeId": "finance-document-archive", "role": "archive"}], "interfaces": [{"type": "api", "name": "journal posting api", "description": "Validated, balanced postings from subledgers and adapters."}, {"type": "event", "name": "journal-posted", "description": "Posting notifications for close and analytics."}], "governance": {"retention": "10 years (statutory and SOX)", "residency": "eu", "sharingPolicy": "Finance and auditors only; read access by role via SoD-checked roles."}, "rootGroup": "Ledger and Master Data", "group": "Ledger"};
+    const currentAsset = {"id": "general-ledger-journal", "name": "General Ledger Journal", "kind": "transactional-record", "description": "Line-item universal journal across all legal entities, ledgers and currencies, including Central Finance replicated postings from brand and legacy systems.", "businessMeaning": "The book of record for every reported number.", "status": "active", "tags": [], "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["sox", "statutory-accounting"], "securityCriticality": "critical", "accessScope": "Finance and auditors only", "systemOfRecordBrickId": "glco", "derivedFromAssetIds": ["contract-account-subledger-posting", "revenue-recognition-schedule", "ap-invoice-and-payment"], "stores": [{"storeId": "s4-hana-db", "role": "system-of-record"}, {"storeId": "finance-lakehouse", "role": "analytical-copy"}, {"storeId": "finance-document-archive", "role": "archive"}], "interfaces": [{"type": "api", "name": "journal posting api", "description": "Validated, balanced postings from subledgers and adapters."}, {"type": "event", "name": "journal-posted", "description": "Posting notifications for close and analytics."}], "governance": {"retention": "10 years (statutory and SOX)", "residency": "eu", "sharingPolicy": "Finance and auditors only; read access by role via SoD-checked roles."}, "rootGroup": "Ledger and Master Data", "group": "Ledger"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "glco", "name": "General Ledger and Central Finance Hub", "role": "own", "description": "System of record for all journal entries across entities and ledgers."}];
     const consumingBricks = [{"id": "entm", "name": "Legal Entity, Intercompany and FX Accounting", "role": "read-write", "description": "Reads balances and posts revaluation and intercompany entries."}, {"id": "gtax", "name": "Tax Provision and Global Minimum Tax", "role": "read", "description": "Trial balance inputs."}, {"id": "clse", "name": "Close Orchestration and Account Reconciliation", "role": "read", "description": "Reads balances and journal detail to reconcile."}, {"id": "cnsl", "name": "Consolidation and External Reporting", "role": "read", "description": "Reads entity balances."}, {"id": "fdbx", "name": "Finance Data Platform (FinDB)", "role": "read", "description": "Ledger detail."}];
-    const ownerTeam = {"teamId": "ledg", "teamName": "Ledger Core", "teamType": "platform", "groupName": "Finance Core Engineering"};
-    const stewardTeams = [{"teamId": "clsr", "teamName": "Close and Consolidation", "teamType": "stream-aligned", "groupName": "Close, Reporting and Controls"}, {"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupName": "Finance Core Engineering"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -697,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

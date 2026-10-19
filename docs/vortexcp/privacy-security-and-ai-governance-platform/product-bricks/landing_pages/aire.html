@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "aire", "name": "AI Use-Case Register", "type": "full-stack", "status": "sustaining", "description": "Maintains intended use, affected context, supplier and model references, business ownership and lifecycle state for known AI uses. It is not a model-training or inference service. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "AI Register", "link": "https://privacyperfect.com/services/ai-register/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-aire-ui", "name": "Register and attest to an AI use", "type": "web-component", "description": "Register and attest to an AI use with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-aire-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-aire-api", "name": "AI Use-Case Register API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-aire-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-aire-worker", "name": "AI owner attestation worker", "type": "daemon", "description": "AI owner attestation worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-aire-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-aire-service", "name": "Version AI purpose, ownership and lifecycle context", "type": "stateful-service", "description": "Maintains intended use, affected context, supplier and model references, business ownership and lifecycle state for known AI uses. It is not a model-training or inference service."}]}], "dataDependencies": [{"assetId": "dcat", "moduleIds": ["module-aire-service"], "role": "read", "description": "Use the approved scope and version of Reusable Processing Definitions through its owning capability; no independent source-of-truth copy."}, {"assetId": "vnds", "moduleIds": ["module-aire-service"], "role": "read", "description": "Use the approved scope and version of Supplier Relationship through its owning capability; no independent source-of-truth copy."}, {"assetId": "airs", "moduleIds": ["module-aire-service"], "role": "own", "description": "Authoritative owner of AI Use Case. Purpose, accountable contacts, supplier/model references, version and lifecycle status; no training corpus or inference transcript is collected by default."}, {"assetId": "aiev", "moduleIds": ["module-aire-service"], "role": "read", "description": "Use the approved scope and version of AI Assurance Decision through its owning capability; no independent source-of-truth copy."}, {"assetId": "sync", "moduleIds": ["module-aire-service"], "role": "read", "description": "Use the approved scope and version of Integration Reconciliation through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "dict", "moduleId": "module-dict-api", "sourceModuleId": "module-aire-service", "type": "context", "description": "Use Reusable Data Dictionary as the authoritative source of its context or workflow; keep AI Use-Case Register responsible for its own decision state."}, {"targetBrickId": "vreg", "moduleId": "module-vreg-api", "sourceModuleId": "module-aire-service", "type": "context", "description": "Use Supplier Relationship Register as the authoritative source of its context or workflow; keep AI Use-Case Register responsible for its own decision state."}, {"targetBrickId": "conn", "moduleId": "module-conn-api", "sourceModuleId": "module-aire-service", "type": "context", "description": "Use Integration Exchange as the authoritative source of its context or workflow; keep AI Use-Case Register responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-aire-api", "type": "context", "description": "Enforce tenant, role and record access for AI Use-Case Register."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-aire-service", "type": "context", "description": "Record attributable state changes and decision context from AI Use-Case Register."}, {"targetBrickId": "aias", "moduleId": "module-aias-api", "sourceModuleId": "module-aire-service", "type": "data", "description": "Read AI Assurance Decision from its owner with record-scope checks and source version."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Security, Supplier and AI Assurance", "group": "AI Lifecycle"};
-    const relatedTeams = [{"teamId": "aigr", "teamName": "AI Governance Lifecycle", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "airm", "name": "AI Risk Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for AI Risk Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "aigo", "customerName": "AI Governance Owner", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "acpt", "jobName": "Decide whether an AI use case can proceed responsibly", "jobWhatItIs": "Before committing to an AI-enabled process, establish intended use, affected people and relevant responsibilities.", "jobOutcome": "An accountable decision states scope, conditions and the evidence still required.", "supportRationale": "Create an owned AI-use record.", "usedInSteps": [{"step": "Identify the use and responsibility", "description": "Record purpose, supplier, version and business owner; unresolved ownership prevents completion.", "howItSupports": "Create an owned AI-use record.", "media": []}, {"step": "Assess impacts and applicability", "description": "Connect technical evidence to privacy and security context; a specialist reviews ambiguous classifications.", "howItSupports": "Reuse context while retaining separate assessment rationales.", "media": []}, {"step": "Record conditions and sign-off", "description": "Assign human oversight and release conditions, including an escalation or suspension route.", "howItSupports": "Keep authorization separate from screening suggestions.", "media": []}]}, {"customerId": "aigo", "customerName": "AI Governance Owner", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "reai", "jobName": "Keep AI decisions valid as systems and uses change", "jobWhatItIs": "After adoption, changes can invalidate the original review.", "jobOutcome": "Material changes and incidents trigger an accountable reassessment before continued use is accepted.", "supportRationale": "Maintain a review cadence and change history.", "usedInSteps": [{"step": "Gather change and incident signals", "description": "Receive owner attestations and selected references from technical monitoring; label gaps and stale feeds.", "howItSupports": "Maintain a review cadence and change history.", "media": []}, {"step": "Reopen affected assessments", "description": "Compare the new use, model or supplier with the earlier decision and revisit affected conditions.", "howItSupports": "Connect lifecycle changes to the assessment evidence.", "media": []}, {"step": "Communicate portfolio exceptions", "description": "Explain unreviewed uses and expired approvals to sponsors without hiding them in an aggregate score.", "howItSupports": "Produce an exception-based portfolio view.", "media": []}, {"step": "Communicate portfolio exceptions", "description": "Explain unreviewed uses and expired approvals to sponsors without hiding them in an aggregate score.", "howItSupports": "Record continuation, restriction or retirement.", "media": []}]}, {"customerId": "ciso", "customerName": "Information Security Manager", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "ctlr", "jobName": "Demonstrate that security controls operate as intended", "jobWhatItIs": "Ahead of assurance reviews, establish what controls actually do and what evidence supports them.", "jobOutcome": "Reviewers can distinguish effective controls, exceptions and missing evidence.", "supportRationale": "Produce a scoped assurance snapshot.", "usedInSteps": [{"step": "Publish findings and corrective actions", "description": "Separate open failures from accepted exceptions and provide the auditor an approved evidence package.", "howItSupports": "Produce a scoped assurance snapshot.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Sponsor", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "fund", "jobName": "Fund a governance program that earns continued investment", "jobWhatItIs": "When fragmented controls create avoidable work or exposure, choose a sustainable intervention.", "jobOutcome": "Funding follows demonstrated adoption value and a realistic total cost.", "supportRationale": "Show a reviewable account of pilot outcomes.", "usedInSteps": [{"step": "Evaluate the pilot and supplier", "description": "Compare observed outcomes with the baseline, including exit exports and service trust evidence.", "howItSupports": "Show a reviewable account of pilot outcomes.", "media": []}, {"step": "Stage the investment", "description": "Approve expansion only where ownership, adoption and support capacity can sustain it.", "howItSupports": "Keep outcome and cost evidence visible at renewal.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Sponsor", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "over", "jobName": "Hold risk owners accountable for unresolved exposure", "jobWhatItIs": "During management review, decide which issues need action, acceptance or escalation.", "jobOutcome": "Material exceptions have named authority, time bounds and an evidence trail.", "supportRationale": "Expose stale and incomplete evidence beside the summary.", "usedInSteps": [{"step": "Review material exceptions", "description": "Inspect unresolved or expired decisions and understand data freshness before comparing groups.", "howItSupports": "Expose stale and incomplete evidence beside the summary.", "media": []}, {"step": "Check follow-through", "description": "Ask for proof that material actions changed the position, not simply that tasks were marked done.", "howItSupports": "Trace closure back to verified evidence.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

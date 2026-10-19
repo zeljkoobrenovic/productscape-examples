@@ -11,7 +11,7 @@ Why this domain:
 Scope notes:
 
 - The domain is kept current with the latest public materials (last refreshed 2026-07-04), not frozen as a point-in-time snapshot; Amazon's AI shopping assistant is therefore referred to by its current name, Alexa for Shopping (renamed from Rufus on 2026-05-13), while the stable internal ID `rufu` is retained.
-- Internal operator and control-plane actors are modeled as customers, not only as teams and bricks: the Marketplace Trust & Compliance Operator and the Fulfillment & Customer Resolution Operator carry the jobs and guardrail KPIs behind fraud recovery, seller verification, returns abuse, delivery exception handling, and regulatory obligations.
+- Internal operator and control-plane actors are modeled as customers, not only as bricks: the Marketplace Trust & Compliance Operator and the Fulfillment & Customer Resolution Operator carry the jobs and guardrail KPIs behind fraud recovery, seller verification, returns abuse, delivery exception handling, and regulatory obligations.
 
 Research summary (initial gather 2026-03-31, refreshed 2026-07-04):
 

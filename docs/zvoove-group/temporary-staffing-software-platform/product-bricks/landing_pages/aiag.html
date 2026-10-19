@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "aiag", "name": "AI Recruiting and Placement Agents", "type": "full-stack", "status": "invest", "description": "Autonomous agents that talk to applicants and placed workers over WhatsApp: the application agent that interviews and builds the profile, the scheduling agent that books interviews, and the check-in agent that follows up during assignments. Modeled on zvoove Cockpit X (published claim: 250 hours saved per month by the application agent at one customer).", "links": [], "layers": [{"layer": "ui", "description": "Recruiter supervision of agents.", "modules": [{"id": "module-agent-inbox", "name": "Agent Conversation Inbox", "type": "web-component", "description": "Recruiters see agent conversations, summaries and escalations and can take over.", "dependencies": {"modules": [{"moduleId": "module-agent-api", "type": "uses", "description": "Reads conversations."}]}}]}, {"layer": "interfaces", "description": "Agent control API.", "modules": [{"id": "module-agent-api", "name": "Agent Control API", "type": "api", "description": "Starts, pauses and configures agents per vacancy, branch and language."}]}, {"layer": "worker", "description": "Conversation runtime.", "modules": [{"id": "module-conversation-runner", "name": "Conversation Runner", "type": "message-consumer", "description": "Processes inbound WhatsApp messages and drives the agent state machine.", "dependencies": {"modules": [{"moduleId": "module-agent-orchestrator", "type": "uses", "description": "Asks for the next action."}]}}, {"id": "module-checkin-scheduler", "name": "Check-in Scheduler", "type": "daemon", "description": "Triggers check-ins at day 1, week 1 and before assignment end."}]}, {"layer": "stateless-service", "description": "Agent reasoning orchestration.", "modules": [{"id": "module-agent-orchestrator", "name": "Agent Orchestrator", "type": "stateless-service", "description": "Combines the playbook, candidate context and LLM tool calls; owns no durable state.", "dependencies": {"modules": [{"moduleId": "module-llm-gateway", "type": "uses", "description": "LLM calls with guardrails.", "targetBrickId": "aipl"}]}}]}, {"layer": "integration", "description": "Messaging channels.", "modules": [{"id": "module-whatsapp-connector", "name": "WhatsApp Business Connector", "type": "integration", "description": "Sends and receives WhatsApp Business messages and templates."}]}], "dataDependencies": [{"assetId": "application-and-screening-record", "moduleIds": ["module-agent-orchestrator"], "role": "write", "description": "Writes structured interview results."}, {"assetId": "ai-agent-interaction-log", "moduleIds": ["module-conversation-runner"], "role": "write", "description": "Logs every agent turn for audit."}], "brickDependencies": [{"targetBrickId": "apts", "moduleId": "module-candidate-api", "sourceModuleId": "module-agent-orchestrator", "type": "uses", "description": "Writes interview answers and stage changes to the candidate."}, {"targetBrickId": "aipl", "moduleId": "module-llm-gateway", "sourceModuleId": "module-agent-orchestrator", "type": "uses", "description": "Guarded LLM access and logging."}, {"targetBrickId": "ordr", "moduleId": "module-assignment-api", "sourceModuleId": "module-checkin-scheduler", "type": "context", "description": "Knows assignment start and end dates for check-ins."}], "externalSystemsThisBrickDependsOn": [{"system": "Meta WhatsApp Business Platform", "type": "channel", "interface": "WhatsApp Cloud API", "description": "Messaging channel to candidates and workers.", "sourceModuleId": "module-whatsapp-connector"}, {"system": "Calendar services (Microsoft 365, Google)", "type": "data", "interface": "Calendar API", "description": "Interview slot booking.", "sourceModuleId": "module-agent-orchestrator"}], "externalSystemsDependingOnThisBrick": [], "domain": "Talent Acquisition and Client Sales", "group": "Recruiting"};
-    const relatedTeams = [{"teamId": "ai-recruiting-agents", "teamName": "AI Recruiting Agents", "teamType": "stream-aligned", "groupId": "talent-and-sales", "groupName": "Talent and Sales", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "zvoove-cockpit", "name": "zvoove Cockpit and Cockpit X", "icon": "product.png", "type": "B2B Recruiting and CRM SaaS", "whyUsed": "Cockpit X agents."}];
     const supportedJobs = [{"customerId": "disp", "customerName": "Recruiter-Dispatcher", "customerGroup": "Agency Front Office", "customerIcon": "customer-disp-portrait.jpg", "productId": "zvoove-cockpit", "productName": "zvoove Cockpit and Cockpit X", "productIcon": "product.png", "jobId": "disp-fill", "jobName": "Fill a client order with a reliable worker by the start date", "jobWhatItIs": "Find, qualify and place a worker who shows up and stays.", "jobOutcome": "The position is filled on time with a signed, compliant assignment.", "supportRationale": "Pool first, ads second, AI interview.", "usedInSteps": [{"step": "Find candidates", "description": "Search the pool and publish an ad if needed.", "howItSupports": "Pool first, ads second, AI interview.", "media": [{"type": "image", "src": "media/jbtd-disp-disp-fill-1.png", "title": "Recruiter-Dispatcher JTBD step 1: Find candidates", "alt": "Enterprise infographic for step 1 of the job \"Fill a client order with a reliable worker by the start date\": Find candidates."}]}, {"step": "Onboard the worker", "description": "Make sure data and documents are complete.", "howItSupports": "Self-onboarding.", "media": [{"type": "image", "src": "media/jbtd-disp-disp-fill-3.png", "title": "Recruiter-Dispatcher JTBD step 3: Onboard the worker", "alt": "Enterprise infographic for step 3 of the job \"Fill a client order with a reliable worker by the start date\": Onboard the worker."}]}]}, {"customerId": "ownr", "customerName": "Staffing Agency Owner", "customerGroup": "Staffing Agency Leadership", "customerIcon": "customer-ownr-portrait.jpg", "productId": "zvoove-cockpit", "productName": "zvoove Cockpit and Cockpit X", "productIcon": "product.png", "jobId": "ownr-grow", "jobName": "Win more orders and fill them faster than competing agencies", "jobWhatItIs": "Grow share with existing clients and win new ones in a tight labour market.", "jobOutcome": "More orders filled within the client's deadline at agreed rates.", "supportRationale": "AI agents answer 24/7.", "usedInSteps": [{"step": "Reach candidates before competitors do", "description": "Answer applicants within minutes.", "howItSupports": "AI agents answer 24/7.", "media": [{"type": "image", "src": "media/jbtd-ownr-ownr-grow-2.png", "title": "Staffing Agency Owner JTBD step 2: Reach candidates before competitors do", "alt": "Enterprise infographic for step 2 of the job \"Win more orders and fill them faster than competing agencies\": Reach candidates before competitors do."}]}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

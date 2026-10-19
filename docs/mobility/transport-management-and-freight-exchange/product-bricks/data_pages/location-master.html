@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "location-master", "name": "Location Master", "kind": "master-data", "description": "The shared register of logistics locations: plants, warehouses, DCs, docks, and frequent third-party addresses, with geocoordinates, loading equipment, opening hours, site instructions, and dock configurations. Fed by shipper onboarding, ERP master-data sync, and site-manager maintenance; consumed by planning (distances, routing), order capture, visibility geofences, and dock capacity. Company site data with no personal content, but planning quality degrades network-wide when it drifts.", "businessMeaning": "The map every process agrees on: if two products disagree about where a warehouse is or when it loads, plans and slots fall apart.", "status": "active", "tags": ["platform-foundation"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "all planning, execution, visibility, and scheduling workflows of the owning tenant", "systemOfRecordBrickId": "mdat", "ownerTeamId": "integration-and-data", "stewardTeamIds": ["site-logistics"], "derivedFromAssetIds": [], "stores": [{"storeId": "location-master-db", "role": "system-of-record"}, {"storeId": "location-master-cache", "role": "serving"}], "interfaces": [{"type": "api", "name": "location api", "description": "Location lookup, geocoding, and site-detail API used by planning, order capture, visibility geofencing, and dock scheduling."}, {"type": "event", "name": "location change events", "description": "Location created and updated events that invalidate planning caches and geofence definitions."}], "governance": {"retention": "maintained while referenced; superseded versions kept 24 months for plan reproducibility", "residency": "eu", "sharingPolicy": "tenant-scoped; shared third-party addresses deduplicated without exposing which tenants use them"}, "rootGroup": "Platform and Master Data", "group": "Organizations and Reference Data"};
+    const currentAsset = {"id": "location-master", "name": "Location Master", "kind": "master-data", "description": "The shared register of logistics locations: plants, warehouses, DCs, docks, and frequent third-party addresses, with geocoordinates, loading equipment, opening hours, site instructions, and dock configurations. Fed by shipper onboarding, ERP master-data sync, and site-manager maintenance; consumed by planning (distances, routing), order capture, visibility geofences, and dock capacity. Company site data with no personal content, but planning quality degrades network-wide when it drifts.", "businessMeaning": "The map every process agrees on: if two products disagree about where a warehouse is or when it loads, plans and slots fall apart.", "status": "active", "tags": ["platform-foundation"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "all planning, execution, visibility, and scheduling workflows of the owning tenant", "systemOfRecordBrickId": "mdat", "derivedFromAssetIds": [], "stores": [{"storeId": "location-master-db", "role": "system-of-record"}, {"storeId": "location-master-cache", "role": "serving"}], "interfaces": [{"type": "api", "name": "location api", "description": "Location lookup, geocoding, and site-detail API used by planning, order capture, visibility geofencing, and dock scheduling."}, {"type": "event", "name": "location change events", "description": "Location created and updated events that invalidate planning caches and geofence definitions."}], "governance": {"retention": "maintained while referenced; superseded versions kept 24 months for plan reproducibility", "residency": "eu", "sharingPolicy": "tenant-scoped; shared third-party addresses deduplicated without exposing which tenants use them"}, "rootGroup": "Platform and Master Data", "group": "Organizations and Reference Data"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "mdat", "name": "Logistics Master Data", "role": "own", "description": "System of record for locations, loading points, geocodes, and site characteristics."}];
     const consumingBricks = [{"id": "plan", "name": "Transport Planning and Optimization", "role": "read", "description": "Reads location geocodes, opening hours, and site constraints for routing and consolidation."}, {"id": "dock", "name": "Dock Scheduling", "role": "read", "description": "Reads site dock layouts, capacities, and opening hours from logistics master data."}];
-    const ownerTeam = {"teamId": "integration-and-data", "teamName": "Integration and Data", "teamType": "platform", "groupName": "Platform Group"};
-    const stewardTeams = [{"teamId": "site-logistics", "teamName": "Site Logistics", "teamType": "stream-aligned", "groupName": "Execution Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

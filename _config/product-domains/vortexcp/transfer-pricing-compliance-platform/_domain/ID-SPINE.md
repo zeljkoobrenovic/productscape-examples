@@ -91,68 +91,41 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 tpmd→transfer-pricing-model,company-type-profile,legal-entity; ictx→intercompany-transaction,legal-entity; segp→segmented-financial-statement,intercompany-transaction; xlio→data-upload-batch,validation-finding; erpi→data-upload-batch,integration-connection; gene→local-file-document,master-file-document,transfer-pricing-model; tmpl→report-template,local-file-document; vald→validation-finding,documentation-scope; ctry→country-regulation-record,filing-deadline; trns→translation-glossary,local-file-document; cbcr→cbcr-dataset,legal-entity; pcbc→public-cbcr-report,cbcr-dataset; cbcn→cbcr-notification,filing-deadline; bnch→benchmark-study,segmented-financial-statement; scop→documentation-scope,legal-entity; task→workflow-task,documentation-scope; dead→filing-deadline,country-regulation-record; dash→compliance-status-snapshot,filing-deadline; rskm→risk-assessment,intercompany-transaction; lent→legal-entity,corporate-document; icag→intercompany-agreement,intercompany-transaction; cdoc→corporate-document,legal-entity; lsch→legal-structure-chart,legal-entity; esig→e-signature-envelope,intercompany-agreement; rai→ai-interaction-log,country-regulation-record; aiwr→ai-interaction-log,local-file-document; iden→user-account,client-organisation; divs→client-organisation,legal-entity; audt→audit-trail-entry,local-file-document; docx→local-file-document,master-file-document,public-cbcr-report; secp→audit-trail-entry,user-account; fsvc→service-engagement,documentation-scope; supp→service-engagement,ai-interaction-log.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `transfer-pricing-model` → tp-model-and-data
-- `company-type-profile` → tp-model-and-data
-- `intercompany-transaction` → tp-model-and-data
-- `segmented-financial-statement` → tp-model-and-data
-- `data-upload-batch` → tp-model-and-data
-- `validation-finding` → report-generation
-- `documentation-scope` → compliance-workflow
-- `master-file-document` → report-generation
-- `local-file-document` → report-generation
-- `report-template` → report-generation
-- `country-regulation-record` → localisation-and-country-content
-- `filing-deadline` → localisation-and-country-content
-- `translation-glossary` → localisation-and-country-content
-- `cbcr-dataset` → cbcr-and-benchmarking
-- `public-cbcr-report` → cbcr-and-benchmarking
-- `cbcr-notification` → cbcr-and-benchmarking
-- `benchmark-study` → cbcr-and-benchmarking
-- `workflow-task` → compliance-workflow
-- `compliance-status-snapshot` → compliance-workflow
-- `risk-assessment` → compliance-workflow
-- `legal-entity` → legal-module
-- `intercompany-agreement` → legal-module
-- `corporate-document` → legal-module
-- `legal-structure-chart` → legal-module
-- `e-signature-envelope` → legal-module
-- `ai-interaction-log` → ai-and-assistance
-- `user-account` → platform-core-and-security
-- `client-organisation` → platform-core-and-security
-- `audit-trail-entry` → platform-core-and-security
-- `integration-connection` → integrations
-- `service-engagement` → full-service-delivery
+- `transfer-pricing-model`
+- `company-type-profile`
+- `intercompany-transaction`
+- `segmented-financial-statement`
+- `data-upload-batch`
+- `validation-finding`
+- `documentation-scope`
+- `master-file-document`
+- `local-file-document`
+- `report-template`
+- `country-regulation-record`
+- `filing-deadline`
+- `translation-glossary`
+- `cbcr-dataset`
+- `public-cbcr-report`
+- `cbcr-notification`
+- `benchmark-study`
+- `workflow-task`
+- `compliance-status-snapshot`
+- `risk-assessment`
+- `legal-entity`
+- `intercompany-agreement`
+- `corporate-document`
+- `legal-structure-chart`
+- `e-signature-envelope`
+- `ai-interaction-log`
+- `user-account`
+- `client-organisation`
+- `audit-trail-entry`
+- `integration-connection`
+- `service-engagement`
 
 31 assets.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Reptune had 20+ team members at the August 2024 Vortex transaction; model the company at ~40 after commercial scaling, with small teams (2–5 people) that mix software engineers and transfer pricing specialists.
-
-Org group "Documentation Product Group":
-- `tp-model-and-data` (stream-aligned) owns tpmd, ictx, segp, xlio
-- `report-generation` (stream-aligned) owns gene, tmpl, vald, docx
-- `localisation-and-country-content` (complicated-subsystem) owns ctry, trns
-
-Org group "Compliance and Reporting Group":
-- `cbcr-and-benchmarking` (stream-aligned) owns cbcr, pcbc, cbcn, bnch
-- `compliance-workflow` (stream-aligned) owns scop, task, dead, dash, rskm
-
-Org group "Legal Module Group":
-- `legal-module` (stream-aligned) owns lent, icag, cdoc, lsch, esig
-
-Org group "Platform and AI Group":
-- `ai-and-assistance` (enabling) owns rai, aiwr
-- `platform-core-and-security` (platform) owns iden, divs, audt, secp
-- `integrations` (platform) owns erpi
-
-Org group "Services and Customer Group":
-- `full-service-delivery` (stream-aligned) owns fsvc; customer dependencies on htax, tpsp, lfin
-- `customer-success-and-advisory` (enabling) owns supp; runs onboarding, training, on-demand expert hours, consultation (VCA, APAs, MAPs, controversy); customer dependencies on htax, tpmg, tadv
-
-11 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

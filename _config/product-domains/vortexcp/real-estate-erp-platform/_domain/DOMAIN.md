@@ -40,4 +40,4 @@ This product domain models the business operated by **Bloxs** (vortexcp.com/inve
 - Leadership: André Proost CEO since 1 May 2025 (previously CompuGroup Medical and Centric); founder Dennis Gubbels remains board member, shareholder and M&A director; Joost Moerland is the Vortex partner.
 - KPI current/target values are realistic seed values for a modeled domain, informed by public Dutch real estate reporting (CBS housing statistics, Huurcommissie rent rules, Vastgoedmanagement Nederland benchmarks), not official Bloxs targets.
 
-Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (teams, products, deployment), `tour-operator-erp-platform` (ID spine approach, vertical-ERP shape, relations, residuality).
+Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (products, deployment), `tour-operator-erp-platform` (ID spine approach, vertical-ERP shape, relations, residuality).

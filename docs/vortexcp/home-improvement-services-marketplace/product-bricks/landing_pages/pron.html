@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pron", "name": "Professional Onboarding and Business Verification", "type": "full-stack", "status": "sustaining", "description": "Onboards a specialist business, collects required legal and operational evidence, supports manual checks, and controls verified status and marketplace admission.", "links": [{"group": "References", "links": [{"label": "Gecheckt door Solvari", "link": "https://www.solvari.nl/betrouwbaarheid", "description": "Official specialist-screening criteria and ongoing quality approach."}]}], "layers": [{"layer": "ui", "description": "Professional registration and evidence workflow.", "modules": [{"id": "module-pron-ui", "name": "Professional Onboarding Experience", "type": "web-component", "description": "Collects company, contact, service, insurance, certification, and acceptance evidence."}]}, {"layer": "interfaces", "description": "Professional identity boundary.", "modules": [{"id": "module-pron-api", "name": "Professional Onboarding and Verification API", "type": "api", "description": "Creates professional accounts and exposes verified status and evidence summaries."}]}, {"layer": "service", "description": "Admission workflow and verification evidence.", "modules": [{"id": "module-pron-service", "name": "Professional Verification Service", "type": "stateful-service", "description": "Owns verification cases, checklist versions, results, expiry, re-checks, and admission state."}]}, {"layer": "integration", "description": "Business-register and screening adapters.", "modules": [{"id": "module-pron-registry", "name": "Business Registry Verification Connector", "type": "integration", "description": "Queries or supports evidence from national business registers and approved verification providers."}]}], "dataDependencies": [{"assetId": "specialist-account", "moduleIds": ["module-pron-api", "module-pron-service"], "role": "own", "description": "Owns the canonical specialist business and account relationship."}, {"assetId": "specialist-verification", "moduleIds": ["module-pron-service", "module-pron-registry"], "role": "own", "description": "Owns verification evidence, decisions, expiry, and re-check state."}], "brickDependencies": [{"targetBrickId": "idam", "moduleId": "module-idam-api", "sourceModuleId": "module-pron-api", "type": "access", "description": "Uses shared account authentication and role management."}, {"targetBrickId": "trst", "moduleId": "module-trst-api", "sourceModuleId": "module-pron-service", "type": "risk", "description": "Uses blacklist, fraud, complaint, and reputation risk signals for admission and re-screening."}], "externalSystemsThisBrickDependsOn": [{"system": "National business registers and approved screening providers", "type": "verification", "interface": "Registry search or evidence exchange", "description": "Supports identity, registration, qualification, and status checks appropriate to each market.", "sourceModuleId": "module-pron-registry"}], "externalSystemsDependingOnThisBrick": [], "domain": "Professional Growth and Monetization", "group": "Professional identity and operating fit"};
-    const relatedTeams = [{"teamId": "pact", "teamName": "Professional Account and Trust", "teamType": "stream-aligned", "groupId": "prgg", "groupName": "Professional Growth", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "spro", "name": "Solvari Pro Growth Platform", "icon": "product.png", "type": "B2B SaaS and Lead Marketplace", "whyUsed": "Turns a business into an eligible marketplace participant. Creates a verified professional account."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

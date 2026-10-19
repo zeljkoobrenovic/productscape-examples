@@ -38,4 +38,4 @@ This product domain models the business operated by **Infotopics | Apps for Tabl
 - Leadership: Richard van Wijk (CEO, co-founder), Merlijn Buit (CTO, co-founder, Tableau Visionary). Vortex describes the deal as a 2026 buyout in its software category.
 - KPI current/target values are realistic seed values for a modeled domain, informed by public BI adoption benchmarks and the vendor's published claims, not official Infotopics targets.
 
-Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (teams, products, deployment), `tour-operator-erp-platform` and `real-estate-erp-platform` (ID spine approach, relations, residuality).
+Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (products, deployment), `tour-operator-erp-platform` and `real-estate-erp-platform` (ID spine approach, relations, residuality).

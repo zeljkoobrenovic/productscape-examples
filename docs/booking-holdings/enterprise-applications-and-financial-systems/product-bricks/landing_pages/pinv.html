@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pinv", "name": "Partner Commission Invoicing and Collections", "type": "full-stack", "status": "sustaining", "description": "Invoices accommodation and travel partners for agency-model commission and collects it via direct debit, card or bank transfer, with dunning and dispute handling. Agency revenues were $7,968M in 2025 and almost entirely Booking.com accommodation commissions (10-K FY2025).", "links": [], "layers": [{"layer": "ui", "description": "Operator and finance-user screens.", "modules": [{"id": "module-pinv-ui", "name": "Partner Invoice and Dispute Console", "type": "web-component", "description": "Operations view of invoices, payments, disputes and dunning stages.", "dependencies": {"modules": [{"moduleId": "module-pinv-api", "type": "uses", "description": "Reads and updates invoices."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-pinv-api", "name": "Partner Invoicing API", "type": "api", "description": "Invoice, statement and balance access for partner extranets and finance operations.", "dependencies": {"modules": [{"moduleId": "module-pinv-core", "type": "uses", "description": "Reads invoices."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-pinv-billing-run", "name": "Commission Billing Run", "type": "daemon", "description": "Periodic billing of completed stays into partner invoices with tax.", "dependencies": {"modules": [{"moduleId": "module-pinv-core", "type": "uses", "description": "Creates invoices."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-pinv-dunning", "name": "Dunning and Collections Service", "type": "service", "description": "Payment reminders, collection attempts, holds and escalation.", "dependencies": {"modules": [{"moduleId": "module-pinv-core", "type": "uses", "description": "Reads overdue items."}]}}, {"id": "module-pinv-core", "name": "Partner Invoice Store", "type": "stateful-service", "description": "Commission invoices, credit notes, payments and disputes per partner."}]}, {"layer": "integration", "description": "Adapters to SAP, providers, banks and authorities.", "modules": [{"id": "module-pinv-einvoice", "name": "E-Invoicing Gateway Adapter", "type": "integration", "description": "Issues invoices in mandated e-invoice formats and clearance models."}]}], "dataDependencies": [{"assetId": "partner-commission-invoice", "moduleIds": ["module-pinv-core", "module-pinv-api", "module-pinv-billing-run", "module-pinv-dunning"], "role": "own", "description": "System of record for partner commission invoices and collections."}, {"assetId": "contract-account-subledger-posting", "moduleIds": ["module-pinv-billing-run"], "role": "read", "description": "Billable commission items."}], "brickDependencies": [{"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-pinv-billing-run", "type": "composition", "description": "Commission items and open items come from the contract-accounting subledger."}, {"targetBrickId": "itax", "moduleId": "module-itax-api", "sourceModuleId": "module-pinv-billing-run", "type": "context", "description": "Determines VAT on commission invoices."}, {"targetBrickId": "psrc", "moduleId": "module-psrc-api", "sourceModuleId": "module-pinv-dunning", "type": "data", "description": "Uses reconciled incoming payments to clear invoices."}], "externalSystemsThisBrickDependsOn": [{"system": "Tax authority e-invoicing platforms", "type": "regulatory", "interface": "E-invoice clearance", "description": "Country e-invoicing and clearance systems.", "sourceModuleId": "module-pinv-einvoice"}], "externalSystemsDependingOnThisBrick": [{"system": "Partner extranets (e.g. Booking.com Partner Hub)", "type": "channel-consumer", "interface": "Partner Invoicing API", "description": "Partners view and pay invoices.", "moduleId": "module-pinv-api"}], "domain": "Money Movement and Settlement", "group": "Partner Settlement"};
-    const relatedTeams = [{"teamId": "ptst", "teamName": "Partner Settlement", "teamType": "stream-aligned", "groupId": "mmov", "groupName": "Money Movement Finance", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "pstlm", "name": "Partner Settlement Platform", "icon": "pstlm.png", "type": "Internal finance operations product", "whyUsed": "Partner Commission Invoicing and Collections as part of Partner Settlement Platform."}];
     const supportedJobs = [{"customerId": "pset", "customerName": "Partner Settlement and Receivables Operations Lead", "customerGroup": "Finance Operations", "customerIcon": "customer-pset-portrait.jpg", "productId": "pstlm", "productName": "Partner Settlement Platform", "productIcon": "pstlm.png", "jobId": "pset-collect", "jobName": "Invoice and collect agency commission with minimal disputes", "jobWhatItIs": "Invoice partners for commission on agency bookings, collect cash and resolve disputes quickly.", "jobOutcome": "Commission is invoiced correctly, paid on time and disputes are rare and fast to resolve.", "supportRationale": "Convergent invoicing on subledger postings with tax determination.", "usedInSteps": [{"step": "Generate commission invoices", "description": "Create periodic commission invoices with correct tax per partner and entity.", "howItSupports": "Convergent invoicing on subledger postings with tax determination.", "media": []}, {"step": "Collect via partner payment methods", "description": "Collect by direct debit, card or bank transfer depending on partner set-up.", "howItSupports": "Collection runs and payment allocation.", "media": []}, {"step": "Apply incoming cash", "description": "Match incoming bank receipts to open invoices automatically.", "howItSupports": "Automated cash application with reconciliation.", "media": []}, {"step": "Resolve disputes and dunning", "description": "Handle disputed lines and run dunning for overdue partners.", "howItSupports": "Dispute cases linked to source bookings.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

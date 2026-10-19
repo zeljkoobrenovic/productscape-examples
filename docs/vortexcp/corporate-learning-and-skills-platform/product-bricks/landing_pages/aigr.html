@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "aigr", "name": "AI Drafting Controls and Evaluation", "type": "full-stack", "status": "invest", "description": "Constrain assisted drafting to approved processing scopes, record source and model provenance and test output quality before human publication.", "links": [{"group": "Public product context", "description": "Capability grounding only. Module boundaries, dependencies and investment status are proposed reference-design assumptions.", "links": [{"label": "Legal Documentation", "link": "https://www.studytube.com/legal-documentation", "description": "Entry point to customer, processor, AI and security documents; contract contents are not independently verified here."}]}], "layers": [{"layer": "ui", "description": "Human-facing views and decisions.", "modules": [{"id": "module-aigr-ui", "name": "AI output review and evaluation workspace", "type": "web-component", "description": "AI output review and evaluation workspace with tenant-scoped access and actionable error states.", "dependencies": {"modules": [{"moduleId": "module-aigr-api", "type": "uses", "description": "Calls the scoped interface for this workflow."}]}}]}, {"layer": "interfaces", "description": "Stable command and query boundary.", "modules": [{"id": "module-aigr-api", "name": "AI Drafting Controls and Evaluation API", "type": "api", "description": "Request bounded drafting or question-generation jobs and inspect their provenance.", "dependencies": {"modules": [{"moduleId": "module-aigr-core", "type": "delegates", "description": "Uses the brick's authoritative behavior and validation."}]}}]}, {"layer": "worker", "description": "Retryable asynchronous and scheduled work.", "modules": [{"id": "module-aigr-worker", "name": "AI Drafting Controls and Evaluation Processing", "type": "message-consumer", "description": "Execute queued generation with timeouts, cost limits and resumable job states.", "dependencies": {"modules": [{"moduleId": "module-aigr-core", "type": "uses", "description": "Applies accepted changes through the authoritative state boundary."}]}}]}, {"layer": "service", "description": "Authoritative behavior and owned durable records.", "modules": [{"id": "module-aigr-core", "name": "AI Drafting Controls and Evaluation Service", "type": "stateful-service", "description": "Maintain approved provider configurations, generation records, evaluation results and rejection decisions."}]}, {"layer": "integration", "description": "Boundary to an external service or system.", "modules": [{"id": "module-aigr-adapter", "name": "AI Drafting Controls and Evaluation Adapter", "type": "integration", "description": "Call an employer-approved generation provider with permitted input only; exact provider and data terms remain unverified.", "dependencies": {"modules": [{"moduleId": "module-aigr-core", "type": "uses", "description": "Validates and records integration outcomes through the owning service."}]}}]}], "dataDependencies": [{"assetId": "tnts", "moduleIds": ["module-aigr-core"], "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}, {"assetId": "aire", "moduleIds": ["module-aigr-core"], "role": "own", "description": "Owns the academy record and its correction rules; external source-of-truth boundaries remain as documented in the asset."}, {"assetId": "prvc", "moduleIds": ["module-aigr-core"], "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}], "brickDependencies": [{"targetBrickId": "idam", "moduleId": "module-idam-api", "sourceModuleId": "module-aigr-core", "type": "uses", "description": "Uses Tenant Identity and Access for the ai drafting controls and evaluation workflow; source and target responsibilities remain separate."}, {"targetBrickId": "priv", "moduleId": "module-priv-api", "sourceModuleId": "module-aigr-core", "type": "processing-approval", "description": "Checks approved data and processor scope before sending a generation request. Unapproved scopes fail closed and remain visible to the author and assurance owner."}], "externalSystemsThisBrickDependsOn": [{"system": "Approved AI model provider", "type": "integration", "interface": "Call an employer-approved generation provider with permitted input only; exact provider and data terms remain unverified.", "description": "Proposed interface boundary; exact provider, commercial terms and technical contract require verification.", "sourceModuleId": "module-aigr-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Learning Operations and Knowledge", "group": "Knowledge Publication"};
-    const relatedTeams = [{"teamId": "knld", "teamName": "Knowledge Publication and AI Quality", "teamType": "stream-aligned", "groupId": "lsvg", "groupName": "Learning Supply and Value", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "lmac", "name": "Learning Management System and Employer Academy", "icon": "product.png", "type": "B2B SaaS", "whyUsed": "Supports Learning Management System and Employer Academy through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "sknv", "name": "Skill Navigator and Development Planning", "icon": "product.png", "type": "B2B SaaS", "whyUsed": "Supports Skill Navigator and Development Planning through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "aist", "name": "AI Authoring and Knowledge Publication", "icon": "product.png", "type": "B2B SaaS authoring", "whyUsed": "Supports AI Authoring and Knowledge Publication through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "libr", "name": "Learning Content Libraries and Subscriptions", "icon": "product.png", "type": "B2B content subscription", "whyUsed": "Supports Learning Content Libraries and Subscriptions through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "doip", "name": "External Training Intermediary", "icon": "product.png", "type": "B2B training procurement", "whyUsed": "Supports External Training Intermediary through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "even", "name": "Training Event Management", "icon": "product.png", "type": "B2B learning operations", "whyUsed": "Supports Training Event Management through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}, {"id": "svcs", "name": "Academy Implementation and Customer Success", "icon": "product.png", "type": "B2B implementation and managed support", "whyUsed": "Supports Academy Implementation and Customer Success through ai drafting controls and evaluation; shared service use does not imply that every tenant licenses every feature."}];
     const supportedJobs = [{"customerId": "auth", "customerName": "Subject Matter Expert and Learning Author", "customerGroup": "Content and Training Partners", "customerIcon": "customer-auth-portrait.jpg", "productId": "aist", "productName": "AI Authoring and Knowledge Publication", "productIcon": "product.png", "jobId": "publ", "jobName": "Turn expert knowledge into trustworthy learning", "jobWhatItIs": "Convert a real learning need and approved source material into an effective course.", "jobOutcome": "Learners receive reviewed content and meaningful practice or assessment.", "supportRationale": "Agree what the learner should be able to do and select authorized source material.", "usedInSteps": [{"step": "Define the learning outcome", "description": "Agree what the learner should be able to do and select authorized source material.", "howItSupports": "Agree what the learner should be able to do and select authorized source material.", "media": []}, {"step": "Create a grounded draft", "description": "Build explanations and questions, optionally using AI suggestions under the approved processing scope.", "howItSupports": "Build explanations and questions, optionally using AI suggestions under the approved processing scope.", "media": []}, {"step": "Review the learning experience", "description": "Have named experts check accuracy, accessibility, question quality and source permissions.", "howItSupports": "Have named experts check accuracy, accessibility, question quality and source permissions.", "media": []}, {"step": "Publish a traceable version", "description": "Release the approved course with a review date and communicate its intended audience.", "howItSupports": "Release the approved course with a review date and communicate its intended audience.", "media": []}]}, {"customerId": "auth", "customerName": "Subject Matter Expert and Learning Author", "customerGroup": "Content and Training Partners", "customerIcon": "customer-auth-portrait.jpg", "productId": "aist", "productName": "AI Authoring and Knowledge Publication", "productIcon": "product.png", "jobId": "curr", "jobName": "Keep learning accurate when organizational knowledge changes", "jobWhatItIs": "Maintain published learning through policy changes and learner feedback.", "jobOutcome": "People stop receiving obsolete instruction and can identify the current version.", "supportRationale": "Locate courses tied to changed source documents or recurring learner misunderstandings.", "usedInSteps": [{"step": "Identify affected learning", "description": "Locate courses tied to changed source documents or recurring learner misunderstandings.", "howItSupports": "Locate courses tied to changed source documents or recurring learner misunderstandings.", "media": []}, {"step": "Evaluate the change", "description": "Decide whether to correct, replace or retire content and whether learners need reassessment.", "howItSupports": "Decide whether to correct, replace or retire content and whether learners need reassessment.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

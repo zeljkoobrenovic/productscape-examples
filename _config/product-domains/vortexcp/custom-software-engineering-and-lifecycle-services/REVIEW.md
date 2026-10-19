@@ -10,7 +10,7 @@ Updated: 2026-09-06
 - Eight modeled roles cover buyers, product and engineering owners, quality and data authorities, operations, beneficiaries and internal delivery coordination. Sixteen jobs connect to ten outcome streams and eight offerings.
 - KPI definitions include observable denominators, review cadence and guardrails. Baselines are explicitly unmeasured; targets and strategy horizons are proposals rather than reported company performance or commitments.
 - Twelve primary-source references distinguish public positioning from analytical implications. Investor and company scale measures retain their different populations and undated reporting context.
-- The source model is internally coherent and ready for domain-specific stakeholder review. Architecture, demand, staffing, commercial packaging and customer research remain unverified assumptions. The creation pass validates sources without invoking documentation generation.
+- The source model is internally coherent and ready for domain-specific stakeholder review. Architecture, demand, commercial packaging and customer research remain unverified assumptions. The creation pass validates sources without invoking documentation generation.
 
 ### High-priority findings
 
@@ -35,7 +35,6 @@ No unresolved source-schema or cross-model reference defects were found in the s
 
 - `customers/customers.json`, all roles: run a bounded discovery for a selected client task; replace unmeasured KPI baselines and calibrate proposed thresholds from observed outcomes. Preserve task-completion and continuity guardrails.
 - `product-deployments/deployment.json`, channels `crun`, `opsw` and `chap`: validate actual vendor choices, client isolation, contractual coverage and integration boundaries. Treat current channel definitions as proposed operating patterns.
-- `teams/teams.json`, `orgDesign` and all nine teams: compare the 76-role illustrative slice against actual engagement demand and maintenance obligations. Confirm staffing and decision rights before using it as an organization plan.
 - `data/data-assets.json`, assets `txns`, `know`, `evls` and `rslt`: confirm real data categories, source authority, approved processing, retention and stewardship for the selected client scope before collecting or copying data.
 
 ### Open assumptions
@@ -43,7 +42,6 @@ No unresolved source-schema or cross-model reference defects were found in the s
 - Customer personas and journeys are analytical scenarios; no primary customer interviews were available.
 - The one-, three- and five-year horizons are relative planning proposals, not Dawn's published roadmap.
 - Layered modules and stores are logical responsibility boundaries that may use existing tools. No actual internal toolchain or microservice deployment is established.
-- Public specialist and developer counts use different definitions; modeled teams are a partial illustrative capacity slice.
 - Medical-software intended use, applicable obligations and approval responsibilities require competent client determination. A provider service or certification claim does not establish product approval.
 - All six residuality scenarios and their candidate residues are hypothetical, with no claimed historical survival or implementation.
 
@@ -51,7 +49,7 @@ No unresolved source-schema or cross-model reference defects were found in the s
 
 - Repository validator: passed for 13 JSON datasets and 22 product bricks.
 - Scoped reference audit: passed 5,994 checks across lowercase and local ID conventions, customer/job/KPI references, sources, products, streams, deployment composition, modules, reciprocal data dependencies and unique accountable ownership.
-- All 22 bricks have deployment coverage and exactly one consistent team owner; all 20 data assets resolve to modeled record owners, consumers, stores and teams.
+- All 22 bricks have deployment coverage; all 20 data assets resolve to modeled record owners, consumers and stores.
 - Existing residuality generator validation was exercised without generating pages. Its catalog contained 255 targets, and all stressor references resolved. Slash-qualified job, journey and KPI targets follow that generator's canonical format.
 - Existing template icons are reused and their referenced paths resolve. No external image API was called.
 - Read-only inspection of output produced by a concurrent workspace generation found 95 HTML pages and 734 static local references with no missing targets. All seven generated section indexes contain the expected domain data; browser interaction was not tested.

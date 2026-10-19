@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "load", "name": "Load Balancing and Traffic Management", "type": "service", "status": "sustaining", "description": "Layer 4 and layer 7 load balancing, global traffic management, health checks, TLS offload, service discovery, and failover for production workloads.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-traffic-management-console", "name": "Traffic management console", "type": "web-component", "description": "UI for target health, regional routing, failover, and certificate status.", "dependencies": {"modules": [{"moduleId": "module-load-balancing-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}, "direction": "public"}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-load-balancing-api", "name": "Load balancing API", "type": "api", "description": "Manages listeners, target pools, health checks, TLS, and routing policies.", "dependencies": {"modules": [{"moduleId": "module-load-balancer-provisioning-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-health-and-failover-controller", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-traffic-policy-evaluator", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-traffic-and-health-event-stream", "name": "Traffic and health event stream", "type": "message-consumer", "description": "Publishes request, latency, target health, failover, and error-rate events.", "dependencies": {"modules": [{"moduleId": "module-load-balancer-provisioning-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-health-and-failover-controller", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-traffic-policy-evaluator", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}, "direction": "internal"}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-load-balancer-provisioning-engine", "name": "Load balancer provisioning engine", "type": "service", "description": "Creates listeners, target groups, certificates, routes, and balancing policies.", "dependencies": {"modules": [{"moduleId": "module-health-and-failover-controller", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-traffic-policy-evaluator", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-health-and-failover-controller", "name": "Health and failover controller", "type": "service", "description": "Evaluates endpoint health, regional availability, routing weight, and failover thresholds."}, {"id": "module-traffic-policy-evaluator", "name": "Traffic policy evaluator", "type": "service", "description": "Applies path, host, geo, latency, and weighted routing policies across services and regions."}]}], "dataDependencies": [{"assetId": "resource-inventory", "moduleIds": ["module-load-balancer-provisioning-engine", "module-health-and-failover-controller", "module-traffic-policy-evaluator"], "role": "own", "description": "Tracks listeners, target groups, health checks, certificates, and routing policies."}, {"assetId": "usage-meter", "moduleIds": ["module-traffic-and-health-event-stream"], "role": "publish", "description": "Publishes processed bytes, requests, rules, and endpoint usage."}, {"assetId": "audit-log", "moduleIds": ["module-traffic-and-health-event-stream"], "role": "publish", "description": "Publishes traffic policy and listener changes."}], "brickDependencies": [{"targetBrickId": "vnet", "moduleId": "module-virtual-network-api", "sourceModuleId": "module-load-balancing-api", "type": "runtime", "description": "Uses Virtual Networking capabilities for governed public-cloud delivery."}, {"targetBrickId": "keym", "moduleId": "module-key-management-api", "sourceModuleId": "module-load-balancing-api", "type": "control-plane", "description": "Uses Key Management and Encryption capabilities for governed public-cloud delivery."}, {"targetBrickId": "obsr", "moduleId": "module-telemetry-ingest-api", "sourceModuleId": "module-load-balancing-api", "type": "runtime", "description": "Uses Monitoring and Observability capabilities for governed public-cloud delivery."}, {"targetBrickId": "thrt", "moduleId": "module-security-findings-api", "sourceModuleId": "module-load-balancing-api", "type": "control-plane", "description": "Uses Threat Detection and Posture capabilities for governed public-cloud delivery."}], "externalSystemsThisBrickDependsOn": [{"system": "Customer application endpoints", "type": "runtime", "interface": "http, tcp, tls, and health checks", "description": "Routes traffic to customer workloads across zones, clusters, and regions.", "sourceModuleId": "module-traffic-policy-evaluator"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer users and partner systems", "type": "digital-channel", "interface": "public and private service endpoints", "description": "Depend on stable service endpoints, health routing, and failover.", "moduleId": "module-load-balancing-api"}], "domain": "Infrastructure Services", "group": "Networking and Resilience"};
-    const relatedTeams = [{"teamId": "storage-edge-networking", "teamName": "Storage, Edge, and Networking", "teamType": "stream-aligned", "groupId": "infrastructure-services", "groupName": "Infrastructure Services", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Elastic Infrastructure Cloud", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

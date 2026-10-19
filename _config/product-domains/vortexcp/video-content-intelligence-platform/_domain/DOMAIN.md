@@ -34,14 +34,12 @@ Illustrative first-year pilot gates, to negotiate: at least 99% accepted output 
 
 Facts and access dates are catalogued in `customers/insights.json`. Insights separate source observations from proposed implications. Undated pages carry access dates, not invented publication dates. Case results are vendor-reported, cohort-specific observations, not guaranteed causal uplift. The NLZIET Olympics comparison is against regular programming, not a randomized control. [Case study](https://mediadistillery.com/cases/nlziet-case-study)
 
-All personas, metrics, horizons, modules, stores, runtime boundaries, rights controls and staffing are proposed design. Public sources do not establish private repositories, cloud accounts, SLA terms, training permissions or internal budgets. KPI baselines are unmeasured. Source-grounded outputs need confidence, corrections and provenance. Supplied content rights remain the operator’s authority. Governance text is a contract-design proposal, not a claim of existing compliance or legal advice.
-
-The proposed operating model has six teams (36 delivery FTE) and two shared leadership roles. This deliberately falls below the eight-team heuristic: splitting every AI feature into a separate team would fragment ownership. It is a scale-up planning option, not Media Distillery’s reported headcount. Shared incident coverage, managed infrastructure and phased sports expansion are prerequisites.
+All personas, metrics, horizons, modules, stores, runtime boundaries and rights controls are proposed design. Public sources do not establish private repositories, cloud accounts, SLA terms, training permissions or internal budgets. KPI baselines are unmeasured. Source-grounded outputs need confidence, corrections and provenance. Supplied content rights remain the operator’s authority. Governance text is a contract-design proposal, not a claim of existing compliance or legal advice.
 
 Competition covers specialist overlap, general video-AI substitutes, adjacent metadata providers and internal development. Gracenote is a partner/adjacent player. Unverified comparable financial figures are omitted.
 
 ## Workflow and structural references
 
-Inspected `ride-sharing-marketplace` for customers, bricks, streams, data and competition; `maas` for current products/deployment/teams; `digital-news-publishing-platform` for editorial and advertising boundaries; `bi-dashboard-extensions-platform` for B2B integration and Vortex navigation patterns. Structures were reused; business content was independently authored.
+Inspected `ride-sharing-marketplace` for customers, bricks, streams, data and competition; `maas` for current products/deployment; `digital-news-publishing-platform` for editorial and advertising boundaries; `bi-dashboard-extensions-platform` for B2B integration and Vortex navigation patterns. Structures were reused; business content was independently authored.
 
 Authoring follows `.claude/skills/new-product-domain` and its strategy/edit/validate/balance skills. All three `.codex/skills/gpa-*` reviews are saved in `REVIEW.md`. The current deployment schema is version 4: brick-to-product relationships live in `deployment.json`, without retired per-product `neededBricks` or interface catalogues.

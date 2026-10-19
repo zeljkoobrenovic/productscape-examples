@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "vzsl", "name": "VizSlides Presentation Export", "type": "full-stack", "status": "sustaining", "description": "Turns dashboards into presentations: users pick sheets, filter states and a template and VizSlides produces a PowerPoint or PDF deck with one visual per slide, titles, notes and the company theme, either on demand from the dashboard or on a schedule through MailScheduler. It answers the job of taking the numbers to a meeting or a slide without screenshots, and reuses the rendering service that MailScheduler relies on.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-vzsl-viz", "name": "VizSlides Extension", "type": "web-component", "description": "Deck builder inside the dashboard: pick sheets and filter states, order slides, choose a template and download the deck.", "dependencies": {"modules": [{"moduleId": "module-vzsl-bff", "type": "uses", "description": "Extension submits deck definitions and polls export status through the BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-vzsl-bff", "name": "VizSlides BFF", "type": "bff", "description": "Accepts deck definitions, starts export jobs and returns download links.", "dependencies": {"modules": [{"moduleId": "module-vzsl-composer", "type": "delegates", "description": "BFF delegates slide composition to the composer."}, {"moduleId": "module-vzsl-pptx", "type": "uses", "description": "BFF enqueues deck assembly jobs."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-vzsl-pptx", "name": "Deck Assembly Consumer", "type": "message-consumer", "description": "Assembles rendered slides into PPTX or PDF decks with the customer theme and stores the result as a report artifact.", "dependencies": {"modules": [{"moduleId": "module-vzsl-composer", "type": "processes", "description": "Consumer processes composed slides into a deck."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-vzsl-composer", "name": "Slide Composition Service", "type": "stateless-service", "description": "Resolves each slide into a rendered sheet image or data table plus title, notes and layout from the template without owning state."}]}], "dataDependencies": [{"assetId": "rendered-report-artifact", "moduleIds": ["module-vzsl-pptx", "module-vzsl-bff"], "role": "write", "description": "Stores assembled decks as rendered report artifacts for download or delivery."}, {"assetId": "dashboard-data-snapshot", "moduleIds": ["module-vzsl-composer"], "role": "read", "description": "Reads sheet data for table slides."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-vzsl-viz", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell, settings persistence, theming and Tableau Extensions API bindings."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-vzsl-composer", "type": "data", "description": "Reads the current filter and parameter state so slides reflect what the user sees through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "rndr", "moduleId": "module-rndr-api", "sourceModuleId": "module-vzsl-composer", "type": "rendering", "description": "Renders each selected sheet to PNG or PDF pages for the slides."}, {"targetBrickId": "mlsc", "moduleId": "module-mlsc-api", "sourceModuleId": "module-vzsl-bff", "type": "notification", "description": "Registers recurring deck exports as MailScheduler deliveries."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-vzsl-viz", "type": "licensing", "description": "On every extension load checks the organisation's plan and records the anonymous unique user token that meters active users over a rolling 12 months."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Cloud and Tableau Server", "type": "channel", "interface": "Tableau Extensions API and Tableau REST API", "description": "Hosts the deck builder and supplies sheet images for slides.", "sourceModuleId": "module-vzsl-viz"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Products", "group": "Visual Storytelling"};
-    const relatedTeams = [{"teamId": "visual-storytelling", "teamName": "Visual Storytelling", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "visual-storytelling-extensions", "name": "Visual Storytelling Extensions", "icon": "visual-storytelling-extensions.png", "type": "B2B Dashboard Extension Bundle", "whyUsed": "Exports dashboard views to presentation-ready slides."}];
     const supportedJobs = [{"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "visual-storytelling-extensions", "productName": "Visual Storytelling Extensions", "productIcon": "visual-storytelling-extensions.png", "jobId": "jtbd-dcre-2", "jobName": "Add write-back, planning and commenting to a dashboard the governed way", "jobWhatItIs": "Turn a read-only forecast, budget or data-quality dashboard into one where planners enter forecasts, budget owners set targets, analysts correct records and reviewers approve numbers, with the data stored in the company's own database, validation and role management enforced, and every change logged, using WriteBackExtreme, InputTables and FinanceTables instead of a spreadsheet round-trip or a custom web application.", "jobOutcome": "Business users enter and revise numbers inside the dashboard they already use, the data lands in a governed table that finance and IT trust, every change is attributable and reversible, and the creator delivers this without writing application code or running a separate server.", "supportRationale": "Builds P&Ls, budget reports and management statements from the written-back data with FinanceTables.", "usedInSteps": [{"step": "Roll out to planners and connect finance reporting", "description": "Train the planning team in the dashboard, watch the first cycle for validation errors and confusing fields, then feed the written-back forecasts and budgets into FinanceTables P&L and budget-versus-actual views so the planning loop closes inside the same dashboards.", "howItSupports": "Builds P&Ls, budget reports and management statements from the written-back data with FinanceTables.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

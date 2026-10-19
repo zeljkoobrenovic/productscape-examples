@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "rsel", "name": "Reseller and Agent Portal", "type": "full-stack", "status": "sustaining", "description": "Portal and API through which retail travel agents, affiliated independent agents (ZRA-style) and B2B partners book the operator's products for their clients, retrieve documents, follow changes and see their commission. Reseller bookings are ordinary booking files marked with the agent and commission scheme, so the operator serves the trade channel without extra handling.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-rsel-web", "name": "Reseller Portal", "type": "web-component", "description": "Agent-facing portal with product search, availability and net/gross prices, booking on behalf of clients, booking overview, document downloads and commission statements.", "dependencies": {"modules": [{"moduleId": "module-rsel-bff", "type": "uses", "description": "Portal UI calls the reseller BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-rsel-bff", "name": "Reseller Portal BFF", "type": "bff", "description": "Backend-for-frontend aggregating products, prices, bookings, documents and commission for the logged-in agent.", "dependencies": {"modules": [{"moduleId": "module-rsel-store", "type": "delegates", "description": "Agent profile and commission reads are delegated to the reseller store."}]}}, {"id": "module-rsel-api", "name": "Reseller Booking API", "type": "api", "description": "Partner-facing API for agency front-office systems to search, book and retrieve documents programmatically.", "dependencies": {"modules": [{"moduleId": "module-rsel-store", "type": "delegates", "description": "API resolves agent credentials, entitlements and commission rules from the reseller store."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-rsel-doc-notifier", "name": "Reseller Document Notification Consumer", "type": "message-consumer", "description": "Consumes booking and document events for agent bookings and notifies the agent that new documents or changes are available.", "dependencies": {"modules": [{"moduleId": "module-rsel-store", "type": "processes", "description": "Consumer records notifications per agent in the reseller store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-rsel-store", "name": "Reseller Agent and Commission Store", "type": "stateful-service", "description": "Owns reseller agent profiles, agency links, commission schemes, statements and notification state."}]}], "dataDependencies": [{"assetId": "reseller-agent-profile", "moduleIds": ["module-rsel-store", "module-rsel-doc-notifier"], "role": "own", "description": "System of record for the Reseller Agent Profile asset and commission statements."}, {"assetId": "booking-file", "moduleIds": ["module-rsel-bff", "module-rsel-api"], "role": "write", "description": "Creates and updates booking files on behalf of agents."}], "brickDependencies": [{"targetBrickId": "prod", "moduleId": "module-prod-api", "sourceModuleId": "module-rsel-bff", "type": "data", "description": "Reads products and departures the agent may sell."}, {"targetBrickId": "pric", "moduleId": "module-pric-api", "sourceModuleId": "module-rsel-bff", "type": "data", "description": "Calculates gross and net prices with agent commission."}, {"targetBrickId": "book", "moduleId": "module-book-api", "sourceModuleId": "module-rsel-bff", "type": "data", "description": "Creates and reads agent bookings through the booking API."}, {"targetBrickId": "book", "moduleId": "module-book-api", "sourceModuleId": "module-rsel-api", "type": "data", "description": "Partner API creates bookings through the same booking API."}, {"targetBrickId": "docs", "moduleId": "module-docs-api", "sourceModuleId": "module-rsel-doc-notifier", "type": "documents", "description": "Retrieves travel documents for agent bookings."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-rsel-bff", "type": "identity", "description": "Resolves agent users, agencies and commission entitlements from the identity and tenant backbone before serving requests."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Travel agency front-office systems", "type": "channel-consumer", "interface": "Reseller Booking API", "description": "Agency systems book and retrieve documents programmatically through the partner API.", "moduleId": "module-rsel-api"}], "domain": "Sales and Booking", "group": "Booking and Customer Management"};
-    const relatedTeams = [{"teamId": "web-and-channels", "teamName": "Web and Channels", "teamType": "stream-aligned", "groupId": "sbkg", "groupName": "Sales and Booking Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "partner-portals", "name": "Supplier, DMC, Reseller and Guide Portals", "icon": "dmcm.png", "type": "B2B Partner Portals", "whyUsed": "Lets agents search, book and manage their clients' bookings without phone calls. Records channel-originated bookings under the right reseller for commission."}];
     const supportedJobs = [{"customerId": "dmcm", "customerName": "DMC Ground Operations Manager", "customerGroup": "Tailor-Made Travel Specialists and DMCs", "customerIcon": "customer-dmcm-portrait.jpg", "productId": "partner-portals", "productName": "Supplier, DMC, Reseller and Guide Portals", "productIcon": "dmcm.png", "jobId": "jtbd-dmcm-1", "jobName": "Confirm operator service requests quickly and accurately", "jobWhatItIs": "Receive the hotel nights, transfers, excursions, guides and full ground packages that Dutch and Belgian tour operators request for their group departures and tailor-made files, check them against the DMC's own contracts and availability, and confirm, reject or counter-propose with the right price and remarks, before the operator's option or the traveler's patience expires.", "jobOutcome": "Every operator request gets a correct answer within a working day, rejections come with an alternative, and what the DMC confirmed is exactly what the operator's file and later the invoice will show.", "supportRationale": "Connects the DMC once to the platform so requests from several operators arrive in the same portal account.", "usedInSteps": [{"step": "Receive structured requests instead of emails", "description": "Get requests from every connected operator in one queue in the supplier portal or through the one-to-one data exchange, with dates, pax, room mix, meal plans, pick-up times and contracted prices already structured, rather than in emails and attachments in five formats.", "howItSupports": "Connects the DMC once to the platform so requests from several operators arrive in the same portal account.", "media": [{"type": "image", "src": "media/jbtd-dmcm-jtbd-dmcm-1-1.png", "title": "DMC Ground Operations Manager JTBD step 1: Receive structured requests instead of emails", "alt": "Enterprise infographic for step 1 of the job \"Confirm operator service requests quickly and accurately\": Receive structured requests instead of emails."}]}]}, {"customerId": "rsel", "customerName": "Reseller Travel Agent", "customerGroup": "Travelers and Trade Partners", "customerIcon": "customer-rsel-portrait.jpg", "productId": "partner-portals", "productName": "Supplier, DMC, Reseller and Guide Portals", "productIcon": "dmcm.png", "jobId": "jtbd-rsel-1", "jobName": "Book operator products for my clients without phone calls", "jobWhatItIs": "Find the right departure or tailor-made product for a client, confirm availability and commissionable price instantly in the reseller portal, place an option or book, collect the client's details and deposit, and receive confirmation while the client is still in the conversation.", "jobOutcome": "A confirmed booking made in the portal in one client conversation, with the agent's commission recorded and no phone call or email to the operator required.", "supportRationale": "Provides the reseller portal with live availability, reseller pricing and commission per product.", "usedInSteps": [{"step": "Search availability and price", "description": "Search the operator's products in the reseller portal by destination, date and room type, see live availability, gross price, net price and commission, and shortlist for the client.", "howItSupports": "Provides the reseller portal with live availability, reseller pricing and commission per product.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-1-1.png", "title": "Reseller Travel Agent JTBD step 1: Search availability and price", "alt": "Enterprise infographic for step 1 of the job \"Book operator products for my clients without phone calls\": Search availability and price."}]}, {"step": "Place an option or book directly", "description": "Hold seats with an option that has a clear expiry, or book directly with traveler names, room wishes and the client's contact details.", "howItSupports": "Creates options and bookings from the portal with reseller attribution.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-1-2.png", "title": "Reseller Travel Agent JTBD step 2: Place an option or book directly", "alt": "Enterprise infographic for step 2 of the job \"Book operator products for my clients without phone calls\": Place an option or book directly."}]}, {"step": "Collect deposit and confirm", "description": "Collect the deposit from the client directly or through a payment link, and receive the confirmation and invoice in the portal with commission shown.", "howItSupports": "Delivers confirmation and invoice documents into the reseller portal.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-1-3.png", "title": "Reseller Travel Agent JTBD step 3: Collect deposit and confirm", "alt": "Enterprise infographic for step 3 of the job \"Book operator products for my clients without phone calls\": Collect deposit and confirm."}]}, {"step": "Convert options and reconcile commission", "description": "Follow option reminders, convert or release options before expiry, and reconcile the monthly commission statement against the portal booking list.", "howItSupports": "Manages option reminders, conversion and commission statements in the portal.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-1-4.png", "title": "Reseller Travel Agent JTBD step 4: Convert options and reconcile commission", "alt": "Enterprise infographic for step 4 of the job \"Book operator products for my clients without phone calls\": Convert options and reconcile commission."}]}]}, {"customerId": "rsel", "customerName": "Reseller Travel Agent", "customerGroup": "Travelers and Trade Partners", "customerIcon": "customer-rsel-portrait.jpg", "productId": "partner-portals", "productName": "Supplier, DMC, Reseller and Guide Portals", "productIcon": "dmcm.png", "jobId": "jtbd-rsel-2", "jobName": "Keep my clients informed with documents and changes", "jobWhatItIs": "Retrieve travel documents, itineraries and invoices for clients from the reseller portal as soon as they are ready, receive change notifications about departures, hotels, schedules and payments in time, and pass information to clients under the agency's own name.", "jobOutcome": "Clients receive correct documents and timely change information from their agent, and the agent never has to chase the operator by phone.", "supportRationale": "Publishes client documents to the reseller portal with notifications and reseller branding.", "usedInSteps": [{"step": "Retrieve documents for clients", "description": "Get a notification when a client's documents are published, download vouchers, tickets and itineraries from the portal, and forward or hand them over under the agency's branding.", "howItSupports": "Publishes client documents to the reseller portal with notifications and reseller branding.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-2-1.png", "title": "Reseller Travel Agent JTBD step 1: Retrieve documents for clients", "alt": "Enterprise infographic for step 1 of the job \"Keep my clients informed with documents and changes\": Retrieve documents for clients."}]}, {"step": "Track payments and due dates", "description": "See per booking what the client has paid, what is due and when, and remind the client or settle through the agency's own accounts.", "howItSupports": "Displays payment status and reminders in the reseller portal.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-2-2.png", "title": "Reseller Travel Agent JTBD step 2: Track payments and due dates", "alt": "Enterprise infographic for step 2 of the job \"Keep my clients informed with documents and changes\": Track payments and due dates."}]}, {"step": "Receive and relay changes", "description": "Receive change notifications about departure times, hotels, pickup points and cancellations for the agent's bookings, and relay them to clients or manage rebooking in the portal.", "howItSupports": "Sends change notifications to the reseller for affected bookings and allows rebooking.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-2-3.png", "title": "Reseller Travel Agent JTBD step 3: Receive and relay changes", "alt": "Enterprise infographic for step 3 of the job \"Keep my clients informed with documents and changes\": Receive and relay changes."}]}, {"step": "Handle after-travel questions", "description": "Answer client questions after the trip about invoices, complaints and rebooking using the portal's booking history and messaging with the operator.", "howItSupports": "Provides booking history and messaging with the operator in the portal.", "media": [{"type": "image", "src": "media/jbtd-rsel-jtbd-rsel-2-4.png", "title": "Reseller Travel Agent JTBD step 4: Handle after-travel questions", "alt": "Enterprise infographic for step 4 of the job \"Keep my clients informed with documents and changes\": Handle after-travel questions."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "earn", "name": "Driver Earnings and Incentive Management", "type": "service", "status": "invest", "description": "Calculates and explains driver earnings, incentives, adjustments, cash-out, and payout visibility.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "Building High Throughput Payment Account Processing", "link": "https://www.uber.com/iq/en/blog/high-throughput-processing/", "description": "Relevant to payout consistency, account-ledger throughput, and immutable financial changelogs."}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-earnings-api", "name": "Earnings API", "type": "api", "description": "API for driver-facing earnings views and payout actions.", "dependencies": {"modules": [{"moduleId": "module-fare-breakdown-calculator", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-incentive-ledger", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-payout-and-cash-out-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-fare-breakdown-calculator", "name": "Fare Breakdown Calculator", "type": "service", "description": "Converts trip activity into driver-visible earnings statements."}, {"id": "module-incentive-ledger", "name": "Incentive Ledger", "type": "service", "description": "Stores bonus, quest, and other incentive state."}, {"id": "module-payout-and-cash-out-controls", "name": "Payout and Cash-out Controls", "type": "service", "description": "Handles payout timing and cash-out workflow control."}]}], "dataDependencies": [{"assetId": "payment-instrument-reference", "moduleIds": ["module-fare-breakdown-calculator", "module-incentive-ledger", "module-payout-and-cash-out-controls"], "role": "read", "description": "Reads Payment Instrument Reference to support domain workflows."}, {"assetId": "transaction", "moduleIds": ["module-fare-breakdown-calculator", "module-incentive-ledger", "module-payout-and-cash-out-controls"], "role": "write", "description": "Writes or updates Transaction during domain workflows."}, {"assetId": "audit-log", "moduleIds": ["module-fare-breakdown-calculator", "module-incentive-ledger", "module-payout-and-cash-out-controls"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}, {"assetId": "dynamic-pricing-and-incentives", "moduleIds": ["module-fare-breakdown-calculator", "module-incentive-ledger", "module-payout-and-cash-out-controls"], "role": "read", "description": "Reads Dynamic Pricing And Incentives to support domain workflows."}], "brickDependencies": [{"targetBrickId": "pric", "moduleId": "module-marketplace-pricing-events", "sourceModuleId": "module-fare-breakdown-calculator", "type": "pricing", "description": "Depends on Dynamic Pricing and Incentives for fare and incentive logic."}, {"targetBrickId": "payx", "moduleId": "module-payments-platform-api", "sourceModuleId": "module-earnings-api", "type": "payout-ledger", "description": "Depends on Payments Platform and Ledger for payout execution, balances, and auditable financial movement."}, {"targetBrickId": "mapp", "moduleId": "module-mobile-experience-sdk", "sourceModuleId": "module-fare-breakdown-calculator", "type": "mobile-surface", "description": "Depends on Mobile App Experience Platform for driver-visible payout, earnings, and incentive surfaces."}], "externalSystemsThisBrickDependsOn": [{"system": "Payout partners", "type": "financial-partner", "interface": "Disbursement API", "description": "Executes payout and cash-out movement.", "sourceModuleId": "module-incentive-ledger"}], "externalSystemsDependingOnThisBrick": [], "domain": "Driver Supply and Operations", "group": "earnings-and-partner-control"};
-    const relatedTeams = [{"teamId": "supply-growth-earnings-and-partner-control", "teamName": "Driver and Fleet Supply Driver Earnings and Incentive Management", "teamType": "stream-aligned", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}, {"teamId": "supply-growth-enablement", "teamName": "Driver and Fleet Supply Launch Readiness", "teamType": "enabling", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "dapp", "name": "Driver Supply App", "icon": "", "type": "Supply-side Marketplace", "whyUsed": "Makes earnings and incentive logic visible enough to change driver behavior."}];
     const supportedJobs = [{"customerId": "drvu", "customerName": "Flexible Driver Earner", "customerGroup": "Driver Supply", "customerIcon": "drvu.png", "productId": "dapp", "productName": "Driver Supply App", "productIcon": "", "jobId": "earn", "jobName": "Turn time online into predictable earnings", "jobWhatItIs": "Use the app to find worthwhile trips, stay in productive demand zones, and get paid clearly and on time.", "jobOutcome": "Higher earnings per active hour with lower stress and less idle time.", "supportRationale": "Breaks down fares, bonuses, and payout timing.", "usedInSteps": [{"step": "Track earnings and solve issues", "description": "Understand what was earned, cash out, and resolve support or safety issues fast.", "howItSupports": "Breaks down fares, bonuses, and payout timing.", "media": [{"type": "image", "src": "media/jbtd-drvu-earn-3.jpg", "title": "Flexible Driver Earner JTBD step 3: Track earnings and solve issues", "alt": "Enterprise infographic for step 3 of the job \"Turn time online into predictable earnings\": Track earnings and solve issues."}]}]}, {"customerId": "drvu", "customerName": "Flexible Driver Earner", "customerGroup": "Driver Supply", "customerIcon": "drvu.png", "productId": "dapp", "productName": "Driver Supply App", "productIcon": "", "jobId": "sustain", "jobName": "Stay active on the platform without avoidable friction", "jobWhatItIs": "Keep driving over time without being pushed out by compliance confusion, payout mistrust, or poor support handling.", "jobOutcome": "The driver sees the platform as a credible long-term earnings channel rather than an unreliable side gig.", "supportRationale": "Provides evidence and payout context when earnings are disputed.", "usedInSteps": [{"step": "Get help when a trip or account issue appears", "description": "Escalate unfair ratings, rider incidents, compliance disputes, or payout confusion into a credible workflow.", "howItSupports": "Provides evidence and payout context when earnings are disputed.", "media": [{"type": "image", "src": "media/jbtd-drvu-sustain-2.jpg", "title": "Flexible Driver Earner JTBD step 2: Get help when a trip or account issue appears", "alt": "Enterprise infographic for step 2 of the job \"Stay active on the platform without avoidable friction\": Get help when a trip or account issue appears."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

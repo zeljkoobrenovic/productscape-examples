@@ -7,7 +7,7 @@ Updated: 2026-06-17
 ### Executive assessment
 
 - Recent changes materially improved the strategic grounding: `_domain/DOMAIN.md` now states an EU-centric horizontal classifieds scope, category priorities, monetization model, non-goals, and sequencing tradeoffs.
-- Customer segmentation is credible and materially distinct across local buyers, casual sellers, professional merchants, and merchant SaaS/feed partners. The partner side is now better reflected in teams and deployments than in the previous review.
+- Customer segmentation is credible and materially distinct across local buyers, casual sellers, professional merchants, and merchant SaaS/feed partners. The partner side is now better reflected in deployments than in the previous review.
 - Competition and customer links are much stronger: the model now covers horizontal classifieds, social/local substitutes, C2C recommerce, motors, real estate, jobs, integration platforms, payment/shipping rails, and EU regulatory context.
 - Evidence quality improved because EU DSA and P2B sources were added and unsupported claims are explicitly summarized as assumptions. The remaining weakness is that 10 of 20 insights still have no `sourceIds`, so discovery/search, merchant ROI, pricing, feed reliability, and marketplace-intelligence claims are not yet research-backed.
 - The largest cross-model defect remains customer-to-implementation traceability: all 54 `streamsNeeded` references in customer job steps point to product-brick IDs, while none point to the 12 product-stream IDs.
@@ -77,7 +77,7 @@ Updated: 2026-06-17
 
 ### Architecture assessment
 
-- The implementation model is broad and mostly well-wired: 88 bricks, 12 product streams, 20 data assets, 26 teams, no missing brick owners, no missing stream brick dependencies, no missing data asset references, and no invalid data owner team IDs were found.
+- The implementation model is broad and mostly well-wired: 88 bricks, 12 product streams, 20 data assets, no missing stream brick dependencies, and no missing data asset references were found.
 - Recent data changes fixed the previous high-risk ownership defects. Data assets now align with their system-of-record brick owners, and duplicate `role: own` data dependencies were not found.
 - Product and deployment coverage improved: `products.json` and `deployment.json` now reference 23 unique bricks, including partner-support bricks such as `ause`, `buan`, `doma`, and `prba`.
 - The remaining architecture risk is not reference validity; it is realism. Every brick has exactly three brick dependencies, every brick has exactly two inbound and two outbound external-system relationships, and repeated module signatures make unlike capabilities look operationally identical.
@@ -146,7 +146,7 @@ Updated: 2026-06-17
 
 3. Partner architecture is improved but still blended into the professional seller product.
    - Severity: Medium
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json` product `p3`; `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` team `merchant-platform-merchant-platform`; `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-bricks.json` bricks `svih`, `ause`, `buan`, `doma`, `prba`, and `clim`.
+   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json` product `p3`; `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-bricks.json` bricks `svih`, `ause`, `buan`, `doma`, `prba`, and `clim`.
    - Why it matters: Recent changes added partner APIs, authentication, analytics, documents, and backoffice support to `p3`, which is good. But `cg4-p2` still shares the Professional Seller Workspace product rather than having a clearly named partner integration platform surface.
    - Suggested direction: Either rename/split `p3` to make the partner integration surface first-class, or add a dedicated partner product that owns API docs, sandbox, certification, diagnostics, auth scopes, and support workflows.
 
@@ -161,118 +161,3 @@ Updated: 2026-06-17
 7. Rewrite stream flow key facts and pain points with classifieds-specific operational detail.
 8. Preserve the corrected data ownership model and make high-risk data assets visible in relevant streams and deployment products.
 
-## Teams Review
-
-Updated: 2026-06-17
-
-### Operating-model assessment
-
-- Recent changes materially improved the team model. The domain now has 24 delivery teams: 10 stream-aligned teams, 13 platform teams, and 1 complicated-subsystem team, with Marketplace Growth, Merchant & Partner Platform, and Marketplace Foundations as the main operating groups.
-- Staffing arithmetic is internally consistent. Delivery teams sum to 238 FTE, role counts also sum to 238, and the three group-leadership blocks add 12 FTE, matching the stated 250 FTE principle.
-- Product-brick ownership is structurally strong: all 88 bricks have exactly one owning team, no duplicate owners were found, all team dependencies resolve, and all data assets now align with the owning team of their system-of-record brick.
-- The previous partner gap is fixed. `partner-platform` explicitly owns customer `cg4-p2`, partner API reliability, certification, sandbox-to-production flow, connector templates, feed diagnostics, and partner support.
-- The remaining weakness is not basic reference integrity. It is operating clarity: several product streams span many owning teams without an explicit stream owner, platform teams use external `primaryCustomers` where consuming-team contracts would be clearer, and team KPI names drift from the customer KPI model.
-- AI-agent boundaries remain appropriate. Agents are software-delivery assistants for backend, frontend, QA, code review, and release-risk work, with human review, testing, and production-change controls.
-
-### Ownership findings
-
-1. Buyer homepage ownership is assigned to the seller listing team.
-   - Severity: High
-   - Affected team/group ID: `seller-growth-listing-funnel`, `buyer-growth-discovery`, `buyer-engagement-comms`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` team `seller-growth-listing-funnel`; `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-bricks.json` brick `home`; `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json` product `p1`; `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-stream.json` stream `buyer-browse-interesting-listings`.
-   - Why it matters: `home` is modeled as a buyer/seeker homepage, is used by the Buyer Discovery Experience product, and appears in the buyer browsing stream. Assigning it to `seller-growth-listing-funnel` gives the seller listing team ownership over a buyer acquisition and discovery surface.
-   - Suggested direction: Reassign `home` to `buyer-growth-discovery` or `buyer-engagement-comms`, or split it into buyer homepage and seller listing-entry bricks if both flows need distinct ownership.
-
-2. Product stream ownership is still implicit and handoff-heavy.
-   - Severity: High
-   - Affected team/group ID: `buyer-growth-discovery`, `buyer-discovery-intelligence`, `marketplace-growth-casual-seller-household-lister`, `seller-success-experience`, `merchant-platform`, `marketplace-foundations`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-stream.json`; `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`.
-   - Why it matters: Streams now correctly appear in customer jobs, but teams do not own product-stream IDs. `buyer-contact-sellers-confidently` uses 8 bricks owned by 8 teams, `seller-manage-live-listings` uses 7 bricks owned by 6 teams, and `platform-operate-shared-experience-foundation` uses 8 bricks owned by 6 teams. Without a stream owner or steward, incidents, roadmap tradeoffs, and KPI accountability are inferred from brick ownership.
-   - Suggested direction: Add explicit stream ownership to the model, such as `ownedProductStreams`, `primaryStreamOwnerTeamId`, or stream-level steward/supporting-team fields. For high-traffic streams, name the accountable lead team and the recurring platform contracts.
-
-3. Data stewardship still references a removed team ID.
-   - Severity: Medium
-   - Affected team/group ID: `platform-core-services`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/data/data-assets.json`; `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`.
-   - Why it matters: Data ownership is now aligned with system-of-record brick ownership, but 9 data assets still list `platform-core-services` in `stewardTeamIds`. That team no longer exists in `teams.json`, so stewardship for saved search, conversation, customer contact, transaction, payment, geo, listing, and media assets cannot resolve.
-   - Suggested direction: Replace `platform-core-services` with current platform teams by asset domain: `experience-services-platform` for conversations and notifications, `payments-and-transactions` for payment and transaction assets, `marketplace-foundations-data-2` for geo/catalog/tracking, and `trust-and-identity` or `identity-verification-platform` where privacy or identity control is the stewardship concern.
-
-4. Owned bricks still lack product and deployment visibility.
-   - Severity: Medium
-   - Affected team/group ID: multiple teams, including `marketplace-growth-casual-seller-household-lister`, `buyer-engagement-comms`, `buyer-discovery-intelligence`, `seller-success-experience`, `developer-platform`, and `marketplace-foundations-frontend-core`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`; `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json`; `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/deployment.json`; `_config/product-domains/marketplaces/general-listings-marketplace/product-bricks/product-bricks.json`.
-   - Why it matters: Product and deployment coverage improved to 62 of 88 bricks, but 26 owned bricks are still absent from products and deployment channels, including `ccnm`, `copo`, `arre`, `orma`, `ubws`, `sema`, `awfo`, `desy`, `unfr`, `ustr`, and `udpr`. Teams are accountable for capabilities whose delivery surface is not modeled.
-   - Suggested direction: Add internal platform, operations, analytics, and customer-product surfaces for these bricks, or mark intentionally non-deployable bricks with a clear convention so team accountability is not mistaken for deployable product coverage.
-
-### Topology and staffing findings
-
-1. Marketplace Foundations is more coherent, but still contract-heavy.
-   - Severity: Medium
-   - Affected team/group ID: `marketplace-foundations`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` group `marketplace-foundations` and nested families `identity-and-trust`, `payments-and-transactions`, `experience-platform`, `data-and-intelligence`, and `developer-platform`.
-   - Why it matters: The previous fragmentation is improved, but Marketplace Foundations still contains 12 of 24 delivery teams and 119 of 238 delivery FTE. That is plausible for a data-heavy marketplace, but only if the platform teams operate through explicit contracts, SLOs, incident ownership, support tiers, and roadmap intake from stream-aligned teams.
-   - Suggested direction: Keep the five durable platform families, but make each platform team's provided/dependent interfaces operational: API/data contracts, consumers, SLOs, on-call boundaries, release gates, and escalation paths.
-
-2. Platform teams use external customers as primary customers.
-   - Severity: Medium
-   - Affected team/group ID: all 13 platform teams, especially `developer-platform`, `marketplace-data-platform`, `marketplace-foundations-frontend-core`, `marketplace-analytics`, and `marketplace-data-monetization`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` `primaryCustomers`; `_config/product-domains/marketplaces/general-listings-marketplace/customers/customers.json`.
-   - Why it matters: Platform teams often list external marketplace customers as primary customers, even when their actual operating customer is an internal team. This blurs direct outcome ownership. For example, `developer-platform` lists `cg1-p1` and `cg2-p1`, although its real customers are delivery teams using build, test, deployment, and on-call tooling.
-   - Suggested direction: Split semantics: keep `primaryCustomers` for direct external outcome ownership, add `consumerTeamIds` or `platformConsumers` for internal consumers, and use `customerImpact` to explain which external outcomes the platform supports indirectly.
-
-3. Some topology labels and placements still blur team intent.
-   - Severity: Medium
-   - Affected team/group ID: `merchant-crm-contracts`, `buyer-engagement-comms`, `marketplace-foundations-data-2`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`.
-   - Why it matters: `merchant-crm-contracts` sits under the Experience Platform family even though its bricks (`b2cr`, `b2cc`, `ucga`) are merchant commercial systems. `buyer-engagement-comms` mixes SEO, consumer advertising, and the unified web shell. `marketplace-foundations-data-2` still carries a generated suffix. These are not fatal, but they weaken the otherwise clearer operating model.
-   - Suggested direction: Move `merchant-crm-contracts` under Merchant & Partner Platform or rename it as a commercial contracts platform; separate buyer growth work from shared web-shell platform ownership if needed; rename `marketplace-foundations-data-2` to a stable domain name such as `geo-catalog-tracking-data`.
-
-4. High-scope teams are already at the 10-FTE ceiling.
-   - Severity: Medium
-   - Affected team/group ID: `market-intelligence-and-pricing`, `partner-platform`, `seller-success-experience`, `merchant-platform-professional-seller-dealer-storefront`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` `ownedProductBricks` and `staffing`.
-   - Why it matters: `market-intelligence-and-pricing` owns 7 bricks across catalog data, market knowledge, price estimation, rules, engine, and page experience. Several other teams own 5 bricks while also carrying customer, support, or platform obligations. The 10-FTE cap is disciplined, but these teams may be under-modeled if the roadmap assumes active investment across all owned surfaces.
-   - Suggested direction: Keep the current headcount model if only part of each portfolio is active at once. If multiple owned bricks are strategic in the same horizon, split teams or add specialist capacity, especially data science, partner solutions, product operations, and reliability roles.
-
-### Strategy alignment findings
-
-1. Team KPI names drift from the customer KPI model.
-   - Severity: High
-   - Affected team/group ID: `seller-growth-listing-funnel`, `seller-success-experience`, `merchant-platform`, `partner-platform`, `payments-and-transactions`, `experience-services-platform`, `merchant-crm-contracts`, `market-intelligence-and-pricing`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json` `teamCharter.metrics` and `primaryCustomers.relatedKPIs`; `_config/product-domains/marketplaces/general-listings-marketplace/customers/customers.json` KPI pyramids.
-   - Why it matters: The customer KPI model has 55 KPI names, but 21 non-operating team metrics and 32 `relatedKPIs` references do not match those names exactly. Examples include `Listing publish success rate`, `Time to first response`, `Professional seller GMV contribution`, `Lead quality score`, `Certified partner connectors live`, and `Feed validation pass rate`. Generated docs cannot reliably connect team accountability to customer KPI pyramids by name.
-   - Suggested direction: Use stable KPI IDs in team metrics instead of free-text names, or normalize team metric names to the existing KPI pyramid names. Keep `metricKind: team-operating-metric` for internal platform metrics that should not roll up to customer KPIs.
-
-2. Partner team accountability is fixed, but partner measurement still needs normalization.
-   - Severity: Medium
-   - Affected team/group ID: `partner-platform`, `marketplace-data-monetization`, customer `cg4-p2`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`; `_config/product-domains/marketplaces/general-listings-marketplace/customers/customers.json`; `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json` product `p4`.
-   - Why it matters: `partner-platform` now owns `cg4-p2` and product `p4` gives partners a first-class deployment surface. However, team metrics such as `Certified partner connectors live` and `Feed validation pass rate` do not match the partner KPI language in customers and insights, which uses terms such as partner certification lead time, validation error recurrence, certified partner count, coverage, and partner-enabled supply scale.
-   - Suggested direction: Normalize partner KPIs across `customers.json`, `teams.json`, `insights.json`, and product `p4`; use IDs to connect certification, validation, reliability, supply scale, and partner support outcomes.
-
-3. Trust and transaction control ownership is improved but still needs an explicit operating contract.
-   - Severity: Medium
-   - Affected team/group ID: `trust-and-identity`, `identity-verification-platform`, `payments-and-transactions`, `experience-services-platform`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`; `_config/product-domains/marketplaces/general-listings-marketplace/data/data-assets.json`; product bricks `hpfi`, `papl`, `idve`, `frde`, `acsc`, `ccma`, `cmse`.
-   - Why it matters: The data and brick ownership model is now coherent, but safe completion depends on shared policy decisions across fraud, actor scoring, identity verification, messaging, payment ledger, protected checkout, disputes, and incident response. Mutual dependencies among trust, identity, payments, and data platform teams are reasonable, but need a named decision owner for controls.
-   - Suggested direction: Define a Trust and Transactions control contract: policy owner, approval rights, escalation path, model/rule release process, incident commander, audit evidence owner, and category gates for protected transactions.
-
-4. Platform products use external customer labels too narrowly.
-   - Severity: Medium
-   - Affected team/group ID: products `p5`, `p6`, `p7`; teams in `marketplace-foundations`
-   - Source: `_config/product-domains/marketplaces/general-listings-marketplace/product-deployments/products.json`; `_config/product-domains/marketplaces/general-listings-marketplace/teams/teams.json`.
-   - Why it matters: `Trust & Safety Platform` lists only `cg1-p1`, `Marketplace Data & Intelligence` lists only `cg3-p1`, and `Platform & Operations` lists only `cg2-p1`, while the related platform teams support multiple external customer outcomes and many internal consuming teams. This mirrors the platform `primaryCustomers` issue and can hide who actually consumes the platform.
-   - Suggested direction: Add internal platform consumers and customer-impact mapping to products, or separate external customer-facing products from internal platform products.
-
-### Edit backlog
-
-1. Reassign `home` from `seller-growth-listing-funnel` to the buyer discovery or buyer engagement team, or split the brick if the homepage has separate buyer and seller entry surfaces.
-2. Add explicit product-stream ownership fields for the 12 streams, including lead team, supporting teams, and operating contract per high-traffic stream.
-3. Replace stale `platform-core-services` steward references in `data/data-assets.json` with current team IDs.
-4. Normalize team KPI references against customer KPI IDs; keep team operating metrics separate with `metricKind: team-operating-metric`.
-5. Split `primaryCustomers` from platform consumer semantics by adding `consumerTeamIds`, `platformConsumers`, or `customerImpact` fields for platform teams.
-6. Add product/deployment coverage or explicit non-deployable conventions for the 26 owned bricks not present in products or deployment channels.
-7. Rename or relocate residual topology mismatches: `marketplace-foundations-data-2`, `merchant-crm-contracts`, and possibly `buyer-engagement-comms`.
-8. Define the Trust and Transactions control contract across `trust-and-identity`, `identity-verification-platform`, `payments-and-transactions`, and `experience-services-platform`.
-9. Recheck staffing for high-scope teams if the roadmap invests in several owned bricks at once, especially `market-intelligence-and-pricing` and `partner-platform`.
-10. Preserve the current bounded AI-agent model; only add team-specific agent detail where it maps to concrete engineering risks or repos.

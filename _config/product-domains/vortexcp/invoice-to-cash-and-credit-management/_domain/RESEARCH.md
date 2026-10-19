@@ -16,7 +16,6 @@ POM product pages support offer names and described capabilities. Testimonials a
 - Three current offer names are verified. Exact feature entitlements, connectors, endpoints, payloads, countries, tariffs and service commitments require discovery.
 - Partner listings do not establish implemented interfaces. The adviser persona and minimal referral contract are modeling judgments.
 - The boundary excludes lending, debt purchasing, custody of customer funds, general-ledger accounting, lease administration, legal enforcement and clinical records.
-- Eight teams and 78 FTE are a staffing scenario, including six group leadership roles. This excludes creditor staff, bank staff, external support organizations, sales and general corporate administration. It is not an estimate of POM's company size.
 - Module boundaries, logical stores, EU runtime partitions and retention controls are technology-neutral proposals requiring contractual verification.
 - Business KPI trees use a shared creditor-contract measurement contract, sliced by the relevant use case. These slices overlap and must not be added together as independent company revenue. They do not imply fees charged to payers or advisers.
 - Public references are ordinary links. No local imagery or corporate logos are claimed or fabricated.
@@ -26,12 +25,11 @@ POM product pages support offer names and described capabilities. Testimonials a
 1. Interview finance, billing and collections staff, payers, housing officers and an adviser to validate segmentation and adoption assumptions.
 2. Obtain approved packaging and integration contracts. Confirm how separately purchased offers use common case and reconciliation facilities.
 3. Measure due cohorts, cash matching, complaints, ninety-day plan fulfillment and implementation effort before approving targets.
-4. Validate staffing, specialist responsibilities and on-call capacity before treating the organization scenario as an implementation proposal.
-5. Review minimal case information, representation authority, retention and local collection policies with accountable creditor specialists.
-6. Re-check competitor scope during procurement. The reviewed Billtrust office page lists several offices without designating one headquarters.
+4. Review minimal case information, representation authority, retention and local collection policies with accountable creditor specialists.
+5. Re-check competitor scope during procurement. The reviewed Billtrust office page lists several offices without designating one headquarters.
 
 ## Structural and workflow references
 
-The adjacent models are payments-and-revenue-infrastructure and real-estate-erp-platform. The ride-sharing-marketplace reference supplies customer, brick, stream and data structure; maas supplies current products, deployment and team structure. The current product schema puts composition in deployment channels, avoiding retired per-product fields.
+The adjacent models are payments-and-revenue-infrastructure and real-estate-erp-platform. The ride-sharing-marketplace reference supplies customer, brick, stream and data structure; maas supplies current products and deployment structure. The current product schema puts composition in deployment channels, avoiding retired per-product fields.
 
-Authoring used the .claude new-product-domain workflow and its strategy, customer, brick, stream, data, product, team, competition, validation and balance-audit skills. The three .codex review skills contribute the separate sections in [REVIEW.md](../REVIEW.md).
+Authoring used the .claude new-product-domain workflow and its strategy, customer, brick, stream, data, product, competition, validation and balance-audit skills. The two .codex review skills contribute the separate sections in [REVIEW.md](../REVIEW.md).

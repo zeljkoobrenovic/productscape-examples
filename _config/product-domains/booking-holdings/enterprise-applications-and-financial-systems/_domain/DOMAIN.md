@@ -56,7 +56,6 @@ Internal customers fund the platforms through technology budgets and the Transfo
 ## Assumptions and open questions
 
 - **All KPI values are modeled seed values.** Booking Holdings publishes no internal finance-operations or architecture metrics.
-- Teams, groups and headcounts are modeled, not Booking Holdings' actual organisation. The model has 132 people in 14 teams plus group leads. Brand engineering teams, the payments platform and finance operations are outside the team model.
 - BlackLine, OneStream, FinDB, SAP RISE and IFRS 15 wording come from an unverified third-party job listing (https://jobs.weekday.works/wkdyodt36e). Booking Holdings reports under US GAAP (ASC 606). The model treats these tools as plausible, not confirmed.
 - How far the S/4HANA and Central Finance programme has progressed, and which brands already run on it, is not public.
 - Which PSPs Booking uses (beyond the Antom partnership) is not confirmed by official sources. Adyen and Stripe appear as categories.

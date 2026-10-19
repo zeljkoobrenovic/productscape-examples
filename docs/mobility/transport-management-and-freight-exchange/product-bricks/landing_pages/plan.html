@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "plan", "name": "Transport Planning and Optimization", "type": "full-stack", "status": "sustaining", "description": "Consolidates ERP order lines into an optimized daily load plan: FTL load building, LTL and groupage consolidation, multi-stop routing, and truck-legal constraints such as weight, pallet spaces, and driving-time rules. Planners compare scenarios on cost and service before releasing the plan to tendering, cutting planner touches per load and avoidable empty kilometers.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-plan-web", "name": "Planning Board", "type": "web-component", "description": "Drag-and-drop load-building board with map view, scenario comparison, and plan release.", "dependencies": {"modules": [{"moduleId": "module-plan-api", "type": "uses", "description": "UI module calls the brick API for plan retrieval, editing, and release."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-plan-api", "name": "Planning API", "type": "api", "description": "API for building, optimizing, comparing, and releasing load plans.", "dependencies": {"modules": [{"moduleId": "module-plan-optimizer", "type": "delegates", "description": "Interface module delegates optimization runs to the load optimization engine."}, {"moduleId": "module-plan-scenario-store", "type": "delegates", "description": "Interface module delegates plan and scenario persistence to the backing store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-plan-optimizer", "name": "Load Optimization Engine", "type": "stateless-service", "description": "Solves load building and multi-stop routing under vehicle, weight, pallet-space, time-window, and driving-time constraints; owns no durable state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-plan-scenario-store", "name": "Plan and Scenario Store", "type": "stateful-service", "description": "Persists load plans, optimization scenarios, planner overrides, and release history."}]}], "dataDependencies": [{"assetId": "transport-order", "moduleIds": ["module-plan-optimizer", "module-plan-scenario-store"], "role": "read-write", "description": "Reads open orders as planning input and updates them with load and sequence assignments."}, {"assetId": "location-master", "moduleIds": ["module-plan-optimizer"], "role": "read", "description": "Reads location geocodes, opening hours, and site constraints for routing and consolidation."}], "brickDependencies": [{"targetBrickId": "tord", "moduleId": "module-tord-api", "sourceModuleId": "module-plan-optimizer", "type": "data", "description": "Reads open transport orders and writes planned loads back to the order system of record."}, {"targetBrickId": "mdat", "moduleId": "module-mdat-api", "sourceModuleId": "module-plan-optimizer", "type": "master-data", "description": "Uses location geocodes, opening hours, and equipment master data as optimization inputs."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-plan-api", "type": "identity", "description": "Resolves organizations, users, roles, and entitlements from the identity backbone."}], "externalSystemsThisBrickDependsOn": [{"system": "Map and routing providers", "type": "data", "interface": "Truck Routing API", "description": "Provides truck-attribute routing, distance matrices, and toll segments for load optimization.", "sourceModuleId": "module-plan-optimizer"}], "externalSystemsDependingOnThisBrick": [], "domain": "Shipper Products", "group": "Planning and Execution Management"};
-    const relatedTeams = [{"teamId": "transport-planning", "teamName": "Transport Planning", "teamType": "stream-aligned", "groupId": "shpg", "groupName": "Shipper Product Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "enterprise-tms", "name": "Enterprise TMS", "icon": "tdir.png", "type": "B2B Enterprise SaaS", "whyUsed": "Turns ERP order intake into an optimized, tendable load plan for plants and DCs."}];
     const supportedJobs = [{"customerId": "tdir", "customerName": "Transportation Director", "customerGroup": "Enterprise Shippers", "customerIcon": "tdir.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tdir-1", "jobName": "Secure yearly capacity at target cost", "jobWhatItIs": "Run the annual and mid-year transport procurement cycle: baseline lane volumes, tender to incumbent and new carriers, negotiate rates against market benchmarks, award, and publish enforceable routing guides.", "jobOutcome": "Contracted rate cards and routing guides that cover planned volumes at or below market cost, with qualified fallback capacity for every critical lane.", "supportRationale": "Supplies forecast volumes and consolidation scenarios so tendered quantities reflect the future network, not last year's.", "usedInSteps": [{"step": "Baseline lanes, volumes, and market position", "description": "Pull twelve months of shipment history per lane, equipment type, and season; compare paid rates against lane benchmarks to find overpriced corridors and coverage gaps before the RFP starts.", "howItSupports": "Supplies forecast volumes and consolidation scenarios so tendered quantities reflect the future network, not last year's.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-1-1.png", "title": "Transportation Director JTBD step 1: Baseline lanes, volumes, and market position", "alt": "Enterprise infographic for step 1 of the job \"Secure yearly capacity at target cost\": Baseline lanes, volumes, and market position."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-1", "jobName": "Plan and tender the daily load plan", "jobWhatItIs": "Turn the overnight ERP order drop into optimized FTL/LTL loads, tender them through the routing guide, and get every load confirmed with carrier, driver, and dock slot before cutoff.", "jobOutcome": "The day's orders become confirmed, dispatched transport orders with minimal manual touches and no loads left silently uncovered.", "supportRationale": "Ingests ERP orders, validates master data, and stages them for load building.", "usedInSteps": [{"step": "Import and validate orders", "description": "Receive transport demand automatically from the ERP, validate addresses, quantities, and delivery windows, and flag incomplete orders before they poison the plan.", "howItSupports": "Ingests ERP orders, validates master data, and stages them for load building.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-1-1.png", "title": "Transport Planner JTBD step 1: Import and validate orders", "alt": "Enterprise infographic for step 1 of the job \"Plan and tender the daily load plan\": Import and validate orders."}]}, {"step": "Build and optimize loads", "description": "Consolidate orders into FTL and LTL loads by route, weight, and time window; review the engine's proposals and adjust only where local knowledge beats the algorithm.", "howItSupports": "Proposes consolidated, routed loads that respect equipment, driver-time, and delivery-window constraints.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-1-2.png", "title": "Transport Planner JTBD step 2: Build and optimize loads", "alt": "Enterprise infographic for step 2 of the job \"Plan and tender the daily load plan\": Build and optimize loads."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -100,89 +100,54 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 agnd→appointment,patient-profile,practitioner-profile; obok→appointment,practice-website; grpm→group-programme,patient-invoice; dosr→patient-profile,treatment-episode,clinical-note; clin→care-pathway-template,treatment-episode; vtxt→clinical-note,audit-log-entry; meas→measurement-result,questionnaire-definition; decl→declaration-claim,treatment-episode,insurer-contract; vcgw→insurance-eligibility-check,declaration-claim,return-message; pinv→patient-invoice,payment-transaction; bils→return-message,declaration-claim; bidb→practice-kpi-snapshot,treatment-episode; qdat→quality-data-extract,measurement-result,data-sharing-consent; trpl→treatment-plan,treatment-episode,practitioner-profile; medm→medication-record,patient-profile; romq→measurement-result,questionnaire-definition; cpor→client-portal-account,e-consult-message; zpmc→declaration-claim,treatment-plan,insurer-contract; jzrg→municipal-assignment,declaration-claim; pgoa→client-portal-account,patient-profile; econ→e-consult-message,client-portal-account; rxrp→repeat-prescription-request,medication-record; appb→appointment,client-portal-account; trig→triage-session,client-portal-account; pgom→medmij-consent,health-data-import; netw→family-share-permission,client-portal-account; diar→self-measurement,health-data-import; qlib→questionnaire-definition,e-health-programme; bldc→e-health-programme,home-task-progress; emgy→home-task-progress,e-health-programme; vidc→video-session,remote-care-trajectory; exrc→exercise-programme-link,home-task-progress; zdom→referral-message,practitioner-profile; hisc→his-connection,patient-profile; papi→partner-api-credential,integration-event; pweb→practice-website,appointment; mobi→user-identity,appointment; iden→user-identity,practitioner-profile; audt→audit-log-entry,data-sharing-consent; tnnt→tenant-configuration,migration-batch; supp→support-ticket,tenant-configuration.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `patient-profile` → clinical-record-team
-- `practitioner-profile` → platform-security-team
-- `appointment` → agenda-and-booking-team
-- `group-programme` → agenda-and-booking-team
-- `treatment-episode` → clinical-record-team
-- `clinical-note` → clinical-record-team
-- `care-pathway-template` → clinical-record-team
-- `measurement-result` → clinical-record-team
-- `questionnaire-definition` → embloom-content-team
-- `declaration-claim` → declarations-and-payments-team
-- `insurance-eligibility-check` → declarations-and-payments-team
-- `return-message` → declarations-and-payments-team
-- `patient-invoice` → declarations-and-payments-team
-- `payment-transaction` → declarations-and-payments-team
-- `insurer-contract` → ggz-registration-and-financing-team
-- `municipal-assignment` → ggz-registration-and-financing-team
-- `practice-kpi-snapshot` → insight-and-quality-team
-- `quality-data-extract` → insight-and-quality-team
-- `treatment-plan` → crs-treatment-team
-- `medication-record` → crs-treatment-team
-- `client-portal-account` → uw-zorg-online-team
-- `e-consult-message` → uw-zorg-online-team
-- `repeat-prescription-request` → uw-zorg-online-team
-- `triage-session` → uw-zorg-online-team
-- `medmij-consent` → quli-and-medmij-team
-- `health-data-import` → quli-and-medmij-team
-- `family-share-permission` → quli-and-medmij-team
-- `self-measurement` → quli-and-medmij-team
-- `e-health-programme` → embloom-content-team
-- `home-task-progress` → remote-care-team
-- `video-session` → remote-care-team
-- `remote-care-trajectory` → remote-care-team
-- `exercise-programme-link` → remote-care-team
-- `referral-message` → care-network-integration-team
-- `his-connection` → care-network-integration-team
-- `partner-api-credential` → open-platform-team
-- `integration-event` → open-platform-team
-- `practice-website` → open-platform-team
-- `user-identity` → platform-security-team
-- `audit-log-entry` → platform-security-team
-- `data-sharing-consent` → platform-security-team
-- `tenant-configuration` → cloud-runtime-and-migration-team
-- `migration-batch` → cloud-runtime-and-migration-team
-- `support-ticket` → implementation-and-support-team
+- `patient-profile`
+- `practitioner-profile`
+- `appointment`
+- `group-programme`
+- `treatment-episode`
+- `clinical-note`
+- `care-pathway-template`
+- `measurement-result`
+- `questionnaire-definition`
+- `declaration-claim`
+- `insurance-eligibility-check`
+- `return-message`
+- `patient-invoice`
+- `payment-transaction`
+- `insurer-contract`
+- `municipal-assignment`
+- `practice-kpi-snapshot`
+- `quality-data-extract`
+- `treatment-plan`
+- `medication-record`
+- `client-portal-account`
+- `e-consult-message`
+- `repeat-prescription-request`
+- `triage-session`
+- `medmij-consent`
+- `health-data-import`
+- `family-share-permission`
+- `self-measurement`
+- `e-health-programme`
+- `home-task-progress`
+- `video-session`
+- `remote-care-trajectory`
+- `exercise-programme-link`
+- `referral-message`
+- `his-connection`
+- `partner-api-credential`
+- `integration-event`
+- `practice-website`
+- `user-identity`
+- `audit-log-entry`
+- `data-sharing-consent`
+- `tenant-configuration`
+- `migration-batch`
+- `support-ticket`
 
 44 assets. Personal-data level is high (medical data, BSN, medication, psychological questionnaires); tag AVG/GDPR special-category health data, WGBO (medical file retention 20 years), NEN 7510, Wegiz, MedMij, zorgprestatiemodel and Jeugdwet retention rules. Data residency EU/Netherlands.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-HCI has ~250 staff in the Netherlands and Switzerland, organised in business units (paramedical, GGZ, patient platforms, e-health) plus shared platform, integration and customer operations. Model ~245 people: product/engineering teams of 6–12, customer operations larger.
-
-Org group "Paramedical Business Unit":
-- `agenda-and-booking-team` (stream-aligned) owns agnd, obok, grpm
-- `clinical-record-team` (stream-aligned) owns dosr, clin, vtxt, meas
-- `declarations-and-payments-team` (complicated-subsystem) owns decl, vcgw, pinv, bils
-- `insight-and-quality-team` (stream-aligned) owns bidb, qdat
-
-Org group "GGZ Business Unit":
-- `crs-treatment-team` (stream-aligned) owns trpl, medm, romq, cpor
-- `ggz-registration-and-financing-team` (complicated-subsystem) owns zpmc, jzrg
-
-Org group "Patient Platforms":
-- `uw-zorg-online-team` (stream-aligned) owns pgoa, econ, rxrp, appb, trig
-- `quli-and-medmij-team` (stream-aligned) owns pgom, netw, diar
-
-Org group "E-health":
-- `embloom-content-team` (stream-aligned; psychologists and content developers in Maastricht) owns qlib, bldc, emgy
-- `remote-care-team` (stream-aligned) owns vidc, exrc
-
-Org group "Platform and Integration":
-- `care-network-integration-team` (platform) owns zdom, hisc
-- `open-platform-team` (platform) owns papi, pweb, mobi
-- `platform-security-team` (platform) owns iden, audt
-- `cloud-runtime-and-migration-team` (platform) owns tnnt
-
-Org group "Customer Operations":
-- `implementation-and-support-team` (stream-aligned; onboarding, training, support desk, billing services) owns supp; customer dependencies on impl, fyth, ggzi
-
-Team customer dependencies: paramedical teams → fyth, alth, rhab; GGZ teams → ggzp, ggzi; patient platforms → ptnt, gpph; e-health → ggzp, ggzi, ptnt; integration/open platform → intp, gpph; security → ggzi; runtime/migration → impl. Consumer → provider team dependencies only (no "Provides …" edges). Team metrics must be KPI names that exist in the persona pyramids and that the team can move.
-
-15 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

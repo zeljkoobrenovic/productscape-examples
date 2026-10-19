@@ -6,7 +6,7 @@ Updated: 2026-09-06
 
 This domain models the customer and delivery landscape of a custom software engineering and lifecycle-services business, grounded in Dawn Technology and its Vortex Capital Partners investment profile. It connects client investment decisions to usable applications, accountable integration and modernization, assurance evidence, live operation and eventual transfer.
 
-Dawn publicly describes custom software and services spanning discovery, advice, quality, infrastructure and lifecycle support. The company also presents mobile and smart-device work and regulated-software expertise. Vortex records its investment in 2022, an acquisition-led group strategy, integrated shared services and a 2025 rebrand. These public facts establish the business context; they do not disclose a single proprietary software platform, an internal architecture or the proposed team topology below.
+Dawn publicly describes custom software and services spanning discovery, advice, quality, infrastructure and lifecycle support. The company also presents mobile and smart-device work and regulated-software expertise. Vortex records its investment in 2022, an acquisition-led group strategy, integrated shared services and a 2025 rebrand. These public facts establish the business context; they do not disclose a single proprietary software platform or an internal architecture.
 
 Sources: [Dawn Technology](https://dawn.tech/), [Vortex Dawn profile](https://vortexcp.com/investment/dawn/), [Dawn company history](https://dawn.tech/over-dawn-technology).
 
@@ -34,11 +34,9 @@ The bricks and their layered modules are logical implementation responsibilities
 
 Five deployment channels separate the client delivery workspace, client application/data runtime, web/mobile/device experience, contracted service workspace and internal chapter/asset workspace. Each has product and stream mappings, an owner, operating flow, interfaces, touchpoints and a bounded MVP.
 
-Twenty data assets identify authoritative capability boundaries, consumers, team stewards and logical stores. Client systems remain authoritative for contracts, identities, business records and approved knowledge where stated. Reusable engineering know-how requires provenance and license review. Client code, personal content and secrets must not be pooled across engagements.
+Twenty data assets identify authoritative capability boundaries, consumers and logical stores. Client systems remain authoritative for contracts, identities, business records and approved knowledge where stated. Reusable engineering know-how requires provenance and license review. Client code, personal content and secrets must not be pooled across engagements.
 
 ## Organization and economic logic
-
-The proposed nine-team slice contains 73 team members plus three separately counted coordination roles. Its 76 modeled roles are not a Dawn headcount claim and do not attempt to cover all client engagements or company functions. Delivery, platform, specialist and enabling roles have one accountable owner per brick. Client approvers retain investment, intended-use, business-semantic and release authority. Reliability coordinates contracted recovery; application teams retain code-fix responsibility. No blanket 24/7 staffing plan is implied.
 
 Vortex’s group-integration context motivates reusable assets, chapter knowledge transfer and shared planning. The economic hypothesis is that accepted milestones, repeat client value, reduced rework and support continuity can improve as ownership and reuse mature. No company financials, realized efficiency gains or revenue mix were available.
 
@@ -48,7 +46,7 @@ The public homepage’s 200+ specialists and Vortex’s >150 developers are reco
 
 The bounded comparison set includes Info Support, Xebia, Furore Conclusion, Mendix-based delivery and internal client engineering. Competitive categories are hypotheses about buying alternatives, not observed tender participation, market share or quality rankings. Xebia coverage is limited to its official capability listing; detailed fit remains to be researched.
 
-Six candidate stress scenarios cover shared dependency compromise, device-platform disruption, missing assurance evidence, AI-source/model change, loss of specialist capacity during integration and client-mandated supplier/hosting transfer. Impacts reference actual model objects across strategy, jobs, journey steps, KPIs, products, streams, bricks, teams and competitors. All scenarios are hypothetical and carry no probability estimate or claim of Dawn having survived them.
+Six candidate stress scenarios cover shared dependency compromise, device-platform disruption, missing assurance evidence, AI-source/model change, loss of specialist capacity during integration and client-mandated supplier/hosting transfer. Impacts reference actual model objects across strategy, jobs, journey steps, KPIs, products, streams, bricks and competitors. All scenarios are hypothetical and carry no probability estimate or claim of Dawn having survived them.
 
 ## Source and completion notes
 

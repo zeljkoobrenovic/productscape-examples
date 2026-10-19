@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "tfnd", "name": "Traveler Funds and Deferred Merchant Bookings Ledger", "type": "service", "status": "invest", "description": "Tracks cash received from travelers before Booking performs: deferred merchant bookings were $5,270M at 31 December 2025, up from $4,031M (10-K FY2025), and are mostly refundable on cancellation. The brick keeps the liability per booking, links it to funds held by licensed e-money entities, and releases it on stay, cancellation or payout.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-tfnd-api", "name": "Traveler Funds API", "type": "api", "description": "Balances and movements of traveler funds and deferred merchant bookings by booking, entity and currency.", "dependencies": {"modules": [{"moduleId": "module-tfnd-core", "type": "uses", "description": "Reads the liability ledger."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-tfnd-movement-consumer", "name": "Funds Movement Consumer", "type": "message-consumer", "description": "Applies payment captures, refunds, cancellations and payouts to the liability.", "dependencies": {"modules": [{"moduleId": "module-tfnd-core", "type": "uses", "description": "Writes movements."}]}}, {"id": "module-tfnd-aging", "name": "Liability Aging Job", "type": "daemon", "description": "Ages balances, flags stale or negative liabilities and prepares safeguarding inputs.", "dependencies": {"modules": [{"moduleId": "module-tfnd-core", "type": "uses", "description": "Reads balances."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-tfnd-core", "name": "Deferred Merchant Bookings Ledger", "type": "stateful-service", "description": "Per-booking liability ledger reconciled to subledger and safeguarding positions."}]}], "dataDependencies": [{"assetId": "deferred-merchant-bookings-balance", "moduleIds": ["module-tfnd-core", "module-tfnd-api", "module-tfnd-movement-consumer", "module-tfnd-aging"], "role": "own", "description": "System of record for the deferred merchant bookings liability."}, {"assetId": "payment-transaction-and-settlement-record", "moduleIds": ["module-tfnd-movement-consumer"], "role": "read", "description": "Captures and refunds that move the liability."}], "brickDependencies": [{"targetBrickId": "pevt", "moduleId": "module-pevt-api", "sourceModuleId": "module-tfnd-movement-consumer", "type": "data", "description": "Receives captured and refunded payment events."}, {"targetBrickId": "regr", "moduleId": "module-regr-api", "sourceModuleId": "module-tfnd-aging", "type": "data", "description": "Feeds traveler-funds positions to e-money safeguarding."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-tfnd-core", "type": "context", "description": "Reconciles liability balances to subledger open items."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Treasury and e-money compliance", "type": "consumer", "interface": "Traveler Funds API", "description": "Funds positions used for liquidity and safeguarding.", "moduleId": "module-tfnd-api"}], "domain": "Global Finance Core", "group": "Subledger and Revenue"};
-    const relatedTeams = [{"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "sublr", "name": "Subledger and Revenue Platform", "icon": "sublr.png", "type": "Internal finance platform", "whyUsed": "Traveler Funds and Deferred Merchant Bookings Ledger as part of Subledger and Revenue Platform."}];
     const supportedJobs = [{"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Normalised financial events into the subledger.", "usedInSteps": [{"step": "Capture booking financial events", "description": "Receive complete booking, payment and cancellation events from every brand.", "howItSupports": "Normalised financial events into the subledger.", "media": []}, {"step": "Apply recognition rules", "description": "Determine gross or net, timing and deferral for each booking type.", "howItSupports": "Revenue recognition engine posts schedules.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-launch", "jobName": "Launch payment methods and markets without finance blockers", "jobWhatItIs": "Add a payment method, PSP, currency or market (for example local methods in Asia through a partner such as Antom) with accounting, tax, settlement and controls ready on day one.", "jobOutcome": "New payment options go live on the product timeline and post correctly to the ledger from the first transaction.", "supportRationale": "Payment events feed the subledger and revenue posting for merchant bookings.", "usedInSteps": [{"step": "Map payment events to finance contracts", "description": "Map authorisation, capture, settlement and fee events to the canonical schema.", "howItSupports": "Payment events feed the subledger and revenue posting for merchant bookings.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Payment event ingestion normalises PSP settlements into one record.", "usedInSteps": [{"step": "Ingest PSP and acquirer settlement data", "description": "Normalise settlement reports from all PSPs and acquirers daily.", "howItSupports": "Payment event ingestion normalises PSP settlements into one record.", "media": []}, {"step": "Match bookings, payments and settlements", "description": "Run three-way matching and route breaks to owners.", "howItSupports": "Settlement reconciliation matches payments to bookings and bank receipts.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

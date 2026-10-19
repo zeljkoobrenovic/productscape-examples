@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "cloud-data-and-ai-platform", "name": "Cloud Data and AI Platform", "description": "Cloud Data and AI Platform covers the managed cloud services, developer experiences, governance controls, and operating workflows required to ingest data, analyze it, train and serve models, build AI applications, and run governed enterprise AI at scale."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "network-connectivity-policy", "name": "Network Connectivity Policy", "kind": "policy-record", "description": "Private endpoint, VPC, peering, egress, ingress, DNS, firewall, residency, and partner connectivity policy metadata.", "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["contractual-confidentiality"], "securityCriticality": "critical", "accessScope": "approved product, platform operations, security, and customer-authorized workflows", "businessMeaning": "Private endpoint, VPC, peering, egress, ingress, DNS, firewall, residency, and partner connectivity policy metadata.", "status": "active", "tags": [], "systemOfRecordBrickId": "netw", "ownerTeamId": "cloud-compute-networking", "stewardTeamIds": ["cloud-compute-networking", "security-posture-threat-detection", "partner-solution-integrations"], "derivedFromAssetIds": [], "stores": [{"storeId": "network-connectivity-policy-store", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "network-connectivity-policy api", "description": "Governed service interface for Network Connectivity Policy."}], "governance": {"retention": "contractual lifecycle plus customer-configured retention and audit window", "residency": "customer-selected cloud region with approved control-plane metadata replication only", "sharingPolicy": "least-privilege internal use and customer-authorized product workflows only"}, "rootGroup": "Integration, Platform, and Technical Data", "group": "Reference and Policy Data"};
+    const currentAsset = {"id": "network-connectivity-policy", "name": "Network Connectivity Policy", "kind": "policy-record", "description": "Private endpoint, VPC, peering, egress, ingress, DNS, firewall, residency, and partner connectivity policy metadata.", "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["contractual-confidentiality"], "securityCriticality": "critical", "accessScope": "approved product, platform operations, security, and customer-authorized workflows", "businessMeaning": "Private endpoint, VPC, peering, egress, ingress, DNS, firewall, residency, and partner connectivity policy metadata.", "status": "active", "tags": [], "systemOfRecordBrickId": "netw", "derivedFromAssetIds": [], "stores": [{"storeId": "network-connectivity-policy-store", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "network-connectivity-policy api", "description": "Governed service interface for Network Connectivity Policy."}], "governance": {"retention": "contractual lifecycle plus customer-configured retention and audit window", "residency": "customer-selected cloud region with approved control-plane metadata replication only", "sharingPolicy": "least-privilege internal use and customer-authorized product workflows only"}, "rootGroup": "Integration, Platform, and Technical Data", "group": "Reference and Policy Data"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "netw", "name": "Private Networking and Connectivity", "role": "own", "description": "Owns the authoritative data product for Network Connectivity Policy, including schema, lifecycle, access, and governance responsibilities."}];
     const consumingBricks = [{"id": "fedt", "name": "Federated Query and Data Sharing", "role": "read", "description": "Reads Network Connectivity Policy to execute product workflows with governed customer, platform, or control context."}, {"id": "acct", "name": "Account and Workspace Provisioning", "role": "read", "description": "Reads Network Connectivity Policy to execute product workflows with governed customer, platform, or control context."}, {"id": "post", "name": "Security Posture and Threat Detection", "role": "read", "description": "Reads Network Connectivity Policy to execute product workflows with governed customer, platform, or control context."}, {"id": "prtn", "name": "Partner Solution Integrations", "role": "read", "description": "Reads Network Connectivity Policy to execute product workflows with governed customer, platform, or control context."}, {"id": "docs", "name": "Developer Documentation and SDKs", "role": "read", "description": "Reads Network Connectivity Policy to execute product workflows with governed customer, platform, or control context."}];
-    const ownerTeam = {"teamId": "cloud-compute-networking", "teamName": "Compute and Private Networking", "teamType": "stream-aligned", "groupName": "Cloud Operations"};
-    const stewardTeams = [{"teamId": "cloud-compute-networking", "teamName": "Compute and Private Networking", "teamType": "stream-aligned", "groupName": "Cloud Operations"}, {"teamId": "security-posture-threat-detection", "teamName": "Security Posture and Threat Detection", "teamType": "platform", "groupName": "Cloud Operations"}, {"teamId": "partner-solution-integrations", "teamName": "Partner Solution Integrations", "teamType": "platform", "groupName": "Commercial Ecosystem"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

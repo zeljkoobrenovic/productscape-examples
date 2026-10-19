@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "regy", "name": "Artifact Registry and Image Distribution", "type": "service", "status": "sustaining", "description": "Stores, distributes, and governs container images, packages, charts, and other deployable artifacts used across CI, CD, and runtime workflows.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-registry-api", "name": "Registry API", "type": "api", "description": "API used by build, deployment, and runtime systems to publish and consume deployable artifacts.", "dependencies": {"modules": [{"moduleId": "module-registry-control-layer", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}, {"id": "module-artifact-pull-and-publish-workflows", "name": "Artifact Pull and Publish Workflows", "type": "api", "description": "Standard workflows for pushing, promoting, and consuming versioned artifacts.", "dependencies": {"modules": [{"moduleId": "module-registry-control-layer", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-registry-control-layer", "name": "Registry Control Layer", "type": "service", "description": "Handles artifact namespaces, permissions, retention, and replication policies.", "dependencies": {"modules": [{"moduleId": "module-artifact-distribution-and-caching-layer", "type": "integrates", "description": "Service module uses the integration adapter for external-system communication."}]}}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-artifact-distribution-and-caching-layer", "name": "Artifact Distribution and Caching Layer", "type": "integration", "description": "Optimizes secure artifact pull and distribution across build and runtime environments."}]}], "dataDependencies": [{"assetId": "artifact-registry-and-image-distribution", "moduleIds": ["module-registry-control-layer"], "role": "own", "description": "Acts as the primary owning brick for Artifact Registry And Image Distribution."}, {"assetId": "security-posture-and-runtime-protection", "moduleIds": ["module-registry-control-layer"], "role": "read", "description": "Reads Security Posture And Runtime Protection to support domain workflows."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "runtime_foundation", "group": "artifact-and-delivery-chain"};
-    const relatedTeams = [{"teamId": "plat-runtime-artifact-and-delivery-chain", "teamName": "Runtime and Delivery Foundation Artifact Registry and Image Distribution", "teamType": "platform", "groupId": "plat-runtime", "groupName": "Runtime and Delivery Foundation", "role": "related", "roleLabel": "Related team"}, {"teamId": "plat-runtime-experience-quality", "teamName": "Runtime and Delivery Foundation Enablement", "teamType": "platform", "groupId": "plat-runtime", "groupName": "Runtime and Delivery Foundation", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prod_run", "name": "Runtime and Delivery Foundation", "icon": "api.png", "type": "Internal Platform Product", "whyUsed": "Creates a standard path for storing and promoting deployable artifacts between CI, CD, and runtime targets."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

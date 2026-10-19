@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "home-improvement-services-marketplace", "name": "Home Improvement Services Marketplace", "description": "The Home Improvement Services Marketplace domain covers the trusted discovery, qualification, matching, comparison, and professional-growth capabilities required to connect homeowners with vetted renovation, maintenance, and residential sustainability specialists across the Benelux and adjacent European markets."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "marketplace-outcome-event", "name": "Marketplace Outcome Event", "kind": "event-stream", "description": "Governed events for request completion, qualification, match, contact, appointment, quote, selection, job win, completion, review, claim, renewal, and churn.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["homeowner", "professional-contact", "affiliate-contact"], "legalTags": ["gdpr", "analytics"], "securityCriticality": "high", "accessScope": "Authorized product, operations, data, quality, commercial, and privacy workflows using minimized identifiers.", "businessMeaning": "Provides a consistent measurable lifecycle across customers, products, brands, channels, and experiments.", "status": "active", "stores": [{"storeId": "analytics-lakehouse", "role": "system-of-record"}], "interfaces": [{"type": "event", "name": "marketplace outcome stream", "description": "Contracted lifecycle events and governed aggregates."}], "ownerTeamId": "dint", "stewardTeamIds": ["hint", "hcho", "pdmd", "mall", "mqua", "pmon"], "derivedFromAssetIds": ["project-request", "qualification-decision", "match-decision", "lead-transaction", "professional-pipeline", "review-and-reputation", "case-and-claim"], "governance": {"retention": "Keep identifiable events only for approved operational and measurement windows; aggregate or anonymize for longer-term trends.", "residency": "eu", "sharingPolicy": "Use purpose-filtered views, minimized identifiers, governed metrics, and aggregation thresholds."}, "rootGroup": "Interaction, Trust, and Commercial Data", "group": "Interaction and professional outcome"};
+    const currentAsset = {"id": "marketplace-outcome-event", "name": "Marketplace Outcome Event", "kind": "event-stream", "description": "Governed events for request completion, qualification, match, contact, appointment, quote, selection, job win, completion, review, claim, renewal, and churn.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["homeowner", "professional-contact", "affiliate-contact"], "legalTags": ["gdpr", "analytics"], "securityCriticality": "high", "accessScope": "Authorized product, operations, data, quality, commercial, and privacy workflows using minimized identifiers.", "businessMeaning": "Provides a consistent measurable lifecycle across customers, products, brands, channels, and experiments.", "status": "active", "stores": [{"storeId": "analytics-lakehouse", "role": "system-of-record"}], "interfaces": [{"type": "event", "name": "marketplace outcome stream", "description": "Contracted lifecycle events and governed aggregates."}], "derivedFromAssetIds": ["project-request", "qualification-decision", "match-decision", "lead-transaction", "professional-pipeline", "review-and-reputation", "case-and-claim"], "governance": {"retention": "Keep identifiable events only for approved operational and measurement windows; aggregate or anonymize for longer-term trends.", "residency": "eu", "sharingPolicy": "Use purpose-filtered views, minimized identifiers, governed metrics, and aggregation thresholds."}, "rootGroup": "Interaction, Trust, and Commercial Data", "group": "Interaction and professional outcome"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "cmpr", "name": "Specialist Comparison and Selection Workspace", "role": "publish", "description": "Publishes contact, appointment, selection, and no-selection outcomes."}, {"id": "crmx", "name": "Professional Lead CRM and Sales Workflow", "role": "publish", "description": "Publishes quote, win, loss, and completion outcomes."}, {"id": "data", "name": "Marketplace Analytics and Experimentation", "role": "own", "description": "Owns the governed analytical event and aggregate model for the marketplace lifecycle."}];
     const consumingBricks = [{"id": "rvws", "name": "Reviews and Reputation Experience", "role": "read", "description": "Uses verified contact and selection outcomes to establish review eligibility."}];
-    const ownerTeam = {"teamId": "dint", "teamName": "Data and Decisioning Enablement", "teamType": "enabling", "groupName": "Marketplace Control"};
-    const stewardTeams = [{"teamId": "hint", "teamName": "Homeowner Intent", "teamType": "stream-aligned", "groupName": "Homeowner Marketplace"}, {"teamId": "hcho", "teamName": "Homeowner Choice", "teamType": "stream-aligned", "groupName": "Homeowner Marketplace"}, {"teamId": "pdmd", "teamName": "Professional Demand", "teamType": "stream-aligned", "groupName": "Professional Growth"}, {"teamId": "mall", "teamName": "Marketplace Allocation", "teamType": "complicated-subsystem", "groupName": "Marketplace Control"}, {"teamId": "mqua", "teamName": "Marketplace Quality", "teamType": "stream-aligned", "groupName": "Marketplace Control"}, {"teamId": "pmon", "teamName": "Professional Monetization", "teamType": "stream-aligned", "groupName": "Professional Growth"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

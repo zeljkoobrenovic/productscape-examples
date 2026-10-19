@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "digital-supervision-and-enforcement-platform", "name": "Digital Supervision and Enforcement Platform", "description": "A Twyns-informed domain for municipal, parking and transport supervision and enforcement, connecting resident reports and field observations to reviewed decisions, partner handoffs and public-service outcomes. Strategy, architecture and staffing are modeled assumptions."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "notc", "name": "Assessment and Delivery Record", "kind": "logical-object", "description": "Notice versions, authorization, delivery attempts and external receipt.", "businessMeaning": "Fiscal route and delivery evidence; external authority owns its official assessment register.", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["resident or visitor", "enforcement subject", "authorized staff"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "Named authority roles and purpose-approved service identities; supplier support only by scoped authorization.", "status": "active", "stores": [{"storeId": "park", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Parking Assessment and Referral Delivery API", "description": "Purpose-scoped access; external systems of record are not replaced by local snapshots."}], "ownerTeamId": "prkt", "stewardTeamIds": ["prkt", "plat"], "derivedFromAssetIds": ["drev", "case"], "governance": {"retention": "Authority-approved schedule per purpose, case route and record class, with explicit legal holds and verified disposal. No universal legal duration is asserted.", "residency": "Proposed EEA deployment subject to contractual verification; actual Twyns hosting location was not established.", "sharingPolicy": "Fiscal route and delivery evidence; external authority owns its official assessment register. Legal tags describe potential regimes, not simultaneous permission to process under both. The authority determines the applicable purpose and rules."}, "rootGroup": "Parking Compliance", "group": "Governed Records"};
+    const currentAsset = {"id": "notc", "name": "Assessment and Delivery Record", "kind": "logical-object", "description": "Notice versions, authorization, delivery attempts and external receipt.", "businessMeaning": "Fiscal route and delivery evidence; external authority owns its official assessment register.", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["resident or visitor", "enforcement subject", "authorized staff"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "Named authority roles and purpose-approved service identities; supplier support only by scoped authorization.", "status": "active", "stores": [{"storeId": "park", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Parking Assessment and Referral Delivery API", "description": "Purpose-scoped access; external systems of record are not replaced by local snapshots."}], "derivedFromAssetIds": ["drev", "case"], "governance": {"retention": "Authority-approved schedule per purpose, case route and record class, with explicit legal holds and verified disposal. No universal legal duration is asserted.", "residency": "Proposed EEA deployment subject to contractual verification; actual Twyns hosting location was not established.", "sharingPolicy": "Fiscal route and delivery evidence; external authority owns its official assessment register. Legal tags describe potential regimes, not simultaneous permission to process under both. The authority determines the applicable purpose and rules."}, "rootGroup": "Parking Compliance", "group": "Governed Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "noti", "name": "Parking Assessment and Referral Delivery", "role": "own", "description": "System of record for the modeled Assessment and Delivery Record. External original records retain their original authority."}];
     const consumingBricks = [{"id": "appe", "name": "Objections, Corrections and Remedy Routing", "role": "read", "description": "Consume the permitted projection of Assessment and Delivery Record. Access remains purpose- and authority-scoped."}];
-    const ownerTeam = {"teamId": "prkt", "teamName": "Parking and Decision Remedies", "teamType": "stream-aligned", "groupName": "Twyns-Informed Product and Service Organization"};
-    const stewardTeams = [{"teamId": "prkt", "teamName": "Parking and Decision Remedies", "teamType": "stream-aligned", "groupName": "Twyns-Informed Product and Service Organization"}, {"teamId": "plat", "teamName": "Platform, Data and Assurance", "teamType": "platform", "groupName": "Twyns-Informed Product and Service Organization"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

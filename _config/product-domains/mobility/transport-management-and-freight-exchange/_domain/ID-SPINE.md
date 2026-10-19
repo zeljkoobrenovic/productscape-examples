@@ -79,51 +79,26 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least the obvious ones
 tord→transport-order; plan→transport-order,location-master; csel→contract-rate-card,carrier-profile; tndr→tender-event,contract-rate-card; rate→contract-rate-card; fxch→spot-freight-offer,vehicle-capacity-offer; mtch→spot-freight-offer,vehicle-capacity-offer,network-trust-score; cprt→carrier-profile; cvet→carrier-profile; trst→network-trust-score; pgar→payment-guarantee-case; texe→shipment-execution-record,transport-order; conn→tracking-event-stream; edoc→transport-document; trck→tracking-event-stream,eta-prediction; excp→shipment-execution-record; dock→dock-slot-booking; cost→freight-invoice,contract-rate-card; audt→freight-invoice; anly→lane-rate-benchmark; co2e→emissions-record; iden→shipper-organization; mdat→location-master; bill→shipper-organization.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `transport-order` → transport-planning
-- `shipment-execution-record` → transport-execution
-- `contract-rate-card` → freight-procurement
-- `tender-event` → freight-procurement
-- `spot-freight-offer` → freight-exchange
-- `vehicle-capacity-offer` → freight-exchange
-- `carrier-profile` → network-trust
-- `shipper-organization` → platform-foundation
-- `tracking-event-stream` → visibility
-- `eta-prediction` → visibility
-- `dock-slot-booking` → site-logistics
-- `freight-invoice` → settlement
-- `payment-guarantee-case` → network-trust
-- `network-trust-score` → network-trust
-- `transport-document` → transport-execution
-- `lane-rate-benchmark` → analytics
-- `emissions-record` → analytics
-- `location-master` → integration-and-data
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Org group "Shipper Product Group":
-- `transport-planning` (stream-aligned) owns tord, plan, csel
-- `freight-procurement` (stream-aligned) owns tndr, rate
-
-Org group "Network Product Group":
-- `freight-exchange` (stream-aligned) owns fxch, mtch
-- `carrier-experience` (stream-aligned) owns cprt
-- `network-trust` (complicated-subsystem) owns cvet, trst, pgar
-
-Org group "Execution Group":
-- `transport-execution` (stream-aligned) owns texe, edoc
-- `connectivity` (platform) owns conn
-- `visibility` (stream-aligned) owns trck, excp
-- `site-logistics` (stream-aligned) owns dock
-
-Org group "Commercial and Insight Group":
-- `settlement` (stream-aligned) owns cost, audt
-- `analytics` (stream-aligned) owns anly, co2e
-
-Org group "Platform Group":
-- `platform-foundation` (platform) owns iden, notf, bill
-- `integration-and-data` (platform) owns intg, mdat
+- `transport-order`
+- `shipment-execution-record`
+- `contract-rate-card`
+- `tender-event`
+- `spot-freight-offer`
+- `vehicle-capacity-offer`
+- `carrier-profile`
+- `shipper-organization`
+- `tracking-event-stream`
+- `eta-prediction`
+- `dock-slot-booking`
+- `freight-invoice`
+- `payment-guarantee-case`
+- `network-trust-score`
+- `transport-document`
+- `lane-rate-benchmark`
+- `emissions-record`
+- `location-master`
 
 ## Products (product-deployments/products.json) — id, primary customers
 

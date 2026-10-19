@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "ridp", "name": "Rider Identity, Wallet and Payments", "type": "full-stack", "status": "sustaining", "description": "Manages rider identity, family or business profiles, payment methods, receipts, refunds, and billing context.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "Building High Throughput Payment Account Processing", "link": "https://www.uber.com/iq/en/blog/high-throughput-processing/", "description": "Describes hot-account financial processing and audit-safe money movement in a large payments platform."}, {"label": "Use Passkeys Wherever You Sign in to Uber", "link": "https://www.uber.com/en-US/blog/use-passkeys-wherever-you-sign-in-to-uber/", "description": "Explains account authentication architecture for lower-friction, stronger identity security."}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-identity-and-billing-api", "name": "Identity and Billing API", "type": "api", "description": "API for profile, payment, and receipt workflows.", "dependencies": {"modules": [{"moduleId": "module-identity-and-account-graph", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-wallet-and-billing-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-receipts-and-adjustments", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-identity-and-account-graph", "name": "Identity and Account Graph", "type": "service", "description": "Stores rider, family, and business profile relationships."}, {"id": "module-wallet-and-billing-controls", "name": "Wallet and Billing Controls", "type": "service", "description": "Manages payment instruments, billing preferences, and receipts."}, {"id": "module-receipts-and-adjustments", "name": "Receipts and Adjustments", "type": "service", "description": "Supports refunds, credits, and post-trip billing corrections."}]}], "dataDependencies": [{"assetId": "identity-credential", "moduleIds": ["module-identity-and-account-graph", "module-wallet-and-billing-controls", "module-receipts-and-adjustments"], "role": "read", "description": "Reads Identity Credential to support domain workflows."}, {"assetId": "session-token", "moduleIds": ["module-identity-and-account-graph", "module-wallet-and-billing-controls", "module-receipts-and-adjustments"], "role": "own", "description": "Acts as the primary owning brick for Session Token."}, {"assetId": "access-policy", "moduleIds": ["module-identity-and-account-graph", "module-wallet-and-billing-controls", "module-receipts-and-adjustments"], "role": "own", "description": "Acts as the primary owning brick for Access Policy."}, {"assetId": "audit-log", "moduleIds": ["module-identity-and-account-graph", "module-wallet-and-billing-controls", "module-receipts-and-adjustments"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}], "brickDependencies": [{"targetBrickId": "payx", "moduleId": "module-payments-platform-api", "sourceModuleId": "module-identity-and-billing-api", "type": "payment-platform", "description": "Depends on Payments Platform and Ledger for checkout orchestration, refunds, and auditable money movement."}, {"targetBrickId": "risk", "moduleId": "module-risk-decision-api", "sourceModuleId": "module-identity-and-billing-api", "type": "risk", "description": "Depends on Fraud and Risk Decisioning for account-protection and payment-abuse checks."}, {"targetBrickId": "mapp", "moduleId": "module-mobile-experience-sdk", "sourceModuleId": "module-identity-and-account-graph", "type": "mobile-surface", "description": "Depends on Mobile App Experience Platform for shared client-side identity, wallet, and receipt surfaces."}], "externalSystemsThisBrickDependsOn": [{"system": "Payment processors", "type": "financial-partner", "interface": "Payments API", "description": "Handles charge authorization, settlement, and refund execution.", "sourceModuleId": "module-identity-and-account-graph"}], "externalSystemsDependingOnThisBrick": [], "domain": "Rider Demand and Trip Experience", "group": "live-trip-and-confidence"};
-    const relatedTeams = [{"teamId": "rider-core", "teamName": "Rider Core Experience", "teamType": "stream-aligned", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "rider-growth-operations-excellence", "teamName": "Rider Growth and Trip Experience Service Quality", "teamType": "enabling", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "trust-ops", "teamName": "Safety and Trust Operations", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "rapp", "name": "Rider Mobility App", "icon": "", "type": "B2C Mobility", "whyUsed": "Handles rider profile, payment, receipts, and family or business identity context."}];
     const supportedJobs = [{"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "book", "jobName": "Book a reliable ride for a time-sensitive trip", "jobWhatItIs": "Turn a need to get somewhere into a completed ride with predictable pickup, travel time, and payment.", "jobOutcome": "A completed trip that feels fast, safe, and worth the price paid.", "supportRationale": "Supports profile, family, payment methods, receipts, and refund flows.", "usedInSteps": [{"step": "Track, complete, and settle the trip", "description": "Stay informed during the ride, arrive where expected, and pay or resolve issues without friction.", "howItSupports": "Supports profile, family, payment methods, receipts, and refund flows.", "media": [{"type": "image", "src": "media/jbtd-ridu-book-3.jpg", "title": "Urban Time-Sensitive Rider JTBD step 3: Track, complete, and settle the trip", "alt": "Enterprise infographic for step 3 of the job \"Book a reliable ride for a time-sensitive trip\": Track, complete, and settle the trip."}]}]}, {"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "trust", "jobName": "Use ride sharing confidently in high-anxiety situations", "jobWhatItIs": "Rely on the marketplace for late-night, teen, family, airport, or unfamiliar-city travel without feeling exposed or unsupported.", "jobOutcome": "The rider chooses the service in moments where trust matters, not only when convenience matters.", "supportRationale": "Supports receipts, fare adjustment, and account-linked follow-up.", "usedInSteps": [{"step": "Get resolution if the trip breaks trust", "description": "Report incidents, billing issues, or pickup failures and get a credible response.", "howItSupports": "Supports receipts, fare adjustment, and account-linked follow-up.", "media": [{"type": "image", "src": "media/jbtd-ridu-trust-3.jpg", "title": "Urban Time-Sensitive Rider JTBD step 3: Get resolution if the trip breaks trust", "alt": "Enterprise infographic for step 3 of the job \"Use ride sharing confidently in high-anxiety situations\": Get resolution if the trip breaks trust."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

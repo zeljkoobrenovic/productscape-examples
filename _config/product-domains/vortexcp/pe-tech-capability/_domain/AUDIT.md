@@ -21,7 +21,6 @@ inventory of an implemented Vortex capability.
 | Modules | 91 across all six permitted architectural layers |
 | Outcome streams | 14 streams with 56 steps, decision facts, frictions, and capability references |
 | Data | 26 logical records, 7 proposed store boundaries, explicit accountability |
-| Teams | 5 logical responsibility areas; actual headcount is deliberately unspecified |
 | Insights | 11 insights, 6 sources: the supplied brief and 5 verified public pages |
 | Customer relations | 12 directed, scoped evidence and decision handoffs |
 | Peers and alternatives | 3 sourced offerings, distinguished as a peer model or service alternative |
@@ -45,7 +44,6 @@ than inferred from a target quota.
 | Personas | 8 | 4 | Separate investment, execution, governance, exit, and LP decisions matter |
 | Bricks | 26 | 20 | Includes the ten accelerators and the shared decision/evidence infrastructure |
 | Data assets | 26 | 17 | Distinct logical decision records, not 26 physical databases |
-| Teams | 5 | 24 | Shared responsibility areas fit a specialist operating capability |
 | Products | 11 | 3 | Named service outputs with distinct users; not 11 separately sold applications |
 | Insights | 11 | 8 | The brief is the primary design basis, with limited public contextual research |
 | Competitors/alternatives | 3 | 11 | Focused peer/service comparison; no padding with unrelated investment firms |
@@ -53,26 +51,24 @@ than inferred from a target quota.
 ## Traceability and realism
 
 - Every customer has two jobs, an adoption journey, both KPI pyramids, strategy
-  horizons, at least one offering, and a responsible team.
+  horizons, and at least one offering.
 - Every job step references a real stream with the correct display name. Its
   stream has substantive capability overlap with the customer's offerings; the
   shared access-control brick alone is not counted as outcome coverage.
-- Every brick is used by a stream, connected to at least one product through
-  deployment, and assigned to exactly one accountable team. There are no orphan
-  bricks or duplicate primary ownership assignments.
-- Every logical data asset is used by a brick, has a real team owner, and refers
-  to valid stores and derivation sources. A capability's primary record and its
-  accountable team agree.
+- Every brick is used by a stream, and connected to at least one product through
+  deployment. There are no orphan bricks.
+- Every logical data asset is used by a brick and refers to valid stores and
+  derivation sources.
 - Source, insight, customer, job, KPI, journey, relationship, stream, deployment,
-  module, and team references resolve. The committee thesis offering includes
+  and module references resolve. The committee thesis offering includes
   the value scorecard needed to revisit earlier decisions.
 - All pyramids fan out. Four operational customer pyramids have four levels;
   twelve governance/business trees have three levels to avoid artificial causal
   precision. All 80 leaves have units and null current values. No single-child
-  chains, duplicate persona KPI IDs, or unresolved strategy/team metric names remain.
+  chains, duplicate persona KPI IDs, or unresolved strategy metric names remain.
 - Coaching, candidates, company evidence, peer learning, and buyer/LP claims have
   explicit disclosure boundaries. Company and fund authorities retain their
-  decisions; proposed modules and teams do not imply actual deployed systems or staffing.
+  decisions; proposed modules do not imply actual deployed systems.
 - Competition contains no business statistics needing invented periods, scope,
   or sources. Public source observations and proposed implications are separate.
 - The illustrative investment and onboarding figures in the input are not seeded
@@ -88,7 +84,7 @@ These are explicit limits of a proposal, not unfilled source artifacts:
 
 - Confirm actual sponsor, company decision rights, role capacity, specialist funding,
   and confidentiality arrangements before assigning real work. Update through
-  `set-domain-strategy` and `edit-teams` when evidence is available.
+  `set-domain-strategy` when evidence is available.
 - Establish approved company measurements, periods, baselines, compatible cohorts,
   and contribution-review rules before setting targets or drawing comparisons.
   Use `edit-customers` and `edit-data-assets` for the verified definitions.

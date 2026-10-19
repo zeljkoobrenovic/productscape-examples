@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "cbcn", "name": "CbCR Notifications", "type": "service", "status": "sustaining", "description": "Tracking and preparation of CbCR notifications: which constituent entity must notify which tax authority by when, in what form and identifying which entity files the CbC report, with letters prepared from country-specific formats and reminders to the local contact. Deadlines are calculated automatically per country and shown on the dashboard.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-cbcn-web", "name": "Notification Tracker", "type": "web-component", "description": "Screens listing notification obligations per entity and country with status, deadline, responsible contact and the prepared notification letter.", "dependencies": {"modules": [{"moduleId": "module-cbcn-api", "type": "uses", "description": "Tracker calls the Notifications API for obligations, letters and status."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-cbcn-api", "name": "CbCR Notifications API", "type": "api", "description": "API for notification obligations, statuses, letters and evidence of submission; used by the tracker, workflow tasks and the dashboard.", "dependencies": {"modules": [{"moduleId": "module-cbcn-store", "type": "delegates", "description": "Interface delegates obligation persistence to the notification store."}, {"moduleId": "module-cbcn-letter-composer", "type": "delegates", "description": "Interface delegates letter preparation to the composer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-cbcn-reminder-daemon", "name": "Notification Deadline Reminder Daemon", "type": "daemon", "description": "Scans upcoming notification deadlines and creates workflow tasks and reminders for the responsible local contact.", "dependencies": {"modules": [{"moduleId": "module-cbcn-store", "type": "processes", "description": "Daemon updates reminder and escalation status in the notification store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-cbcn-letter-composer", "name": "Notification Letter Composer", "type": "stateless-service", "description": "Prepares the notification letter or form content per country from the reporting entity, constituent entity and fiscal year data.", "dependencies": {"modules": [{"moduleId": "module-cbcn-store", "type": "uses", "description": "Composer reads obligations and prior notifications from the notification store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-cbcn-store", "name": "CbCR Notification Store", "type": "stateful-service", "description": "Owns notification obligations, statuses, letters, submission evidence and history per entity, country and fiscal year."}]}], "dataDependencies": [{"assetId": "cbcr-notification", "moduleIds": ["module-cbcn-store", "module-cbcn-letter-composer", "module-cbcn-reminder-daemon"], "role": "own", "description": "System of record for the CbCR Notification asset: obligations, letters and submission status."}, {"assetId": "filing-deadline", "moduleIds": ["module-cbcn-reminder-daemon"], "role": "read", "description": "Reads notification deadlines per entity and country."}, {"assetId": "legal-entity", "moduleIds": ["module-cbcn-store"], "role": "read", "description": "Reads constituent entities and their tax jurisdictions."}], "brickDependencies": [{"targetBrickId": "cbcr", "moduleId": "module-cbcr-api", "sourceModuleId": "module-cbcn-store", "type": "data", "description": "Reads the reporting entity and constituent entities for the fiscal year."}, {"targetBrickId": "dead", "moduleId": "module-dead-api", "sourceModuleId": "module-cbcn-reminder-daemon", "type": "workflow", "description": "Reads calculated notification deadlines per entity and country."}, {"targetBrickId": "ctry", "moduleId": "module-ctry-api", "sourceModuleId": "module-cbcn-letter-composer", "type": "regulation", "description": "Reads notification formats, addressees and procedures per country."}, {"targetBrickId": "task", "moduleId": "module-task-api", "sourceModuleId": "module-cbcn-reminder-daemon", "type": "workflow", "description": "Creates reminder tasks for the responsible local contact."}, {"targetBrickId": "docx", "moduleId": "module-docx-api", "sourceModuleId": "module-cbcn-letter-composer", "type": "rendering", "description": "Renders notification letters as Word or PDF."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-cbcn-api", "type": "identity", "description": "Resolves the user, client organisation and division scope, role and access rights (read-only, location-restricted, custom profile) from the identity backbone before serving requests."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "CbCR and Benchmarks", "group": "Country-by-Country Reporting"};
-    const relatedTeams = [{"teamId": "cbcr-and-benchmarking", "teamName": "CbCR and Benchmarking", "teamType": "stream-aligned", "groupId": "crpg", "groupName": "Compliance and Reporting Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "cbcr-and-public-cbcr", "name": "Country-by-Country Reporting and EU Public CbCR", "icon": "cbcr-and-public-cbcr.png", "type": "B2B SaaS Add-on", "whyUsed": "CbCR notifications per country with auto-calculated deadlines."}, {"id": "country-regulations-and-local-forms", "name": "Country Regulations, Local Forms and Procedures", "icon": "country-regulations-and-local-forms.png", "type": "Content Subscription", "whyUsed": "Notification rules and formats maintained per country."}];
     const supportedJobs = [{"customerId": "tpmg", "customerName": "Transfer Pricing Manager / Documentation Coordinator", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-tpmg-portrait.jpg", "productId": "cbcr-and-public-cbcr", "productName": "Country-by-Country Reporting and EU Public CbCR", "productIcon": "cbcr-and-public-cbcr.png", "jobId": "jtbd-tpmg-2", "jobName": "Deliver every Master File, Local File and CbCR before its deadline", "jobWhatItIs": "Run the annual cycle for a fiscal year: scope entities and countries against thresholds, plan the deliverables and their deadlines, assign tasks to local contacts and specialists, collect and validate data, generate drafts, resolve validation findings, finalise and archive, and prepare CbCR, notifications and public CbCR, so nothing is late anywhere.", "jobOutcome": "Every scoped Master File, Local File, CbCR filing and notification is final and archived before its calculated deadline, tasks are tracked and chased automatically, and the coordinator sees status per entity at any moment instead of reconstructing it from e-mail.", "supportRationale": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "usedInSteps": [{"step": "Prepare CbCR, notifications and public CbCR", "description": "Enter or bulk-load the CbCR data per jurisdiction, validate it, generate the filing-ready XML and Excel, prepare the CbCR notifications for the countries that require them, and generate the EU Public CbCR in XHTML with inline XBRL from the same data.", "howItSupports": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "media": []}]}, {"customerId": "lfin", "customerName": "Local Finance Controller / Country Tax Contact", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-lfin-portrait.jpg", "productId": "cbcr-and-public-cbcr", "productName": "Country-by-Country Reporting and EU Public CbCR", "productIcon": "cbcr-and-public-cbcr.png", "jobId": "jtbd-lfin-2", "jobName": "File a locally compliant local file and forms on time", "jobWhatItIs": "Make sure the entity's Local File meets the country's content, format, language and filing requirements, review it for local accuracy, obtain the translation and local forms the authority expects, and file, lodge or keep it on file according to the local procedure before the deadline.", "jobOutcome": "The entity's Local File and accompanying forms are locally correct, in the required language, and filed or prepared before the local deadline every year, without the controller researching rules or hiring a local adviser for routine filings.", "supportRationale": "Provides the CbCR notification for the entity with local filing guidance where the country requires one.", "usedInSteps": [{"step": "File or lodge with the local authority and record the filing", "description": "Submit the Local File, forms and any CbCR notification through the country's procedure (portal, tax return attachment, or kept on file for request), record the filing date and evidence in the platform and close the task.", "howItSupports": "Provides the CbCR notification for the entity with local filing guidance where the country requires one.", "media": []}]}, {"customerId": "regr", "customerName": "Country Regulations and Content Specialist", "customerGroup": "Reptune Service and Content Teams", "customerIcon": "customer-regr-portrait.jpg", "productId": "country-regulations-and-local-forms", "productName": "Country Regulations, Local Forms and Procedures", "productIcon": "country-regulations-and-local-forms.png", "jobId": "jtbd-regr-1", "jobName": "Keep 170+ country rule sets and deadlines current and correct", "jobWhatItIs": "Maintain, for every country the platform supports, the current thresholds, documentation content and format requirements, language requirements, CbCR and notification obligations and deadline rules, detecting regulatory change quickly, encoding it as structured rules with sources and effective dates, and releasing it through review so that scoping, deadline calculation, validation and the dashboard reflect the law as it stands.", "jobOutcome": "Every country rule set is verified current within its review cycle, regulatory changes reach the platform within days rather than the next season, deadlines calculate correctly for every entity, and no client or specialist relies on a rule that has been superseded.", "supportRationale": "Consumes the CbCR, public CbCR and notification rules to produce filing-ready XML, XHTML with inline XBRL and local filing guidance.", "usedInSteps": [{"step": "Keep CbCR, public CbCR and notification rules current", "description": "Maintain which countries require CbCR filing, notification and by when, the XML schema versions tax authorities accept, the EU Public CbCR rules and XHTML with inline XBRL format per member state, and the upcoming Australian Public CbCR requirements, so CbCR output stays filing-ready.", "howItSupports": "Consumes the CbCR, public CbCR and notification rules to produce filing-ready XML, XHTML with inline XBRL and local filing guidance.", "media": []}]}, {"customerId": "tpmg", "customerName": "Transfer Pricing Manager / Documentation Coordinator", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-tpmg-portrait.jpg", "productId": "country-regulations-and-local-forms", "productName": "Country Regulations, Local Forms and Procedures", "productIcon": "country-regulations-and-local-forms.png", "jobId": "jtbd-tpmg-2", "jobName": "Deliver every Master File, Local File and CbCR before its deadline", "jobWhatItIs": "Run the annual cycle for a fiscal year: scope entities and countries against thresholds, plan the deliverables and their deadlines, assign tasks to local contacts and specialists, collect and validate data, generate drafts, resolve validation findings, finalise and archive, and prepare CbCR, notifications and public CbCR, so nothing is late anywhere.", "jobOutcome": "Every scoped Master File, Local File, CbCR filing and notification is final and archived before its calculated deadline, tasks are tracked and chased automatically, and the coordinator sees status per entity at any moment instead of reconstructing it from e-mail.", "supportRationale": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "usedInSteps": [{"step": "Prepare CbCR, notifications and public CbCR", "description": "Enter or bulk-load the CbCR data per jurisdiction, validate it, generate the filing-ready XML and Excel, prepare the CbCR notifications for the countries that require them, and generate the EU Public CbCR in XHTML with inline XBRL from the same data.", "howItSupports": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "media": []}]}, {"customerId": "tadv", "customerName": "Transfer Pricing Adviser at a Tax Advisory Firm", "customerGroup": "Tax Advisory Firms", "customerIcon": "customer-tadv-portrait.jpg", "productId": "country-regulations-and-local-forms", "productName": "Country Regulations, Local Forms and Procedures", "productIcon": "country-regulations-and-local-forms.png", "jobId": "jtbd-tadv-2", "jobName": "Deliver locally compliant files in countries my firm does not cover", "jobWhatItIs": "Prepare Local Files, local forms and CbCR notifications for client entities in jurisdictions where the firm has no office or correspondent, and make them compliant with local thresholds, content requirements, formats, language rules and deadlines without subcontracting a local firm for each file. Relies on the platform's maintained country regulations, localised templates, machine and certified translation, the R-AI country expert and Reptune's specialists as a back-up.", "jobOutcome": "The firm confidently accepts engagements covering countries it does not staff, local files are prepared to the local standard in the required language and form, notifications and filings are not missed, subcontracting cost falls, and clients keep a single adviser for their whole footprint.", "supportRationale": "Produces filing-ready CbCR XML and Excel, EU Public CbCR in XHTML with inline XBRL, and notifications with local filing guidance.", "usedInSteps": [{"step": "Handle CbCR notifications and filings per jurisdiction", "description": "Determine for each client entity where a CbCR notification is due and in what form, prepare the notifications and the CbCR XML for the reporting entity, and track filing dates and confirmations per jurisdiction, including public CbCR obligations for clients in scope of the EU directive.", "howItSupports": "Produces filing-ready CbCR XML and Excel, EU Public CbCR in XHTML with inline XBRL, and notifications with local filing guidance.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

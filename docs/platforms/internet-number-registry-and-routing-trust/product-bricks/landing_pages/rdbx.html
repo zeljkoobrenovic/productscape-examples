@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "rdbx", "name": "RIPE Database and RDAP Publication", "type": "full-stack", "status": "invest", "description": "Maintains and publishes RIPE Database objects, Whois/RDAP lookup, route and route6 objects, organisation objects, contacts, and related public registry views.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-whois-rest-and-rdap-interfaces", "name": "Whois, REST, and RDAP interfaces", "type": "api", "description": "Public and authenticated access paths for registry objects and related operational metadata.", "dependencies": {"modules": [{"moduleId": "module-ripe-database-publication-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-ripe-database-publication-service", "name": "RIPE Database publication service", "type": "service", "description": "Publishes public registry, RIPE IRR, reverse delegation, contact, and object metadata through Whois, web search, REST, and RDAP surfaces."}]}], "dataDependencies": [{"assetId": "ripe-database-object", "moduleIds": ["module-ripe-database-publication-service"], "role": "write", "description": "Maintains and publishes public registry, routing registry, and reverse delegation object state."}, {"assetId": "number-resource-record", "moduleIds": ["module-ripe-database-publication-service"], "role": "read", "description": "Reads authoritative resource lifecycle state for public object publication."}, {"assetId": "api-access-log", "moduleIds": ["module-ripe-database-publication-service"], "role": "publish", "description": "Publishes telemetry for Whois, RDAP, REST, and bulk data access."}], "brickDependencies": [{"targetBrickId": "v4al", "moduleId": "module-ipv4-allocation-workflow-service", "sourceModuleId": "module-ripe-database-publication-service", "type": "registry-publication", "description": "Publishes IPv4 resource records and lifecycle state into public registry views."}, {"targetBrickId": "v6al", "moduleId": "module-ipv6-request-workflow-service", "sourceModuleId": "module-ripe-database-publication-service", "type": "registry-publication", "description": "Publishes IPv6 resource records and lifecycle state into public registry views."}, {"targetBrickId": "asnr", "moduleId": "module-asn-lifecycle-service", "sourceModuleId": "module-ripe-database-publication-service", "type": "registry-publication", "description": "Publishes AS Number records, routing references, and related public object state."}, {"targetBrickId": "mntn", "moduleId": "module-maintainer-authorization-service", "sourceModuleId": "module-ripe-database-publication-service", "type": "authorization", "description": "Uses maintainer and access-control state to authorize object updates."}], "externalSystemsThisBrickDependsOn": [{"system": "IANA and peer RIR public data feeds", "type": "registry-context", "interface": "delegated statistics and authority data", "description": "Provides global RIR and IANA context used in public registry and statistics surfaces.", "sourceModuleId": "module-ripe-database-publication-service"}], "externalSystemsDependingOnThisBrick": [{"system": "Network automation, abuse desks, researchers, and public lookup tools", "type": "external-consumer", "interface": "Whois, RDAP, REST API, and bulk data", "description": "Use published registry objects for coordination, incident response, routing policy checks, and research.", "moduleId": "module-whois-rest-and-rdap-interfaces"}], "domain": "Registry Resource Management", "group": "Registry Publication and Access Control"};
-    const relatedTeams = [{"teamId": "registry-resource-management-registry-publication-and-access-control", "teamName": "Registry Resource Management RIPE Database and RDAP Publication", "teamType": "platform", "groupId": "registry-resource-management", "groupName": "Registry Resource Management", "role": "related", "roleLabel": "Related team"}, {"teamId": "routing-trust-and-dns-team", "teamName": "Routing Trust and DNS Team", "teamType": "platform", "groupId": "routing-trust-and-dns", "groupName": "Routing Trust and DNS", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p2", "name": "Registry Resource Lifecycle", "icon": "", "type": "B2B", "whyUsed": "Publishes registry objects, route objects, contacts, and lookup state through Whois, REST, and RDAP."}, {"id": "p5", "name": "Internet Measurement and Public Data Services", "icon": "", "type": "public-interest-platform", "whyUsed": "Provides authoritative registry object context used by public analysis and automation."}];
     const supportedJobs = [{"customerId": "cg1-p1", "customerName": "Local Internet Registry Operator", "customerGroup": "RIPE NCC Registry and Routing Trust Customers", "customerIcon": "network.png", "productId": "p2", "productName": "Registry Resource Lifecycle", "productIcon": "", "jobId": "jtbd-cg1-1", "jobName": "Operate my LIR account and registry resources confidently", "jobWhatItIs": "Manage member account state, contacts, billing, resource requests, assignments, reverse DNS, and registry corrections from one trusted operational path.", "jobOutcome": "The organization can use and maintain Internet number resources without avoidable support escalation or registry-quality drift.", "supportRationale": "Publishes the resulting registry objects through Whois, REST, and RDAP lookup paths.", "usedInSteps": [{"step": "Complete the registry workflow", "description": "Submit the request, provide documentation, track status, and respond to RIPE NCC actions.", "howItSupports": "Publishes the resulting registry objects through Whois, REST, and RDAP lookup paths.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-2.jpg", "title": "Local Internet Registry Operator JTBD step 2: Complete the registry workflow", "alt": "Enterprise infographic for step 2 of the job \"Operate my LIR account and registry resources confidently\": Complete the registry workflow."}]}, {"step": "Keep records accurate", "description": "Maintain contacts, abuse data, reverse DNS, and registry quality after the resource is active.", "howItSupports": "Makes resource, contact, route, and delegation state visible to operators and public lookup consumers.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-3.jpg", "title": "Local Internet Registry Operator JTBD step 3: Keep records accurate", "alt": "Enterprise infographic for step 3 of the job \"Operate my LIR account and registry resources confidently\": Keep records accurate."}]}]}, {"customerId": "cg2-p1", "customerName": "Routing Security and Peering Engineer", "customerGroup": "RIPE NCC Registry and Routing Trust Customers", "customerIcon": "shield.png", "productId": "p5", "productName": "Internet Measurement and Public Data Services", "productIcon": "", "jobId": "jtbd-cg2-1", "jobName": "Protect route announcements with RPKI", "jobWhatItIs": "Certify resources, create accurate ROAs, monitor origin validation, and keep routing policy aligned with network changes.", "jobOutcome": "Customer prefixes remain reachable, valid, and trusted by peers and transit providers.", "supportRationale": "Provides route and route6 object context used alongside RPKI when aligning routing policy.", "usedInSteps": [{"step": "Authorize origins", "description": "Create ROAs that match production routing and peer expectations.", "howItSupports": "Provides route and route6 object context used alongside RPKI when aligning routing policy.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-2.jpg", "title": "Routing Security and Peering Engineer JTBD step 2: Authorize origins", "alt": "Enterprise infographic for step 2 of the job \"Protect route announcements with RPKI\": Authorize origins."}]}]}, {"customerId": "cg2-p1", "customerName": "Routing Security and Peering Engineer", "customerGroup": "RIPE NCC Registry and Routing Trust Customers", "customerIcon": "shield.png", "productId": "p5", "productName": "Internet Measurement and Public Data Services", "productIcon": "", "jobId": "jtbd-cg2-2", "jobName": "Diagnose routing and reachability incidents", "jobWhatItIs": "Use BGP, measurement, DNS, and registry evidence to understand whether a routing issue is local, regional, or global.", "jobOutcome": "Routing incidents are resolved faster with stronger evidence and less guessing.", "supportRationale": "Adds authoritative registry, contact, and routing registry object context.", "usedInSteps": [{"step": "Gather control-plane evidence", "description": "Inspect route collectors, origins, AS paths, and timing around the incident.", "howItSupports": "Adds authoritative registry, contact, and routing registry object context.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-2-1.jpg", "title": "Routing Security and Peering Engineer JTBD step 1: Gather control-plane evidence", "alt": "Enterprise infographic for step 1 of the job \"Diagnose routing and reachability incidents\": Gather control-plane evidence."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

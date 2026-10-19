@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "glco", "name": "General Ledger and Central Finance Hub", "type": "service", "status": "invest", "description": "The global SAP S/4HANA general ledger, fed through Central Finance from brand and legacy source systems. Booking.com's Financial Systems team has run SAP on HANA, moved to Simple Finance in 2016 and started its S/4HANA journey with Central Finance in 2019 (job postings). This brick is the single book of record for every legal entity: universal journal, ledger approach for US GAAP and local GAAP, period control and the document flow from subledgers into the ledger. Whether the target runtime is SAP RISE is an assumption from a third-party job listing.", "links": [], "layers": [{"layer": "ui", "description": "Operator and finance-user screens.", "modules": [{"id": "module-glco-ui", "name": "Ledger Workspace", "type": "web-component", "description": "Fiori-style journal entry, document display and period-status screens for accountants.", "dependencies": {"modules": [{"moduleId": "module-glco-api", "type": "uses", "description": "Reads and posts through the ledger API."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-glco-api", "name": "Ledger Posting and Query API", "type": "api", "description": "Governed API for journal postings, balances and document lookups used by subledgers, close tooling and data extraction.", "dependencies": {"modules": [{"moduleId": "module-glco-core", "type": "uses", "description": "Posts to and reads from the universal journal."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-glco-cfin-replication", "name": "Central Finance Replication Monitor", "type": "daemon", "description": "Watches SLT/AIF replication from source systems, surfaces failed postings and drives re-processing.", "dependencies": {"modules": [{"moduleId": "module-glco-cfin-adapter", "type": "uses", "description": "Retries failed replication documents."}, {"moduleId": "module-glco-core", "type": "uses", "description": "Confirms postings landed."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-glco-period-control", "name": "Period Open/Close Controller", "type": "service", "description": "Owns posting-period status per company code and ledger, enforcing the close calendar."}, {"id": "module-glco-core", "name": "Universal Journal Service", "type": "stateful-service", "description": "S/4HANA universal journal (ACDOCA) with parallel ledgers for US GAAP and local statutory reporting.", "dependencies": {"modules": [{"moduleId": "module-glco-period-control", "type": "uses", "description": "Rejects postings into closed periods."}]}}]}, {"layer": "integration", "description": "Adapters to SAP, providers, banks and authorities.", "modules": [{"id": "module-glco-cfin-adapter", "name": "Central Finance Source Adapter", "type": "integration", "description": "Mapping and replication adapter (SLT/AIF) that brings brand and legacy ERP postings into the central ledger with harmonised master data."}]}], "dataDependencies": [{"assetId": "general-ledger-journal", "moduleIds": ["module-glco-core", "module-glco-api", "module-glco-cfin-replication"], "role": "own", "description": "System of record for all journal entries across entities and ledgers."}, {"assetId": "chart-of-accounts-and-financial-master-data", "moduleIds": ["module-glco-core", "module-glco-cfin-adapter"], "role": "read", "description": "Maps and validates account, cost centre and profit centre assignments."}], "brickDependencies": [{"targetBrickId": "coam", "moduleId": "module-coam-api", "sourceModuleId": "module-glco-core", "type": "context", "description": "Validates every posting against the harmonised chart of accounts, cost objects and company codes."}, {"targetBrickId": "entm", "moduleId": "module-entm-api", "sourceModuleId": "module-glco-core", "type": "composition", "description": "Uses legal-entity, intercompany partner and FX rate data for multi-currency postings."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-glco-cfin-replication", "type": "data", "description": "Receives summarised FI-CA subledger postings for transaction-level revenue and liabilities."}, {"targetBrickId": "sodc", "moduleId": "module-sodc-api", "sourceModuleId": "module-glco-api", "type": "control", "description": "Posting and period-change authorisations are governed by access and SoD rules."}], "externalSystemsThisBrickDependsOn": [{"system": "SAP S/4HANA (Central Finance)", "type": "platform", "interface": "S/4HANA universal journal and SLT/AIF", "description": "Vendor platform that runs the ledger; runtime (RISE private cloud) assumed.", "sourceModuleId": "module-glco-core"}, {"system": "Brand and legacy ERP source systems", "type": "data", "interface": "Central Finance replication", "description": "Brand finance systems not yet converged replicate postings into the central ledger.", "sourceModuleId": "module-glco-cfin-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "External auditor (Deloitte & Touche)", "type": "consumer", "interface": "Ledger extracts", "description": "Journal and balance data for the annual ICFR attestation and financial-statement audit.", "moduleId": "module-glco-api"}], "domain": "Global Finance Core", "group": "Ledger and Accounting Core"};
-    const relatedTeams = [{"teamId": "ledg", "teamName": "Ledger Core", "teamType": "platform", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}, {"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "fcore", "name": "Global Finance Core", "icon": "fcore.png", "type": "Internal finance platform", "whyUsed": "General Ledger and Central Finance Hub as part of Global Finance Core."}];
     const supportedJobs = [{"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "fldr-steer", "jobName": "Steer the company on one trusted global financial view", "jobWhatItIs": "Run monthly performance reviews, quarterly guidance and capital allocation from consolidated, brand-comparable numbers.", "jobOutcome": "Leadership decides on the same numbers the auditors and investors will see, without reconciling spreadsheets.", "supportRationale": "Orchestrated close across entities with reconciled subledgers.", "usedInSteps": [{"step": "Close and consolidate the period", "description": "Get every brand and entity closed and consolidated on schedule.", "howItSupports": "Orchestrated close across entities with reconciled subledgers.", "media": []}]}, {"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "fldr-transform", "jobName": "Deliver Transformation Program savings without raising control risk", "jobWhatItIs": "Turn the program's modernization of processes and systems and procurement optimization into retired systems, less manual effort and lower spend.", "jobOutcome": "Committed run-rate savings land on time and the ICFR conclusion stays effective.", "supportRationale": "Standard adapters shorten each brand migration.", "usedInSteps": [{"step": "Move brands onto shared platforms", "description": "Retire brand-specific ledgers and integrations in favour of the global core.", "howItSupports": "Standard adapters shorten each brand migration.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "ctrl-close", "jobName": "Close the books fast and clean every month and quarter", "jobWhatItIs": "Complete entity closes, reconciliations, consolidation and reporting within the calendar.", "jobOutcome": "Consolidated results are final on schedule with reconciled balances and no late audit adjustments.", "supportRationale": "Close orchestration with task dependencies and status.", "usedInSteps": [{"step": "Run the close calendar", "description": "Sequence tasks across entities and teams and track completion.", "howItSupports": "Close orchestration with task dependencies and status.", "media": []}, {"step": "Reconcile balance sheet accounts", "description": "Match subledgers, banks and intercompany and resolve exceptions.", "howItSupports": "Automated matching and exception queues.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "fcore", "productName": "Global Finance Core", "productIcon": "fcore.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Normalised financial events into the subledger.", "usedInSteps": [{"step": "Capture booking financial events", "description": "Receive complete booking, payment and cancellation events from every brand.", "howItSupports": "Normalised financial events into the subledger.", "media": []}, {"step": "Apply recognition rules", "description": "Determine gross or net, timing and deferral for each booking type.", "howItSupports": "Revenue recognition engine posts schedules.", "media": []}, {"step": "Account for agency commission", "description": "Recognise commission and receivables from partner invoices.", "howItSupports": "Commission invoices post to receivables and revenue.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

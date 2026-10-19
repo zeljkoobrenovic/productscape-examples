@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "cbkf", "name": "Refund, Chargeback and Dispute Accounting", "type": "full-stack", "status": "sustaining", "description": "Accounts for refunds, card-scheme chargebacks, APM disputes and representment outcomes, including recovery from partners where contracts allow. Ensures each dispute stage posts correctly to the subledger and revenue, and that losses are provisioned.", "links": [], "layers": [{"layer": "ui", "description": "Operator and finance-user screens.", "modules": [{"id": "module-cbkf-ui", "name": "Dispute Accounting Console", "type": "web-component", "description": "Case view with financial impact, liability owner and posting status.", "dependencies": {"modules": [{"moduleId": "module-cbkf-api", "type": "uses", "description": "Reads and updates cases."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-cbkf-api", "name": "Dispute Accounting API", "type": "api", "description": "Creates and updates refund and chargeback cases and their accounting status.", "dependencies": {"modules": [{"moduleId": "module-cbkf-core", "type": "uses", "description": "Reads and writes cases."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-cbkf-event-consumer", "name": "Dispute Event Consumer", "type": "message-consumer", "description": "Consumes scheme chargeback notifications and refund events.", "dependencies": {"modules": [{"moduleId": "module-cbkf-core", "type": "uses", "description": "Opens or updates cases."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-cbkf-core", "name": "Dispute Case Ledger", "type": "stateful-service", "description": "Refund and chargeback cases with stages, amounts, liability and recovery."}]}], "dataDependencies": [{"assetId": "chargeback-and-refund-case", "moduleIds": ["module-cbkf-core", "module-cbkf-api", "module-cbkf-event-consumer"], "role": "own", "description": "System of record for refund and dispute accounting cases."}, {"assetId": "payment-transaction-and-settlement-record", "moduleIds": ["module-cbkf-event-consumer"], "role": "read", "description": "Original payment details."}], "brickDependencies": [{"targetBrickId": "pevt", "moduleId": "module-pevt-api", "sourceModuleId": "module-cbkf-event-consumer", "type": "data", "description": "Receives refund and chargeback payment events."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-cbkf-core", "type": "data", "description": "Posts dispute stages to the subledger."}, {"targetBrickId": "rrec", "moduleId": "module-rrec-api", "sourceModuleId": "module-cbkf-core", "type": "context", "description": "Adjusts recognised revenue for refunds and lost disputes."}], "externalSystemsThisBrickDependsOn": [{"system": "Card schemes and PSP dispute services", "type": "data", "interface": "Chargeback notifications", "description": "Scheme and PSP chargeback and representment data.", "sourceModuleId": "module-cbkf-event-consumer"}], "externalSystemsDependingOnThisBrick": [], "domain": "Money Movement and Settlement", "group": "Payments-to-Ledger"};
-    const relatedTeams = [{"teamId": "p2lg", "teamName": "Payments-to-Ledger", "teamType": "stream-aligned", "groupId": "mmov", "groupName": "Money Movement Finance", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p2led", "name": "Payments-to-Ledger Service", "icon": "p2led.png", "type": "Internal finance service", "whyUsed": "Refund, Chargeback and Dispute Accounting as part of Payments-to-Ledger Service."}];
     const supportedJobs = [{"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "p2led", "productName": "Payments-to-Ledger Service", "productIcon": "p2led.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Dispute accounting links each case to the original payment and reverses revenue correctly.", "usedInSteps": [{"step": "Account for refunds and chargebacks", "description": "Post refunds, chargebacks and dispute outcomes against the original booking.", "howItSupports": "Dispute accounting links each case to the original payment and reverses revenue correctly.", "media": []}, {"step": "Clear breaks and report", "description": "Resolve or write off breaks and report status for the close.", "howItSupports": "Break ageing and write-off reporting feed the close and controls.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "p2led", "productName": "Payments-to-Ledger Service", "productIcon": "p2led.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Refund and dispute postings linked to the original booking.", "usedInSteps": [{"step": "Account for refunds and chargebacks", "description": "Reverse or adjust revenue and liabilities after cancellations and disputes.", "howItSupports": "Refund and dispute postings linked to the original booking.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

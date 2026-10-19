@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "time", "name": "Time Registration and Timesheet Automation", "type": "full-stack", "status": "sustaining", "description": "Captures worked hours from terminals, geofenced app clock-in, client portals and paper timesheets (zvoove Timesheet Automation reads handwritten and scanned sheets), applies rounding and surcharge classification and routes hours for client approval before payroll and billing.", "links": [], "layers": [{"layer": "ui", "description": "Hours review.", "modules": [{"id": "module-hours-review", "name": "Hours Review Grid", "type": "web-component", "description": "Back-office grid of hours per worker and week with anomalies highlighted.", "dependencies": {"modules": [{"moduleId": "module-time-api", "type": "uses", "description": "Reads hours."}]}}]}, {"layer": "interfaces", "description": "Time API.", "modules": [{"id": "module-time-api", "name": "Time Record API", "type": "api", "description": "Clock events, timesheet lines, approvals and corrections."}]}, {"layer": "worker", "description": "Capture pipelines.", "modules": [{"id": "module-timesheet-ocr", "name": "Timesheet OCR Consumer", "type": "message-consumer", "description": "Extracts lines from scanned or photographed timesheets.", "dependencies": {"modules": [{"moduleId": "module-llm-gateway", "type": "uses", "description": "Vision extraction.", "targetBrickId": "aipl"}]}}, {"id": "module-approval-router", "name": "Approval Router", "type": "message-consumer", "description": "Sends hours to the client approver and escalates overdue approvals."}]}, {"layer": "service", "description": "Time store.", "modules": [{"id": "module-time-service", "name": "Time Record Service", "type": "stateful-service", "description": "Clock events, classified hours, approvals and audit trail."}]}, {"layer": "integration", "description": "Hardware terminals.", "modules": [{"id": "module-terminal-connector", "name": "Time Terminal Connector", "type": "integration", "description": "Imports punches from clocking terminals at client sites."}]}], "dataDependencies": [{"assetId": "time-record", "moduleIds": ["module-time-service", "module-time-api"], "role": "own", "description": "System of record for worked hours."}, {"assetId": "shift-schedule", "moduleIds": ["module-time-service"], "role": "read", "description": "Planned shifts."}], "brickDependencies": [{"targetBrickId": "schd", "moduleId": "module-schedule-api", "sourceModuleId": "module-time-service", "type": "context", "description": "Planned vs actual comparison."}, {"targetBrickId": "comp", "moduleId": "module-rules-api", "sourceModuleId": "module-time-service", "type": "uses", "description": "Classifies night, Sunday, holiday and overtime surcharges."}, {"targetBrickId": "clpt", "moduleId": "module-client-portal-bff", "sourceModuleId": "module-approval-router", "type": "uses", "description": "Client approves hours in the portal."}], "externalSystemsThisBrickDependsOn": [{"system": "Clocking terminal vendors", "type": "device", "interface": "Terminal export", "description": "Punch data.", "sourceModuleId": "module-terminal-connector"}], "externalSystemsDependingOnThisBrick": [], "domain": "Placement and Workforce Operations", "group": "Scheduling and Time"};
-    const relatedTeams = [{"teamId": "workforce-scheduling", "teamName": "Workforce Scheduling and Time", "teamType": "stream-aligned", "groupId": "workforce-operations", "groupName": "Workforce Operations", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "zvoove-one", "name": "zvoove One", "icon": "product.png", "type": "B2B Vertical ERP SaaS", "whyUsed": "Hours and Timesheet Automation."}, {"id": "planbition", "name": "Planbition", "icon": "product.png", "type": "B2B Workforce Management SaaS", "whyUsed": "Time registration."}, {"id": "helloflex", "name": "HelloFlex", "icon": "product.png", "type": "B2B Vertical ERP SaaS", "whyUsed": "Uren."}, {"id": "mywage", "name": "mywage", "icon": "product.png", "type": "B2B Staffing Platform on Salesforce", "whyUsed": "Timesheets."}];
     const supportedJobs = [{"customerId": "disp", "customerName": "Recruiter-Dispatcher", "customerGroup": "Agency Front Office", "customerIcon": "customer-disp-portrait.jpg", "productId": "zvoove-one", "productName": "zvoove One", "productIcon": "product.png", "jobId": "disp-sell", "jobName": "Keep clients ordering from me", "jobWhatItIs": "Stay the first agency a client calls.", "jobOutcome": "Repeat orders and new positions from existing clients.", "supportRationale": "Client portal approval.", "usedInSteps": [{"step": "Keep the client informed", "description": "Hours, assignments and issues visible to the client.", "howItSupports": "Client portal approval.", "media": [{"type": "image", "src": "media/jbtd-disp-disp-sell-2.png", "title": "Recruiter-Dispatcher JTBD step 2: Keep the client informed", "alt": "Enterprise infographic for step 2 of the job \"Keep clients ordering from me\": Keep the client informed."}]}]}, {"customerId": "payr", "customerName": "Payroll and Billing Specialist", "customerGroup": "Agency Back Office", "customerIcon": "customer-payr-portrait.jpg", "productId": "zvoove-one", "productName": "zvoove One", "productIcon": "product.png", "jobId": "payr-pay", "jobName": "Pay every worker correctly and on time", "jobWhatItIs": "Run gross-to-net for a period with all tariff, surcharge and equal-pay rules.", "jobOutcome": "Payroll released before the payment date with minimal corrections.", "supportRationale": "Approvals before cut-off.", "usedInSteps": [{"step": "Collect approved hours", "description": "Chase missing approvals.", "howItSupports": "Approvals before cut-off.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-1.png", "title": "Payroll and Billing Specialist JTBD step 1: Collect approved hours", "alt": "Enterprise infographic for step 1 of the job \"Pay every worker correctly and on time\": Collect approved hours."}]}, {"step": "Run and check payroll", "description": "Calculate, check and release.", "howItSupports": "Engine with pre-checks.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-2.png", "title": "Payroll and Billing Specialist JTBD step 2: Run and check payroll", "alt": "Enterprise infographic for step 2 of the job \"Pay every worker correctly and on time\": Run and check payroll."}]}]}, {"customerId": "plan", "customerName": "Onsite Workforce Planner", "customerGroup": "Agency Front Office", "customerIcon": "customer-plan-portrait.jpg", "productId": "planbition", "productName": "Planbition", "productIcon": "product.png", "jobId": "plan-roster", "jobName": "Staff every shift with qualified workers at the lowest total cost", "jobWhatItIs": "Match fluctuating client demand with available, qualified workers.", "jobOutcome": "Shift fill rate above target without overtime peaks.", "supportRationale": "Planned versus actual.", "usedInSteps": [{"step": "Close the week", "description": "Reconcile clock-in data with the plan.", "howItSupports": "Planned versus actual.", "media": [{"type": "image", "src": "media/jbtd-plan-plan-roster-3.png", "title": "Onsite Workforce Planner JTBD step 3: Close the week", "alt": "Enterprise infographic for step 3 of the job \"Staff every shift with qualified workers at the lowest total cost\": Close the week."}]}]}, {"customerId": "temp", "customerName": "Temporary Worker", "customerGroup": "Temporary Workers", "customerIcon": "customer-temp-portrait.jpg", "productId": "planbition", "productName": "Planbition", "productIcon": "product.png", "jobId": "temp-work", "jobName": "Start working quickly and get paid correctly", "jobWhatItIs": "Go from application to paid work with minimum hassle.", "jobOutcome": "Starts within days and every payslip matches the hours worked.", "supportRationale": "App clock-in.", "usedInSteps": [{"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "App clock-in.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}, {"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "Payslips.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}]}, {"customerId": "payr", "customerName": "Payroll and Billing Specialist", "customerGroup": "Agency Back Office", "customerIcon": "customer-payr-portrait.jpg", "productId": "helloflex", "productName": "HelloFlex", "productIcon": "product.png", "jobId": "payr-pay", "jobName": "Pay every worker correctly and on time", "jobWhatItIs": "Run gross-to-net for a period with all tariff, surcharge and equal-pay rules.", "jobOutcome": "Payroll released before the payment date with minimal corrections.", "supportRationale": "Approvals before cut-off.", "usedInSteps": [{"step": "Collect approved hours", "description": "Chase missing approvals.", "howItSupports": "Approvals before cut-off.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-1.png", "title": "Payroll and Billing Specialist JTBD step 1: Collect approved hours", "alt": "Enterprise infographic for step 1 of the job \"Pay every worker correctly and on time\": Collect approved hours."}]}, {"step": "Run and check payroll", "description": "Calculate, check and release.", "howItSupports": "Engine with pre-checks.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-2.png", "title": "Payroll and Billing Specialist JTBD step 2: Run and check payroll", "alt": "Enterprise infographic for step 2 of the job \"Pay every worker correctly and on time\": Run and check payroll."}]}]}, {"customerId": "temp", "customerName": "Temporary Worker", "customerGroup": "Temporary Workers", "customerIcon": "customer-temp-portrait.jpg", "productId": "helloflex", "productName": "HelloFlex", "productIcon": "product.png", "jobId": "temp-work", "jobName": "Start working quickly and get paid correctly", "jobWhatItIs": "Go from application to paid work with minimum hassle.", "jobOutcome": "Starts within days and every payslip matches the hours worked.", "supportRationale": "App clock-in.", "usedInSteps": [{"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "App clock-in.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}, {"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "Payslips.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}]}, {"customerId": "payr", "customerName": "Payroll and Billing Specialist", "customerGroup": "Agency Back Office", "customerIcon": "customer-payr-portrait.jpg", "productId": "mywage", "productName": "mywage", "productIcon": "product.png", "jobId": "payr-pay", "jobName": "Pay every worker correctly and on time", "jobWhatItIs": "Run gross-to-net for a period with all tariff, surcharge and equal-pay rules.", "jobOutcome": "Payroll released before the payment date with minimal corrections.", "supportRationale": "Approvals before cut-off.", "usedInSteps": [{"step": "Collect approved hours", "description": "Chase missing approvals.", "howItSupports": "Approvals before cut-off.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-1.png", "title": "Payroll and Billing Specialist JTBD step 1: Collect approved hours", "alt": "Enterprise infographic for step 1 of the job \"Pay every worker correctly and on time\": Collect approved hours."}]}, {"step": "Run and check payroll", "description": "Calculate, check and release.", "howItSupports": "Engine with pre-checks.", "media": [{"type": "image", "src": "media/jbtd-payr-payr-pay-2.png", "title": "Payroll and Billing Specialist JTBD step 2: Run and check payroll", "alt": "Enterprise infographic for step 2 of the job \"Pay every worker correctly and on time\": Run and check payroll."}]}]}, {"customerId": "temp", "customerName": "Temporary Worker", "customerGroup": "Temporary Workers", "customerIcon": "customer-temp-portrait.jpg", "productId": "mywage", "productName": "mywage", "productIcon": "product.png", "jobId": "temp-work", "jobName": "Start working quickly and get paid correctly", "jobWhatItIs": "Go from application to paid work with minimum hassle.", "jobOutcome": "Starts within days and every payslip matches the hours worked.", "supportRationale": "App clock-in.", "usedInSteps": [{"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "App clock-in.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}, {"step": "Record hours and check pay", "description": "Clock in and see payslips.", "howItSupports": "Payslips.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-work-3.png", "title": "Temporary Worker JTBD step 3: Record hours and check pay", "alt": "Enterprise infographic for step 3 of the job \"Start working quickly and get paid correctly\": Record hours and check pay."}]}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

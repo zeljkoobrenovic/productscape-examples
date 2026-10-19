@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "swch", "name": "Switch Service and Historical Data Import", "type": "full-stack", "status": "sustaining", "description": "Makes switching from a previous bookkeeper or software painless: collect digital copies of the last returns, annual accounts and personal data, import opening balances and fixed assets into the ledger, reconstruct the running year's bookings where needed and file the historical documents in the archive, so that VAT and income tax history continue without gaps. Client success runs it; the bookkeeper verifies the imported starting position.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-swch-web", "name": "Switch Checklist and Upload", "type": "web-component", "description": "Client checklist of documents to collect from the previous bookkeeper with upload, status per document and an explanation of why each is needed; executive view of the import result.", "dependencies": {"modules": [{"moduleId": "module-swch-api", "type": "uses", "description": "Checklist uploads documents and tracks status through the Switch API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-swch-api", "name": "Switch API", "type": "api", "description": "API for switch cases, document checklists, import jobs and verification status per client; used by onboarding, the bookkeeper workspace and the document archive.", "dependencies": {"modules": [{"moduleId": "module-swch-store", "type": "delegates", "description": "Interface delegates case and import persistence to the switch store."}, {"moduleId": "module-swch-import-queue", "type": "uses", "description": "Interface enqueues import jobs."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-swch-import-queue", "name": "Import Job Queue", "type": "message-queue", "description": "Queue of historical data import jobs per client with the uploaded documents and extracted figures.", "dependencies": {"modules": [{"moduleId": "module-swch-store", "type": "processes", "description": "Queue entries reference import jobs in the switch store."}]}}, {"id": "module-swch-import-worker", "name": "Historical Import Worker", "type": "message-consumer", "description": "Consumes import jobs, maps prior-year figures to opening balances and fixed assets, posts them to the ledger, archives the documents and raises a verification task for the bookkeeper.", "dependencies": {"modules": [{"moduleId": "module-swch-import-queue", "type": "uses", "description": "Worker consumes import jobs."}, {"moduleId": "module-swch-mapper", "type": "uses", "description": "Worker maps historical figures through the mapper."}, {"moduleId": "module-swch-store", "type": "processes", "description": "Worker stores import results and verification status."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-swch-mapper", "name": "Opening Balance Mapper", "type": "stateless-service", "description": "Maps balance sheet items, fixed assets and depreciation, VAT positions and partner capital from previous annual accounts and returns to the Kees chart of accounts.", "dependencies": {"modules": [{"moduleId": "module-swch-store", "type": "uses", "description": "Mapper reads extracted figures and mapping decisions."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-swch-store", "name": "Historical Import Store", "type": "stateful-service", "description": "Owns switch cases, document checklists, extracted figures, mapping decisions, import results and verification status."}]}], "dataDependencies": [{"assetId": "historical-return-import", "moduleIds": ["module-swch-store", "module-swch-import-worker", "module-swch-api"], "role": "own", "description": "System of record for the Historical Return Import asset: documents, figures, mappings and results."}, {"assetId": "onboarding-case", "moduleIds": ["module-swch-store"], "role": "read-write", "description": "Reads the switch request from the onboarding case and updates its switch step."}], "brickDependencies": [{"targetBrickId": "onbd", "moduleId": "module-onbd-api", "sourceModuleId": "module-swch-store", "type": "workflow", "description": "Reads the onboarding case that requested a switch and reports completion."}, {"targetBrickId": "ledg", "moduleId": "module-ledg-api", "sourceModuleId": "module-swch-import-worker", "type": "data", "description": "Posts opening balances and fixed assets into the client's ledger."}, {"targetBrickId": "docs", "moduleId": "module-docs-api", "sourceModuleId": "module-swch-import-worker", "type": "documents", "description": "Archives the previous returns and annual accounts in the client's document archive."}, {"targetBrickId": "bkws", "moduleId": "module-bkws-api", "sourceModuleId": "module-swch-import-worker", "type": "workflow", "description": "Raises a verification task for the assigned bookkeeper."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-swch-api", "type": "identity", "description": "Resolves the signed-in client, partner or Kees staff member, the client accounts they may access and their role (client, partner, bookkeeper, backup bookkeeper, client success, QA) before serving any request."}, {"targetBrickId": "audt", "moduleId": "module-audt-ingest-queue", "sourceModuleId": "module-swch-store", "type": "audit", "description": "Publishes switch case and historical import events to the audit trail queue so every change is time-stamped, attributable to a person and retained under the AVG and fiscal retention rules."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Growth and Client Lifecycle", "group": "Acquisition and Onboarding"};
-    const relatedTeams = [{"teamId": "client-success-and-onboarding", "teamName": "Client Success and Onboarding", "teamType": "stream-aligned", "groupId": "gwcs", "groupName": "Growth and Client Success", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "kees-personal-bookkeeper-eenmanszaak", "name": "Kees de Boekhouder for Sole Proprietors", "icon": "kees-personal-bookkeeper-eenmanszaak.png", "type": "Bookkeeping Subscription (Personal Bookkeeper + App)", "whyUsed": "The switch from a previous bookkeeper without gaps in the sole proprietor's filing history."}, {"id": "founders-bv-package", "name": "Founders for Holding BV and Werkmaatschappij", "icon": "founders-bv-package.png", "type": "Bookkeeping Subscription (Company, via Founders)", "whyUsed": "Imports the BV's previous annual accounts and opening balances into Founders."}, {"id": "onboarding-and-switch-service", "name": "Free Intro Call, Onboarding and Switch Service", "icon": "onboarding-and-switch-service.png", "type": "Client Lifecycle Service", "whyUsed": "Collects digital copies of earlier VAT and income tax returns and imports history so nothing falls between bookkeepers."}];
     const supportedJobs = [{"customerId": "bvdg", "customerName": "BV Director-Major Shareholder (DGA)", "customerGroup": "Partnerships and Companies", "customerIcon": "customer-bvdg-portrait.jpg", "productId": "founders-bv-package", "productName": "Founders for Holding BV and Werkmaatschappij", "productIcon": "founders-bv-package.png", "jobId": "jtbd-bvdg-3", "jobName": "Move from sole proprietorship to BV without losing my bookkeeper", "jobWhatItIs": "Convert a successful eenmanszaak or VOF into a BV structure (usually a holding plus a werkmaatschappij) at the right moment, for the right reasons (profit level, liability, pension, selling the business one day), and carry the administration, the bank connection, the invoicing and the personal relationship with the bookkeeper across from Kees de Boekhouder to its sister company Founders without a gap in filings. The job is to grow into a company without starting over with an unknown accountant.", "jobOutcome": "The decision to incorporate is taken on a clear comparison of tax, cost and risk, the sole proprietorship's last year is closed and its final income tax return filed by the same organisation, the BVs are set up in Founders with the history and bank connections in place on day one, and the first DGA payroll and the first corporate year run without a missed filing.", "supportRationale": "Imports the previous returns and opening balances so the BV starts with a complete history instead of an empty ledger.", "usedInSteps": [{"step": "Set up the BV administration with Founders", "description": "After incorporation at the notary and registration at the KVK, open the Founders client accounts for the holding and the operating company, connect their bank accounts, load the opening balances and switch the subscription from the eenmanszaak plan to the BV plans without a second onboarding.", "howItSupports": "Imports the previous returns and opening balances so the BV starts with a complete history instead of an empty ledger.", "media": []}]}, {"customerId": "csux", "customerName": "Client Success and Sales Executive", "customerGroup": "Kees Service Teams", "customerIcon": "customer-csux-portrait.jpg", "productId": "onboarding-and-switch-service", "productName": "Free Intro Call, Onboarding and Switch Service", "productIcon": "onboarding-and-switch-service.png", "jobId": "jtbd-csux-2", "jobName": "Switch clients from a previous bookkeeper without gaps", "jobWhatItIs": "Bring an entrepreneur who is leaving another bookkeeper or a software package onto Kees without a gap in the VAT or income tax history: time the switch, collect the digital copies of previous returns and the personal data, reconstruct the running year and opening balances in the client's administration, hand over to the personal bookkeeper with a complete checklist, and verify that the first Kees filing goes out on time.", "jobOutcome": "Every switched client has a continuous administration with opening balances and prior filings on file, the first VAT return under Kees is filed on time, nothing is filed twice or not at all, and the switch takes days of the client's attention rather than weeks.", "supportRationale": "Opens the switch case with the effective date, the last filing by the previous bookkeeper and the responsibilities per quarter.", "usedInSteps": [{"step": "Time the switch and set expectations", "description": "Agree with the entrepreneur when the switch takes effect, ideally at a quarter boundary, who files the last return with the previous bookkeeper, when the notice to the previous provider goes out, and that the first fiscal year at Kees runs to the end of the year, so the client knows what happens to the running quarter.", "howItSupports": "Opens the switch case with the effective date, the last filing by the previous bookkeeper and the responsibilities per quarter.", "media": []}, {"step": "Collect digital copies of old returns and personal data", "description": "Request the digital copies of the previous VAT returns, the last income tax return and annual accounts, the fixed-asset list and the client's personal data, and let the client upload them to the switch case; chase what is missing with a checklist rather than a sequence of e-mails.", "howItSupports": "Provides the document checklist, the upload of digital copies of old returns and personal data and the status of what is still missing.", "media": []}, {"step": "Reconstruct the running year and opening balances", "description": "Import the historical returns, book the opening balances and the bookings of the current year that the previous bookkeeper had processed, connect the bank so past transactions can be matched, and reconcile the VAT filed so far this year against the administration, so the first Kees return covers exactly the right period.", "howItSupports": "Imports the historical returns and opening balances into the client's administration and flags reconciliation differences.", "media": []}, {"step": "Verify the first filing and close the switch", "description": "Check before the first deadline that the quarter is reviewed and the VAT return filed under Kees, that nothing was filed twice by the previous bookkeeper, and that the client's dashboard shows the continued history; ask the client how the switch went and close the case.", "howItSupports": "Tracks the switch case to closure with the first Kees filing confirmed and the client's feedback recorded.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

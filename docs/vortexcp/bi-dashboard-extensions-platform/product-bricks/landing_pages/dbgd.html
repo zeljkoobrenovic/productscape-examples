@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "dbgd", "name": "DashboardGuide Onboarding Overlays", "type": "full-stack", "status": "sustaining", "description": "Guided tours and contextual help inside dashboards: creators author step-by-step overlays, tooltips and welcome panels that explain what a dashboard shows, how to filter it and where to click, so new users get productive without training sessions. DashboardGuide tracks who completed which guide, can gate first use behind a short tour and feeds completion events to DashboardUsage, which makes it the adoption lever for BI platform leads rolling out dashboards to thousands of viewers.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-dbgd-overlay", "name": "Guide Overlay", "type": "web-component", "description": "Runtime overlay that plays tours, tooltips and help panels on the dashboard, with progress and dismiss controls.", "dependencies": {"modules": [{"moduleId": "module-dbgd-bff", "type": "uses", "description": "Overlay loads guide content and records progress through the BFF."}]}}, {"id": "module-dbgd-editor", "name": "Guide Editor", "type": "web-component", "description": "Authoring UI where creators place steps on dashboard objects, write copy, add media and preview the guide.", "dependencies": {"modules": [{"moduleId": "module-dbgd-bff", "type": "uses", "description": "Editor saves guide content through the BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-dbgd-bff", "name": "DashboardGuide BFF", "type": "bff", "description": "Serves guide content, user progress and completion state to the overlay and editor.", "dependencies": {"modules": [{"moduleId": "module-dbgd-content", "type": "delegates", "description": "BFF delegates guide content persistence to the content store."}, {"moduleId": "module-dbgd-progress", "type": "uses", "description": "BFF records progress through the progress service."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-dbgd-content", "name": "Guide Content Store", "type": "stateful-service", "description": "Owns guides, steps, copy, media references and publish state per dashboard."}, {"id": "module-dbgd-progress", "name": "Guide Progress Service", "type": "service", "description": "Tracks which anonymous user token completed or skipped which guide and emits completion events."}]}], "dataDependencies": [{"assetId": "dashboard-guide-content", "moduleIds": ["module-dbgd-content", "module-dbgd-bff"], "role": "own", "description": "System of record for guide content and progress."}, {"assetId": "extension-configuration", "moduleIds": ["module-dbgd-bff", "module-dbgd-editor"], "role": "read-write", "description": "Stores which guides are attached to a dashboard and trigger rules."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-dbgd-overlay", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell and the dashboard object model to anchor steps."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-dbgd-overlay", "type": "data", "description": "Reads dashboard object positions and filter state to anchor and trigger steps through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "dbus", "moduleId": "module-dbus-api", "sourceModuleId": "module-dbgd-progress", "type": "data", "description": "Sends guide start and completion events to DashboardUsage analytics."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-dbgd-overlay", "type": "licensing", "description": "On every extension load checks the organisation's plan and records the anonymous unique user token that meters active users over a rolling 12 months."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Cloud, Tableau Server and Tableau Desktop", "type": "channel", "interface": "Tableau Extensions API", "description": "Hosts the overlay and editor in dashboards.", "sourceModuleId": "module-dbgd-overlay"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Products", "group": "Distribution and Adoption"};
-    const relatedTeams = [{"teamId": "distribution-and-adoption", "teamName": "Distribution and Adoption", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "dashboard-workflow-tools", "name": "Dashboard Workflow Tools", "icon": "dashboard-workflow-tools.png", "type": "B2B Platform Governance Tools", "whyUsed": "Onboarding overlays, tours and contextual help on any dashboard."}];
     const supportedJobs = [{"customerId": "bilr", "customerName": "BI Platform Lead", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-bilr-portrait.jpg", "productId": "dashboard-workflow-tools", "productName": "Dashboard Workflow Tools", "productIcon": "dashboard-workflow-tools.png", "jobId": "jtbd-bilr-1", "jobName": "Grow dashboard adoption across creators, explorers and viewers", "jobWhatItIs": "Run the analytics centre of excellence's adoption programme: understand why licensed users do not open dashboards or export everything to Excel, equip creators with a standard interactive toolkit (SuperTables, PowerKPIs, DashboardGuide, ShowMeMore), reach non-Tableau stakeholders through scheduled delivery, and manage adoption as a monthly metric per business unit rather than as anecdotes.", "jobOutcome": "Monthly active dashboard users grow across all three roles, Excel exports and shadow spreadsheets decline, and the platform lead can show the steering committee that the BI investment, including the extensions, is used by the people it was bought for.", "supportRationale": "Aggregates DashboardUsage events per dashboard, extension and business unit into an adoption baseline.", "usedInSteps": [{"step": "Baseline adoption and find where users drop to Excel", "description": "Combine Tableau Server or Cloud usage statistics with DashboardUsage events and creator interviews to see which dashboards are opened, where sessions end in an export, and which business units run their own spreadsheets next to the platform.", "howItSupports": "Aggregates DashboardUsage events per dashboard, extension and business unit into an adoption baseline.", "media": []}, {"step": "Review adoption monthly and act per business unit", "description": "Publish an adoption scorecard per business unit with active users, toolkit dashboards, export share and guided sessions, celebrate the units that grow, retire dead dashboards, and re-plan training and licences where adoption stalls.", "howItSupports": "Produces the monthly adoption scorecard from DashboardUsage across the estate.", "media": []}]}, {"customerId": "bilr", "customerName": "BI Platform Lead", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-bilr-portrait.jpg", "productId": "dashboard-workflow-tools", "productName": "Dashboard Workflow Tools", "productIcon": "dashboard-workflow-tools.png", "jobId": "jtbd-bilr-2", "jobName": "Govern which extensions run on the platform and under which licence", "jobWhatItIs": "Set and operate the extension policy for the Tableau or Power BI tenant: which extensions are permitted, whether they run SaaS-hosted by the vendor or self-hosted in the company network, how they are assessed by security, safelisted on Tableau Server or Cloud, versioned across workbooks and licensed under the right plan, so creators can use extensions without each one becoming a security exception.", "jobOutcome": "Every extension in production is on an approved list with a known version, URL, deployment model and licence, the security review is done once per vendor rather than per dashboard, and governance incidents such as unapproved extensions or broken URLs after upgrades approach zero.", "supportRationale": "Shows which workbooks and extensions are actually used so upgrade planning focuses on live dashboards.", "usedInSteps": [{"step": "Keep every workbook on the approved version and URL", "description": "Track which workbooks use which extension version, use TrexReplacer to switch extension URLs in bulk when a server moves or a version is retired, and plan extension upgrades together with Tableau Server upgrades so nothing breaks on reporting days.", "howItSupports": "Shows which workbooks and extensions are actually used so upgrade planning focuses on live dashboards.", "media": []}]}, {"customerId": "bilr", "customerName": "BI Platform Lead", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-bilr-portrait.jpg", "productId": "dashboard-workflow-tools", "productName": "Dashboard Workflow Tools", "productIcon": "dashboard-workflow-tools.png", "jobId": "jtbd-bilr-3", "jobName": "Justify and renew the extensions investment with usage evidence", "jobWhatItIs": "Each year, prove to the CFO, the steering committee and procurement that the extensions subscription pays for itself: track active users against the plan the way the vendor counts them, gather usage and outcome evidence from DashboardUsage, write-back cycles and report deliveries, negotiate the renewal with the customer success manager and, where useful, the consulting partner, and decide whether to renew, expand to Enterprise-only products or consolidate.", "jobOutcome": "Renewal is a planned decision backed by evidence rather than a surprise invoice, the plan matches real active users, and expansion into WriteBackExtreme, MailScheduler or a second BI platform happens because the numbers support it.", "supportRationale": "Provides adoption evidence per dashboard and extension for the business case.", "usedInSteps": [{"step": "Gather usage and outcome evidence", "description": "Pull DashboardUsage adoption per dashboard, the number of forecast cycles and records handled through write-back, and the reports delivered by MailScheduler, and pair them with business-unit statements about time saved and spreadsheets retired.", "howItSupports": "Provides adoption evidence per dashboard and extension for the business case.", "media": []}]}, {"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "dashboard-workflow-tools", "productName": "Dashboard Workflow Tools", "productIcon": "dashboard-workflow-tools.png", "jobId": "jtbd-dcre-1", "jobName": "Deliver an Excel-friendly interactive dashboard without building ten variants", "jobWhatItIs": "Take a business request such as 'a sales dashboard by region, product and month that people can slice as they like' and deliver one published dashboard on Tableau Cloud, Tableau Server or Power BI in which viewers can pivot, group, filter, drill, format, save their own view and export to Excel, using SuperTables, ShowMeMore, PowerKPIs, HierarchyFilter and DrillDownTree instead of building a separate worksheet for every column combination.", "jobOutcome": "The requesting team adopts one dashboard for their recurring questions, the creator's backlog of variant requests for that subject shrinks to near zero, and the dashboard stays maintainable because layout, formatting and drill paths are configuration in the workbook rather than duplicated worksheets.", "supportRationale": "Adds onboarding overlays that teach the interactive features so users self-serve instead of asking for changes.", "usedInSteps": [{"step": "Add charts, KPI tiles and guidance the platform lacks", "description": "Complement the grid with ShowMeMore chart types such as Sankey, bullet or radar, a PowerKPIs tile row as the entry point with sparklines and drill-through, PictureThis for product images, and a short DashboardGuide tour that explains how to pivot and export, so the first session does not end with a request for a new variant.", "howItSupports": "Adds onboarding overlays that teach the interactive features so users self-serve instead of asking for changes.", "media": []}, {"step": "Publish, verify with users and retire the variants", "description": "Publish to the production project on Tableau Server or Cloud, walk the requesting team through the dashboard, check that saved views and Excel export behave as expected for explorers and viewers, and then archive the older worksheet variants and the Excel workbook the team used to maintain.", "howItSupports": "Shows with DashboardUsage whether the new dashboard replaces the old variants before they are retired.", "media": []}]}, {"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "dashboard-workflow-tools", "productName": "Dashboard Workflow Tools", "productIcon": "dashboard-workflow-tools.png", "jobId": "jtbd-dcre-3", "jobName": "Guide users through a dashboard and prove it is used", "jobWhatItIs": "After publishing, make sure the intended audience finds, understands and returns to the dashboard: add DashboardGuide onboarding overlays, measure views, interactions and drop-off with DashboardUsage, deliver the same content to people who never open Tableau through MailScheduler, and report adoption back to the BI platform lead so the dashboard earns its place in the portfolio.", "jobOutcome": "New users complete their first session without asking the creator for help, usage data shows which dashboards and views are alive and which can be retired, and the creator can show the BI platform lead evidence of adoption instead of anecdotes.", "supportRationale": "Provides DashboardGuide steps, tooltips and first-visit rules stored with the workbook.", "usedInSteps": [{"step": "Add onboarding overlays to the published dashboard", "description": "Configure a DashboardGuide tour with step markers on the filters, the SuperTable pivot controls and the export button, add contextual help for KPI definitions, and set the tour to run on first visit and on demand thereafter.", "howItSupports": "Provides DashboardGuide steps, tooltips and first-visit rules stored with the workbook.", "media": []}, {"step": "Measure views, interactions and drop-off", "description": "Enable DashboardUsage on the dashboard to record opens, filters applied, tables pivoted, exports and time on view per anonymous user token, and review weekly which views are opened and which are ignored.", "howItSupports": "Collects and reports dashboard usage events per dashboard, view and user token.", "media": []}, {"step": "Report adoption and prune the portfolio", "description": "Combine DashboardUsage, MailScheduler delivery logs and active-user counts into a short adoption report for the BI platform lead, retire dashboards nobody opens, and use the evidence when the extensions subscription comes up for renewal.", "howItSupports": "Produces the per-dashboard adoption evidence that decides which dashboards stay and which are archived.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

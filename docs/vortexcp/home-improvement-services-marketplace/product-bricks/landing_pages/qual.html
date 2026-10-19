@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "qual", "name": "Request Qualification and Enrichment", "type": "service", "status": "invest", "description": "Validates intent, contactability, completeness, taxonomy, duplication, policy, and risk and supports human enrichment before a request enters matching.", "links": [], "layers": [{"layer": "interfaces", "description": "Qualification decision boundary.", "modules": [{"id": "module-qual-api", "name": "Request Qualification API", "type": "api", "description": "Submits requests for qualification and returns state, confidence, reasons, and required actions."}]}, {"layer": "worker", "description": "Automated and queued qualification.", "modules": [{"id": "module-qual-worker", "name": "Qualification Worker", "type": "message-consumer", "description": "Runs normalization, duplication, contactability, policy, and confidence checks."}]}, {"layer": "service", "description": "Decision evidence and enrichment workflow.", "modules": [{"id": "module-qual-service", "name": "Qualification Decision Service", "type": "stateful-service", "description": "Owns machine and human decisions, reason codes, evidence, corrections, overrides, and release status."}]}], "dataDependencies": [{"assetId": "qualification-decision", "moduleIds": ["module-qual-api", "module-qual-worker", "module-qual-service"], "role": "own", "description": "Owns qualification evidence, confidence, corrections, reasons, and release state."}, {"assetId": "project-request", "moduleIds": ["module-qual-worker", "module-qual-service"], "role": "read-write", "description": "Reads submitted intent and appends governed normalized or verified fields."}], "brickDependencies": [{"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-qual-worker", "type": "contactability", "description": "Uses verified contact and consent context."}, {"targetBrickId": "trst", "moduleId": "module-trst-api", "sourceModuleId": "module-qual-worker", "type": "risk", "description": "Uses duplicate, abuse, source, and identity risk signals."}, {"targetBrickId": "opsc", "moduleId": "module-opsc-api", "sourceModuleId": "module-qual-service", "type": "human-review", "description": "Routes low-confidence or high-impact cases to the operator console."}], "externalSystemsThisBrickDependsOn": [{"system": "Address, phone, email, and abuse-signal providers", "type": "verification", "interface": "Verification APIs", "description": "Supports contactability and anomaly checks without outsourcing the final marketplace decision.", "sourceModuleId": "module-qual-worker"}], "externalSystemsDependingOnThisBrick": [], "domain": "Marketplace Intelligence and Control", "group": "Qualification, matching, and economics"};
-    const relatedTeams = [{"teamId": "mqua", "teamName": "Marketplace Quality", "teamType": "stream-aligned", "groupId": "mccg", "groupName": "Marketplace Control", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "hcmp", "name": "Homeowner Project Marketplace", "icon": "product.png", "type": "B2C Marketplace", "whyUsed": "Improves the chance that a submitted request is actionable."}, {"id": "mqoc", "name": "Marketplace Quality and Operations Console", "icon": "product.png", "type": "Internal Operations Platform", "whyUsed": "Gives operators governed exception handling."}];
     const supportedJobs = [{"customerId": "hown", "customerName": "Renovating and Sustainability-Minded Homeowner", "customerGroup": "Homeowner Demand", "customerIcon": "customer-hown-portrait.jpg", "productId": "hcmp", "productName": "Homeowner Project Marketplace", "productIcon": "product.png", "jobId": "plan", "jobName": "Turn a home-improvement need into a feasible project brief", "jobWhatItIs": "Move from a vague repair, renovation, comfort, or sustainability goal to a request that suitable specialists can understand and respond to.", "jobOutcome": "A complete, contactable, and realistic project request without requiring the homeowner to become a construction expert.", "supportRationale": "Combines category guidance with progressive project intake and readiness checks.", "usedInSteps": [{"step": "Clarify the desired home outcome", "description": "Translate symptoms and aspirations into a category, property context, urgency, approximate scope, and decision criteria.", "howItSupports": "Combines category guidance with progressive project intake and readiness checks.", "media": []}, {"step": "Provide the evidence a specialist needs", "description": "Supply address, property characteristics, photos, dimensions, timing, and contact preferences while understanding how the information will be used.", "howItSupports": "Captures structured project, property, media, identity, and consent data.", "media": []}, {"step": "Provide the evidence a specialist needs", "description": "Supply address, property characteristics, photos, dimensions, timing, and contact preferences while understanding how the information will be used.", "howItSupports": "Detects missing or implausible information and prepares the request for matching.", "media": []}, {"step": "Confirm the request is ready to share", "description": "Review the summary, correct mistakes, understand the next steps, and submit only when the expected contact experience is clear.", "howItSupports": "Presents a final brief, consent choice, and clear fulfillment expectation before submission.", "media": []}]}, {"customerId": "mops", "customerName": "Marketplace Quality and Intake Operator", "customerGroup": "Marketplace Operations", "customerIcon": "customer-mops-portrait.jpg", "productId": "mqoc", "productName": "Marketplace Quality and Operations Console", "productIcon": "product.png", "jobId": "qual", "jobName": "Turn incomplete demand into a contactable, matchable request", "jobWhatItIs": "Assess intent, completeness, category, contactability, duplication, policy, and risk quickly enough to preserve homeowner interest.", "jobOutcome": "A qualified request with explicit evidence, confidence, routing constraints, and a defensible accept, enrich, hold, or reject decision.", "supportRationale": "Builds a risk- and value-aware qualification queue.", "usedInSteps": [{"step": "Triage incoming requests by confidence and urgency", "description": "Prioritize cases where delay harms value or automation has low confidence, using source, category, contact, duplicate, and anomaly signals.", "howItSupports": "Builds a risk- and value-aware qualification queue.", "media": []}, {"step": "Verify, correct, or collect missing context", "description": "Review evidence, contact the homeowner when necessary, normalize project and property data, and record what changed and why.", "howItSupports": "Combines operator tools, communication, rules, and audit history.", "media": []}, {"step": "Approve the match set and distribution treatment", "description": "Confirm eligible specialists, sharing limits, price or campaign treatment, and any manual exclusions before demand is released.", "howItSupports": "Explains ranking and allocation and records human overrides.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

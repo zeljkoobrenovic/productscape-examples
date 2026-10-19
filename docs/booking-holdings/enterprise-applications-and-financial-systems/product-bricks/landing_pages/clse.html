@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "clse", "name": "Close Orchestration and Account Reconciliation", "type": "full-stack", "status": "invest", "description": "Runs the month-end and quarter-end close calendar across all legal entities and brands: task lists with owners and deadlines, balance-sheet account reconciliations, subledger-to-GL tie-outs, journal-entry review and certification. Modeled on a close-management SaaS tenant such as BlackLine (assumed: named only in an unverified third-party job listing) integrated with the SAP general ledger.", "links": [], "layers": [{"layer": "ui", "description": "Finance workspace screens and embedded views.", "modules": [{"id": "module-clse-workspace", "name": "Close Workspace", "type": "web-component", "description": "Close calendar, task status, reconciliation queues and certification screens for accountants and controllers.", "dependencies": {"modules": [{"moduleId": "module-clse-api", "type": "uses", "description": "Reads and updates close tasks and reconciliations."}]}}]}, {"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-clse-api", "name": "Close and Reconciliation API", "type": "api", "description": "Exposes close status, reconciliation results and certifications to reporting, controls and data consumers.", "dependencies": {"modules": [{"moduleId": "module-clse-core", "type": "uses", "description": "Serves close state."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-clse-balance-loader", "name": "Balance and Subledger Loader", "type": "daemon", "description": "Scheduled loads of GL trial balances, FI-CA subledger totals, PSP settlement totals and bank balances per period.", "dependencies": {"modules": [{"moduleId": "module-clse-core", "type": "uses", "description": "Writes period balances."}, {"moduleId": "module-glco-api", "type": "uses", "description": "Reads trial balances.", "targetBrickId": "glco"}, {"moduleId": "module-brim-api", "type": "uses", "description": "Reads subledger totals.", "targetBrickId": "brim"}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-clse-auto-match", "name": "Auto-Match and Variance Engine", "type": "stateless-service", "description": "Applies matching rules and thresholds, proposes explanations and routes unexplained variances to owners.", "dependencies": {"modules": [{"moduleId": "module-clse-core", "type": "uses", "description": "Reads balances and writes match results."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-clse-core", "name": "Close Task and Reconciliation Store", "type": "stateful-service", "description": "Period-scoped record of close tasks, reconciliations, variances, preparer/reviewer sign-offs and attachments."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-clse-vendor-adapter", "name": "Close SaaS Adapter", "type": "integration", "description": "Connector to the close-management SaaS tenant and to SAP for journal posting of reconciling entries."}]}], "dataDependencies": [{"assetId": "account-reconciliation-and-close-task", "moduleIds": ["module-clse-core", "module-clse-api", "module-clse-auto-match"], "role": "own", "description": "System of record for close tasks and account reconciliations."}, {"assetId": "general-ledger-journal", "moduleIds": ["module-clse-balance-loader"], "role": "read", "description": "Reads balances and journal detail to reconcile."}, {"assetId": "reconciliation-match-result", "moduleIds": ["module-clse-auto-match"], "role": "read", "description": "Uses payment reconciliation results to support cash and clearing accounts."}], "brickDependencies": [{"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-clse-balance-loader", "type": "data", "description": "Pulls trial balances and posts reconciling journals."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-clse-balance-loader", "type": "data", "description": "Ties FI-CA subledger to the GL each period."}, {"targetBrickId": "psrc", "moduleId": "module-psrc-api", "sourceModuleId": "module-clse-auto-match", "type": "data", "description": "Uses PSP settlement reconciliation results as supporting evidence."}, {"targetBrickId": "ctlm", "moduleId": "module-ctlm-api", "sourceModuleId": "module-clse-api", "type": "control", "description": "Publishes reconciliation certifications as SOX control evidence."}], "externalSystemsThisBrickDependsOn": [{"system": "Close-management SaaS (e.g. BlackLine, assumed)", "type": "platform", "interface": "Vendor API and file import", "description": "Hosts reconciliation and task-management functionality.", "sourceModuleId": "module-clse-vendor-adapter"}, {"system": "SAP S/4HANA", "type": "system-of-record", "interface": "Journal posting interface", "description": "Reconciling entries are posted back to the ledger.", "sourceModuleId": "module-clse-vendor-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "External auditor (Deloitte & Touche)", "type": "consumer", "interface": "Read-only audit access", "description": "Reviews reconciliations and certifications during interim and year-end audit.", "moduleId": "module-clse-workspace"}], "domain": "Close, Reporting and Controls", "group": "Close and Consolidation"};
-    const relatedTeams = [{"teamId": "clsr", "teamName": "Close and Consolidation", "teamType": "stream-aligned", "groupId": "rtrc", "groupName": "Close, Reporting and Controls", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "r2rcl", "name": "Close, Consolidation and Reporting Workbench", "icon": "r2rcl.png", "type": "Enterprise application", "whyUsed": "Close Orchestration and Account Reconciliation as part of Close, Consolidation and Reporting Workbench."}];
     const supportedJobs = [{"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "r2rcl", "productName": "Close, Consolidation and Reporting Workbench", "productIcon": "r2rcl.png", "jobId": "ctrl-close", "jobName": "Close the books fast and clean every month and quarter", "jobWhatItIs": "Complete entity closes, reconciliations, consolidation and reporting within the calendar.", "jobOutcome": "Consolidated results are final on schedule with reconciled balances and no late audit adjustments.", "supportRationale": "Close orchestration with task dependencies and status.", "usedInSteps": [{"step": "Run the close calendar", "description": "Sequence tasks across entities and teams and track completion.", "howItSupports": "Close orchestration with task dependencies and status.", "media": []}, {"step": "Reconcile balance sheet accounts", "description": "Match subledgers, banks and intercompany and resolve exceptions.", "howItSupports": "Automated matching and exception queues.", "media": []}, {"step": "Consolidate and report", "description": "Eliminate intercompany, translate currencies and produce statements.", "howItSupports": "Consolidation and disclosure workflow for SEC filings.", "media": []}, {"step": "Provide evidence", "description": "Hand auditors complete, linked evidence for key controls.", "howItSupports": "Evidence linked to controls and journal entries.", "media": []}]}, {"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "r2rcl", "productName": "Close, Consolidation and Reporting Workbench", "productIcon": "r2rcl.png", "jobId": "fldr-steer", "jobName": "Steer the company on one trusted global financial view", "jobWhatItIs": "Run monthly performance reviews, quarterly guidance and capital allocation from consolidated, brand-comparable numbers.", "jobOutcome": "Leadership decides on the same numbers the auditors and investors will see, without reconciling spreadsheets.", "supportRationale": "Orchestrated close across entities with reconciled subledgers.", "usedInSteps": [{"step": "Close and consolidate the period", "description": "Get every brand and entity closed and consolidated on schedule.", "howItSupports": "Orchestrated close across entities with reconciled subledgers.", "media": []}, {"step": "Certify and publish", "description": "Sign quarterly and annual filings with confidence in control evidence.", "howItSupports": "Consolidated statements with linked SOX evidence.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

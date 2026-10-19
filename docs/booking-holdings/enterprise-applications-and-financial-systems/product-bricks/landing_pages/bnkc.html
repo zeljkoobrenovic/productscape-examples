@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "bnkc", "name": "Bank Connectivity and Payment Factory", "type": "integration", "status": "sustaining", "description": "Central payment factory for outgoing payments (partner payouts, supplier payments, intercompany) and incoming bank statements, with format conversion, approval workflow, sanctions screening hand-off and bank connectivity via SWIFT and host-to-host channels.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-bnkc-api", "name": "Payment Factory API", "type": "api", "description": "Submit payment batches and read status and bank statements.", "dependencies": {"modules": [{"moduleId": "module-bnkc-core", "type": "uses", "description": "Stores batches and status."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-bnkc-dispatcher", "name": "Payment File Dispatcher", "type": "daemon", "description": "Converts batches to pain.001 / local formats and transmits within cut-offs.", "dependencies": {"modules": [{"moduleId": "module-bnkc-bank-adapter", "type": "uses", "description": "Transmits files."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-bnkc-approval", "name": "Payment Approval Workflow", "type": "stateless-service", "description": "Dual approval and limit checks before release.", "dependencies": {"modules": [{"moduleId": "module-bnkc-core", "type": "uses", "description": "Updates batch status."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-bnkc-core", "name": "Payment Batch Store", "type": "stateful-service", "description": "Payment batches, approvals, bank acknowledgements and statements."}]}, {"layer": "integration", "description": "Adapters to SAP, providers, banks and authorities.", "modules": [{"id": "module-bnkc-bank-adapter", "name": "Bank Channel Adapter", "type": "integration", "description": "SWIFT and host-to-host connectivity to the group's banks."}]}], "dataDependencies": [{"assetId": "partner-payout-instruction", "moduleIds": ["module-bnkc-dispatcher"], "role": "read", "description": "Payout batches for transmission."}, {"assetId": "ap-invoice-and-payment", "moduleIds": ["module-bnkc-dispatcher"], "role": "read", "description": "Supplier payment runs for transmission."}], "brickDependencies": [{"targetBrickId": "trcm", "moduleId": "module-trcm-api", "sourceModuleId": "module-bnkc-core", "type": "context", "description": "Bank accounts, signatories and cash positions come from treasury."}, {"targetBrickId": "sodc", "moduleId": "module-sodc-api", "sourceModuleId": "module-bnkc-approval", "type": "control", "description": "Approver rights governed by segregation of duties."}], "externalSystemsThisBrickDependsOn": [{"system": "Banks and SWIFT network", "type": "service", "interface": "SWIFT / host-to-host", "description": "Payment execution and statement delivery.", "sourceModuleId": "module-bnkc-bank-adapter"}, {"system": "Sanctions screening service", "type": "service", "interface": "Screening API", "description": "Screens payees before release.", "sourceModuleId": "module-bnkc-approval"}], "externalSystemsDependingOnThisBrick": [], "domain": "Money Movement and Settlement", "group": "Partner Settlement"};
-    const relatedTeams = [{"teamId": "ptst", "teamName": "Partner Settlement", "teamType": "stream-aligned", "groupId": "mmov", "groupName": "Money Movement Finance", "role": "related", "roleLabel": "Related team"}, {"teamId": "trea", "teamName": "Treasury Systems", "teamType": "stream-aligned", "groupId": "eapp", "groupName": "Enterprise Business Applications", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "pstlm", "name": "Partner Settlement Platform", "icon": "pstlm.png", "type": "Internal finance operations product", "whyUsed": "Bank Connectivity and Payment Factory as part of Partner Settlement Platform."}, {"id": "s2pay", "name": "Source-to-Pay Suite", "icon": "s2pay.png", "type": "Enterprise application", "whyUsed": "Bank Connectivity and Payment Factory as part of Source-to-Pay Suite."}, {"id": "taxtr", "name": "Tax and Treasury Systems", "icon": "taxtr.png", "type": "Enterprise application", "whyUsed": "Bank Connectivity and Payment Factory as part of Tax and Treasury Systems."}];
     const supportedJobs = [{"customerId": "pset", "customerName": "Partner Settlement and Receivables Operations Lead", "customerGroup": "Finance Operations", "customerIcon": "customer-pset-portrait.jpg", "productId": "pstlm", "productName": "Partner Settlement Platform", "productIcon": "pstlm.png", "jobId": "pset-payout", "jobName": "Pay every accommodation and travel partner the right amount on time", "jobWhatItIs": "Turn completed merchant bookings into correct, funded and traceable partner payouts.", "jobOutcome": "Every partner receives the expected amount on the expected date, and every payout is reconciled to the ledger.", "supportRationale": "Subledger balances and deferred bookings drive amounts due.", "usedInSteps": [{"step": "Determine what is owed", "description": "Calculate amounts due per partner from completed stays, cancellations and adjustments.", "howItSupports": "Subledger balances and deferred bookings drive amounts due.", "media": []}, {"step": "Validate payout details", "description": "Check bank details, payout method and sanctions screening before release.", "howItSupports": "Payout orchestration validates details and holds suspicious changes.", "media": []}, {"step": "Release and fund payout runs", "description": "Batch payouts by currency and method and confirm funding with treasury.", "howItSupports": "Payment factory and treasury funding checks.", "media": []}, {"step": "Confirm and reconcile", "description": "Process bank confirmations and returns and reconcile payouts to the ledger.", "howItSupports": "Bank status feeds clear subledger items.", "media": []}]}, {"customerId": "txtr", "customerName": "Tax and Treasury Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-txtr-portrait.jpg", "productId": "pstlm", "productName": "Partner Settlement Platform", "productIcon": "pstlm.png", "jobId": "txtr-cash", "jobName": "Know and protect global cash and FX exposure every day", "jobWhatItIs": "Have one daily view of cash across banks, entities and brands, forecast payouts and hedge currency exposure.", "jobOutcome": "Treasury funds payouts and hedges EUR and GBP exposure from a reliable same-day position.", "supportRationale": "Bank connectivity feeds the daily cash position.", "usedInSteps": [{"step": "Collect bank balances and statements", "description": "Bring in bank statements and balances from every banking partner and entity.", "howItSupports": "Bank connectivity feeds the daily cash position.", "media": []}, {"step": "Forecast partner payouts and collections", "description": "Anticipate merchant-model payouts and commission receipts by currency.", "howItSupports": "Payout schedules expose the outflows treasury must fund.", "media": []}, {"step": "Compute FX exposure and decide hedges", "description": "Net exposures by currency and entity and execute forward contracts.", "howItSupports": "Exposure engine with hedge accounting links.", "media": []}, {"step": "Fund payouts and safeguarded accounts", "description": "Move cash to payout and safeguarding accounts in time.", "howItSupports": "Payment factory and safeguarding position checks.", "media": []}]}, {"customerId": "ptpo", "customerName": "Procurement and Payables Operations Lead", "customerGroup": "Finance Operations", "customerIcon": "customer-ptpo-portrait.jpg", "productId": "s2pay", "productName": "Source-to-Pay Suite", "productIcon": "s2pay.png", "jobId": "ptpo-buy", "jobName": "Buy through compliant, negotiated channels", "jobWhatItIs": "Make sure every purchase request flows to an approved supplier on a negotiated contract with the right approvals.", "jobOutcome": "Most addressable spend is under contract and approvals are fast and auditable.", "supportRationale": "Guided buying with approval workflows.", "usedInSteps": [{"step": "Request and approve", "description": "Capture purchase requests with budget checks and approvals by policy.", "howItSupports": "Guided buying with approval workflows.", "media": []}, {"step": "Source and contract", "description": "Run sourcing events and store contracts with negotiated prices.", "howItSupports": "Sourcing and contract management.", "media": []}, {"step": "Onboard suppliers", "description": "Collect supplier master data, tax IDs, bank details and risk checks.", "howItSupports": "Supplier master shared with payables and tax.", "media": []}]}, {"customerId": "ptpo", "customerName": "Procurement and Payables Operations Lead", "customerGroup": "Finance Operations", "customerIcon": "customer-ptpo-portrait.jpg", "productId": "s2pay", "productName": "Source-to-Pay Suite", "productIcon": "s2pay.png", "jobId": "ptpo-pay", "jobName": "Pay suppliers correctly and on time", "jobWhatItIs": "Receive, validate, match and pay supplier invoices with the right tax and without duplicates.", "jobOutcome": "Invoices are processed touchlessly, paid on terms and fully traceable for SOX.", "supportRationale": "E-invoice and capture automation.", "usedInSteps": [{"step": "Receive invoices", "description": "Ingest invoices as e-invoices, PDF or portal submissions.", "howItSupports": "E-invoice and capture automation.", "media": []}, {"step": "Match and validate tax", "description": "Match to purchase order and receipt and validate tax.", "howItSupports": "Three-way match with tax determination.", "media": []}, {"step": "Approve and schedule payment", "description": "Route exceptions, approve and schedule by terms.", "howItSupports": "Exception workflow and payment proposal.", "media": []}, {"step": "Pay and reconcile", "description": "Pay through the payment factory and reconcile to bank statements.", "howItSupports": "Payment factory and bank reconciliation.", "media": []}]}, {"customerId": "txtr", "customerName": "Tax and Treasury Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-txtr-portrait.jpg", "productId": "taxtr", "productName": "Tax and Treasury Systems", "productIcon": "taxtr.png", "jobId": "txtr-cash", "jobName": "Know and protect global cash and FX exposure every day", "jobWhatItIs": "Have one daily view of cash across banks, entities and brands, forecast payouts and hedge currency exposure.", "jobOutcome": "Treasury funds payouts and hedges EUR and GBP exposure from a reliable same-day position.", "supportRationale": "Bank connectivity feeds the daily cash position.", "usedInSteps": [{"step": "Collect bank balances and statements", "description": "Bring in bank statements and balances from every banking partner and entity.", "howItSupports": "Bank connectivity feeds the daily cash position.", "media": []}, {"step": "Forecast partner payouts and collections", "description": "Anticipate merchant-model payouts and commission receipts by currency.", "howItSupports": "Payout schedules expose the outflows treasury must fund.", "media": []}, {"step": "Compute FX exposure and decide hedges", "description": "Net exposures by currency and entity and execute forward contracts.", "howItSupports": "Exposure engine with hedge accounting links.", "media": []}, {"step": "Fund payouts and safeguarded accounts", "description": "Move cash to payout and safeguarding accounts in time.", "howItSupports": "Payment factory and safeguarding position checks.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

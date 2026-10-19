@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "schd", "name": "Shift Planning and Scheduling", "type": "full-stack", "status": "invest", "description": "Plans shifts for pools of flex workers at client sites - demand, rosters, availability, qualifications and labour-law checks - with AI-assisted plan generation. Modeled on Planbition (1,000+ installations, 17+ countries, Planbition X plain-language scheduling), Plan4Flex mid-office and mywage myschedule.", "links": [], "layers": [{"layer": "ui", "description": "Planner and worker views.", "modules": [{"id": "module-roster-planner", "name": "Roster Planner", "type": "web-component", "description": "Drag-and-drop roster with compliance warnings and fill rate per shift.", "dependencies": {"modules": [{"moduleId": "module-schedule-api", "type": "uses", "description": "Reads and writes shifts."}]}}, {"id": "module-ai-plan-prompt", "name": "AI Plan Assistant", "type": "web-component", "description": "Planner describes a plan in plain language and reviews the proposed roster.", "dependencies": {"modules": [{"moduleId": "module-schedule-optimizer", "type": "uses", "description": "Generates proposals."}]}}]}, {"layer": "interfaces", "description": "Scheduling API.", "modules": [{"id": "module-schedule-api", "name": "Schedule API", "type": "api", "description": "Shifts, demand, availability, swaps and open-shift offers."}]}, {"layer": "worker", "description": "Open-shift broadcasting.", "modules": [{"id": "module-open-shift-broadcaster", "name": "Open Shift Broadcaster", "type": "message-consumer", "description": "Offers unfilled shifts to qualified available workers via app and messaging."}]}, {"layer": "stateless-service", "description": "Optimisation.", "modules": [{"id": "module-schedule-optimizer", "name": "Schedule Optimizer", "type": "stateless-service", "description": "Constraint solver plus LLM instruction parsing for roster proposals.", "dependencies": {"modules": [{"moduleId": "module-llm-gateway", "type": "uses", "description": "Parses planner instructions.", "targetBrickId": "aipl"}]}}]}, {"layer": "service", "description": "Schedule store.", "modules": [{"id": "module-schedule-service", "name": "Shift and Availability Service", "type": "stateful-service", "description": "Shifts, demand curves, availability and swaps."}]}], "dataDependencies": [{"assetId": "shift-schedule", "moduleIds": ["module-schedule-service", "module-schedule-api"], "role": "own", "description": "System of record for shifts and availability."}, {"assetId": "assignment", "moduleIds": ["module-schedule-service"], "role": "read", "description": "Assignment context."}], "brickDependencies": [{"targetBrickId": "ordr", "moduleId": "module-assignment-api", "sourceModuleId": "module-schedule-service", "type": "context", "description": "Shifts belong to assignments."}, {"targetBrickId": "comp", "moduleId": "module-rules-api", "sourceModuleId": "module-schedule-optimizer", "type": "uses", "description": "Rest times, max hours and minor-worker rules."}, {"targetBrickId": "wapp", "moduleId": "module-worker-bff", "sourceModuleId": "module-open-shift-broadcaster", "type": "uses", "description": "Pushes open shifts to workers."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Placement and Workforce Operations", "group": "Scheduling and Time"};
-    const relatedTeams = [{"teamId": "workforce-scheduling", "teamName": "Workforce Scheduling and Time", "teamType": "stream-aligned", "groupId": "workforce-operations", "groupName": "Workforce Operations", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "planbition", "name": "Planbition", "icon": "product.png", "type": "B2B Workforce Management SaaS", "whyUsed": "Planning and Planbition X."}, {"id": "regional-staffing-erps", "name": "Regional Staffing ERPs (Kentro, WorkExpert, Nivel IV, Plan4Flex)", "icon": "product.png", "type": "B2B Vertical ERP SaaS", "whyUsed": "Plan4Flex mid-office."}, {"id": "mywage", "name": "mywage", "icon": "product.png", "type": "B2B Staffing Platform on Salesforce", "whyUsed": "myschedule."}];
     const supportedJobs = [{"customerId": "plan", "customerName": "Onsite Workforce Planner", "customerGroup": "Agency Front Office", "customerIcon": "customer-plan-portrait.jpg", "productId": "planbition", "productName": "Planbition", "productIcon": "product.png", "jobId": "plan-roster", "jobName": "Staff every shift with qualified workers at the lowest total cost", "jobWhatItIs": "Match fluctuating client demand with available, qualified workers.", "jobOutcome": "Shift fill rate above target without overtime peaks.", "supportRationale": "AI-assisted, rule-checked roster.", "usedInSteps": [{"step": "Build the roster", "description": "From demand to proposal.", "howItSupports": "AI-assisted, rule-checked roster.", "media": [{"type": "image", "src": "media/jbtd-plan-plan-roster-1.png", "title": "Onsite Workforce Planner JTBD step 1: Build the roster", "alt": "Enterprise infographic for step 1 of the job \"Staff every shift with qualified workers at the lowest total cost\": Build the roster."}]}, {"step": "Fill gaps", "description": "Offer open shifts to available workers.", "howItSupports": "Open-shift broadcasting.", "media": [{"type": "image", "src": "media/jbtd-plan-plan-roster-2.png", "title": "Onsite Workforce Planner JTBD step 2: Fill gaps", "alt": "Enterprise infographic for step 2 of the job \"Staff every shift with qualified workers at the lowest total cost\": Fill gaps."}]}]}, {"customerId": "temp", "customerName": "Temporary Worker", "customerGroup": "Temporary Workers", "customerIcon": "customer-temp-portrait.jpg", "productId": "planbition", "productName": "Planbition", "productIcon": "product.png", "jobId": "temp-stable", "jobName": "Keep a steady flow of work", "jobWhatItIs": "Avoid gaps between assignments and pick shifts that fit life.", "jobOutcome": "Enough hours every week.", "supportRationale": "Shift offers.", "usedInSteps": [{"step": "Pick up extra shifts", "description": "Accept open shifts.", "howItSupports": "Shift offers.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-stable-1.png", "title": "Temporary Worker JTBD step 1: Pick up extra shifts", "alt": "Enterprise infographic for step 1 of the job \"Keep a steady flow of work\": Pick up extra shifts."}]}]}, {"customerId": "temp", "customerName": "Temporary Worker", "customerGroup": "Temporary Workers", "customerIcon": "customer-temp-portrait.jpg", "productId": "mywage", "productName": "mywage", "productIcon": "product.png", "jobId": "temp-stable", "jobName": "Keep a steady flow of work", "jobWhatItIs": "Avoid gaps between assignments and pick shifts that fit life.", "jobOutcome": "Enough hours every week.", "supportRationale": "Shift offers.", "usedInSteps": [{"step": "Pick up extra shifts", "description": "Accept open shifts.", "howItSupports": "Shift offers.", "media": [{"type": "image", "src": "media/jbtd-temp-temp-stable-1.png", "title": "Temporary Worker JTBD step 1: Pick up extra shifts", "alt": "Enterprise infographic for step 1 of the job \"Keep a steady flow of work\": Pick up extra shifts."}]}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pevt", "name": "Payment Event Ingestion and Normalisation", "type": "integration", "status": "invest", "description": "Ingests card-not-present card and alternative payment method events (authorisations, captures, refunds, fees, settlements) and PSP and acquirer settlement reports, and normalises them into one finance-ready payment record. New local methods (for example the Antom partnership for Asian markets, January 2025) must be ledger-ready before launch. The payments platform itself (checkout, routing, fraud) is upstream and out of scope.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-pevt-api", "name": "Payment Record API", "type": "api", "description": "Query normalised payment transactions, fees and settlement lines by booking, PSP and batch.", "dependencies": {"modules": [{"moduleId": "module-pevt-core", "type": "uses", "description": "Reads normalised records."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-pevt-event-consumer", "name": "Payment Event Consumer", "type": "message-consumer", "description": "Consumes payment lifecycle events from the payments platform.", "dependencies": {"modules": [{"moduleId": "module-pevt-normaliser", "type": "uses", "description": "Normalises events."}]}}, {"id": "module-pevt-file-ingest", "name": "Settlement Report Ingestor", "type": "daemon", "description": "Collects PSP, acquirer and APM settlement reports (SFTP/API) and validates completeness.", "dependencies": {"modules": [{"moduleId": "module-pevt-normaliser", "type": "uses", "description": "Normalises report lines."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-pevt-normaliser", "name": "Payment Normalisation Service", "type": "stateless-service", "description": "Maps method-, PSP- and scheme-specific formats to one canonical schema with fee and FX components.", "dependencies": {"modules": [{"moduleId": "module-pevt-core", "type": "uses", "description": "Stores canonical records."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-pevt-core", "name": "Payment Record Store", "type": "stateful-service", "description": "Canonical payment transactions, fees, interchange and settlement lines."}]}, {"layer": "integration", "description": "Adapters to SAP, providers, banks and authorities.", "modules": [{"id": "module-pevt-psp-adapter", "name": "PSP and APM Adapters", "type": "integration", "description": "Adapters per payment service provider and alternative method (cards, wallets, local methods)."}]}], "dataDependencies": [{"assetId": "payment-transaction-and-settlement-record", "moduleIds": ["module-pevt-core", "module-pevt-normaliser", "module-pevt-api"], "role": "own", "description": "System of record for finance-normalised payment and settlement data."}, {"assetId": "booking-financial-event", "moduleIds": ["module-pevt-event-consumer"], "role": "consume", "description": "Links payments to bookings."}], "brickDependencies": [{"targetBrickId": "fint", "moduleId": "module-fint-api", "sourceModuleId": "module-pevt-event-consumer", "type": "data", "description": "Payment events arrive via the finance integration hub."}, {"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-pevt-core", "type": "data", "description": "Hands normalised payments to the subledger for posting and clearing."}], "externalSystemsThisBrickDependsOn": [{"system": "Payment service providers and acquirers (e.g. Adyen, Antom)", "type": "data", "interface": "Settlement reports and APIs", "description": "Settlement and fee data for card and APM transactions; named providers illustrative.", "sourceModuleId": "module-pevt-psp-adapter"}, {"system": "Booking payments platform (FinTech)", "type": "data", "interface": "Payment lifecycle events", "description": "Upstream payment events from checkout and payout processing.", "sourceModuleId": "module-pevt-event-consumer"}], "externalSystemsDependingOnThisBrick": [{"system": "Payments analytics", "type": "consumer", "interface": "Payment Record API", "description": "Cost-of-payments and method-mix analysis.", "moduleId": "module-pevt-api"}], "domain": "Money Movement and Settlement", "group": "Payments-to-Ledger"};
-    const relatedTeams = [{"teamId": "p2lg", "teamName": "Payments-to-Ledger", "teamType": "stream-aligned", "groupId": "mmov", "groupName": "Money Movement Finance", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p2led", "name": "Payments-to-Ledger Service", "icon": "p2led.png", "type": "Internal finance service", "whyUsed": "Payment Event Ingestion and Normalisation as part of Payments-to-Ledger Service."}];
     const supportedJobs = [{"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "p2led", "productName": "Payments-to-Ledger Service", "productIcon": "p2led.png", "jobId": "pymt-launch", "jobName": "Launch payment methods and markets without finance blockers", "jobWhatItIs": "Add a payment method, PSP, currency or market (for example local methods in Asia through a partner such as Antom) with accounting, tax, settlement and controls ready on day one.", "jobOutcome": "New payment options go live on the product timeline and post correctly to the ledger from the first transaction.", "supportRationale": "Payment events feed the subledger and revenue posting for merchant bookings.", "usedInSteps": [{"step": "Map payment events to finance contracts", "description": "Map authorisation, capture, settlement and fee events to the canonical schema.", "howItSupports": "Payment events feed the subledger and revenue posting for merchant bookings.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "p2led", "productName": "Payments-to-Ledger Service", "productIcon": "p2led.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Payment event ingestion normalises PSP settlements into one record.", "usedInSteps": [{"step": "Ingest PSP and acquirer settlement data", "description": "Normalise settlement reports from all PSPs and acquirers daily.", "howItSupports": "Payment event ingestion normalises PSP settlements into one record.", "media": []}, {"step": "Match bookings, payments and settlements", "description": "Run three-way matching and route breaks to owners.", "howItSupports": "Settlement reconciliation matches payments to bookings and bank receipts.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Post refunds, chargebacks and dispute outcomes against the original booking.", "howItSupports": "Dispute accounting links each case to the original payment and reverses revenue correctly.", "media": []}, {"step": "Clear breaks and report", "description": "Resolve or write off breaks and report status for the close.", "howItSupports": "Break ageing and write-off reporting feed the close and controls.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "p2led", "productName": "Payments-to-Ledger Service", "productIcon": "p2led.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Normalised financial events into the subledger.", "usedInSteps": [{"step": "Capture booking financial events", "description": "Receive complete booking, payment and cancellation events from every brand.", "howItSupports": "Normalised financial events into the subledger.", "media": []}, {"step": "Apply recognition rules", "description": "Determine gross or net, timing and deferral for each booking type.", "howItSupports": "Revenue recognition engine posts schedules.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Reverse or adjust revenue and liabilities after cancellations and disputes.", "howItSupports": "Refund and dispute postings linked to the original booking.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

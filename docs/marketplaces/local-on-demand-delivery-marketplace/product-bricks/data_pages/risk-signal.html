@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "local-on-demand-delivery-marketplace", "name": "Local On-Demand Delivery Marketplace", "description": "Covers the consumer, merchant, courier, grocery, retail, advertising, payment, dispatch, and trust workflows required to operate a multi-sided local delivery marketplace for restaurant meals, groceries, convenience, and everyday retail."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "risk-signal", "name": "Risk Signal", "kind": "security-event", "description": "Fraud, abuse, device, payment, refund, promotion, account, and policy decision signals.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["consumer", "merchant", "courier"], "legalTags": ["fraud", "security"], "securityCriticality": "critical", "accessScope": "risk decisioning, policy enforcement, and support", "businessMeaning": "Trust and abuse signal layer used to protect the marketplace.", "status": "active", "stores": [{"storeId": "risk-signal-db", "role": "system-of-record"}, {"storeId": "risk-event-stream", "role": "event-stream"}], "interfaces": [{"type": "api", "name": "risk signal api", "description": "Risk decision and signal interface."}], "ownerTeamId": "identity-risk", "stewardTeamIds": ["ledger-settlement"], "derivedFromAssetIds": ["identity-credential", "transaction", "order-record"], "governance": {"retention": "fraud and security retention window", "residency": "market-specific", "sharingPolicy": "strict trust and risk use only"}, "rootGroup": "Risk, Governance, Security, and Compliance Data", "group": "Events and Logs"};
+    const currentAsset = {"id": "risk-signal", "name": "Risk Signal", "kind": "security-event", "description": "Fraud, abuse, device, payment, refund, promotion, account, and policy decision signals.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["consumer", "merchant", "courier"], "legalTags": ["fraud", "security"], "securityCriticality": "critical", "accessScope": "risk decisioning, policy enforcement, and support", "businessMeaning": "Trust and abuse signal layer used to protect the marketplace.", "status": "active", "stores": [{"storeId": "risk-signal-db", "role": "system-of-record"}, {"storeId": "risk-event-stream", "role": "event-stream"}], "interfaces": [{"type": "api", "name": "risk signal api", "description": "Risk decision and signal interface."}], "derivedFromAssetIds": ["identity-credential", "transaction", "order-record"], "governance": {"retention": "fraud and security retention window", "residency": "market-specific", "sharingPolicy": "strict trust and risk use only"}, "rootGroup": "Risk, Governance, Security, and Compliance Data", "group": "Events and Logs"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "risk", "name": "Fraud, Abuse & Policy Controls", "role": "own", "description": "Owns risk signals, decisions, and policy actions."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "identity-risk", "teamName": "Identity and Risk", "teamType": "platform", "groupName": "Marketplace Foundations"};
-    const stewardTeams = [{"teamId": "ledger-settlement", "teamName": "Ledger and Settlement", "teamType": "platform", "groupName": "Marketplace Foundations"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

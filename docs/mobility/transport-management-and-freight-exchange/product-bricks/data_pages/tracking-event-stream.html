@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "tracking-event-stream", "name": "Tracking Event Stream", "kind": "event-stream", "description": "Real-time position and status telemetry of shipments in execution: GPS positions from carrier telematics providers and the driver mobile app, geofence events, temperature readings, and status pings, normalized by the connectivity gateway from dozens of telematics formats. Consumed by live visibility maps, ETA prediction, exception detection, and dock arrival triggers. Vehicle positions identify drivers and owner-operators, so the stream is consent-gated per shipment with deliberately short retention.", "businessMeaning": "The live pulse of the network: where every tracked truck is right now, feeding everything the platform predicts and preempts.", "status": "active", "tags": ["execution-and-visibility"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "shipment parties during execution, and internal visibility, ETA, and exception workflows", "systemOfRecordBrickId": "conn", "ownerTeamId": "visibility", "stewardTeamIds": ["connectivity"], "derivedFromAssetIds": [], "stores": [{"storeId": "tracking-event-topic", "role": "system-of-record"}, {"storeId": "tracking-event-archive", "role": "archive"}], "interfaces": [{"type": "event", "name": "tracking event topic", "description": "Normalized position and status stream consumed by visibility, ETA, exception, and dock-scheduling services."}, {"type": "api", "name": "tracking history api", "description": "Per-shipment track history for live maps and post-delivery dispute review."}], "governance": {"retention": "raw positions 90 days, then reduced to shipment-level route summaries; consent scope limited to active shipments", "residency": "eu", "sharingPolicy": "positions visible only to the parties of the tracked shipment while it executes; never used to profile drivers; aggregates only beyond the transaction"}, "rootGroup": "Visibility and Site Operations Data", "group": "Tracking and Prediction"};
+    const currentAsset = {"id": "tracking-event-stream", "name": "Tracking Event Stream", "kind": "event-stream", "description": "Real-time position and status telemetry of shipments in execution: GPS positions from carrier telematics providers and the driver mobile app, geofence events, temperature readings, and status pings, normalized by the connectivity gateway from dozens of telematics formats. Consumed by live visibility maps, ETA prediction, exception detection, and dock arrival triggers. Vehicle positions identify drivers and owner-operators, so the stream is consent-gated per shipment with deliberately short retention.", "businessMeaning": "The live pulse of the network: where every tracked truck is right now, feeding everything the platform predicts and preempts.", "status": "active", "tags": ["execution-and-visibility"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "shipment parties during execution, and internal visibility, ETA, and exception workflows", "systemOfRecordBrickId": "conn", "derivedFromAssetIds": [], "stores": [{"storeId": "tracking-event-topic", "role": "system-of-record"}, {"storeId": "tracking-event-archive", "role": "archive"}], "interfaces": [{"type": "event", "name": "tracking event topic", "description": "Normalized position and status stream consumed by visibility, ETA, exception, and dock-scheduling services."}, {"type": "api", "name": "tracking history api", "description": "Per-shipment track history for live maps and post-delivery dispute review."}], "governance": {"retention": "raw positions 90 days, then reduced to shipment-level route summaries; consent scope limited to active shipments", "residency": "eu", "sharingPolicy": "positions visible only to the parties of the tracked shipment while it executes; never used to profile drivers; aggregates only beyond the transaction"}, "rootGroup": "Visibility and Site Operations Data", "group": "Tracking and Prediction"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "conn", "name": "Carrier Connectivity Gateway", "role": "publish", "description": "Publishes normalized carrier position and status events into the tracking event stream."}, {"id": "trck", "name": "Real-Time Visibility and ETA", "role": "own", "description": "System of record for the matched, shipment-assigned tracking event timeline."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "visibility", "teamName": "Visibility", "teamType": "stream-aligned", "groupName": "Execution Group"};
-    const stewardTeams = [{"teamId": "connectivity", "teamName": "Connectivity", "teamType": "platform", "groupName": "Execution Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

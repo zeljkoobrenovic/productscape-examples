@@ -8,7 +8,7 @@ Vortex Capital Partners says it invested in December 2017 and lists PrivacyPerfe
 
 ## Evidence and interpretation
 
-This is a researched product-domain model, not a description of the company's private implementation or organization chart. `customers/insights.json` contains the source register and separates observations from implications. Undated pages have an access date, not an invented publication date. Public product descriptions establish capability scope; all brick boundaries, APIs, storage designs, teams, service objectives and future horizons are proposals for this model.
+This is a researched product-domain model, not a description of the company's private implementation or organization chart. `customers/insights.json` contains the source register and separates observations from implications. Undated pages have an access date, not an invented publication date. Public product descriptions establish capability scope; all brick boundaries, APIs, storage designs, service objectives and future horizons are proposals for this model.
 
 PrivacyPerfect describes Netherlands-based processing and EU data storage, and advertises ISO 27001 certification. These are vendor statements, not an independent certificate audit or proof that a customer's use is compliant. Contractual hosting boundaries, support access, backup locations and certificate scope remain diligence items. [Home](https://privacyperfect.com/), [About](https://privacyperfect.com/about/)
 
@@ -59,9 +59,7 @@ An initial delivery slice should establish isolation, import reconciliation, pro
 
 ## Operating model assumptions
 
-Eight capability-owning teams represent a mature planning scenario, with lightweight group leadership and differentiated roles. This is **not PrivacyPerfect's actual staffing**, nor a minimum launch requirement. The organization can initially combine these responsibilities in fewer teams and split them only when workload and specialist capacity justify it. Customer legal decisions and independent audits stay outside the software delivery organization. Billing integrations support subscription administration; corporate finance, HR and sales are outside this domain's staffing total.
-
-Every brick has one primary team in `teams.json`. Every data asset has a system-of-record brick, an owner and a steward. Human accountability covers template releases, privileged support, breach decisions, rights fulfillment and AI approval. No autonomous operational decision agents are assumed.
+Every data asset has a system-of-record brick. Human accountability covers template releases, privileged support, breach decisions, rights fulfillment and AI approval. No autonomous operational decision agents are assumed.
 
 ## Regulatory interpretation
 
@@ -71,6 +69,6 @@ AI governance must distinguish statutory obligations from voluntary risk framewo
 
 ## Structural references and quality gates
 
-The model uses `transfer-pricing-compliance-platform` for expert-assisted compliance SaaS, `enterprise-architecture-management-platform` for enterprise collaboration and governance, `ride-sharing-marketplace` for customer/brick/stream/data shapes, and `maas` for the current lean products/deployment/team schemas. Legacy `neededBricks` and `ownedBricks` fields are replaced by the current deployment and team dependency relationships.
+The model uses `transfer-pricing-compliance-platform` for expert-assisted compliance SaaS, `enterprise-architecture-management-platform` for enterprise collaboration and governance, `ride-sharing-marketplace` for customer/brick/stream/data shapes, and `maas` for the current lean products/deployment schemas. Legacy `neededBricks` and `ownedBricks` fields are replaced by the current deployment relationships.
 
-The workflow combines `.claude`'s creation, authoring, validation and balance-audit skills with `.codex`'s product-domain, product-bricks and teams reviews. `REVIEW.md` records the resulting assessment and unresolved research assumptions. Validation covers schema, lowercase IDs, cross-file relationships, ownership, KPI trees, scoped generation and generated local links.
+The workflow combines `.claude`'s creation, authoring, validation and balance-audit skills with `.codex`'s product-domain and product-bricks reviews. `REVIEW.md` records the resulting assessment and unresolved research assumptions. Validation covers schema, lowercase IDs, cross-file relationships, KPI trees, scoped generation and generated local links.

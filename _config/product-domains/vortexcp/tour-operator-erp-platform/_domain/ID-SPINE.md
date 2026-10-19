@@ -87,60 +87,33 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 prod→travel-product,travel-content-asset; comp→travel-component,supplier-contract; pric→price-and-yield-rule,travel-product; cont→supplier-contract,supplier-profile; ctnt→travel-content-asset; supl→supplier-profile,supplier-request; sprt→supplier-request,seat-and-room-assignment; vtbl→quote-proposal,travel-component,travel-content-asset; book→booking-file,customer-profile; crmr→customer-profile; webs→travel-product,booking-file; rsel→reseller-agent-profile,booking-file; flgt→flight-ticket-record; dept→departure,booking-file; seat→seat-and-room-assignment,departure; guid→departure,passenger-record; pass→passenger-record; docs→travel-document,booking-file; mytp→booking-file,travel-document,payment-transaction; qual→review-and-survey-response; invc→customer-invoice,payment-transaction; acct→supplier-invoice,customer-invoice,flight-ticket-record; gfnd→guarantee-fund-report,booking-file; mktg→marketing-consent-and-segment,customer-profile; bint→booking-file,customer-invoice; wflw→booking-file; comm→customer-profile; aiaa→quote-proposal,customer-profile; iden→tenant-organization; intg→tenant-organization.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `travel-product` → product-and-pricing
-- `travel-component` → product-and-pricing
-- `price-and-yield-rule` → product-and-pricing
-- `supplier-contract` → product-and-pricing
-- `travel-content-asset` → product-and-pricing
-- `supplier-profile` → supplier-network
-- `supplier-request` → supplier-network
-- `quote-proposal` → tour-builder
-- `booking-file` → booking-desk
-- `customer-profile` → booking-desk
-- `flight-ticket-record` → booking-desk
-- `reseller-agent-profile` → web-and-channels
-- `departure` → group-operations
-- `seat-and-room-assignment` → group-operations
-- `passenger-record` → group-operations
-- `travel-document` → traveler-experience
-- `review-and-survey-response` → traveler-experience
-- `customer-invoice` → payments-and-invoicing
-- `payment-transaction` → payments-and-invoicing
-- `supplier-invoice` → accounting-and-compliance
-- `guarantee-fund-report` → accounting-and-compliance
-- `marketing-consent-and-segment` → marketing-and-insight
-- `tenant-organization` → platform-core
+- `travel-product`
+- `travel-component`
+- `price-and-yield-rule`
+- `supplier-contract`
+- `travel-content-asset`
+- `supplier-profile`
+- `supplier-request`
+- `quote-proposal`
+- `booking-file`
+- `customer-profile`
+- `flight-ticket-record`
+- `reseller-agent-profile`
+- `departure`
+- `seat-and-room-assignment`
+- `passenger-record`
+- `travel-document`
+- `review-and-survey-response`
+- `customer-invoice`
+- `payment-transaction`
+- `supplier-invoice`
+- `guarantee-fund-report`
+- `marketing-consent-and-segment`
+- `tenant-organization`
 
 23 assets.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-The combined company has ~40 employees, so teams are small (2–5 people); model that honestly.
-
-Org group "Travel Product Group":
-- `product-and-pricing` (stream-aligned) owns prod, comp, pric, cont, ctnt
-- `supplier-network` (stream-aligned) owns supl, sprt
-
-Org group "Sales and Booking Group":
-- `tour-builder` (stream-aligned) owns vtbl
-- `booking-desk` (stream-aligned) owns book, crmr, flgt
-- `web-and-channels` (stream-aligned) owns webs, rsel
-
-Org group "Operations and Traveler Group":
-- `group-operations` (stream-aligned) owns dept, seat, guid, pass
-- `traveler-experience` (stream-aligned) owns docs, mytp, qual
-
-Org group "Finance and Insight Group":
-- `payments-and-invoicing` (stream-aligned) owns invc
-- `accounting-and-compliance` (complicated-subsystem) owns acct, gfnd
-- `marketing-and-insight` (stream-aligned) owns mktg, bint
-
-Org group "Platform and Enablement Group":
-- `platform-core` (platform) owns iden, intg, wflw, comm
-- `ai-enablement` (enabling) owns aiaa
-- `customer-success-and-consulting` (enabling) owns no bricks; runs onboarding, process-optimisation advisory and support; customer dependencies on town, gops, tspc, fina
 
 ## Products (product-deployments/products.json) — id, primary customers
 

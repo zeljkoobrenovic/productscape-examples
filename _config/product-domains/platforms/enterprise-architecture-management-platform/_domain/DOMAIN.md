@@ -11,4 +11,4 @@ Structural references used:
 - `_config/product-domains/other/payments-and-revenue-infrastructure`
 - `_config/product-domains/platforms/internal-developer-platform`
 
-The current canonical structure is the newer `_domain`, `business`, `customers`, `data`, `delivery`, `objectives`, `product-bricks`, `product-deployments`, `start`, and `teams` layout. Generated `docs` output was not modified.
+The current canonical structure is the newer `_domain`, `business`, `customers`, `data`, `delivery`, `objectives`, `product-bricks`, `product-deployments`, and `start` layout. Generated `docs` output was not modified.

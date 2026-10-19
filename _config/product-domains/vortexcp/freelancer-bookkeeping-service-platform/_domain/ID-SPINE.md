@@ -93,68 +93,44 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 dash→dashboard-snapshot,ledger-entry; vatv→vat-return,ledger-entry; ntfy→notification,filing-deadline; scan→receipt-document,expense-booking; expn→expense-booking,ledger-entry; docs→receipt-document,business-entity-profile; quot→quote,customer-contact; invc→sales-invoice,customer-contact,business-entity-profile; dunn→sales-invoice,notification; bank→bank-connection,bank-transaction; mtch→bank-transaction,transaction-match,ledger-entry; ledg→ledger-entry,business-entity-profile; vatr→vat-return,ledger-entry; yend→annual-accounts,ledger-entry; itax→income-tax-return,annual-accounts; ctax→corporate-tax-return,annual-accounts; payr→payslip,filing-submission; bdgw→filing-submission,vat-return,income-tax-return; kvkf→business-entity-profile,filing-submission; bkws→review-task,client-account; qaud→qa-finding,review-task; wkld→client-allocation,client-account; dlin→filing-deadline,review-task; msgc→client-message,client-account; advk→tax-rule-article,client-message; lead→lead-and-intro-call; onbd→onboarding-case,client-allocation,client-account; swch→historical-return-import,onboarding-case; subs→subscription-plan,subscription-invoice; prtn→partner-referral,client-account; cnet→entrepreneur-network-profile,client-account; iden→user-identity,client-account; mobi→user-identity,notification; audt→audit-trail-entry,user-identity; intg→bank-connection,filing-submission,audit-trail-entry.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `client-account` → platform-and-security-team
-- `user-identity` → platform-and-security-team
-- `audit-trail-entry` → platform-and-security-team
-- `business-entity-profile` → client-app-team
-- `dashboard-snapshot` → client-app-team
-- `notification` → client-app-team
-- `receipt-document` → expenses-and-banking-team
-- `expense-booking` → expenses-and-banking-team
-- `bank-connection` → expenses-and-banking-team
-- `bank-transaction` → expenses-and-banking-team
-- `transaction-match` → expenses-and-banking-team
-- `quote` → invoicing-team
-- `sales-invoice` → invoicing-team
-- `customer-contact` → invoicing-team
-- `ledger-entry` → bookkeeping-engine-team
-- `vat-return` → bookkeeping-engine-team
-- `annual-accounts` → bookkeeping-engine-team
-- `income-tax-return` → bookkeeping-engine-team
-- `corporate-tax-return` → founders-bv-services
-- `payslip` → bookkeeping-pods
-- `filing-submission` → filing-and-integrations-team
-- `filing-deadline` → bookkeeper-workspace-team
-- `review-task` → bookkeeper-workspace-team
-- `client-allocation` → bookkeeper-workspace-team
-- `client-message` → bookkeeping-pods
-- `qa-finding` → quality-and-tax-knowledge
-- `tax-rule-article` → quality-and-tax-knowledge
-- `lead-and-intro-call` → growth-and-marketing
-- `partner-referral` → growth-and-marketing
-- `entrepreneur-network-profile` → growth-and-marketing
-- `onboarding-case` → client-success-and-onboarding
-- `historical-return-import` → client-success-and-onboarding
-- `subscription-plan` → client-success-and-onboarding
-- `subscription-invoice` → client-success-and-onboarding
+- `client-account`
+- `user-identity`
+- `audit-trail-entry`
+- `business-entity-profile`
+- `dashboard-snapshot`
+- `notification`
+- `receipt-document`
+- `expense-booking`
+- `bank-connection`
+- `bank-transaction`
+- `transaction-match`
+- `quote`
+- `sales-invoice`
+- `customer-contact`
+- `ledger-entry`
+- `vat-return`
+- `annual-accounts`
+- `income-tax-return`
+- `corporate-tax-return`
+- `payslip`
+- `filing-submission`
+- `filing-deadline`
+- `review-task`
+- `client-allocation`
+- `client-message`
+- `qa-finding`
+- `tax-rule-article`
+- `lead-and-intro-call`
+- `partner-referral`
+- `entrepreneur-network-profile`
+- `onboarding-case`
+- `historical-return-import`
+- `subscription-plan`
+- `subscription-invoice`
 
 34 assets. Personal-data level is high for most (names, BSN in tax returns, bank transactions); tag AVG/GDPR, Belastingdienst retention (7 years fiscal retention duty, 10 years for real-estate related VAT).
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Kees de Boekhouder has ~100 staff (about 40% bookkeepers) plus the Founders sister company; model the organisation at ~115 people. Product/engineering is small (full-stack developers, solution architects, heads of QA/Growth/Operations/Finance/People) — keep product teams at 3–6 people and bookkeeping pods large.
-
-Org group "Product and Engineering":
-- `client-app-team` (stream-aligned) owns dash, vatv, ntfy, docs, mobi
-- `expenses-and-banking-team` (stream-aligned) owns scan, expn, bank, mtch
-- `invoicing-team` (stream-aligned) owns quot, invc, dunn
-- `bookkeeping-engine-team` (complicated-subsystem) owns ledg, vatr, yend, itax
-- `filing-and-integrations-team` (platform) owns bdgw, kvkf, intg
-- `bookkeeper-workspace-team` (stream-aligned) owns bkws, wkld, dlin
-- `platform-and-security-team` (platform) owns iden, audt
-
-Org group "Bookkeeping Operations" (Amsterdam, Rotterdam, Utrecht):
-- `bookkeeping-pods` (stream-aligned, ~45 bookkeepers and team leads in three offices) owns msgc, payr; customer dependencies on crfr, kfrl, strt, vofp, bkpr
-- `quality-and-tax-knowledge` (complicated-subsystem; Head of QA, fiscal specialists, internal training) owns qaud, advk; customer dependencies on bkpr, kfrl
-- `founders-bv-services` (stream-aligned; Founders Finance B.V. bookkeepers for BVs) owns ctax; customer dependencies on bvdg
-
-Org group "Growth and Client Success":
-- `growth-and-marketing` (stream-aligned; Head of Growth, marketing, partnerships, content) owns lead, prtn, cnet; customer dependencies on strt, crfr, ecop
-- `client-success-and-onboarding` (stream-aligned; sales, client success executives, support) owns onbd, swch, subs; customer dependencies on csux, strt, vofp
-
-12 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

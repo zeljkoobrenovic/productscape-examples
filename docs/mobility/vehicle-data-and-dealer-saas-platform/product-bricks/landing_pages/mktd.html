@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "mktd", "name": "Market and Transaction Data Lake", "type": "service", "status": "invest", "description": "Collects national and international used-car advertisements, RDW ownership changes and more than 30 years of vehicle and transaction history into an analysable market dataset: asking prices, days-to-sell, supply and demand per model and region.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs, BFFs and back-office interfaces.", "modules": [{"id": "module-market-query-api", "name": "Market Query API", "type": "api", "description": "Comparable listings, price distributions and stand-time per segment.", "dependencies": {"modules": [{"moduleId": "module-market-warehouse", "type": "uses", "description": "Queries warehouse."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-advert-harvester", "name": "Advertisement Harvester", "type": "daemon", "description": "Collects advertisements from national and international portals daily.", "dependencies": {"modules": [{"moduleId": "module-listing-matcher", "type": "uses", "description": "Matches listings."}]}}, {"id": "module-ownership-change-ingest", "name": "Ownership Change Ingest", "type": "message-consumer", "description": "Turns RDW ownership changes into sale events.", "dependencies": {"modules": [{"moduleId": "module-market-warehouse", "type": "uses", "description": "Writes sales."}]}}]}, {"layer": "stateless-service", "description": "Orchestration and calculation without durable state.", "modules": [{"id": "module-listing-matcher", "name": "Listing Matcher", "type": "stateless-service", "description": "Matches adverts to plates/specifications and detects when a car is sold.", "dependencies": {"modules": [{"moduleId": "module-specification-api", "type": "uses", "description": "Normalises editions.", "targetBrickId": "vidn"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-market-warehouse", "name": "Market Warehouse", "type": "stateful-service", "description": "Historical adverts, sales and transactions by model, edition and region."}]}, {"layer": "integration", "description": "Adapters to RDW, data partners, channels and providers.", "modules": [{"id": "module-portal-data-adapter", "name": "Portal Data Adapter", "type": "integration", "description": "Data agreements and collectors for advertising portals."}]}], "dataDependencies": [{"assetId": "market-advertisement-observation", "moduleIds": ["module-market-warehouse", "module-advert-harvester", "module-portal-data-adapter"], "role": "own", "description": "Observed adverts."}, {"assetId": "vehicle-transaction-history", "moduleIds": ["module-market-warehouse", "module-ownership-change-ingest"], "role": "own", "description": "Sales and ownership history."}, {"assetId": "vehicle-registration-record", "moduleIds": ["module-ownership-change-ingest"], "role": "read", "description": "Mutations."}], "brickDependencies": [{"targetBrickId": "rdwc", "moduleId": "module-plate-register-api", "sourceModuleId": "module-ownership-change-ingest", "type": "data", "description": "Ownership mutations."}, {"targetBrickId": "vidn", "moduleId": "module-specification-api", "sourceModuleId": "module-listing-matcher", "type": "data", "description": "Specification normalisation."}], "externalSystemsThisBrickDependsOn": [{"system": "National and international advertising portals", "type": "data", "interface": "Advertisement data", "description": "Asking prices and stand-time.", "sourceModuleId": "module-portal-data-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Vehicle Data Foundation", "group": "Market, Value and Tax"};
-    const relatedTeams = [{"teamId": "valuation-and-market-data", "teamName": "Valuation and Market Data", "teamType": "complicated-subsystem", "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "occasion-manager", "name": "Occasion Manager", "icon": "product.png", "type": "B2B SaaS module", "whyUsed": "Market comparables."}, {"id": "marktinzicht", "name": "VWE Marktinzicht and Lead Generator", "icon": "product.png", "type": "Data and analytics product", "whyUsed": "Market data."}];
     const supportedJobs = [{"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Market-based price and 150+ channels.", "usedInSteps": [{"step": "Price and advertise once bought", "description": "Set an asking price and go live everywhere.", "howItSupports": "Market-based price and 150+ channels.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "dhld-grow", "jobName": "Grow used-car share in the group's regions", "jobWhatItIs": "Find where demand is and win more buyers in each branch area.", "jobOutcome": "Used-car share per region grows without margin erosion.", "supportRationale": "RDW-based dashboards.", "usedInSteps": [{"step": "Read the market", "description": "Registrations and sales by model and region.", "howItSupports": "RDW-based dashboards.", "media": []}, {"step": "Target switchers", "description": "Reach owners about to change cars.", "howItSupports": "Change-of-ownership lead lists.", "media": []}, {"step": "Price for velocity", "description": "Apply market-based pricing in every branch.", "howItSupports": "Price advice and signals.", "media": []}]}, {"customerId": "trex", "customerName": "Car Trader and Importer-Exporter", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-trex-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "trex-move", "jobName": "Move stock fast between trade parties and borders", "jobWhatItIs": "Sell cars to other traders or foreign buyers quickly.", "jobOutcome": "Cars sell to the trade within days with complete export documents.", "supportRationale": "Trade platform and auction hand-off.", "usedInSteps": [{"step": "Offer to the trade", "description": "List cars for dealers and traders.", "howItSupports": "Trade platform and auction hand-off.", "media": []}]}, {"customerId": "dcli", "customerName": "Importer and Insurer Data Analyst", "customerGroup": "Data and Software Clients", "customerIcon": "customer-dcli-portrait.jpg", "productId": "marktinzicht", "productName": "VWE Marktinzicht and Lead Generator", "productIcon": "product.png", "jobId": "dcli-market", "jobName": "Understand market and car-park development", "jobWhatItIs": "Know registrations, sales and share by model and region to steer allocation and marketing.", "jobOutcome": "Decisions use current, trusted market numbers.", "supportRationale": "Market Performance Manager.", "usedInSteps": [{"step": "Monitor the market", "description": "Dashboards on registrations and share.", "howItSupports": "Market Performance Manager.", "media": []}, {"step": "Benchmark dealers", "description": "Compare dealer performance by area.", "howItSupports": "Occasion performance meter.", "media": []}, {"step": "Target demand", "description": "Find owners likely to switch.", "howItSupports": "Lead scoring.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "marktinzicht", "productName": "VWE Marktinzicht and Lead Generator", "productIcon": "product.png", "jobId": "dhld-grow", "jobName": "Grow used-car share in the group's regions", "jobWhatItIs": "Find where demand is and win more buyers in each branch area.", "jobOutcome": "Used-car share per region grows without margin erosion.", "supportRationale": "RDW-based dashboards.", "usedInSteps": [{"step": "Read the market", "description": "Registrations and sales by model and region.", "howItSupports": "RDW-based dashboards.", "media": []}, {"step": "Target switchers", "description": "Reach owners about to change cars.", "howItSupports": "Change-of-ownership lead lists.", "media": []}, {"step": "Price for velocity", "description": "Apply market-based pricing in every branch.", "howItSupports": "Price advice and signals.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

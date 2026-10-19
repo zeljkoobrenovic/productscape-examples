@@ -490,7 +490,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -503,12 +502,10 @@
     const config = {"domains": [{"id": "enterprise-applications-and-financial-systems", "name": "Enterprise Applications and Financial Systems", "description": "The Enterprise Applications and Financial Systems domain covers Booking Holdings' global finance ecosystem as seen by its architecture function: the SAP S/4HANA finance core and high-volume subledger, payments-to-ledger for card and alternative payment methods, partner settlement, source-to-pay, tax and treasury, close and SOX controls, finance data and integration, and the architecture governance that converges brand finance technology onto one compliant, scalable platform."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "partner-payout-instruction", "name": "Partner Payout Instruction", "kind": "transactional-record", "description": "Payout instructions for merchant-model partners: amount net of commission, currency, method (bank transfer, virtual card), value date and status.", "businessMeaning": "What the company owes each partner and when it is paid.", "status": "active", "tags": [], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["sox", "psd2", "emd2"], "securityCriticality": "critical", "accessScope": "Treasury, settlement operations and partner self-service.", "systemOfRecordBrickId": "pout", "ownerTeamId": "ptst", "stewardTeamIds": ["trea", "sbrv"], "derivedFromAssetIds": ["contract-account-subledger-posting", "partner-bank-and-payout-details"], "stores": [{"storeId": "partner-settlement-db", "role": "system-of-record"}, {"storeId": "finance-event-streams", "role": "event-source"}], "interfaces": [{"type": "api", "name": "payout api", "description": "Create and track payouts."}, {"type": "event", "name": "payout-status-changed", "description": "Executed, returned or failed."}], "governance": {"retention": "10 years", "residency": "eu", "sharingPolicy": "Treasury, settlement operations and partner self-service."}, "rootGroup": "Payments and Settlement Data", "group": "Partner Settlement"};
+    const currentAsset = {"id": "partner-payout-instruction", "name": "Partner Payout Instruction", "kind": "transactional-record", "description": "Payout instructions for merchant-model partners: amount net of commission, currency, method (bank transfer, virtual card), value date and status.", "businessMeaning": "What the company owes each partner and when it is paid.", "status": "active", "tags": [], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["sox", "psd2", "emd2"], "securityCriticality": "critical", "accessScope": "Treasury, settlement operations and partner self-service.", "systemOfRecordBrickId": "pout", "derivedFromAssetIds": ["contract-account-subledger-posting", "partner-bank-and-payout-details"], "stores": [{"storeId": "partner-settlement-db", "role": "system-of-record"}, {"storeId": "finance-event-streams", "role": "event-source"}], "interfaces": [{"type": "api", "name": "payout api", "description": "Create and track payouts."}, {"type": "event", "name": "payout-status-changed", "description": "Executed, returned or failed."}], "governance": {"retention": "10 years", "residency": "eu", "sharingPolicy": "Treasury, settlement operations and partner self-service."}, "rootGroup": "Payments and Settlement Data", "group": "Partner Settlement"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "pout", "name": "Partner Payout Orchestration", "role": "own", "description": "System of record for partner payout instructions."}];
     const consumingBricks = [{"id": "bnkc", "name": "Bank Connectivity and Payment Factory", "role": "read", "description": "Payout batches for transmission."}];
-    const ownerTeam = {"teamId": "ptst", "teamName": "Partner Settlement", "teamType": "stream-aligned", "groupName": "Money Movement Finance"};
-    const stewardTeams = [{"teamId": "trea", "teamName": "Treasury Systems", "teamType": "stream-aligned", "groupName": "Enterprise Business Applications"}, {"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupName": "Finance Core Engineering"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -697,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

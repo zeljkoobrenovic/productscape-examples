@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "rrec", "name": "Revenue Recognition Engine", "type": "service", "status": "invest", "description": "Applies ASC 606 to merchant and agency transactions: principal-versus-agent judgement, gross versus net presentation, timing at check-in or stay completion, cancellations and refunds, and payment facilitation revenue. Merchant revenues grew to $17,755M in 2025 while agency revenues fell to $7,968M as Booking.com shifted to the merchant model (10-K FY2025), so the engine's rules are the most material revenue judgement in the core.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-rrec-api", "name": "Revenue Recognition API", "type": "api", "description": "Exposes recognition rules, schedules and recognised amounts per brand, model and period.", "dependencies": {"modules": [{"moduleId": "module-rrec-core", "type": "uses", "description": "Reads schedules."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-rrec-run", "name": "Recognition Run Scheduler", "type": "daemon", "description": "Daily and period-end recognition runs that post recognised revenue and release deferrals.", "dependencies": {"modules": [{"moduleId": "module-rrec-core", "type": "uses", "description": "Reads due schedule lines."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-rrec-rules", "name": "Recognition Rules Service", "type": "stateless-service", "description": "Evaluates contract type, model (merchant/agency), product and event to pick the recognition pattern.", "dependencies": {"modules": [{"moduleId": "module-rrec-core", "type": "uses", "description": "Creates or updates schedules."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-rrec-core", "name": "Revenue Schedule Store", "type": "stateful-service", "description": "Performance obligations, schedules, recognised and deferred amounts with audit trail."}]}], "dataDependencies": [{"assetId": "revenue-recognition-schedule", "moduleIds": ["module-rrec-core", "module-rrec-rules", "module-rrec-run", "module-rrec-api"], "role": "own", "description": "System of record for recognition schedules and recognised revenue."}, {"assetId": "contract-account-subledger-posting", "moduleIds": ["module-rrec-rules"], "role": "read", "description": "Source items for performance obligations."}], "brickDependencies": [{"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-rrec-rules", "type": "data", "description": "Reads subledger items and events that create or change obligations."}, {"targetBrickId": "tfnd", "moduleId": "module-tfnd-api", "sourceModuleId": "module-rrec-run", "type": "composition", "description": "Releases deferred merchant bookings when revenue is recognised."}, {"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-rrec-run", "type": "data", "description": "Posts recognised revenue to the ledger."}], "externalSystemsThisBrickDependsOn": [{"system": "SAP S/4HANA revenue accounting (assumed)", "type": "platform", "interface": "Revenue accounting integration", "description": "Assumed SAP component for schedule posting.", "sourceModuleId": "module-rrec-run"}], "externalSystemsDependingOnThisBrick": [{"system": "External auditor", "type": "consumer", "interface": "Revenue Recognition API", "description": "Evidence for principal-versus-agent and timing judgements.", "moduleId": "module-rrec-api"}], "domain": "Global Finance Core", "group": "Subledger and Revenue"};
-    const relatedTeams = [{"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "sublr", "name": "Subledger and Revenue Platform", "icon": "sublr.png", "type": "Internal finance platform", "whyUsed": "Revenue Recognition Engine as part of Subledger and Revenue Platform."}];
     const supportedJobs = [{"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Normalised financial events into the subledger.", "usedInSteps": [{"step": "Capture booking financial events", "description": "Receive complete booking, payment and cancellation events from every brand.", "howItSupports": "Normalised financial events into the subledger.", "media": []}, {"step": "Apply recognition rules", "description": "Determine gross or net, timing and deferral for each booking type.", "howItSupports": "Revenue recognition engine posts schedules.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Reverse or adjust revenue and liabilities after cancellations and disputes.", "howItSupports": "Refund and dispute postings linked to the original booking.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-launch", "jobName": "Launch payment methods and markets without finance blockers", "jobWhatItIs": "Add a payment method, PSP, currency or market (for example local methods in Asia through a partner such as Antom) with accounting, tax, settlement and controls ready on day one.", "jobOutcome": "New payment options go live on the product timeline and post correctly to the ledger from the first transaction.", "supportRationale": "Payment events feed the subledger and revenue posting for merchant bookings.", "usedInSteps": [{"step": "Map payment events to finance contracts", "description": "Map authorisation, capture, settlement and fee events to the canonical schema.", "howItSupports": "Payment events feed the subledger and revenue posting for merchant bookings.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Payment event ingestion normalises PSP settlements into one record.", "usedInSteps": [{"step": "Ingest PSP and acquirer settlement data", "description": "Normalise settlement reports from all PSPs and acquirers daily.", "howItSupports": "Payment event ingestion normalises PSP settlements into one record.", "media": []}, {"step": "Match bookings, payments and settlements", "description": "Run three-way matching and route breaks to owners.", "howItSupports": "Settlement reconciliation matches payments to bookings and bank receipts.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Post refunds, chargebacks and dispute outcomes against the original booking.", "howItSupports": "Dispute accounting links each case to the original payment and reverses revenue correctly.", "media": []}, {"step": "Clear breaks and report", "description": "Resolve or write off breaks and report status for the close.", "howItSupports": "Break ageing and write-off reporting feed the close and controls.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

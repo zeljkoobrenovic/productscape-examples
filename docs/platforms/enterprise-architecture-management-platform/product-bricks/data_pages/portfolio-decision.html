@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "enterprise-architecture-management-platform", "name": "Enterprise Architecture Management Platform", "description": "Enterprise Architecture Management Platform covers SaaS products that maintain a living model of enterprise capabilities, applications, technologies, processes, risks, roadmaps, and transformation decisions so business and technology leaders can govern change with shared evidence."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "portfolio-decision", "name": "Portfolio Decision", "kind": "event-log", "description": "Decision records for retain, invest, migrate, retire, defer, approve, reject, or escalate actions across applications, technologies, initiatives, and roadmaps.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["employee"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "architecture governance and audit evidence", "businessMeaning": "Captures why a transformation or portfolio decision was made and which evidence supported it.", "status": "active", "stores": [{"storeId": "decision-ledger", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "portfolio-decision api", "description": "Decision record access for governance and audit workflows."}], "ownerTeamId": "solution-governance", "stewardTeamIds": ["security-governance-operations"], "derivedFromAssetIds": ["application-inventory", "business-capability", "technology-standard"], "governance": {"retention": "regulated audit retention window", "residency": "customer-configured region", "sharingPolicy": "strictly controlled internal and audit usage"}, "rootGroup": "Architecture, Portfolio, and Planning Data", "group": "Events and Logs"};
+    const currentAsset = {"id": "portfolio-decision", "name": "Portfolio Decision", "kind": "event-log", "description": "Decision records for retain, invest, migrate, retire, defer, approve, reject, or escalate actions across applications, technologies, initiatives, and roadmaps.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["employee"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "architecture governance and audit evidence", "businessMeaning": "Captures why a transformation or portfolio decision was made and which evidence supported it.", "status": "active", "stores": [{"storeId": "decision-ledger", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "portfolio-decision api", "description": "Decision record access for governance and audit workflows."}], "derivedFromAssetIds": ["application-inventory", "business-capability", "technology-standard"], "governance": {"retention": "regulated audit retention window", "residency": "customer-configured region", "sharingPolicy": "strictly controlled internal and audit usage"}, "rootGroup": "Architecture, Portfolio, and Planning Data", "group": "Events and Logs"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "apra", "name": "Application Rationalization Engine", "role": "publish", "description": "Publishes rationalization decisions and evidence."}, {"id": "impa", "name": "Change Impact Analyzer", "role": "publish", "description": "Publishes impact evidence for decision records."}, {"id": "spmf", "name": "Strategic Portfolio Fit", "role": "publish", "description": "Publishes investment-fit evidence for decision records."}, {"id": "sdes", "name": "Solution Design Workspace", "role": "publish", "description": "Publishes solution decision evidence."}];
     const consumingBricks = [{"id": "valu", "name": "Value Realization Tracker", "role": "read", "description": "Reads decision evidence to measure realized value."}, {"id": "appr", "name": "Decision and Exception Ledger", "role": "store", "description": "Stores portfolio and architecture decisions."}];
-    const ownerTeam = {"teamId": "solution-governance", "teamName": "Solution Governance", "teamType": "stream-aligned", "groupName": "Transformation Planning"};
-    const stewardTeams = [{"teamId": "security-governance-operations", "teamName": "Security and Governance Operations", "teamType": "platform", "groupName": "Engagement and Trust"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

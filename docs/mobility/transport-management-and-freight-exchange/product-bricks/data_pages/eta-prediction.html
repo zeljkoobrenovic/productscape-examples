@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "eta-prediction", "name": "ETA Prediction", "kind": "derived-metric", "description": "Continuously recomputed estimated arrival times per shipment stop, with confidence bands and delay-risk classification, computed from the tracking event stream combined with route distance, driving-time regulation constraints, and historical lane transit times. Consumed by the visibility UI (arrival boards), exception management (late-risk alerts before the customer notices), and dock scheduling (slot re-planning on predicted delay). Predictions attach to shipments, not people, and carry no direct personal data.", "businessMeaning": "The promise-keeping engine: turning raw positions into 'this truck arrives at 14:40' so planners and docks act before delays become failures.", "status": "active", "tags": ["execution-and-visibility"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "shipment parties and internal visibility, exception, and dock-scheduling workflows", "systemOfRecordBrickId": "trck", "ownerTeamId": "visibility", "stewardTeamIds": [], "derivedFromAssetIds": ["tracking-event-stream"], "stores": [{"storeId": "eta-prediction-cache", "role": "serving"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "eta api", "description": "Current ETA and delay-risk lookup per shipment stop, used by visibility UI, notifications, and dock scheduling."}, {"type": "event", "name": "eta change events", "description": "Significant ETA shift and late-risk events that trigger exceptions and slot re-planning."}], "governance": {"retention": "live predictions ephemeral; prediction-vs-actual history 24 months for model accuracy monitoring", "residency": "eu", "sharingPolicy": "served to shipment parties; accuracy statistics shared internally for model improvement"}, "rootGroup": "Visibility and Site Operations Data", "group": "Tracking and Prediction"};
+    const currentAsset = {"id": "eta-prediction", "name": "ETA Prediction", "kind": "derived-metric", "description": "Continuously recomputed estimated arrival times per shipment stop, with confidence bands and delay-risk classification, computed from the tracking event stream combined with route distance, driving-time regulation constraints, and historical lane transit times. Consumed by the visibility UI (arrival boards), exception management (late-risk alerts before the customer notices), and dock scheduling (slot re-planning on predicted delay). Predictions attach to shipments, not people, and carry no direct personal data.", "businessMeaning": "The promise-keeping engine: turning raw positions into 'this truck arrives at 14:40' so planners and docks act before delays become failures.", "status": "active", "tags": ["execution-and-visibility"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "shipment parties and internal visibility, exception, and dock-scheduling workflows", "systemOfRecordBrickId": "trck", "derivedFromAssetIds": ["tracking-event-stream"], "stores": [{"storeId": "eta-prediction-cache", "role": "serving"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "eta api", "description": "Current ETA and delay-risk lookup per shipment stop, used by visibility UI, notifications, and dock scheduling."}, {"type": "event", "name": "eta change events", "description": "Significant ETA shift and late-risk events that trigger exceptions and slot re-planning."}], "governance": {"retention": "live predictions ephemeral; prediction-vs-actual history 24 months for model accuracy monitoring", "residency": "eu", "sharingPolicy": "served to shipment parties; accuracy statistics shared internally for model improvement"}, "rootGroup": "Visibility and Site Operations Data", "group": "Tracking and Prediction"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "trck", "name": "Real-Time Visibility and ETA", "role": "own", "description": "System of record for ETA predictions and their accuracy history."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "visibility", "teamName": "Visibility", "teamType": "stream-aligned", "groupName": "Execution Group"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

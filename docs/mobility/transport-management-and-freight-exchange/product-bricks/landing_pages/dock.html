@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "dock", "name": "Dock Scheduling", "type": "full-stack", "status": "sustaining", "description": "Dock and yard scheduling for plants and distribution centres: carriers self-book loading and unloading slots against dock capacity and opening hours, gate staff check trucks in and out, and turnaround time is measured per site. ETA-aware rescheduling keeps docks flowing when trucks run late, cutting waiting-time claims and demurrage disputes.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-dock-web", "name": "Slot Booking Calendar", "type": "web-component", "description": "Site calendar for slot capacity and bookings, plus the carrier-facing self-service booking flow.", "dependencies": {"modules": [{"moduleId": "module-dock-api", "type": "uses", "description": "UI module books and reschedules slots through the brick API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-dock-api", "name": "Dock Slot API", "type": "api", "description": "API for slot availability, booking, rescheduling, and turnaround reporting.", "dependencies": {"modules": [{"moduleId": "module-dock-slot-store", "type": "delegates", "description": "Interface module delegates slot state to the slot store."}]}}, {"id": "module-dock-gate-console", "name": "Gate and Yard Console", "type": "backoffice-interface", "description": "Gate check-in/check-out console recording arrival, dock assignment, and departure per truck.", "dependencies": {"modules": [{"moduleId": "module-dock-slot-store", "type": "delegates", "description": "Console writes gate events and turnaround timestamps to the slot store."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-dock-reschedule-worker", "name": "ETA Reschedule Worker", "type": "daemon", "description": "Watches live ETAs for booked trucks, flags slots that will be missed, and proposes reschedules into free capacity before the dock queue backs up.", "dependencies": {"modules": [{"moduleId": "module-dock-slot-store", "type": "processes", "description": "Asynchronous module writes reschedule proposals and slot moves to the slot store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-dock-slot-store", "name": "Slot and Turnaround Store", "type": "stateful-service", "description": "Owns dock capacity models, slot bookings, gate events, and turnaround metrics per site."}]}], "dataDependencies": [{"assetId": "dock-slot-booking", "moduleIds": ["module-dock-slot-store", "module-dock-reschedule-worker"], "role": "own", "description": "System of record for dock slots, bookings, gate events, and turnaround measurements."}, {"assetId": "location-master", "moduleIds": ["module-dock-api"], "role": "read", "description": "Reads site dock layouts, capacities, and opening hours from logistics master data."}], "brickDependencies": [{"targetBrickId": "tord", "moduleId": "module-tord-api", "sourceModuleId": "module-dock-api", "type": "data", "description": "Links slot bookings to transport orders and their cargo and equipment details."}, {"targetBrickId": "trck", "moduleId": "module-trck-api", "sourceModuleId": "module-dock-reschedule-worker", "type": "data", "description": "Polls live ETAs for booked trucks to flag late arrivals and drive slot rescheduling."}, {"targetBrickId": "notf", "moduleId": "module-notf-api", "sourceModuleId": "module-dock-api", "type": "notification", "description": "Sends slot confirmations, reschedule proposals, and gate call-forward messages to carriers."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-dock-api", "type": "identity", "description": "Resolves organizations, users, roles, and entitlements from the identity backbone."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Execution and Visibility", "group": "Visibility and Sites"};
-    const relatedTeams = [{"teamId": "site-logistics", "teamName": "Site Logistics", "teamType": "stream-aligned", "groupId": "exeg", "groupName": "Execution Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "enterprise-tms", "name": "Enterprise TMS", "icon": "tdir.png", "type": "B2B Enterprise SaaS", "whyUsed": "Links confirmed transport orders to booked dock slots so planning and sites stay in sync."}, {"id": "dock-scheduler", "name": "Dock Scheduling", "icon": "dksm.png", "type": "B2B SaaS", "whyUsed": "The core slot booking and yard coordination surface for sites and their carriers."}];
     const supportedJobs = [{"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-1", "jobName": "Plan and tender the daily load plan", "jobWhatItIs": "Turn the overnight ERP order drop into optimized FTL/LTL loads, tender them through the routing guide, and get every load confirmed with carrier, driver, and dock slot before cutoff.", "jobOutcome": "The day's orders become confirmed, dispatched transport orders with minimal manual touches and no loads left silently uncovered.", "supportRationale": "Books matching dock slots at origin and destination for each confirmed load.", "usedInSteps": [{"step": "Confirm dispatch, documents, and dock slots", "description": "Lock in pickup times, generate transport documents including eCMR, and align dock slots at origin and destination so confirmed loads have somewhere to load and unload.", "howItSupports": "Books matching dock slots at origin and destination for each confirmed load.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-1-4.png", "title": "Transport Planner JTBD step 4: Confirm dispatch, documents, and dock slots", "alt": "Enterprise infographic for step 4 of the job \"Plan and tender the daily load plan\": Confirm dispatch, documents, and dock slots."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-2", "jobName": "Track shipments and resolve exceptions before customers notice", "jobWhatItIs": "Monitor every in-transit shipment against plan, catch delays and disruptions early, execute recovery \u2014 re-slot, re-route, inform \u2014 and close each order with clean delivery evidence.", "jobOutcome": "Disruptions are caught and handled before consignees feel them, and closed orders carry complete documentation into settlement.", "supportRationale": "Re-slots arrivals when delays make original bookings impossible.", "usedInSteps": [{"step": "Execute recovery actions", "description": "Rebook dock slots, notify consignees, arrange rescue capacity for breakdowns, and record what happened so the same failure is cheaper to handle next time.", "howItSupports": "Re-slots arrivals when delays make original bookings impossible.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-3.png", "title": "Transport Planner JTBD step 3: Execute recovery actions", "alt": "Enterprise infographic for step 3 of the job \"Track shipments and resolve exceptions before customers notice\": Execute recovery actions."}]}]}, {"customerId": "dksm", "customerName": "Dock Site Manager", "customerGroup": "Warehouse and Dock Operations", "customerIcon": "dksm.png", "productId": "dock-scheduler", "productName": "Dock Scheduling", "productIcon": "dksm.png", "jobId": "jtbd-dksm-1", "jobName": "Smooth dock utilization across the day", "jobWhatItIs": "Shape truck arrivals to the site's real capacity: publish slot capacity and booking rules, get carriers and planners booking ahead, rebalance the day with live ETAs, and learn from utilization patterns.", "jobOutcome": "Arrivals spread across the operating day at a rhythm the warehouse can staff for \u2014 no morning wall, no dead docks, no overtime lottery.", "supportRationale": "Publishes slot capacity and enforces the site's booking rules automatically.", "usedInSteps": [{"step": "Publish capacity and booking rules", "description": "Define slots per dock, equipment constraints, and booking rules \u2014 lead times, priorities for production-critical materials \u2014 and publish them where every carrier and planner books.", "howItSupports": "Publishes slot capacity and enforces the site's booking rules automatically.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-1-1.png", "title": "Dock Site Manager JTBD step 1: Publish capacity and booking rules", "alt": "Enterprise infographic for step 1 of the job \"Smooth dock utilization across the day\": Publish capacity and booking rules."}]}, {"step": "Get arrivals booked ahead", "description": "Pull shipper planners and carriers into pre-booking by making the booked lane visibly faster than turning up blind \u2014 bookings created from transport orders, not phone calls.", "howItSupports": "Offers self-service booking to carriers and planners linked to their transport orders.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-1-2.png", "title": "Dock Site Manager JTBD step 2: Get arrivals booked ahead", "alt": "Enterprise infographic for step 2 of the job \"Smooth dock utilization across the day\": Get arrivals booked ahead."}]}, {"step": "Rebalance the day on live ETAs", "description": "Watch inbound ETAs against booked slots and re-slot early \u2014 moving a late truck to 14:00 at 09:00 is a plan; discovering it at 11:55 is a queue.", "howItSupports": "Re-slots at-risk bookings against remaining capacity with minimal disruption.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-1-3.png", "title": "Dock Site Manager JTBD step 3: Rebalance the day on live ETAs", "alt": "Enterprise infographic for step 3 of the job \"Smooth dock utilization across the day\": Rebalance the day on live ETAs."}]}]}, {"customerId": "dksm", "customerName": "Dock Site Manager", "customerGroup": "Warehouse and Dock Operations", "customerIcon": "dksm.png", "productId": "dock-scheduler", "productName": "Dock Scheduling", "productIcon": "dksm.png", "jobId": "jtbd-dksm-2", "jobName": "Cut truck waiting and turnaround times", "jobWhatItIs": "Move every truck gate-in to gate-out fast: digital check-in, sequenced yard call-off, paperless documents at the dock, and turnaround data that finds the next bottleneck and kills detention disputes.", "jobOutcome": "Turnaround times carriers plan around instead of pricing against, detention costs cut, and gate staff freed from clipboard triage.", "supportRationale": "Runs app and kiosk check-in matched to bookings and captures arrival timestamps automatically.", "usedInSteps": [{"step": "Digitize gate check-in", "description": "Let drivers check in by app or kiosk with booking reference and digital documents, so the gate confirms identity and slot in seconds instead of processing paper in a queue.", "howItSupports": "Runs app and kiosk check-in matched to bookings and captures arrival timestamps automatically.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-2-1.png", "title": "Dock Site Manager JTBD step 1: Digitize gate check-in", "alt": "Enterprise infographic for step 1 of the job \"Cut truck waiting and turnaround times\": Digitize gate check-in."}]}, {"step": "Sequence the yard with call-offs", "description": "Hold checked-in trucks in a buffer and call them to docks in sequence \u2014 drivers wait informed in the cab, docks never idle waiting for a truck that's lost in the yard.", "howItSupports": "Manages the yard buffer and pushes call-off notifications to drivers in their language.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-2-2.png", "title": "Dock Site Manager JTBD step 2: Sequence the yard with call-offs", "alt": "Enterprise infographic for step 2 of the job \"Cut truck waiting and turnaround times\": Sequence the yard with call-offs."}]}, {"step": "Go paperless at the dock", "description": "Handle eCMR and delivery documents digitally at loading and unloading, cutting minutes per truck at the window and ending the lost-CMR payment blockers.", "howItSupports": "Ties document completion into the gate-out flow so paperwork never strands a loaded truck.", "media": [{"type": "image", "src": "media/jbtd-dksm-jtbd-dksm-2-3.png", "title": "Dock Site Manager JTBD step 3: Go paperless at the dock", "alt": "Enterprise infographic for step 3 of the job \"Cut truck waiting and turnaround times\": Go paperless at the dock."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "dock-scheduler", "productName": "Dock Scheduling", "productIcon": "dksm.png", "jobId": "jtbd-tpln-1", "jobName": "Plan and tender the daily load plan", "jobWhatItIs": "Turn the overnight ERP order drop into optimized FTL/LTL loads, tender them through the routing guide, and get every load confirmed with carrier, driver, and dock slot before cutoff.", "jobOutcome": "The day's orders become confirmed, dispatched transport orders with minimal manual touches and no loads left silently uncovered.", "supportRationale": "Books matching dock slots at origin and destination for each confirmed load.", "usedInSteps": [{"step": "Confirm dispatch, documents, and dock slots", "description": "Lock in pickup times, generate transport documents including eCMR, and align dock slots at origin and destination so confirmed loads have somewhere to load and unload.", "howItSupports": "Books matching dock slots at origin and destination for each confirmed load.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-1-4.png", "title": "Transport Planner JTBD step 4: Confirm dispatch, documents, and dock slots", "alt": "Enterprise infographic for step 4 of the job \"Plan and tender the daily load plan\": Confirm dispatch, documents, and dock slots."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "dock-scheduler", "productName": "Dock Scheduling", "productIcon": "dksm.png", "jobId": "jtbd-tpln-2", "jobName": "Track shipments and resolve exceptions before customers notice", "jobWhatItIs": "Monitor every in-transit shipment against plan, catch delays and disruptions early, execute recovery \u2014 re-slot, re-route, inform \u2014 and close each order with clean delivery evidence.", "jobOutcome": "Disruptions are caught and handled before consignees feel them, and closed orders carry complete documentation into settlement.", "supportRationale": "Re-slots arrivals when delays make original bookings impossible.", "usedInSteps": [{"step": "Execute recovery actions", "description": "Rebook dock slots, notify consignees, arrange rescue capacity for breakdowns, and record what happened so the same failure is cheaper to handle next time.", "howItSupports": "Re-slots arrivals when delays make original bookings impossible.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-3.png", "title": "Transport Planner JTBD step 3: Execute recovery actions", "alt": "Enterprise infographic for step 3 of the job \"Track shipments and resolve exceptions before customers notice\": Execute recovery actions."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

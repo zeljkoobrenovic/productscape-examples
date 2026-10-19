@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "dock-slot-booking", "name": "Dock Slot Booking", "kind": "logical-object", "description": "A booked loading or unloading time slot at a plant or DC dock: site, dock and equipment type, slot window, linked transport order, booking carrier, expected driver name and phone for gate check-in, and actual gate-in/gate-out timestamps. Originates from carriers and forwarders booking slots in the dock-scheduling product against site capacity rules; consumed by site gate operations, truck-turnaround analytics, and visibility (arrival vs slot). Driver identification at the gate makes this a personal-data record.", "businessMeaning": "The handshake between a truck and a warehouse: the slot that turns unpredictable arrivals into a smooth dock plan and short turnarounds.", "status": "active", "tags": ["execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner", "customer"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "site operations of the owning shipper, the booking carrier, and turnaround analytics", "systemOfRecordBrickId": "dock", "ownerTeamId": "site-logistics", "stewardTeamIds": [], "derivedFromAssetIds": [], "stores": [{"storeId": "dock-slot-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "dock-slot api", "description": "Slot search, booking, and gate check-in API for the dock-scheduling web app and carrier-facing booking flows."}, {"type": "event", "name": "slot lifecycle events", "description": "Slot booked, rescheduled, gate-in, and gate-out events feeding turnaround KPIs and visibility."}], "governance": {"retention": "18 months for turnaround analytics; driver gate-identification data minimized 30 days after the visit", "residency": "eu", "sharingPolicy": "visible to the site owner and booking carrier; site utilization statistics internal to the owning shipper"}, "rootGroup": "Visibility and Site Operations Data", "group": "Dock and Yard Records"};
+    const currentAsset = {"id": "dock-slot-booking", "name": "Dock Slot Booking", "kind": "logical-object", "description": "A booked loading or unloading time slot at a plant or DC dock: site, dock and equipment type, slot window, linked transport order, booking carrier, expected driver name and phone for gate check-in, and actual gate-in/gate-out timestamps. Originates from carriers and forwarders booking slots in the dock-scheduling product against site capacity rules; consumed by site gate operations, truck-turnaround analytics, and visibility (arrival vs slot). Driver identification at the gate makes this a personal-data record.", "businessMeaning": "The handshake between a truck and a warehouse: the slot that turns unpredictable arrivals into a smooth dock plan and short turnarounds.", "status": "active", "tags": ["execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner", "customer"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "site operations of the owning shipper, the booking carrier, and turnaround analytics", "systemOfRecordBrickId": "dock", "derivedFromAssetIds": [], "stores": [{"storeId": "dock-slot-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "dock-slot api", "description": "Slot search, booking, and gate check-in API for the dock-scheduling web app and carrier-facing booking flows."}, {"type": "event", "name": "slot lifecycle events", "description": "Slot booked, rescheduled, gate-in, and gate-out events feeding turnaround KPIs and visibility."}], "governance": {"retention": "18 months for turnaround analytics; driver gate-identification data minimized 30 days after the visit", "residency": "eu", "sharingPolicy": "visible to the site owner and booking carrier; site utilization statistics internal to the owning shipper"}, "rootGroup": "Visibility and Site Operations Data", "group": "Dock and Yard Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "dock", "name": "Dock Scheduling", "role": "own", "description": "System of record for dock slots, bookings, gate events, and turnaround measurements."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "site-logistics", "teamName": "Site Logistics", "teamType": "stream-aligned", "groupName": "Execution Group"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "objs", "name": "Object Storage", "type": "service", "status": "invest", "description": "Durable object storage with buckets, lifecycle policy, versioning, replication, encryption, access controls, event notifications, and data lake integration.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-lifecycle-policy-console", "name": "Lifecycle policy console", "type": "web-component", "description": "Configures retention, tiering, replication, object lock, and access policies.", "dependencies": {"modules": [{"moduleId": "module-object-storage-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}, "direction": "public"}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-object-storage-api", "name": "Object storage API", "type": "api", "description": "Stores, retrieves, lists, versions, and deletes objects through SDKs and compatible protocols.", "dependencies": {"modules": [{"moduleId": "module-bucket-and-object-namespace", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-lifecycle-and-replication-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-object-event-stream", "name": "Object event stream", "type": "message-consumer", "description": "Emits object-created, object-deleted, replication, and lifecycle events.", "dependencies": {"modules": [{"moduleId": "module-bucket-and-object-namespace", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-lifecycle-and-replication-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}, "direction": "internal"}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-bucket-and-object-namespace", "name": "Bucket and object namespace", "type": "service", "description": "Manages buckets, objects, metadata, versioning, retention, and access boundaries.", "dependencies": {"modules": [{"moduleId": "module-object-event-and-lake-integration", "type": "integrates", "description": "Service module uses the integration adapter for external-system communication."}]}}, {"id": "module-lifecycle-and-replication-engine", "name": "Lifecycle and replication engine", "type": "service", "description": "Executes tiering, deletion, replication, legal hold, and cross-region continuity policies.", "dependencies": {"modules": [{"moduleId": "module-object-event-and-lake-integration", "type": "integrates", "description": "Service module uses the integration adapter for external-system communication."}]}}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-object-event-and-lake-integration", "name": "Object event and lake integration", "type": "integration", "description": "Publishes object events and integrates storage with analytics, AI, and backup workflows."}]}], "dataDependencies": [{"assetId": "resource-inventory", "moduleIds": ["module-bucket-and-object-namespace", "module-lifecycle-and-replication-engine"], "role": "own", "description": "Tracks buckets, prefixes, policies, replication state, and storage classes."}, {"assetId": "usage-meter", "moduleIds": ["module-object-event-stream"], "role": "publish", "description": "Publishes storage volume, request, retrieval, replication, and transfer usage."}, {"assetId": "audit-log", "moduleIds": ["module-object-event-stream"], "role": "publish", "description": "Publishes bucket, object, and access policy events."}], "brickDependencies": [{"targetBrickId": "iamx", "moduleId": "module-iam-administration-api", "sourceModuleId": "module-object-storage-api", "type": "control-plane", "description": "Uses Identity and Access Management capabilities for governed public-cloud delivery."}, {"targetBrickId": "keym", "moduleId": "module-key-management-api", "sourceModuleId": "module-object-storage-api", "type": "control-plane", "description": "Uses Key Management and Encryption capabilities for governed public-cloud delivery."}, {"targetBrickId": "evnt", "moduleId": "module-messaging-and-event-api", "sourceModuleId": "module-object-storage-api", "type": "runtime", "description": "Uses Event Bus and Messaging capabilities for governed public-cloud delivery."}, {"targetBrickId": "cost", "moduleId": "module-cost-management-api", "sourceModuleId": "module-object-storage-api", "type": "control-plane", "description": "Uses FinOps and Commercial Controls capabilities for governed public-cloud delivery."}, {"targetBrickId": "govr", "moduleId": "module-governance-policy-api", "sourceModuleId": "module-object-storage-api", "type": "control-plane", "description": "Uses Cloud Governance and Policy capabilities for governed public-cloud delivery."}], "externalSystemsThisBrickDependsOn": [{"system": "Customer data pipelines", "type": "data-integration", "interface": "object api and event notifications", "description": "Provides durable landing zones for application, analytics, backup, and AI data.", "sourceModuleId": "module-object-event-and-lake-integration"}], "externalSystemsDependingOnThisBrick": [{"system": "Third-party backup and archive tools", "type": "partner-integration", "interface": "object api", "description": "Read and write backup, archive, and compliance objects.", "moduleId": "module-object-storage-api"}], "domain": "Infrastructure Services", "group": "Storage and Data Movement"};
-    const relatedTeams = [{"teamId": "infrastructure-services-storage-and-data-movement-3", "teamName": "Infrastructure Services Object Storage", "teamType": "platform", "groupId": "infrastructure-services", "groupName": "Infrastructure Services", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Elastic Infrastructure Cloud", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}, {"id": "p3", "name": "Cloud Data and AI Services", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}];
     const supportedJobs = [{"customerId": "cg1-p1", "customerName": "Startup CTO", "customerGroup": "Builders & Transformers", "customerIcon": "cg1-p1.png", "productId": "p1", "productName": "Elastic Infrastructure Cloud", "productIcon": "", "jobId": "jtbd-cg1-2", "jobName": "Experiment with data and AI before hiring specialists", "jobWhatItIs": "Use managed analytics and AI services to test product intelligence and automation ideas.", "jobOutcome": "The startup validates AI-powered experiences without building a full data platform first.", "supportRationale": "Provides a core public-cloud building block for this step.", "usedInSteps": [{"step": "Choose architecture path", "description": "Choose architecture path for the job \"Experiment with data and AI before hiring specialists\" with clear success criteria and operational ownership.", "howItSupports": "Provides a core public-cloud building block for this step.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-1.jpg", "title": "Startup CTO JTBD step 1: Choose architecture path", "alt": "Enterprise infographic for step 1 of the job \"Experiment with data and AI before hiring specialists\": Choose architecture path."}]}]}, {"customerId": "cg1-p1", "customerName": "Startup CTO", "customerGroup": "Builders & Transformers", "customerIcon": "cg1-p1.png", "productId": "p3", "productName": "Cloud Data and AI Services", "productIcon": "", "jobId": "jtbd-cg1-2", "jobName": "Experiment with data and AI before hiring specialists", "jobWhatItIs": "Use managed analytics and AI services to test product intelligence and automation ideas.", "jobOutcome": "The startup validates AI-powered experiences without building a full data platform first.", "supportRationale": "Provides a core public-cloud building block for this step.", "usedInSteps": [{"step": "Choose architecture path", "description": "Choose architecture path for the job \"Experiment with data and AI before hiring specialists\" with clear success criteria and operational ownership.", "howItSupports": "Provides a core public-cloud building block for this step.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-1.jpg", "title": "Startup CTO JTBD step 1: Choose architecture path", "alt": "Enterprise infographic for step 1 of the job \"Experiment with data and AI before hiring specialists\": Choose architecture path."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

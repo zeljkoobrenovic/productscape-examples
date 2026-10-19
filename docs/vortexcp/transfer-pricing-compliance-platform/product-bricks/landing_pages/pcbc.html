@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "pcbc", "name": "EU Public CbCR (XHTML with inline XBRL)", "type": "service", "status": "invest", "description": "Public country-by-country reporting under EU Directive (EU) 2021/2101: generates the public report in XHTML with inline XBRL from the CbCR data already in the platform, with the narrative sections, aggregation options for non-EU jurisdictions and the tagging required by the applicable taxonomy. Australian Public CbCR is the next format on the roadmap.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-pcbc-web", "name": "Public CbCR Report Builder", "type": "web-component", "description": "Screens to select the reporting year and consolidation scope, choose jurisdiction aggregation options, edit narrative sections and preview and release the XHTML report.", "dependencies": {"modules": [{"moduleId": "module-pcbc-api", "type": "uses", "description": "Builder calls the Public CbCR API for report drafts, tagging and release."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-pcbc-api", "name": "Public CbCR API", "type": "api", "description": "API for public CbCR report drafts, narrative content, taxonomy tagging and release; used by the builder, workflow tasks and the dashboard.", "dependencies": {"modules": [{"moduleId": "module-pcbc-store", "type": "delegates", "description": "Interface delegates report persistence to the public CbCR report store."}, {"moduleId": "module-pcbc-build-worker", "type": "uses", "description": "Interface triggers asynchronous report builds."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-pcbc-build-worker", "name": "Public Report Build Worker", "type": "message-consumer", "description": "Builds the XHTML and inline XBRL report from the source CbCR dataset and narrative, validates it against the taxonomy and stores the release candidate.", "dependencies": {"modules": [{"moduleId": "module-pcbc-ixbrl-generator", "type": "uses", "description": "Worker generates the tagged XHTML through the inline XBRL generator."}, {"moduleId": "module-pcbc-store", "type": "processes", "description": "Worker stores builds and validation results in the report store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-pcbc-ixbrl-generator", "name": "Inline XBRL Tagger and XHTML Generator", "type": "stateless-service", "description": "Maps CbCR figures and narrative to the public CbCR taxonomy, produces XHTML with inline XBRL tags and runs taxonomy validation.", "dependencies": {"modules": [{"moduleId": "module-pcbc-store", "type": "uses", "description": "Generator reads report drafts and aggregation settings from the report store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-pcbc-store", "name": "Public CbCR Report Store", "type": "stateful-service", "description": "Owns public CbCR report drafts, narrative sections, aggregation settings, builds, validation results and released versions per reporting year."}]}], "dataDependencies": [{"assetId": "public-cbcr-report", "moduleIds": ["module-pcbc-store", "module-pcbc-ixbrl-generator", "module-pcbc-build-worker"], "role": "own", "description": "System of record for the Public CbCR Report asset: drafts, builds and released XHTML versions."}, {"assetId": "cbcr-dataset", "moduleIds": ["module-pcbc-ixbrl-generator"], "role": "read", "description": "Reads the CbCR dataset to derive public report figures."}], "brickDependencies": [{"targetBrickId": "cbcr", "moduleId": "module-cbcr-api", "sourceModuleId": "module-pcbc-ixbrl-generator", "type": "data", "description": "Reads the validated CbCR dataset that the public report is derived from."}, {"targetBrickId": "lent", "moduleId": "module-lent-api", "sourceModuleId": "module-pcbc-store", "type": "master-data", "description": "Reads the ultimate parent, EU subsidiaries and branches that determine reporting obligations and scope."}, {"targetBrickId": "docx", "moduleId": "module-docx-api", "sourceModuleId": "module-pcbc-build-worker", "type": "rendering", "description": "Renders a human-readable PDF alongside the XHTML release."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-pcbc-api", "type": "identity", "description": "Resolves the user, client organisation and division scope, role and access rights (read-only, location-restricted, custom profile) from the identity backbone before serving requests."}, {"targetBrickId": "audt", "moduleId": "module-audt-ingest-queue", "sourceModuleId": "module-pcbc-store", "type": "audit", "description": "Publishes public CbCR report build and release events to the audit trail queue so every change is time-stamped, attributable and versioned."}], "externalSystemsThisBrickDependsOn": [{"system": "EU public CbCR XBRL taxonomy (ESMA / national extensions)", "type": "data", "interface": "XBRL taxonomy package", "description": "Taxonomy and validation rules for inline XBRL tagging of the public report.", "sourceModuleId": "module-pcbc-ixbrl-generator"}], "externalSystemsDependingOnThisBrick": [{"system": "Business registers and company websites", "type": "channel-consumer", "interface": "XHTML report file", "description": "Released public reports are filed with the national business register and published on the group's website.", "moduleId": "module-pcbc-store"}], "domain": "CbCR and Benchmarks", "group": "Country-by-Country Reporting"};
-    const relatedTeams = [{"teamId": "cbcr-and-benchmarking", "teamName": "CbCR and Benchmarking", "teamType": "stream-aligned", "groupId": "crpg", "groupName": "Compliance and Reporting Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "cbcr-and-public-cbcr", "name": "Country-by-Country Reporting and EU Public CbCR", "icon": "cbcr-and-public-cbcr.png", "type": "B2B SaaS Add-on", "whyUsed": "EU Public CbCR under Directive (EU) 2021/2101 generated in XHTML with inline XBRL from existing CbCR data."}];
     const supportedJobs = [{"customerId": "tpmg", "customerName": "Transfer Pricing Manager / Documentation Coordinator", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-tpmg-portrait.jpg", "productId": "cbcr-and-public-cbcr", "productName": "Country-by-Country Reporting and EU Public CbCR", "productIcon": "cbcr-and-public-cbcr.png", "jobId": "jtbd-tpmg-2", "jobName": "Deliver every Master File, Local File and CbCR before its deadline", "jobWhatItIs": "Run the annual cycle for a fiscal year: scope entities and countries against thresholds, plan the deliverables and their deadlines, assign tasks to local contacts and specialists, collect and validate data, generate drafts, resolve validation findings, finalise and archive, and prepare CbCR, notifications and public CbCR, so nothing is late anywhere.", "jobOutcome": "Every scoped Master File, Local File, CbCR filing and notification is final and archived before its calculated deadline, tasks are tracked and chased automatically, and the coordinator sees status per entity at any moment instead of reconstructing it from e-mail.", "supportRationale": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "usedInSteps": [{"step": "Prepare CbCR, notifications and public CbCR", "description": "Enter or bulk-load the CbCR data per jurisdiction, validate it, generate the filing-ready XML and Excel, prepare the CbCR notifications for the countries that require them, and generate the EU Public CbCR in XHTML with inline XBRL from the same data.", "howItSupports": "Turns CbCR data into validated XML, Excel and EU Public CbCR outputs with notifications and local filing guidance.", "media": []}]}, {"customerId": "lfin", "customerName": "Local Finance Controller / Country Tax Contact", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-lfin-portrait.jpg", "productId": "cbcr-and-public-cbcr", "productName": "Country-by-Country Reporting and EU Public CbCR", "productIcon": "cbcr-and-public-cbcr.png", "jobId": "jtbd-lfin-2", "jobName": "File a locally compliant local file and forms on time", "jobWhatItIs": "Make sure the entity's Local File meets the country's content, format, language and filing requirements, review it for local accuracy, obtain the translation and local forms the authority expects, and file, lodge or keep it on file according to the local procedure before the deadline.", "jobOutcome": "The entity's Local File and accompanying forms are locally correct, in the required language, and filed or prepared before the local deadline every year, without the controller researching rules or hiring a local adviser for routine filings.", "supportRationale": "Provides the CbCR notification for the entity with local filing guidance where the country requires one.", "usedInSteps": [{"step": "File or lodge with the local authority and record the filing", "description": "Submit the Local File, forms and any CbCR notification through the country's procedure (portal, tax return attachment, or kept on file for request), record the filing date and evidence in the platform and close the task.", "howItSupports": "Provides the CbCR notification for the entity with local filing guidance where the country requires one.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

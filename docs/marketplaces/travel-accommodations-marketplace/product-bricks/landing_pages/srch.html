@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "srch", "name": "Search, Ranking & Filters", "type": "full-stack", "status": "sustaining", "description": "Accommodation search, filtering, sorting, map browsing, and ranking across traveler and policy intent.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-search-experience-ui", "name": "Search Experience UI", "type": "web-component", "description": "Primary traveler interface for searching and filtering stays.", "dependencies": {"modules": [{"moduleId": "module-search-and-ranking-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-search-and-ranking-api", "name": "Search and Ranking API", "type": "api", "description": "API used by traveler and partner surfaces to query ranked accommodation inventory.", "dependencies": {"modules": [{"moduleId": "module-search-index-and-facet-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-ranking-and-eligibility-pipeline", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-filter-and-explainability-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-inventory-update-feed", "name": "Inventory Update Feed", "type": "message-consumer", "description": "Ingestion feed for availability, content, and commercial updates affecting search.", "dependencies": {"modules": [{"moduleId": "module-search-index-and-facet-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-ranking-and-eligibility-pipeline", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-filter-and-explainability-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-search-index-and-facet-engine", "name": "Search Index and Facet Engine", "type": "service", "description": "Builds and serves searchable property, room, policy, and amenity facets.", "dependencies": {"modules": [{"moduleId": "module-filter-and-explainability-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-ranking-and-eligibility-pipeline", "name": "Ranking and Eligibility Pipeline", "type": "service", "description": "Combines relevance, quality, commercial, and traveler-context signals to order supply."}, {"id": "module-filter-and-explainability-controls", "name": "Filter and Explainability Controls", "type": "service", "description": "Supports traveler filters, operator tuning, and ranking explanation surfaces."}]}], "dataDependencies": [{"assetId": "search-ranking-filters", "moduleIds": ["module-search-index-and-facet-engine", "module-ranking-and-eligibility-pipeline", "module-filter-and-explainability-controls"], "role": "own", "description": "Acts as the primary owning brick for Search Ranking Filters."}, {"assetId": "traveler-account-wallet", "moduleIds": ["module-search-index-and-facet-engine", "module-ranking-and-eligibility-pipeline", "module-filter-and-explainability-controls"], "role": "read", "description": "Reads Traveler Account Wallet to support domain workflows."}], "brickDependencies": [{"targetBrickId": "invt", "moduleId": "module-reservation-event-feed", "sourceModuleId": "module-inventory-update-feed", "type": "availability", "description": "Depends on live rate and availability state."}, {"targetBrickId": "mkli", "moduleId": "module-insight-apis-and-reporting-feeds", "sourceModuleId": "module-search-index-and-facet-engine", "type": "insight", "description": "Consumes commercial, quality, and demand signals."}, {"targetBrickId": "deal", "moduleId": "module-offer-decision-api", "sourceModuleId": "module-search-and-ranking-api", "type": "offer", "description": "Uses eligible offer treatments when ranking and presenting results."}], "externalSystemsThisBrickDependsOn": [{"system": "Search Infrastructure", "type": "platform", "interface": "Indexing and query infrastructure", "description": "Relies on scalable search infrastructure to serve high-volume discovery use cases.", "sourceModuleId": "module-search-index-and-facet-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Traveler Web and App Clients", "type": "channel-consumer", "interface": "Search API", "description": "Traveler clients depend on search and ranking to surface relevant stays.", "moduleId": "module-search-and-ranking-api"}], "domain": "Traveler Experience", "group": "Discovery and consideration"};
-    const relatedTeams = [{"teamId": "traveler-marketplace-discovery-and-consideration-5", "teamName": "Traveler Marketplace Search, Ranking & Filters", "teamType": "stream-aligned", "groupId": "traveler-marketplace", "groupName": "Traveler Marketplace", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Traveler Discovery and Booking Experience", "icon": "", "type": "B2C", "whyUsed": "Provides the core accommodation search and ranking journey."}];
     const supportedJobs = [{"customerId": "cg1-p1", "customerName": "Leisure Traveler / Stay Booker", "customerGroup": "Demand-Side Travelers", "customerIcon": "traveler.png", "productId": "p1", "productName": "Traveler Discovery and Booking Experience", "productIcon": "", "jobId": "jtbd-cg1-1", "jobName": "Find and book the right stay with confidence", "jobWhatItIs": "Turn a destination and trip intention into a booked accommodation with the right mix of location, value, quality, and policy fit.", "jobOutcome": "A confirmed booking with high confidence and low decision regret.", "supportRationale": "Supports narrowing by location, budget, property type, reviews, and policy preferences.", "usedInSteps": [{"step": "Define destination intent and shortlist relevant options", "description": "Start with destination, dates, party size, and important preferences such as neighborhood, amenities, breakfast, or free cancellation.", "howItSupports": "Supports narrowing by location, budget, property type, reviews, and policy preferences.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-1.jpg", "title": "Leisure Traveler / Stay Booker JTBD step 1: Define destination intent and shortlist relevant options", "alt": "Enterprise infographic for step 1 of the job \"Find and book the right stay with confidence\": Define destination intent and shortlist relevant options."}]}]}, {"customerId": "cg2-p1", "customerName": "Managed Travel Booker / Travel Coordinator", "customerGroup": "Demand-Side Travelers", "customerIcon": "business.png", "productId": "p1", "productName": "Traveler Discovery and Booking Experience", "productIcon": "", "jobId": "jtbd-cg2-1", "jobName": "Book compliant accommodation fast for a work trip", "jobWhatItIs": "Find accommodation that fits traveler needs and company controls without turning every booking into a bespoke manual process.", "jobOutcome": "A policy-compliant booking created quickly with clean downstream data.", "supportRationale": "Supports policy-relevant filtering such as cancellation flexibility, breakfast, and location.", "usedInSteps": [{"step": "Search against location, traveler, and policy needs", "description": "Start with destination, dates, company budget, traveler profile, and invoice expectations.", "howItSupports": "Supports policy-relevant filtering such as cancellation flexibility, breakfast, and location.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-1.jpg", "title": "Managed Travel Booker / Travel Coordinator JTBD step 1: Search against location, traveler, and policy needs", "alt": "Enterprise infographic for step 1 of the job \"Book compliant accommodation fast for a work trip\": Search against location, traveler, and policy needs."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

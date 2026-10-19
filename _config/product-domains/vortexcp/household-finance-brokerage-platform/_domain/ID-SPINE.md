@@ -99,74 +99,50 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 simb→simulation-result,lead; feas→feasibility-certificate,simulation-result; ntry→simulation-result; upld→uploaded-proposal,lead; insc→comparison-request,partner-product-tariff; enrg→comparison-request,partner-product-tariff; tlcm→comparison-request,partner-product-tariff; bgtb→budget-profile,comparison-request; appt→appointment,office-profile,lead; cbck→callback-request,lead; cont→content-article; brnd→customer-account,content-article; rate→bank-rate-sheet; cmpr→mortgage-proposal,bank-rate-sheet; advr→advice-record,mortgage-proposal; cfil→credit-file,credit-file-document; bsub→bank-submission,credit-file; clos→closing-milestone,policy-contract; refn→refinancing-case,mortgage-proposal; iqte→insurance-quote,policy-contract; swch→switch-order,comparison-request; cncl→cancellation-request,policy-contract; tckt→care-ticket,customer-account; know→knowledge-article; cvlt→household-contract,customer-account; mntr→savings-alert,household-contract; crmx→customer-360-profile,household-contract; lead→lead,office-profile; offc→office-profile,expert-profile; prod→production-metric,office-profile; acad→academy-enrolment,expert-profile; pcat→partner-product-tariff,partner-agreement; comm→commission-statement,network-payout; pprt→partner-agreement,lead; iden→user-identity,consent-record; cmpl→complaint-record,audit-trail-entry,advice-record; intg→bank-submission,switch-order,audit-trail-entry; anly→analytics-event,production-metric.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `customer-account` → customer-engagement-team
-- `user-identity` → platform-and-integration-team
-- `consent-record` → platform-and-integration-team
-- `audit-trail-entry` → platform-and-integration-team
-- `simulation-result` → consumer-platform-team
-- `feasibility-certificate` → consumer-platform-team
-- `uploaded-proposal` → consumer-platform-team
-- `budget-profile` → consumer-platform-team
-- `content-article` → consumer-platform-team
-- `comparison-request` → comparison-modules-team
-- `partner-product-tariff` → comparison-modules-team
-- `lead` → brokerage-tooling-team
-- `appointment` → customer-engagement-team
-- `callback-request` → customer-engagement-team
-- `office-profile` → network-development-and-franchise
-- `expert-profile` → network-development-and-franchise
-- `production-metric` → network-development-and-franchise
-- `bank-rate-sheet` → mortgage-workbench-team
-- `mortgage-proposal` → mortgage-workbench-team
-- `advice-record` → mortgage-workbench-team
-- `credit-file` → mortgage-workbench-team
-- `credit-file-document` → mortgage-workbench-team
-- `bank-submission` → mortgage-workbench-team
-- `closing-milestone` → mortgage-workbench-team
-- `refinancing-case` → mortgage-workbench-team
-- `insurance-quote` → brokerage-tooling-team
-- `policy-contract` → brokerage-tooling-team
-- `switch-order` → brokerage-tooling-team
-- `cancellation-request` → brokerage-tooling-team
-- `care-ticket` → brokerage-tooling-team
-- `knowledge-article` → customer-care-centres
-- `household-contract` → customer-engagement-team
-- `savings-alert` → customer-engagement-team
-- `customer-360-profile` → customer-engagement-team
-- `academy-enrolment` → peasy-academy
-- `partner-agreement` → partner-management-and-commissions
-- `commission-statement` → partner-management-and-commissions
-- `network-payout` → partner-management-and-commissions
-- `complaint-record` → compliance-and-risk
-- `analytics-event` → platform-and-integration-team
+- `customer-account`
+- `user-identity`
+- `consent-record`
+- `audit-trail-entry`
+- `simulation-result`
+- `feasibility-certificate`
+- `uploaded-proposal`
+- `budget-profile`
+- `content-article`
+- `comparison-request`
+- `partner-product-tariff`
+- `lead`
+- `appointment`
+- `callback-request`
+- `office-profile`
+- `expert-profile`
+- `production-metric`
+- `bank-rate-sheet`
+- `mortgage-proposal`
+- `advice-record`
+- `credit-file`
+- `credit-file-document`
+- `bank-submission`
+- `closing-milestone`
+- `refinancing-case`
+- `insurance-quote`
+- `policy-contract`
+- `switch-order`
+- `cancellation-request`
+- `care-ticket`
+- `knowledge-article`
+- `household-contract`
+- `savings-alert`
+- `customer-360-profile`
+- `academy-enrolment`
+- `partner-agreement`
+- `commission-statement`
+- `network-payout`
+- `complaint-record`
+- `analytics-event`
 
 40 assets. Personal-data level is high for most (income, savings, national register number, health questions for outstanding-balance insurance, EAN meter numbers); tag GDPR, FSMA record-keeping for credit and insurance intermediation, Belgian Book VII Code of Economic Law (credit), IDD (insurance distribution), Central Individual Credit Register consultation.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Peasy employs about 200 people (head office Zaventem, customer care Hasselt and Oujda) plus ~150 experts in ~70 largely franchised offices. Model the organisation at ~200 people: product and technology teams of 4–8, customer care ~45, office network ~70 head-office-side and franchise experts counted in the network team.
-
-Org group "Product and Technology" (Zaventem):
-- `consumer-platform-team` (stream-aligned) owns simb, feas, ntry, upld, bgtb, cont, brnd
-- `comparison-modules-team` (stream-aligned) owns insc, enrg, tlcm, pcat
-- `customer-engagement-team` (stream-aligned) owns appt, cbck, cvlt, mntr, crmx
-- `mortgage-workbench-team` (stream-aligned) owns rate, cmpr, advr, cfil, bsub, clos, refn
-- `brokerage-tooling-team` (stream-aligned) owns iqte, swch, cncl, tckt, lead
-- `platform-and-integration-team` (platform) owns iden, intg, anly
-
-Org group "Advisory Network and Customer Care":
-- `hypotheek-winkel-office-network` (stream-aligned; ~150 experts in ~70 franchised offices across Flanders and Brussels) owns no bricks; brick dependencies on cmpr, cfil, bsub, clos, advr, appt, lead; customer dependencies on fthb, refi, hexp, frnc, bank
-- `customer-care-centres` (stream-aligned; Hasselt and Oujda, ~45 advisors) owns know; customer dependencies on hshs, insa, prov
-- `network-development-and-franchise` (enabling) owns offc, prod; customer dependencies on frnc, hexp
-- `peasy-academy` (enabling) owns acad; customer dependencies on hexp, insa, opsm
-
-Org group "Partners, Finance and Compliance":
-- `partner-management-and-commissions` (stream-aligned) owns comm, pprt; customer dependencies on bank, prov, opsm
-- `compliance-and-risk` (enabling) owns cmpl; customer dependencies on opsm, hexp
-
-12 teams. Team metrics must be KPI names that exist in the pyramids of the team's customers (by NAME) and that the team can actually move.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

@@ -89,57 +89,35 @@ Root "Go-to-Market and Customer Success":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 wbxt→write-back-record,write-back-schema,write-back-audit-log; inpt→write-back-record,write-back-schema,comment-and-annotation; fint→financial-statement-model,dashboard-data-snapshot; sptb→extension-configuration,dashboard-data-snapshot,saved-view; drdt→extension-configuration,dashboard-data-snapshot; hrfl→extension-configuration,dashboard-data-snapshot; prcm→process-event-log,extension-configuration; smmr→extension-configuration,dashboard-data-snapshot; pkpi→extension-configuration,dashboard-data-snapshot; pict→extension-configuration,dashboard-data-snapshot; vzsl→rendered-report-artifact,dashboard-data-snapshot; xdsg→extension-configuration; mlsc→report-schedule,report-delivery-log,rendered-report-artifact; dbgd→dashboard-guide-content,extension-configuration; dbus→dashboard-usage-event; xfrm→extension-configuration; dcon→dashboard-data-snapshot; mpad→extension-configuration,dashboard-data-snapshot; wbdb→write-back-record,write-back-schema; wbwf→write-back-audit-log,comment-and-annotation; rndr→rendered-report-artifact; msgd→report-delivery-log; aiin→ai-request-log,dashboard-data-snapshot; lics→license-entitlement,usage-token-record,subscription-and-invoice,customer-account; eprt→customer-account,license-entitlement,release-artifact; xmgr→release-artifact,tenant-deployment-record; saas→release-artifact,tenant-deployment-record; idnt→identity-and-role; sect→security-evidence-document,write-back-audit-log; webt→customer-account,subscription-and-invoice; gall→release-artifact; part→partner-profile-and-deal; supp→support-ticket,customer-account; docs→release-artifact; csuc→customer-account,usage-token-record,support-ticket.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `extension-configuration` → extension-runtime
-- `dashboard-data-snapshot` → extension-runtime
-- `saved-view` → tables-and-discovery
-- `process-event-log` → tables-and-discovery
-- `write-back-record` → write-back-and-planning
-- `write-back-schema` → write-back-and-planning
-- `write-back-audit-log` → write-back-and-planning
-- `comment-and-annotation` → write-back-and-planning
-- `financial-statement-model` → write-back-and-planning
-- `report-schedule` → distribution-and-adoption
-- `report-delivery-log` → distribution-and-adoption
-- `rendered-report-artifact` → distribution-and-adoption
-- `dashboard-usage-event` → distribution-and-adoption
-- `dashboard-guide-content` → distribution-and-adoption
-- `ai-request-log` → ai-enablement
-- `license-entitlement` → deployment-and-licensing
-- `usage-token-record` → deployment-and-licensing
-- `customer-account` → deployment-and-licensing
-- `subscription-and-invoice` → deployment-and-licensing
-- `release-artifact` → deployment-and-licensing
-- `tenant-deployment-record` → deployment-and-licensing
-- `identity-and-role` → deployment-and-licensing
-- `security-evidence-document` → security-and-compliance
-- `partner-profile-and-deal` → growth-and-partners
-- `support-ticket` → support-and-enablement
+- `extension-configuration`
+- `dashboard-data-snapshot`
+- `saved-view`
+- `process-event-log`
+- `write-back-record`
+- `write-back-schema`
+- `write-back-audit-log`
+- `comment-and-annotation`
+- `financial-statement-model`
+- `report-schedule`
+- `report-delivery-log`
+- `rendered-report-artifact`
+- `dashboard-usage-event`
+- `dashboard-guide-content`
+- `ai-request-log`
+- `license-entitlement`
+- `usage-token-record`
+- `customer-account`
+- `subscription-and-invoice`
+- `release-artifact`
+- `tenant-deployment-record`
+- `identity-and-role`
+- `security-evidence-document`
+- `partner-profile-and-deal`
+- `support-ticket`
 
 25 assets. Write-back records, comments, audit logs and process event logs live in the CUSTOMER's databases (on-premises) — model stores and residency accordingly; the vendor never sees that data in Enterprise deployments.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-The company has about 30 employees, so teams are small (2–4 people); model that honestly (total headcount ≈ 30).
-
-Org group "Extension Product Teams":
-- `write-back-and-planning` (stream-aligned) owns wbxt, inpt, fint, wbdb, wbwf
-- `tables-and-discovery` (stream-aligned) owns sptb, drdt, hrfl, prcm
-- `visual-storytelling` (stream-aligned) owns smmr, pkpi, pict, vzsl, xdsg
-- `distribution-and-adoption` (stream-aligned) owns mlsc, dbgd, dbus, rndr, msgd
-
-Org group "Platform and Enablement Teams":
-- `extension-runtime` (platform) owns xfrm, dcon, mpad
-- `deployment-and-licensing` (platform) owns lics, eprt, xmgr, saas, idnt
-- `ai-enablement` (enabling) owns aiin
-- `security-and-compliance` (enabling) owns sect
-
-Org group "Go-to-Market and Customer Success":
-- `growth-and-partners` (stream-aligned) owns webt, gall, part
-- `support-and-enablement` (enabling) owns supp, docs, csuc
-
-10 teams, 35 bricks.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "corporate-learning-and-skills-platform", "name": "Corporate Learning and Skills Development", "description": "A corporate learning and skills platform modeled on Studytube: employers connect role requirements, employee development, mandatory qualifications, internal knowledge and external training to measurable workplace outcomes."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "conn", "name": "Integration Contract and Delivery Journal", "kind": "logical-object", "description": "Endpoint contracts, correlation and idempotency keys, validation outcomes and delivery/replay checkpoints; secrets remain in protected runtime configuration.", "businessMeaning": "Endpoint contracts, correlation and idempotency keys, validation outcomes and delivery/replay checkpoints; secrets remain in protected runtime configuration.", "status": "active", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["employee", "authorized-administrator"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "Employer integration owners and scoped service operators; payload inspection requires additional authorization.", "systemOfRecordBrickId": "apix", "usedByBrickIds": ["apix", "prov", "book", "invc", "hris"], "ownerTeamId": "intg", "stewardTeamIds": ["trst"], "derivedFromAssetIds": [], "stores": [{"storeId": "exch", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Integration Contracts and Exchange API", "description": "Authorized records are accessed through the owning brick's interface; consumers do not receive unrestricted database access."}], "governance": {"retention": "Proposed policy, subject to employer agreement: Use a short agreed replay window for raw payloads; retain minimal delivery and reconciliation evidence for operational accountability.", "residency": "To be agreed with the employer and verified against contracted hosting and subprocessor scope; no region is asserted.", "sharingPolicy": "Employer integration owners and scoped service operators; payload inspection requires additional authorization. No cross-employer sharing by default; derived analytics and AI processing require approved scopes."}, "rootGroup": "Outcome and Service Evidence", "group": "Outcome and Service Evidence"};
+    const currentAsset = {"id": "conn", "name": "Integration Contract and Delivery Journal", "kind": "logical-object", "description": "Endpoint contracts, correlation and idempotency keys, validation outcomes and delivery/replay checkpoints; secrets remain in protected runtime configuration.", "businessMeaning": "Endpoint contracts, correlation and idempotency keys, validation outcomes and delivery/replay checkpoints; secrets remain in protected runtime configuration.", "status": "active", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["employee", "authorized-administrator"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "Employer integration owners and scoped service operators; payload inspection requires additional authorization.", "systemOfRecordBrickId": "apix", "usedByBrickIds": ["apix", "prov", "book", "invc", "hris"], "derivedFromAssetIds": [], "stores": [{"storeId": "exch", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Integration Contracts and Exchange API", "description": "Authorized records are accessed through the owning brick's interface; consumers do not receive unrestricted database access."}], "governance": {"retention": "Proposed policy, subject to employer agreement: Use a short agreed replay window for raw payloads; retain minimal delivery and reconciliation evidence for operational accountability.", "residency": "To be agreed with the employer and verified against contracted hosting and subprocessor scope; no region is asserted.", "sharingPolicy": "Employer integration owners and scoped service operators; payload inspection requires additional authorization. No cross-employer sharing by default; derived analytics and AI processing require approved scopes."}, "rootGroup": "Outcome and Service Evidence", "group": "Outcome and Service Evidence"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "apix", "name": "Integration Contracts and Exchange", "role": "own", "description": "Owns the academy record and its correction rules; external source-of-truth boundaries remain as documented in the asset."}];
     const consumingBricks = [{"id": "prov", "name": "Training Provider Operations", "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}, {"id": "book", "name": "External Training Booking and Changes", "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}, {"id": "invc", "name": "Training Invoice and Credit Reconciliation", "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}, {"id": "hris", "name": "Workforce Provisioning and Reconciliation", "role": "read", "description": "Consumes authorized information through the owning brick's interface, not direct unrestricted store access."}];
-    const ownerTeam = {"teamId": "intg", "teamName": "Enterprise Identity and Integration", "teamType": "platform", "groupName": "Trust and Customer Enablement"};
-    const stewardTeams = [{"teamId": "trst", "teamName": "Service Reliability and Information Assurance", "teamType": "platform", "groupName": "Trust and Customer Enablement"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

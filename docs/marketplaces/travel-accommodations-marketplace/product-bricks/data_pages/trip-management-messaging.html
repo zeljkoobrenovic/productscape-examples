@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "travel-accommodations-marketplace", "name": "Travel Accommodations Marketplace", "description": "Covers the traveler journeys, partner workflows, pricing and merchandising systems, trust controls, and platform capabilities required to run a global accommodations marketplace."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "trip-management-messaging", "name": "Trip Management Messaging", "kind": "logical-object", "description": "Itinerary views, pre-stay and post-booking messaging, traveler self-service, and reservation-state communication.", "businessMeaning": "Reusable domain data centered on Trip Management & Messaging.", "status": "active", "tags": ["traveler-experience"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer"], "legalTags": ["gdpr"], "systemOfRecordBrickId": "trip", "ownerTeamId": "booking-and-trip-confidence", "stewardTeamIds": [], "derivedFromAssetIds": [], "stores": [{"storeId": "trip-management-messaging-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "trip-management-messaging api", "description": "Access interface for Trip Management Messaging."}], "governance": {"retention": "active lifecycle plus audit window", "residency": "eu", "sharingPolicy": "internal and approved domain consumers only"}, "rootGroup": "Operational Workflow and Event Data", "group": "Core Records"};
+    const currentAsset = {"id": "trip-management-messaging", "name": "Trip Management Messaging", "kind": "logical-object", "description": "Itinerary views, pre-stay and post-booking messaging, traveler self-service, and reservation-state communication.", "businessMeaning": "Reusable domain data centered on Trip Management & Messaging.", "status": "active", "tags": ["traveler-experience"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer"], "legalTags": ["gdpr"], "systemOfRecordBrickId": "trip", "derivedFromAssetIds": [], "stores": [{"storeId": "trip-management-messaging-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "trip-management-messaging api", "description": "Access interface for Trip Management Messaging."}], "governance": {"retention": "active lifecycle plus audit window", "residency": "eu", "sharingPolicy": "internal and approved domain consumers only"}, "rootGroup": "Operational Workflow and Event Data", "group": "Core Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "trip", "name": "Trip Management & Messaging", "role": "own", "description": "Acts as the primary owning brick for Trip Management Messaging."}];
     const consumingBricks = [{"id": "mapb", "name": "Map-Based Stay Browser", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "msgc", "name": "Guest-Property Messaging", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "self", "name": "Self-Service Changes & Recovery", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "extr", "name": "Partner Extranet", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "cont", "name": "Content & Policy Studio", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "medi", "name": "Property Media Pipeline", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "rsrv", "name": "Reservation Inbox & Operations", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "prom", "name": "Partner Merchandising & Programs", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "perf", "name": "Partner Performance Analytics", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "rept", "name": "Reputation & Quality Operations", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "trst", "name": "Trust, Verification & Risk Controls", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}, {"id": "conn", "name": "Connectivity & Partner APIs", "role": "read", "description": "Reads Trip Management Messaging to support domain workflows."}];
-    const ownerTeam = {"teamId": "booking-and-trip-confidence", "teamName": "Booking & Trip Confidence", "teamType": "stream-aligned", "groupName": "Traveler Marketplace"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

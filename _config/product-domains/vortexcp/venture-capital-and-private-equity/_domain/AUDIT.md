@@ -10,10 +10,10 @@ and open questions are in [DOMAIN.md](DOMAIN.md).
 ## Method and structural reference
 
 Used the toolkit's `new-product-domain`, `set-domain-strategy`, customer, brick,
-stream, data-asset, product, team, competition, validation, and balance-audit skills.
+stream, data-asset, product, competition, validation, and balance-audit skills.
 Toolkit schemas and the empty domain starter established the contracts. The
 existing `bi-dashboard-extensions-platform` provided examples of customer relations
-and team charter syntax; no company facts or staffing were copied. The
+syntax; no company facts were copied. The
 `ride-sharing-marketplace` domain supplied the density comparison below.
 
 | Artifact | New domain | Ride-sharing reference |
@@ -26,7 +26,6 @@ and team charter syntax; no company facts or staffing were copied. The
 | Outcome streams | 10 | 10 |
 | Data assets | 23 | 17 |
 | Products | 5 | 3 |
-| Responsibility teams | 5 | 24 |
 | Competitive landscape entries | 8 | 11 |
 | Sourced insights | 11 | 8 |
 
@@ -39,22 +38,21 @@ contains seven external players and one clearly labeled Vortex reference row.
 No unresolved P1 findings.
 
 - Every persona has substantive jobs, a six-stage adoption journey, both KPI
-  pyramids, distinct 1/3/5-year horizons, a primary product, and a serving team.
+  pyramids, distinct 1/3/5-year horizons, and a primary product.
   Journey narratives describe adopting the partnership or internal workbench.
   For investment products, trial means bounded evaluation of the relationship or
   service; no trial investment or assumed redemption right is introduced.
-- All 23 bricks occur in streams and deployments and have exactly one primary
-  owning team. All 23 data assets have an owning team and one accountable
-  record-owning brick, with matching ownership. Stores, stewards, and derivations
+- All 23 bricks occur in streams and deployments. All 23 data assets have one
+  accountable record-owning brick. Stores, stewards, and derivations
   resolve. Product deployment mappings also cover transitive brick dependencies;
   this does not grant end customers access to internal capabilities.
 - Stream-level dependencies match their flow steps. JTBD references and names,
-  product/customer names, insight/customer/job/KPI references, team dependencies,
+  product/customer names, insight/customer/job/KPI references,
   and stressor impacts resolve. All 11 insights identify sources and distinguish
   the public observation from its modeling implication.
 - All KPI trees fan out, with no single-child nodes; every metric has a unit and
   definition. The 82 terminal measurements are null, not invented baselines.
-  All strategy KPI names and team charter metrics resolve to the relevant
+  All strategy KPI names resolve to the relevant
   customer definitions. Investor measures explicitly distinguish DPI, TVPI,
   net IRR, unrealized value, and actual cash. Management economic measures refer
   to the portfolio company rather than incorrectly treating its revenue as
@@ -66,11 +64,6 @@ No unresolved P1 findings.
   is presented as an LP net return.
 
 ## P2 — intentional scope and unverified operating details
-
-The five teams represent shared responsibilities at a specialist manager, including
-external administration and specialist support. Copying the reference domain's
-24-team structure would be inappropriate. Staffing and group leadership counts
-are unspecified; unknown headcounts are not represented as zero.
 
 The 23 bricks describe bounded business capabilities. Their 101 modules distribute
 across UI (23), interfaces (23), durable services (23), integration (20), workers
@@ -103,12 +96,7 @@ marks or private screenshots.
 All 715 static local link and asset references resolve. Browser checks across 14
 representative index and detail pages found no JavaScript errors, broken rendered
 links, or broken images. All 23 brick cards load their dedicated icon filenames,
-and generated icons match the source PNGs byte for byte. Team filtering works,
-and unspecified headcounts display
-as not set. A small toolkit renderer correction preserves missing and null staffing
-through team/group totals while retaining an explicit zero as zero. The earlier
-documentation update passed all 13 toolkit tests, including a regression covering
-unknown, zero, known, and nested totals.
+and generated icons match the source PNGs byte for byte.
 
 ## Validation
 
@@ -122,15 +110,14 @@ PRODUCTSCAPES_ALLOW_UNPINNED=1 python3 productscapes.py build venture-capital-an
 
 Validation, KPI checks, and the documentation build pass. The validator checks
 13 JSON files and 23 bricks. A separate read-only
-audit checked coverage, exact ownership, product dependency closure, name joins,
+audit checked coverage, product dependency closure, name joins,
 KPI definitions and unknown baselines, stream/flow consistency, statistic source
 fields, and stressor targets; it found no errors.
 
 The examples project was already pinned to toolkit `a5c2dad`, while the local
 toolkit checkout was `5c7c353`. Its documented unpinned override was used without
 changing the project pin or checking out another revision. The skill validators
-and JSON schemas have no changes between those revisions. The build also includes
-the local team-renderer correction described above. Changes in the examples project
+and JSON schemas have no changes between those revisions. Changes in the examples project
 are confined to the new domain's source and generated documentation, plus its entry
 in the main site index.
 

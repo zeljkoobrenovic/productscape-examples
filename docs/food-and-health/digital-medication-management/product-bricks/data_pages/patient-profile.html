@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "digital-medication-management", "name": "Digital Medication Management", "description": "The Digital Medication Management domain covers the patient, carer, care-provider, and pharmacy workflows required to run an automated medicine-dispensing and remote medication-management service for home care and supported living \u2014 spanning the in-home dispensing device, pharmacy multi-dose pouch logistics, remote adherence monitoring, missed-dose alarm escalation, care-team portals, and the regulated medical-device software platform behind them."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "patient-profile", "name": "Patient Profile", "kind": "logical-object", "description": "The person receiving care: identity, contact, accessibility and language preferences, and care context.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["patient"], "legalTags": ["gdpr"], "securityCriticality": "critical", "accessScope": "care-team access scoped to caseload", "businessMeaning": "Master record of the person receiving the medication service.", "status": "active", "stores": [{"storeId": "patient-profile-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "patient-profile api", "description": "Access interface for patient-profile api."}], "ownerTeamId": "care-portal-team", "stewardTeamIds": ["safety-and-compliance-team"], "derivedFromAssetIds": [], "governance": {"retention": "retained for the care relationship plus regulated period", "residency": "eu", "sharingPolicy": "strictly controlled care-team access"}, "rootGroup": "Patient and Care Data", "group": "Patient Records"};
+    const currentAsset = {"id": "patient-profile", "name": "Patient Profile", "kind": "logical-object", "description": "The person receiving care: identity, contact, accessibility and language preferences, and care context.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["patient"], "legalTags": ["gdpr"], "securityCriticality": "critical", "accessScope": "care-team access scoped to caseload", "businessMeaning": "Master record of the person receiving the medication service.", "status": "active", "stores": [{"storeId": "patient-profile-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "patient-profile api", "description": "Access interface for patient-profile api."}], "derivedFromAssetIds": [], "governance": {"retention": "retained for the care relationship plus regulated period", "residency": "eu", "sharingPolicy": "strictly controlled care-team access"}, "rootGroup": "Patient and Care Data", "group": "Patient Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "onbp", "name": "Patient Onboarding and Provisioning", "role": "own", "description": "System of record for the patient profile created at onboarding."}];
     const consumingBricks = [{"id": "remd", "name": "Patient Reminder and Confirmation Experience", "role": "read", "description": "Reads accessibility and language preferences for the patient."}];
-    const ownerTeam = {"teamId": "care-portal-team", "teamName": "Care Portal", "teamType": "stream-aligned", "groupName": "Remote Care and Monitoring"};
-    const stewardTeams = [{"teamId": "safety-and-compliance-team", "teamName": "Clinical Safety and Compliance", "teamType": "enabling", "groupName": "Deployment, Fleet and Platform Foundation"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

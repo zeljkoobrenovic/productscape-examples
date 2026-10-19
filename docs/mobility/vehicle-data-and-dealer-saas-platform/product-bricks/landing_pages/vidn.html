@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "vidn", "name": "Vehicle Identity and Specification", "type": "service", "status": "sustaining", "description": "Decodes plates and VINs into a normalised vehicle specification: make, model, edition, factory options, colours, emissions and price lists. Combines RDW technical data with partner sources (SilverDAT VIN information from DAT, Autotelex, Jato).", "links": [], "layers": [{"layer": "interfaces", "description": "APIs, BFFs and back-office interfaces.", "modules": [{"id": "module-specification-api", "name": "Specification API", "type": "api", "description": "Returns the normalised specification for a plate or VIN.", "dependencies": {"modules": [{"moduleId": "module-specification-resolver", "type": "uses", "description": "Resolves the specification."}]}}]}, {"layer": "stateless-service", "description": "Orchestration and calculation without durable state.", "modules": [{"id": "module-specification-resolver", "name": "Specification Resolver", "type": "stateless-service", "description": "Merges RDW technical data with partner option data and resolves conflicts.", "dependencies": {"modules": [{"moduleId": "module-specification-catalog", "type": "uses", "description": "Reads catalog."}, {"moduleId": "module-plate-register-api", "type": "uses", "description": "Reads RDW technical data.", "targetBrickId": "rdwc"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-specification-catalog", "name": "Specification Catalog", "type": "stateful-service", "description": "Normalised model, edition and option catalog with source lineage."}]}, {"layer": "integration", "description": "Adapters to RDW, data partners, channels and providers.", "modules": [{"id": "module-silverdat-vin-adapter", "name": "SilverDAT VIN Adapter", "type": "integration", "description": "Fetches factory option data by VIN from DAT (charged per request)."}, {"id": "module-spec-partner-adapter", "name": "Specification Partner Adapter", "type": "integration", "description": "Imports Autotelex and Jato model and price data."}]}], "dataDependencies": [{"assetId": "vehicle-specification", "moduleIds": ["module-specification-catalog", "module-specification-resolver"], "role": "own", "description": "Normalised specification."}, {"assetId": "vehicle-registration-record", "moduleIds": ["module-specification-resolver"], "role": "read", "description": "Technical RDW facts."}], "brickDependencies": [{"targetBrickId": "rdwc", "moduleId": "module-plate-register-api", "sourceModuleId": "module-specification-resolver", "type": "data", "description": "RDW technical data per plate."}], "externalSystemsThisBrickDependsOn": [{"system": "DAT Group (SilverDAT)", "type": "data", "interface": "SilverDAT VIN query", "description": "Factory options per VIN.", "sourceModuleId": "module-silverdat-vin-adapter"}, {"system": "Autotelex and Jato", "type": "data", "interface": "Model and price data feeds", "description": "Model editions, options and list prices.", "sourceModuleId": "module-spec-partner-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Vehicle Data Foundation", "group": "Registry and Identity"};
-    const relatedTeams = [{"teamId": "vehicle-data-core", "teamName": "Vehicle Data Core", "teamType": "platform", "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "mijnvwe", "name": "MijnVWE Dealer Platform", "icon": "product.png", "type": "B2B Vertical SaaS (modular)", "whyUsed": "Specification in the dossier."}, {"id": "vehicle-reports", "name": "Vehicle History and Condition Reports", "icon": "product.png", "type": "Pay-per-report data product", "whyUsed": "SilverDAT VIN information."}, {"id": "vwe-data-api", "name": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "icon": "product.png", "type": "Data API", "whyUsed": "Specification categories."}];
     const supportedJobs = [{"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}, {"step": "Estimate reconditioning", "description": "Turn visible damage into a repair budget.", "howItSupports": "weDAT estimate from photos.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "lsco-remarket", "jobName": "Remarket returned vehicles at the best result", "jobWhatItIs": "Sell vehicles coming off lease or rental quickly and above book value.", "jobOutcome": "Proceeds beat residual value and cars sell within weeks of return.", "supportRationale": "Damage calculation.", "usedInSteps": [{"step": "Inspect and settle damage", "description": "Capture and price damage at return.", "howItSupports": "Damage calculation.", "media": []}]}, {"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "vehicle-reports", "productName": "Vehicle History and Condition Reports", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}, {"step": "Estimate reconditioning", "description": "Turn visible damage into a repair budget.", "howItSupports": "weDAT estimate from photos.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "vehicle-reports", "productName": "Vehicle History and Condition Reports", "productIcon": "product.png", "jobId": "lsco-remarket", "jobName": "Remarket returned vehicles at the best result", "jobWhatItIs": "Sell vehicles coming off lease or rental quickly and above book value.", "jobOutcome": "Proceeds beat residual value and cars sell within weeks of return.", "supportRationale": "Damage calculation.", "usedInSteps": [{"step": "Inspect and settle damage", "description": "Capture and price damage at return.", "howItSupports": "Damage calculation.", "media": []}]}, {"customerId": "trex", "customerName": "Car Trader and Importer-Exporter", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-trex-portrait.jpg", "productId": "vehicle-reports", "productName": "Vehicle History and Condition Reports", "productIcon": "product.png", "jobId": "trex-import", "jobName": "Import cars profitably and legally", "jobWhatItIs": "Bring a car from abroad to Dutch registration with the lowest correct BPM.", "jobOutcome": "Landed cost is known before buying and registration happens within days.", "supportRationale": "History and valuation.", "usedInSteps": [{"step": "Check before buying abroad", "description": "International damage history and value.", "howItSupports": "History and valuation.", "media": []}, {"step": "Calculate and file BPM", "description": "Choose the method and produce the taxation report.", "howItSupports": "BPM calculation and reports.", "media": []}, {"step": "Complete import paperwork", "description": "Identification, type approval and registration.", "howItSupports": "Trade documents and RDW.", "media": []}]}, {"customerId": "trex", "customerName": "Car Trader and Importer-Exporter", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-trex-portrait.jpg", "productId": "vehicle-reports", "productName": "Vehicle History and Condition Reports", "productIcon": "product.png", "jobId": "trex-move", "jobName": "Move stock fast between trade parties and borders", "jobWhatItIs": "Sell cars to other traders or foreign buyers quickly.", "jobOutcome": "Cars sell to the trade within days with complete export documents.", "supportRationale": "Export documents and remaining BPM.", "usedInSteps": [{"step": "Export the car", "description": "EAD, export plates and remaining BPM refund.", "howItSupports": "Export documents and remaining BPM.", "media": []}]}, {"customerId": "ivnd", "customerName": "Automotive Software Vendor Product Owner", "customerGroup": "Data and Software Clients", "customerIcon": "customer-ivnd-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "ivnd-embed", "jobName": "Embed reliable vehicle data in our product", "jobWhatItIs": "Offer plate-based vehicle data inside garage or dealer software.", "jobOutcome": "Plate lookups succeed instantly for every end customer.", "supportRationale": "Category and licence catalogue.", "usedInSteps": [{"step": "Choose categories and licence", "description": "Decide which data and terms to buy.", "howItSupports": "Category and licence catalogue.", "media": []}, {"step": "Build and test", "description": "Integrate XML/JSON services.", "howItSupports": "Developer portal and test keys.", "media": []}, {"step": "Operate in production", "description": "Monitor availability and usage.", "howItSupports": "Metered gateway.", "media": []}]}, {"customerId": "ivnd", "customerName": "Automotive Software Vendor Product Owner", "customerGroup": "Data and Software Clients", "customerIcon": "customer-ivnd-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "ivnd-transact", "jobName": "Offer RDW transactions inside our software", "jobWhatItIs": "Let garages and lessors run RDW actions without leaving the vendor product.", "jobOutcome": "RDW actions complete in-product with clear errors.", "supportRationale": "Usage billing.", "usedInSteps": [{"step": "Reconcile usage", "description": "Allocate usage per end customer.", "howItSupports": "Usage billing.", "media": []}]}, {"customerId": "dcli", "customerName": "Importer and Insurer Data Analyst", "customerGroup": "Data and Software Clients", "customerIcon": "customer-dcli-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "dcli-enrich", "jobName": "Enrich our customer and policy data with vehicle facts", "jobWhatItIs": "Add accurate vehicle characteristics to portfolios for pricing and risk.", "jobOutcome": "Every policy or customer record has current, correct vehicle data.", "supportRationale": "Licence governance.", "usedInSteps": [{"step": "Agree data use", "description": "Licence and purpose definition.", "howItSupports": "Licence governance.", "media": []}, {"step": "Integrate live lookups", "description": "Plate API in quoting flows.", "howItSupports": "Data API.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "lsco-remarket", "jobName": "Remarket returned vehicles at the best result", "jobWhatItIs": "Sell vehicles coming off lease or rental quickly and above book value.", "jobOutcome": "Proceeds beat residual value and cars sell within weeks of return.", "supportRationale": "Damage calculation.", "usedInSteps": [{"step": "Inspect and settle damage", "description": "Capture and price damage at return.", "howItSupports": "Damage calculation.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

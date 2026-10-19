@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "asst", "name": "Security Asset Context", "type": "full-stack", "status": "invest", "description": "Maintains the scoped asset and system context needed for control reviews, including owner attestations and references to authoritative customer inventories. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "Information Security Management", "link": "https://privacyperfect.com/information-security-management/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-asst-ui", "name": "Reconcile asset scope and owners", "type": "web-component", "description": "Reconcile asset scope and owners with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-asst-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-asst-api", "name": "Security Asset Context API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-asst-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-asst-worker", "name": "Asset-context reconciliation worker", "type": "message-consumer", "description": "Asset-context reconciliation worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-asst-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-asst-service", "name": "Maintain reviewed security asset context", "type": "stateful-service", "description": "Maintains the scoped asset and system context needed for control reviews, including owner attestations and references to authoritative customer inventories."}]}], "dataDependencies": [{"assetId": "sast", "moduleIds": ["module-asst-service"], "role": "own", "description": "Authoritative owner of Security Asset Context. Reviewed asset ownership, criticality and authoritative external inventory identifiers; no credentials or vulnerability payloads are required."}, {"assetId": "sync", "moduleIds": ["module-asst-service"], "role": "read", "description": "Use the approved scope and version of Integration Reconciliation through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "conn", "moduleId": "module-conn-api", "sourceModuleId": "module-asst-service", "type": "context", "description": "Use Integration Exchange as the authoritative source of its context or workflow; keep Security Asset Context responsible for its own decision state."}, {"targetBrickId": "dict", "moduleId": "module-dict-api", "sourceModuleId": "module-asst-service", "type": "context", "description": "Use Reusable Data Dictionary as the authoritative source of its context or workflow; keep Security Asset Context responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-asst-api", "type": "context", "description": "Enforce tenant, role and record access for Security Asset Context."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-asst-service", "type": "context", "description": "Record attributable state changes and decision context from Security Asset Context."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Security, Supplier and AI Assurance", "group": "Security Controls"};
-    const relatedTeams = [{"teamId": "assu", "teamName": "Security and Supplier Assurance", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "isms", "name": "Information Security Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Information Security Management. Shared capability availability does not imply every adjacent commercial module is licensed."}, {"id": "airm", "name": "AI Risk Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for AI Risk Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "ciso", "customerName": "Information Security Manager", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "isms", "productName": "Information Security Management", "productIcon": "product.png", "jobId": "ctlr", "jobName": "Demonstrate that security controls operate as intended", "jobWhatItIs": "Ahead of assurance reviews, establish what controls actually do and what evidence supports them.", "jobOutcome": "Reviewers can distinguish effective controls, exceptions and missing evidence.", "supportRationale": "Relate framework controls to the scoped asset inventory.", "usedInSteps": [{"step": "Select scope and applicable controls", "description": "Agree the assets, framework version and boundaries of the review; document exclusions.", "howItSupports": "Relate framework controls to the scoped asset inventory.", "media": []}, {"step": "Obtain and assess evidence", "description": "Ask control owners for dated proof, check sampling periods and record failed tests.", "howItSupports": "Link each test to scoped evidence and accountable reviewers.", "media": []}, {"step": "Publish findings and corrective actions", "description": "Separate open failures from accepted exceptions and provide the auditor an approved evidence package.", "howItSupports": "Track review outcomes and action due dates.", "media": []}]}, {"customerId": "ciso", "customerName": "Information Security Manager", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "isms", "productName": "Information Security Management", "productIcon": "product.png", "jobId": "miti", "jobName": "Reduce material exposure without losing operating context", "jobWhatItIs": "When a risk or incident exposes a weak control, prioritize practical mitigation.", "jobOutcome": "Risk owners agree actions and demonstrate closure or explicitly time-bound acceptance.", "supportRationale": "Trace risks to assets and controls.", "usedInSteps": [{"step": "Understand the exposure", "description": "Connect the finding to assets, affected processes and existing mitigations.", "howItSupports": "Trace risks to assets and controls.", "media": []}, {"step": "Agree action and authority", "description": "Assign a technical remediation owner outside the governance platform and agree acceptance authority.", "howItSupports": "Coordinate treatments without claiming to execute technical fixes.", "media": []}, {"step": "Verify change and reopen if needed", "description": "Review proof of implementation and revisit the decision after a failed test or material change.", "howItSupports": "Distinguish action completion from verified effectiveness.", "media": []}]}, {"customerId": "proc", "customerName": "Business Process Owner", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "isms", "productName": "Information Security Management", "productIcon": "product.png", "jobId": "updt", "jobName": "Keep operating facts and commitments current", "jobWhatItIs": "As systems, people and suppliers change, keep the governance account aligned to reality.", "jobOutcome": "Records and assigned controls reflect the current process and unresolved changes remain visible.", "supportRationale": "Connect contributor evidence to reviewer verification.", "usedInSteps": [{"step": "Demonstrate assigned actions", "description": "Supply dated evidence for agreed controls and explain exceptions promptly.", "howItSupports": "Connect contributor evidence to reviewer verification.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Sponsor", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "isms", "productName": "Information Security Management", "productIcon": "product.png", "jobId": "over", "jobName": "Hold risk owners accountable for unresolved exposure", "jobWhatItIs": "During management review, decide which issues need action, acceptance or escalation.", "jobOutcome": "Material exceptions have named authority, time bounds and an evidence trail.", "supportRationale": "Connect exposure to treatments and decision owners.", "usedInSteps": [{"step": "Assign action and acceptance authority", "description": "Resolve cross-department priorities while preserving specialist advice and independent challenge.", "howItSupports": "Connect exposure to treatments and decision owners.", "media": []}]}, {"customerId": "ciso", "customerName": "Information Security Manager", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "ctlr", "jobName": "Demonstrate that security controls operate as intended", "jobWhatItIs": "Ahead of assurance reviews, establish what controls actually do and what evidence supports them.", "jobOutcome": "Reviewers can distinguish effective controls, exceptions and missing evidence.", "supportRationale": "Relate framework controls to the scoped asset inventory.", "usedInSteps": [{"step": "Select scope and applicable controls", "description": "Agree the assets, framework version and boundaries of the review; document exclusions.", "howItSupports": "Relate framework controls to the scoped asset inventory.", "media": []}, {"step": "Obtain and assess evidence", "description": "Ask control owners for dated proof, check sampling periods and record failed tests.", "howItSupports": "Link each test to scoped evidence and accountable reviewers.", "media": []}, {"step": "Publish findings and corrective actions", "description": "Separate open failures from accepted exceptions and provide the auditor an approved evidence package.", "howItSupports": "Track review outcomes and action due dates.", "media": []}]}, {"customerId": "ciso", "customerName": "Information Security Manager", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "miti", "jobName": "Reduce material exposure without losing operating context", "jobWhatItIs": "When a risk or incident exposes a weak control, prioritize practical mitigation.", "jobOutcome": "Risk owners agree actions and demonstrate closure or explicitly time-bound acceptance.", "supportRationale": "Trace risks to assets and controls.", "usedInSteps": [{"step": "Understand the exposure", "description": "Connect the finding to assets, affected processes and existing mitigations.", "howItSupports": "Trace risks to assets and controls.", "media": []}, {"step": "Agree action and authority", "description": "Assign a technical remediation owner outside the governance platform and agree acceptance authority.", "howItSupports": "Coordinate treatments without claiming to execute technical fixes.", "media": []}, {"step": "Verify change and reopen if needed", "description": "Review proof of implementation and revisit the decision after a failed test or material change.", "howItSupports": "Distinguish action completion from verified effectiveness.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Sponsor", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "over", "jobName": "Hold risk owners accountable for unresolved exposure", "jobWhatItIs": "During management review, decide which issues need action, acceptance or escalation.", "jobOutcome": "Material exceptions have named authority, time bounds and an evidence trail.", "supportRationale": "Connect exposure to treatments and decision owners.", "usedInSteps": [{"step": "Assign action and acceptance authority", "description": "Resolve cross-department priorities while preserving specialist advice and independent challenge.", "howItSupports": "Connect exposure to treatments and decision owners.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

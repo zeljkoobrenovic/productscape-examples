@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "dapl", "name": "Data Platform", "type": "development", "status": "invest", "description": "Central data platform providing ingestion, storage, processing, and access to marketplace data (listings, search, transactions, behavior); used by analytics, data science, and downstream data-product teams.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-data-stewardship-console", "name": "Data Stewardship Console", "type": "web-component", "description": "User interface for governing, curating, and reviewing information in Data Platform.", "dependencies": {"modules": [{"moduleId": "module-data-access-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-data-access-api", "name": "Data Access API", "type": "api", "description": "API for retrieving or maintaining the canonical data exposed by Data Platform.", "dependencies": {"modules": [{"moduleId": "module-canonical-data-model", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-quality-and-governance-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-distribution-and-access-services", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-data-distribution-feed", "name": "Data Distribution Feed", "type": "message-consumer", "description": "Event or export interface for distributing changes originating in Data Platform.", "dependencies": {"modules": [{"moduleId": "module-canonical-data-model", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-quality-and-governance-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-distribution-and-access-services", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-canonical-data-model", "name": "Canonical Data Model", "type": "service", "description": "Defines the core entities, relationships, and schemas managed by Data Platform."}, {"id": "module-quality-and-governance-controls", "name": "Quality and Governance Controls", "type": "service", "description": "Validates, governs, and curates the information maintained by Data Platform."}, {"id": "module-distribution-and-access-services", "name": "Distribution and Access Services", "type": "service", "description": "Serves trusted data products and downstream access patterns from Data Platform."}]}], "dataDependencies": [{"assetId": "notification", "moduleIds": ["module-canonical-data-model", "module-quality-and-governance-controls", "module-distribution-and-access-services"], "role": "read", "description": "Reads Notification to support domain workflows."}, {"assetId": "saved-search", "moduleIds": ["module-canonical-data-model", "module-quality-and-governance-controls", "module-distribution-and-access-services"], "role": "read", "description": "Reads Saved Search to support domain workflows."}], "brickDependencies": [{"targetBrickId": "clma", "moduleId": "module-domain-event-feed", "sourceModuleId": "module-data-distribution-feed", "type": "event-subscription", "description": "Ingests listing lifecycle events as a primary marketplace data source."}, {"targetBrickId": "ustr", "moduleId": "module-domain-event-feed", "sourceModuleId": "module-data-distribution-feed", "type": "event-subscription", "description": "Ingests user behavioral events for downstream analytics and science."}, {"targetBrickId": "spma", "moduleId": "module-domain-event-feed", "sourceModuleId": "module-data-distribution-feed", "type": "event-subscription", "description": "Ingests transaction state changes for revenue and trust analytics."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Analytics, science, and data products", "type": "data-consumer", "interface": "Data access APIs", "description": "Analytics, data science, and data products read from the data platform.", "moduleId": "module-data-access-api"}], "domain": "Data", "group": "data platform"};
-    const relatedTeams = [{"teamId": "marketplace-data-monetization", "teamName": "Data Monetization & Marketing Automation", "teamType": "platform", "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence", "role": "related", "roleLabel": "Related team"}, {"teamId": "market-intelligence-and-pricing", "teamName": "Market Intelligence & Pricing", "teamType": "platform", "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-analytics", "teamName": "Marketplace Analytics", "teamType": "platform", "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence", "role": "related", "roleLabel": "Related team"}, {"teamId": "marketplace-data-platform", "teamName": "Marketplace Data Platform", "teamType": "platform", "groupId": "data-and-intelligence", "groupName": "Marketplace Data & Intelligence", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p6", "name": "Marketplace Data & Intelligence", "icon": "", "type": "Platform", "whyUsed": "Core data platform processing marketplace events into governed datasets."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

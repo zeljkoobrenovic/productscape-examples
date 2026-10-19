@@ -41,4 +41,4 @@ A Booking.com-style accommodations marketplace competes on five connected value 
 - The domain is intentionally generic rather than Booking.com-branded, but it is grounded in Booking.com operating reality.
 - It models both traditional accommodation partners and alternative-accommodation hosts because Booking.com publicly serves both at scale.
 - Managed travel is included as a demand-side persona because Booking.com supports business travel and policy-constrained booking flows, but it is not treated as the primary commercial center of gravity.
-- Connectivity partners are modeled through products, teams, and capabilities rather than as the main customer narrative because they are critical enablers of supply scale, not the dominant value narrative.
+- Connectivity partners are modeled through products and capabilities rather than as the main customer narrative because they are critical enablers of supply scale, not the dominant value narrative.

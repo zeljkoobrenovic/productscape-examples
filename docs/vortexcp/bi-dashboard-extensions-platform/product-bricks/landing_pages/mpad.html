@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "mpad", "name": "Multi-Platform Adapters", "type": "integration", "status": "invest", "description": "Carries the same extension code to Power BI and Looker Studio: a Power BI custom visual host packaged and certified for Microsoft AppSource (SuperTables, PictureThis, InputTables and WriteBackExtreme since 2022), and a Looker Studio community visualization host, each translating the platform's data view, selection, formatting pane and theming into the framework's abstractions so the product teams write features once. This brick underpins the three-year goal of feature parity across BI platforms on one runtime and one licence, and reduces the risk of depending on a single platform vendor.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-mpad-powerbi", "name": "Power BI Visual Host", "type": "web-component", "description": "Custom visual shell for Power BI (visuals API, formatting pane, selection manager, dataView mapping) that hosts extension front-ends as certified AppSource visuals.", "dependencies": {"modules": [{"moduleId": "module-mpad-api", "type": "uses", "description": "Host exposes platform capabilities through the adapter API."}, {"moduleId": "module-mpad-data-adapter", "type": "uses", "description": "Host normalises dataView rows through the data adapter."}]}}, {"id": "module-mpad-looker", "name": "Looker Studio Visualization Host", "type": "web-component", "description": "Community visualization shell for Looker Studio (dscc data and style bindings, theming) that hosts extension front-ends.", "dependencies": {"modules": [{"moduleId": "module-mpad-api", "type": "uses", "description": "Host exposes platform capabilities through the adapter API."}, {"moduleId": "module-mpad-data-adapter", "type": "uses", "description": "Host normalises data rows through the data adapter."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-mpad-api", "name": "Platform Adapter API", "type": "bff", "description": "Uniform capability interface (data, selection, settings, theme, export) that extension front-ends call regardless of host platform."}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-mpad-data-adapter", "name": "Data View Normaliser", "type": "stateless-service", "description": "Maps Power BI dataViews and Looker Studio data tables into the connector's row and field model without owning state."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-mpad-listings", "name": "AppSource and Looker Packaging Connector", "type": "integration", "description": "Packages, signs and submits visuals to Microsoft AppSource certification and Looker Studio community visualization listings, tracking review status."}]}], "dataDependencies": [{"assetId": "extension-configuration", "moduleIds": ["module-mpad-api", "module-mpad-powerbi", "module-mpad-looker"], "role": "read-write", "description": "Stores extension settings in the Power BI or Looker Studio report."}, {"assetId": "dashboard-data-snapshot", "moduleIds": ["module-mpad-data-adapter"], "role": "read", "description": "Reads platform data views to normalise."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-mpad-api", "type": "runtime", "description": "Reuses the framework's settings model and UI kit inside Power BI and Looker Studio hosts."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-mpad-data-adapter", "type": "data", "description": "Feeds normalised data views into the Dashboard Data Connector."}, {"targetBrickId": "saas", "moduleId": "module-saas-api", "sourceModuleId": "module-mpad-listings", "type": "runtime", "description": "Pulls release builds from the release pipeline for packaging and listing."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-mpad-powerbi", "type": "licensing", "description": "Applies the same license and active-user metering on Power BI and Looker Studio."}], "externalSystemsThisBrickDependsOn": [{"system": "Power BI and Microsoft AppSource", "type": "channel", "interface": "Power BI visuals API and AppSource certification", "description": "Hosts the visuals and distributes certified packages.", "sourceModuleId": "module-mpad-powerbi"}, {"system": "Looker Studio", "type": "channel", "interface": "Community visualizations API", "description": "Hosts the visualizations in Looker Studio reports.", "sourceModuleId": "module-mpad-looker"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Runtime and Platform Services", "group": "Extension Runtime"};
-    const relatedTeams = [{"teamId": "extension-runtime", "teamName": "Extension Runtime", "teamType": "platform", "groupId": "pltf", "groupName": "Platform and Enablement Teams", "role": "related", "roleLabel": "Related team"}, {"teamId": "tables-and-discovery", "teamName": "Tables and Discovery", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}, {"teamId": "visual-storytelling", "teamName": "Visual Storytelling", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "apps-for-power-bi-and-looker-studio", "name": "Apps for Power BI and Looker Studio", "icon": "apps-for-power-bi-and-looker-studio.png", "type": "B2B Custom Visuals", "whyUsed": "Packages the extensions as Power BI custom visuals and Looker Studio community visualizations."}];
     const supportedJobs = [{"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "apps-for-power-bi-and-looker-studio", "productName": "Apps for Power BI and Looker Studio", "productIcon": "apps-for-power-bi-and-looker-studio.png", "jobId": "jtbd-dcre-1", "jobName": "Deliver an Excel-friendly interactive dashboard without building ten variants", "jobWhatItIs": "Take a business request such as 'a sales dashboard by region, product and month that people can slice as they like' and deliver one published dashboard on Tableau Cloud, Tableau Server or Power BI in which viewers can pivot, group, filter, drill, format, save their own view and export to Excel, using SuperTables, ShowMeMore, PowerKPIs, HierarchyFilter and DrillDownTree instead of building a separate worksheet for every column combination.", "jobOutcome": "The requesting team adopts one dashboard for their recurring questions, the creator's backlog of variant requests for that subject shrinks to near zero, and the dashboard stays maintainable because layout, formatting and drill paths are configuration in the workbook rather than duplicated worksheets.", "supportRationale": "Provides the extension catalogue, design patterns and demo workbooks that map a business question to an extension configuration.", "usedInSteps": [{"step": "Capture the requirement and choose the extension pattern", "description": "Sit with the requesting team, list the questions they ask each week and the Excel workbook they currently maintain, and decide which pattern fits: a SuperTable for grid-heavy analysis, a PowerKPIs entry point with drill-through for executives, a DrillDownTree or HierarchyFilter for organisational hierarchies, or ShowMeMore for chart types Tableau lacks. Check the gallery and documentation for a demo workbook that is close.", "howItSupports": "Provides the extension catalogue, design patterns and demo workbooks that map a business question to an extension configuration.", "media": []}, {"step": "Add the extension to the dashboard and connect worksheet data", "description": "Drag the extension object onto the dashboard in Tableau Desktop or the web authoring client, select the worksheet whose data it should read, and confirm that filters, parameters and actions on the dashboard flow into the extension. On Tableau Server or Cloud verify that the extension URL is safelisted; on Power BI import the custom visual from AppSource.", "howItSupports": "Connects the extension to worksheet data through the dashboard data connector and keeps filters and parameters in sync.", "media": []}, {"step": "Configure the SuperTable for self-service", "description": "Set up the grid: default columns and pivots, grouping and subtotals, conditional formatting and sparklines, calculated columns and formulas, number formats per column, row limits and server-side row model for large data, and allow viewers to save personalised views and export to Excel with formatting preserved.", "howItSupports": "Stores the SuperTables configuration in the workbook so it publishes with the dashboard and survives version upgrades.", "media": []}, {"step": "Add charts, KPI tiles and guidance the platform lacks", "description": "Complement the grid with ShowMeMore chart types such as Sankey, bullet or radar, a PowerKPIs tile row as the entry point with sparklines and drill-through, PictureThis for product images, and a short DashboardGuide tour that explains how to pivot and export, so the first session does not end with a request for a new variant.", "howItSupports": "Provides ShowMeMore, PowerKPIs, PictureThis and DashboardGuide as configurable extensions on the same runtime and data connector.", "media": []}, {"step": "Publish, verify with users and retire the variants", "description": "Publish to the production project on Tableau Server or Cloud, walk the requesting team through the dashboard, check that saved views and Excel export behave as expected for explorers and viewers, and then archive the older worksheet variants and the Excel workbook the team used to maintain.", "howItSupports": "Publishes the dashboard with its extension configuration and verifies rendering on the target platform version.", "media": []}]}, {"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "apps-for-power-bi-and-looker-studio", "productName": "Apps for Power BI and Looker Studio", "productIcon": "apps-for-power-bi-and-looker-studio.png", "jobId": "jtbd-dcre-3", "jobName": "Guide users through a dashboard and prove it is used", "jobWhatItIs": "After publishing, make sure the intended audience finds, understands and returns to the dashboard: add DashboardGuide onboarding overlays, measure views, interactions and drop-off with DashboardUsage, deliver the same content to people who never open Tableau through MailScheduler, and report adoption back to the BI platform lead so the dashboard earns its place in the portfolio.", "jobOutcome": "New users complete their first session without asking the creator for help, usage data shows which dashboards and views are alive and which can be retired, and the creator can show the BI platform lead evidence of adoption instead of anecdotes.", "supportRationale": "Places the guide extension on the dashboard and links it to the objects it explains.", "usedInSteps": [{"step": "Add onboarding overlays to the published dashboard", "description": "Configure a DashboardGuide tour with step markers on the filters, the SuperTable pivot controls and the export button, add contextual help for KPI definitions, and set the tour to run on first visit and on demand thereafter.", "howItSupports": "Places the guide extension on the dashboard and links it to the objects it explains.", "media": []}]}, {"customerId": "plnr", "customerName": "Planning and Finance Contributor", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-plnr-portrait.jpg", "productId": "apps-for-power-bi-and-looker-studio", "productName": "Apps for Power BI and Looker Studio", "productIcon": "apps-for-power-bi-and-looker-studio.png", "jobId": "jtbd-plnr-3", "jobName": "Produce P&Ls and management statements from the dashboard data", "jobWhatItIs": "At month-end, turn the actuals and the submitted forecast into the P&L, budget-versus-actual report and management statement the leadership team expects, with the account hierarchy, subtotals, sign conventions and comparison columns, and get it into the board deck and the mailbox without rebuilding it in Excel.", "jobOutcome": "A finance statement produced from the same governed data in minutes, consistent across dashboard, deck and email, and reused every month without manual rework.", "supportRationale": "Lets the creator or controller configure the FinanceTables extension on the dashboard.", "usedInSteps": [{"step": "Configure the statement layout", "description": "Map the chart of accounts to a FinanceTables layout with subtotals, sign flips, currency and comparison columns for actual, budget, forecast and variance, and save it as the monthly template.", "howItSupports": "Lets the creator or controller configure the FinanceTables extension on the dashboard.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

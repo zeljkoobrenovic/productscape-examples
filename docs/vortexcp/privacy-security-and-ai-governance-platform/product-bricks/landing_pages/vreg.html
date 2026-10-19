@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "vreg", "name": "Supplier Relationship Register", "type": "full-stack", "status": "sustaining", "description": "Maintains supplier identity, service scope, criticality, business sponsorship and periodic review dates. Different uses of one supplier retain their own relationship decisions. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "Third Party Risk Management", "link": "https://privacyperfect.com/third-party-risk-management/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-vreg-ui", "name": "Review supplier relationships and scope", "type": "web-component", "description": "Review supplier relationships and scope with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-vreg-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-vreg-api", "name": "Supplier Relationship Register API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-vreg-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-vreg-worker", "name": "Supplier review-due worker", "type": "daemon", "description": "Supplier review-due worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-vreg-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-vreg-service", "name": "Maintain supplier and service relationship state", "type": "stateful-service", "description": "Maintains supplier identity, service scope, criticality, business sponsorship and periodic review dates. Different uses of one supplier retain their own relationship decisions."}]}], "dataDependencies": [{"assetId": "dcat", "moduleIds": ["module-vreg-service"], "role": "read", "description": "Use the approved scope and version of Reusable Processing Definitions through its owning capability; no independent source-of-truth copy."}, {"assetId": "xfer", "moduleIds": ["module-vreg-service"], "role": "read", "description": "Use the approved scope and version of Transfer Decision through its owning capability; no independent source-of-truth copy."}, {"assetId": "vnds", "moduleIds": ["module-vreg-service"], "role": "own", "description": "Authoritative owner of Supplier Relationship. Supplier/service identity, business sponsor, criticality, contacts, intended use and review history."}, {"assetId": "vqst", "moduleIds": ["module-vreg-service"], "role": "read", "description": "Use the approved scope and version of Supplier Evidence Response through its owning capability; no independent source-of-truth copy."}, {"assetId": "ctrt", "moduleIds": ["module-vreg-service"], "role": "read", "description": "Use the approved scope and version of Contract and Safeguard through its owning capability; no independent source-of-truth copy."}, {"assetId": "work", "moduleIds": ["module-vreg-service"], "role": "read", "description": "Use the approved scope and version of Review Task and Communication through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "dict", "moduleId": "module-dict-api", "sourceModuleId": "module-vreg-service", "type": "context", "description": "Use Reusable Data Dictionary as the authoritative source of its context or workflow; keep Supplier Relationship Register responsible for its own decision state."}, {"targetBrickId": "task", "moduleId": "module-task-api", "sourceModuleId": "module-vreg-service", "type": "context", "description": "Use Review Tasks and Communications as the authoritative source of its context or workflow; keep Supplier Relationship Register responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-vreg-api", "type": "context", "description": "Enforce tenant, role and record access for Supplier Relationship Register."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-vreg-service", "type": "context", "description": "Record attributable state changes and decision context from Supplier Relationship Register."}, {"targetBrickId": "tran", "moduleId": "module-tran-api", "sourceModuleId": "module-vreg-service", "type": "data", "description": "Read Transfer Decision from its owner with record-scope checks and source version."}, {"targetBrickId": "vass", "moduleId": "module-vass-api", "sourceModuleId": "module-vreg-service", "type": "data", "description": "Read Supplier Evidence Response from its owner with record-scope checks and source version."}, {"targetBrickId": "cont", "moduleId": "module-cont-api", "sourceModuleId": "module-vreg-service", "type": "data", "description": "Read Contract and Safeguard from its owner with record-scope checks and source version."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Security, Supplier and AI Assurance", "group": "Supplier Relationships"};
-    const relatedTeams = [{"teamId": "assu", "teamName": "Security and Supplier Assurance", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prmg", "name": "Privacy Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Privacy Management. Shared capability availability does not imply every adjacent commercial module is licensed."}, {"id": "vdrm", "name": "Third Party Risk Management", "icon": "product.png", "type": "B2B SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Third Party Risk Management. Shared capability availability does not imply every adjacent commercial module is licensed."}, {"id": "airm", "name": "AI Risk Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for AI Risk Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "vndr", "customerName": "Supplier Risk Manager", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "vdrm", "productName": "Third Party Risk Management", "productIcon": "product.png", "jobId": "slct", "jobName": "Select a supplier with an understood risk position", "jobWhatItIs": "Before a commitment, establish whether the intended supplier relationship is acceptable.", "jobOutcome": "The sponsor understands gaps, conditions and contractual safeguards before selection.", "supportRationale": "Connect supplier and business context.", "usedInSteps": [{"step": "Define the relationship and criticality", "description": "Identify data use, business dependency, supplier identity and the relevant contract scope.", "howItSupports": "Connect supplier and business context.", "media": []}, {"step": "Collect proportionate evidence", "description": "Request only relevant answers and documents, preserve provenance and flag unanswered or contradictory points.", "howItSupports": "Coordinate review without treating supplier assertions as verification.", "media": []}, {"step": "Record a conditional decision", "description": "Escalate unresolved issues and capture the authorized decision before the contract is accepted.", "howItSupports": "Connect assessment, contract conditions and review ownership.", "media": []}]}, {"customerId": "vndr", "customerName": "Supplier Risk Manager", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "vdrm", "productName": "Third Party Risk Management", "productIcon": "product.png", "jobId": "vren", "jobName": "Keep supplier decisions valid through renewal and exit", "jobWhatItIs": "Supplier services, subprocessors and safeguards change during the relationship.", "jobOutcome": "Renewal or exit follows an up-to-date assessment with an accountable exception record.", "supportRationale": "Surface pending reviews and expiring evidence.", "usedInSteps": [{"step": "Check change and expiry signals", "description": "Review contract dates, new uses and supplier-reported changes; a failed integration remains an explicit gap.", "howItSupports": "Surface pending reviews and expiring evidence.", "media": []}, {"step": "Reassess affected obligations", "description": "Review transfer and processing impacts only where the relationship has changed materially.", "howItSupports": "Maintain relationship history.", "media": []}, {"step": "Renew, restrict or exit", "description": "Record the authorized outcome and assign operational exit obligations to customer system owners.", "howItSupports": "Preserve the renewal decision and outstanding conditions.", "media": []}]}, {"customerId": "aigo", "customerName": "AI Governance Owner", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "acpt", "jobName": "Decide whether an AI use case can proceed responsibly", "jobWhatItIs": "Before committing to an AI-enabled process, establish intended use, affected people and relevant responsibilities.", "jobOutcome": "An accountable decision states scope, conditions and the evidence still required.", "supportRationale": "Create an owned AI-use record.", "usedInSteps": [{"step": "Identify the use and responsibility", "description": "Record purpose, supplier, version and business owner; unresolved ownership prevents completion.", "howItSupports": "Create an owned AI-use record.", "media": []}, {"step": "Assess impacts and applicability", "description": "Connect technical evidence to privacy and security context; a specialist reviews ambiguous classifications.", "howItSupports": "Reuse context while retaining separate assessment rationales.", "media": []}, {"step": "Record conditions and sign-off", "description": "Assign human oversight and release conditions, including an escalation or suspension route.", "howItSupports": "Keep authorization separate from screening suggestions.", "media": []}]}, {"customerId": "aigo", "customerName": "AI Governance Owner", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "airm", "productName": "AI Risk Management", "productIcon": "product.png", "jobId": "reai", "jobName": "Keep AI decisions valid as systems and uses change", "jobWhatItIs": "After adoption, changes can invalidate the original review.", "jobOutcome": "Material changes and incidents trigger an accountable reassessment before continued use is accepted.", "supportRationale": "Maintain a review cadence and change history.", "usedInSteps": [{"step": "Gather change and incident signals", "description": "Receive owner attestations and selected references from technical monitoring; label gaps and stale feeds.", "howItSupports": "Maintain a review cadence and change history.", "media": []}, {"step": "Reopen affected assessments", "description": "Compare the new use, model or supplier with the earlier decision and revisit affected conditions.", "howItSupports": "Connect lifecycle changes to the assessment evidence.", "media": []}, {"step": "Communicate portfolio exceptions", "description": "Explain unreviewed uses and expired approvals to sponsors without hiding them in an aggregate score.", "howItSupports": "Record continuation, restriction or retirement.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

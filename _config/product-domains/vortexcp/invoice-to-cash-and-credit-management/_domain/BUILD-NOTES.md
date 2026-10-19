@@ -1,11 +1,11 @@
 # Domain build checklist
 
 - [x] Read the `.claude` new-domain workflow, artifact skills, and `.codex` review skills.
-- [x] Inspect the two adjacent domains, the ride-sharing reference, and the canonical MaaS product/team shape.
+- [x] Inspect the two adjacent domains, the ride-sharing reference, and the canonical MaaS product shape.
 - [x] Research POM and Vortex; define scope and register through `start/config.json`.
 - [x] Author customers, jobs, adoption journeys, KPI pyramids, strategy, and sourced insights.
 - [x] Author layered product bricks and outcome streams.
-- [x] Connect data assets, product deployments, and unique team ownership.
+- [x] Connect data assets and product deployments.
 - [x] Add sourced competition and research context.
 - [x] Run strict validation and the balance audit; save all three Codex reviews.
 - [x] Verify scoped generation using the current generators.

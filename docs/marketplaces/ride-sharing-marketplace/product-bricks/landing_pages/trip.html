@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "trip", "name": "Trip Request and Intent Capture", "type": "full-stack", "status": "sustaining", "description": "Captures rider pickup, destination, timing, ride type, account context, and trip intent before dispatch begins.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "The Architecture of Schemaless, Uber Engineering's Trip Datastore Using MySQL", "link": "https://www.uber.com/en-IT/blog/schemaless-part-two-architecture/", "description": "Explains the distributed trip datastore architecture behind core trip state."}, {"label": "Using Triggers On Schemaless, Uber Engineering's Datastore Using MySQL", "link": "https://www.uber.com/blog/schemaless-part-three-datastore-triggers/", "description": "Shows how trip lifecycle changes feed billing, workflow, and downstream processing."}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-request-ux-surface", "name": "Request UX Surface", "type": "web-component", "description": "Rider-facing request flow in mobile surfaces.", "dependencies": {"modules": [{"moduleId": "module-trip-request-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-trip-request-api", "name": "Trip Request API", "type": "api", "description": "API for creating and updating ride requests.", "dependencies": {"modules": [{"moduleId": "module-request-capture-and-validation", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-product-selection-logic", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-request-state-management", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-request-events", "name": "Request Events", "type": "message-consumer", "description": "Event stream for request creation, update, and cancellation.", "dependencies": {"modules": [{"moduleId": "module-request-capture-and-validation", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-product-selection-logic", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-request-state-management", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-request-capture-and-validation", "name": "Request Capture and Validation", "type": "service", "description": "Validates trip inputs, eligibility, and account context."}, {"id": "module-product-selection-logic", "name": "Product Selection Logic", "type": "service", "description": "Determines which ride products and variants are offered for the requested trip."}, {"id": "module-request-state-management", "name": "Request State Management", "type": "service", "description": "Stores request lifecycle state before, during, and after dispatch."}]}], "dataDependencies": [{"assetId": "customer-profile", "moduleIds": ["module-request-capture-and-validation", "module-product-selection-logic", "module-request-state-management"], "role": "own", "description": "Acts as the primary owning brick for Customer Profile."}, {"assetId": "customer-contact-point", "moduleIds": ["module-request-capture-and-validation", "module-product-selection-logic", "module-request-state-management"], "role": "write", "description": "Writes or updates Customer Contact Point during domain workflows."}, {"assetId": "consent-record", "moduleIds": ["module-request-capture-and-validation", "module-product-selection-logic", "module-request-state-management"], "role": "read", "description": "Reads Consent Record to support domain workflows."}, {"assetId": "trip-request-and-intent-capture", "moduleIds": ["module-request-capture-and-validation", "module-product-selection-logic", "module-request-state-management"], "role": "own", "description": "Acts as the primary owning brick for Trip Request And Intent Capture."}], "brickDependencies": [{"targetBrickId": "mapp", "moduleId": "module-mobile-experience-sdk", "sourceModuleId": "module-request-capture-and-validation", "type": "mobile-surface", "description": "Depends on Mobile App Experience Platform for realtime client state, analytics instrumentation, and resilient trip-request surfaces."}, {"targetBrickId": "capi", "moduleId": "module-client-experience-api", "sourceModuleId": "module-trip-request-api", "type": "client-api", "description": "Depends on Client API Composition and Server-Driven Experience to assemble rider-facing view models and action contracts without forcing mobile apps to own marketplace orchestration details."}, {"targetBrickId": "pric", "moduleId": "module-quote-api", "sourceModuleId": "module-trip-request-api", "type": "pricing", "description": "Depends on Dynamic Pricing and Incentives for upfront fare and offer packaging."}, {"targetBrickId": "ridp", "moduleId": "module-identity-and-billing-api", "sourceModuleId": "module-trip-request-api", "type": "identity", "description": "Depends on Rider Identity, Wallet and Payments for account, wallet, and billing context."}], "externalSystemsThisBrickDependsOn": [{"system": "Maps and geocoding providers", "type": "data", "interface": "Location API", "description": "Supports address normalization and pickup or destination interpretation.", "sourceModuleId": "module-request-capture-and-validation"}], "externalSystemsDependingOnThisBrick": [{"system": "Rider applications", "type": "channel-consumer", "interface": "Trip Request API", "description": "Rider clients depend on request capture to start trips.", "moduleId": "module-trip-request-api"}], "domain": "Rider Demand and Trip Experience", "group": "request-and-choice"};
-    const relatedTeams = [{"teamId": "rider-growth-request-and-choice", "teamName": "Rider Growth and Trip Experience Trip Request and Intent Capture", "teamType": "stream-aligned", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "rapp", "name": "Rider Mobility App", "icon": "", "type": "B2C Mobility", "whyUsed": "Captures rider intent and starts the request funnel."}];
     const supportedJobs = [{"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "book", "jobName": "Book a reliable ride for a time-sensitive trip", "jobWhatItIs": "Turn a need to get somewhere into a completed ride with predictable pickup, travel time, and payment.", "jobOutcome": "A completed trip that feels fast, safe, and worth the price paid.", "supportRationale": "Captures pickup, destination, party size, timing, and rider preferences.", "usedInSteps": [{"step": "Define the trip and compare options", "description": "Choose pickup, destination, trip timing, and whether standard, premium, reserve, share, or airport-specific options best fit the moment.", "howItSupports": "Captures pickup, destination, party size, timing, and rider preferences.", "media": [{"type": "image", "src": "media/jbtd-ridu-book-1.jpg", "title": "Urban Time-Sensitive Rider JTBD step 1: Define the trip and compare options", "alt": "Enterprise infographic for step 1 of the job \"Book a reliable ride for a time-sensitive trip\": Define the trip and compare options."}]}]}, {"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "trust", "jobName": "Use ride sharing confidently in high-anxiety situations", "jobWhatItIs": "Rely on the marketplace for late-night, teen, family, airport, or unfamiliar-city travel without feeling exposed or unsupported.", "jobOutcome": "The rider chooses the service in moments where trust matters, not only when convenience matters.", "supportRationale": "Preserves family, teen, and business account context in the booking flow.", "usedInSteps": [{"step": "Check whether this trip feels safe enough to request", "description": "Interpret driver identity, trip-share controls, supervised-travel cues, and route confidence before committing.", "howItSupports": "Preserves family, teen, and business account context in the booking flow.", "media": [{"type": "image", "src": "media/jbtd-ridu-trust-1.jpg", "title": "Urban Time-Sensitive Rider JTBD step 1: Check whether this trip feels safe enough to request", "alt": "Enterprise infographic for step 1 of the job \"Use ride sharing confidently in high-anxiety situations\": Check whether this trip feels safe enough to request."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

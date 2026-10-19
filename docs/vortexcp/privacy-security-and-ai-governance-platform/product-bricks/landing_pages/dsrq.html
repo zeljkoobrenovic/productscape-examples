@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "dsrq", "name": "Rights Request Casework", "type": "full-stack", "status": "sustaining", "description": "Manages receipt, scope, proportionate clarification, authorized response and case retention. Customer system owners perform data retrieval or changes; non-form requests are equally registrable. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "Data Subject Request", "link": "https://privacyperfect.com/services/data-subject-requests/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-dsrq-ui", "name": "Submit or review a rights case", "type": "web-component", "description": "Submit or review a rights case with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-dsrq-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-dsrq-api", "name": "Rights Request Casework API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-dsrq-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}, {"id": "module-dsrq-public-api", "name": "Limited Public Rights Intake Interface", "type": "api", "description": "Accept a minimized request without an account; apply abuse controls and reveal no case or tenant records. Further communication uses a separately authorized case channel.", "dependencies": {"modules": [{"moduleId": "module-dsrq-service", "type": "uses", "description": "Invokes only the explicitly allowed public operation, not the administrative API."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-dsrq-worker", "name": "Rights deadline and delivery-status worker", "type": "daemon", "description": "Rights deadline and delivery-status worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-dsrq-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-dsrq-service", "name": "Maintain rights-case state, authority and response evidence", "type": "stateful-service", "description": "Manages receipt, scope, proportionate clarification, authorized response and case retention. Customer system owners perform data retrieval or changes; non-form requests are equally registrable.", "dependencies": {"modules": [{"moduleId": "module-dsrq-adapter", "type": "uses", "description": "Invokes the controlled adapter for the external part of this capability."}]}}]}, {"layer": "integration", "description": "Explicit system boundary; validate protocol, contract, permissions and failure behavior.", "modules": [{"id": "module-dsrq-adapter", "name": "Rights Request Casework Boundary Adapter", "type": "integration", "description": "Translate only approved information across the named external boundaries; reject unexpected schema versions and preserve reconciliation evidence."}]}], "dataDependencies": [{"assetId": "proc", "moduleIds": ["module-dsrq-service"], "role": "read", "description": "Use the approved scope and version of Processing Activity through its owning capability; no independent source-of-truth copy."}, {"assetId": "rqst", "moduleIds": ["module-dsrq-service"], "role": "own", "description": "Authoritative owner of Rights Request Case. Request scope, minimum contact and identity-verification outcome, assigned actions, response and reasons; identity documents are not routinely retained here."}, {"assetId": "work", "moduleIds": ["module-dsrq-service"], "role": "read", "description": "Use the approved scope and version of Review Task and Communication through its owning capability; no independent source-of-truth copy."}, {"assetId": "docs", "moduleIds": ["module-dsrq-service"], "role": "read", "description": "Use the approved scope and version of Evidence Document and Provenance through its owning capability; no independent source-of-truth copy."}, {"assetId": "rpol", "moduleIds": ["module-dsrq-service"], "role": "read", "description": "Use the approved scope and version of Retention Policy and Disposal Decision through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "ropi", "moduleId": "module-ropi-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Use Processing Register as the authoritative source of its context or workflow; keep Rights Request Casework responsible for its own decision state."}, {"targetBrickId": "dict", "moduleId": "module-dict-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Use Reusable Data Dictionary as the authoritative source of its context or workflow; keep Rights Request Casework responsible for its own decision state."}, {"targetBrickId": "evdn", "moduleId": "module-evdn-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Use Evidence Vault as the authoritative source of its context or workflow; keep Rights Request Casework responsible for its own decision state."}, {"targetBrickId": "task", "moduleId": "module-task-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Use Review Tasks and Communications as the authoritative source of its context or workflow; keep Rights Request Casework responsible for its own decision state."}, {"targetBrickId": "retp", "moduleId": "module-retp-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Use Retention and Disposal Governance as the authoritative source of its context or workflow; keep Rights Request Casework responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-dsrq-api", "type": "context", "description": "Enforce tenant, role and record access for Rights Request Casework."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-dsrq-service", "type": "context", "description": "Record attributable state changes and decision context from Rights Request Casework."}], "externalSystemsThisBrickDependsOn": [{"system": "Customer operational data systems", "type": "integration", "interface": "Assigned owner tasks and approved evidence exchange", "description": "Customer owners search, export, correct or delete operational data and attest to the result; automatic fulfillment is not assumed.", "sourceModuleId": "module-dsrq-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "Organization website or approved public intake channel", "type": "channel-consumer", "interface": "Public projection or limited request-intake interface", "description": "Exposes only the allowed public or case-intake surface. Anonymous submission creates no access to internal records.", "moduleId": "module-dsrq-public-api"}], "domain": "Privacy Operations", "group": "Rights and Incidents"};
-    const relatedTeams = [{"teamId": "case", "teamName": "Privacy Assessment and Casework", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prmg", "name": "Privacy Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Privacy Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "dpof", "customerName": "Privacy Officer", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "resp", "jobName": "Protect people when a request or incident arrives", "jobWhatItIs": "A rights request or reported incident creates urgent work across teams.", "jobOutcome": "The organization makes timely, justified decisions and can show what it communicated.", "supportRationale": "Route rights casework.", "usedInSteps": [{"step": "Triage the case and responsibility", "description": "Distinguish a rights request from an incident, identify the responsible entity and record receipt or awareness as appropriate.", "howItSupports": "Route rights casework.", "media": []}, {"step": "Gather facts and evaluate action", "description": "Ask system owners for the minimum evidence needed; consider identity, other people\u2019s rights, incident effects and applicable duties.", "howItSupports": "Track scope and evidence for a rights decision.", "media": []}, {"step": "Communicate and retain the decision trail", "description": "Have the authorized owner approve communications, record delivery evidence and schedule the case retention review.", "howItSupports": "Preserve response and exception reasons.", "media": []}]}, {"customerId": "dsub", "customerName": "Individual Rights Requester", "customerGroup": "People Exercising Rights", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "exer", "jobName": "Exercise a data right and receive an understandable response", "jobWhatItIs": "When a person wants access, correction, deletion or another applicable right, make the request and understand the result.", "jobOutcome": "The person receives a clear, appropriately protected response or a reasoned explanation of limits.", "supportRationale": "Register scope without requiring a subscription or account.", "usedInSteps": [{"step": "State the request through a suitable channel", "description": "Explain the intended outcome; support accessibility needs and requests received outside the form.", "howItSupports": "Register scope without requiring a subscription or account.", "media": []}, {"step": "Resolve proportionate clarification", "description": "Provide only what is necessary to identify the request and protect the response; avoid blanket identity-document demands.", "howItSupports": "Support secure clarification and limited evidence retention.", "media": []}, {"step": "Receive and assess the answer", "description": "Understand what was done, what was limited and how to seek further explanation or challenge.", "howItSupports": "Deliver the authorized response with understandable reasons.", "media": []}]}, {"customerId": "dsub", "customerName": "Individual Rights Requester", "customerGroup": "People Exercising Rights", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "untr", "jobName": "Understand an organization\u2019s use of data and question it", "jobWhatItIs": "When a person encounters unclear data use, find accountable information and a route to redress.", "jobOutcome": "The person can locate relevant information and reach the responsible organization.", "supportRationale": "Expose only reviewed public information.", "usedInSteps": [{"step": "Find relevant published information", "description": "Use the organization\u2019s notice or selected public register without needing access to internal governance records.", "howItSupports": "Expose only reviewed public information.", "media": []}, {"step": "Identify who can answer", "description": "Find the responsible contact and accessible options to ask for explanation or exercise a right.", "howItSupports": "Connect transparency to appropriate contact routes.", "media": []}, {"step": "Ask for explanation or review", "description": "Raise an issue and retain the response; the organization explains escalation options where relevant.", "howItSupports": "Record a request or follow-up without losing its context.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

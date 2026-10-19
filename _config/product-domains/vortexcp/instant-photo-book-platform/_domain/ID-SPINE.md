@@ -3,7 +3,7 @@
 Authoritative ID contract for this domain. Every artifact file MUST use exactly these IDs when
 referencing entities owned by another file. Names/descriptions here are one-liners; the artifact
 author expands them to reference-domain density (reference: `freelancer-bookkeeping-service-platform`,
-`ride-sharing-marketplace`; `maas` for teams/products/deployment). All ids lowercase.
+`ride-sharing-marketplace`; `maas` for products/deployment). All ids lowercase.
 Modeled on PastBook (see DOMAIN.md). The modeled company is "PastBook" (Amsterdam).
 
 ## Customer groups and customers (customers.json)
@@ -98,68 +98,46 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 mapp→customer-account,analytics-event; phot→photo-asset,photo-source-connection; prev→preview-video,book-project; webc→book-project,photo-asset; upld→photo-asset,photo-source-connection; fbim→photo-source-connection,photo-asset,consent-record; edit→book-project,page-layout; cvrd→book-project,design-theme; qual→photo-asset,photo-quality-score; dedu→photo-asset,photo-cluster; mmnt→photo-cluster,photo-asset; sele→selection-result,photo-quality-score,photo-cluster; layo→page-layout,selection-result,design-theme; thme→design-theme; ctlg→product-catalog-item; pric→price-list,product-catalog-item; prom→promotion-code,gift-card; cart→checkout-session,price-list; paym→payment-transaction,checkout-session; ordr→order,payment-transaction; acct→customer-account,order; rndr→print-file,book-project; pflt→preflight-report,print-file; rout→production-job,print-partner-profile; pint→production-job,print-partner-profile,print-file; ship→shipment,shipping-rate; qmon→quality-incident,production-job,shipment; camp→marketing-campaign,promotion-code; attr→attribution-event,marketing-campaign; lcyc→lifecycle-message,customer-account; loca→localisation-string; revw→customer-review; help→help-article; sprt→support-ticket,order; rprt→reprint-case,quality-incident,support-ticket; iden→user-identity,customer-account; medi→photo-asset,print-file; priv→consent-record,audit-trail-entry; anly→analytics-event,attribution-event; intg→photo-source-connection,payment-transaction,shipment,audit-trail-entry.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `customer-account` → commerce-team
-- `user-identity` → platform-and-data-team
-- `consent-record` → platform-and-data-team
-- `audit-trail-entry` → platform-and-data-team
-- `analytics-event` → platform-and-data-team
-- `photo-asset` → platform-and-data-team
-- `photo-source-connection` → web-creator-team
-- `photo-quality-score` → curation-ai-team
-- `photo-cluster` → curation-ai-team
-- `selection-result` → curation-ai-team
-- `page-layout` → curation-ai-team
-- `design-theme` → curation-ai-team
-- `book-project` → web-creator-team
-- `preview-video` → mobile-app-team
-- `product-catalog-item` → commerce-team
-- `price-list` → commerce-team
-- `promotion-code` → growth-marketing-team
-- `gift-card` → commerce-team
-- `checkout-session` → commerce-team
-- `payment-transaction` → commerce-team
-- `order` → commerce-team
-- `shipping-rate` → print-and-fulfilment-engineering
-- `print-file` → print-and-fulfilment-engineering
-- `preflight-report` → print-and-fulfilment-engineering
-- `print-partner-profile` → production-operations
-- `production-job` → print-and-fulfilment-engineering
-- `shipment` → print-and-fulfilment-engineering
-- `quality-incident` → production-operations
-- `support-ticket` → customer-support-team
-- `reprint-case` → customer-support-team
-- `help-article` → customer-support-team
-- `marketing-campaign` → growth-marketing-team
-- `attribution-event` → growth-marketing-team
-- `lifecycle-message` → growth-marketing-team
-- `customer-review` → brand-content-and-localisation
-- `localisation-string` → brand-content-and-localisation
+- `customer-account`
+- `user-identity`
+- `consent-record`
+- `audit-trail-entry`
+- `analytics-event`
+- `photo-asset`
+- `photo-source-connection`
+- `photo-quality-score`
+- `photo-cluster`
+- `selection-result`
+- `page-layout`
+- `design-theme`
+- `book-project`
+- `preview-video`
+- `product-catalog-item`
+- `price-list`
+- `promotion-code`
+- `gift-card`
+- `checkout-session`
+- `payment-transaction`
+- `order`
+- `shipping-rate`
+- `print-file`
+- `preflight-report`
+- `print-partner-profile`
+- `production-job`
+- `shipment`
+- `quality-incident`
+- `support-ticket`
+- `reprint-case`
+- `help-article`
+- `marketing-campaign`
+- `attribution-event`
+- `lifecycle-message`
+- `customer-review`
+- `localisation-string`
 
 36 assets. Personal-data level is high for photo assets (faces, children, locations, EXIF), source connections (OAuth tokens) and accounts; tag GDPR (EU customers, Dutch company), CCPA (US majority), COPPA-adjacent care for children's photos, PCI DSS scope for payments (tokenised via providers), Meta Platform Terms for Facebook data (delete on request, no retention beyond the order), retention of print files limited after delivery.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-PastBook is a scale-up with about 16 named core staff on the careers page, engineering and support colleagues in Amsterdam, Milan, Vilnius, New York, Colombo (with Gapstars) and New Delhi, and 24/7 support from the Netherlands, US, Sri Lanka and India. Model the organisation at about 75 people: small product teams (3–7), an outsourced-inclusive support team and a lean operations team; printing is done by partners, not staff.
-
-Org group "Product and Engineering" (Amsterdam, Vilnius, Milan, Colombo):
-- `mobile-app-team` (stream-aligned) owns mapp, phot, prev
-- `web-creator-team` (stream-aligned) owns webc, upld, fbim, edit, cvrd
-- `curation-ai-team` (complicated-subsystem) owns qual, dedu, mmnt, sele, layo, thme
-- `commerce-team` (stream-aligned) owns ctlg, pric, prom, cart, paym, ordr, acct
-- `print-and-fulfilment-engineering` (platform) owns rndr, pflt, rout, pint, ship
-- `platform-and-data-team` (platform) owns iden, medi, priv, anly, intg
-
-Org group "Operations and Customer Care" (Amsterdam, New York, Colombo, New Delhi):
-- `production-operations` (stream-aligned; partner managers and quality) owns qmon; customer dependencies on opsm, prnt
-- `customer-support-team` (stream-aligned; 24/7 agents in four countries) owns help, sprt, rprt; customer dependencies on csup, fmly, gftr, trvl
-
-Org group "Growth and Brand" (Amsterdam, Milan, New York):
-- `growth-marketing-team` (stream-aligned; performance marketing, CRM, ASO) owns camp, attr, lcyc; customer dependencies on gmkt, fmly, gftr, plat
-- `brand-content-and-localisation` (enabling; content, ten languages, reviews, sustainability communication) owns loca, revw; customer dependencies on gmkt, sclk, trvl
-
-10 teams. Team metrics must be KPI names that exist in the pyramids of a customer the team serves. No provider-side "Provides …" edges: dependencies are consumer → provider only (as in maas).
 
 ## Products (product-deployments/products.json) — id, primary customers
 

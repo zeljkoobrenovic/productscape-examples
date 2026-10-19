@@ -33,4 +33,4 @@ This product domain models the business operated by Alpega Group (alpegagroup.co
 - Sourced facts (network scale, product launches, analyst positioning, customer names) come from alpegagroup.com and its press releases; competition statistics preserve each company's officially reported scope.
 - KPI current/target values are realistic seed values for a modeled domain, informed by public European road-freight reporting (Eurostat empty-running shares, IRU driver-shortage reports, cargo-crime statistics), not official Alpega targets.
 
-Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (teams, products, deployment), `freight-logistics-orchestration` (adjacent-domain boundary, icon set).
+Structural references used while creating this domain: `ride-sharing-marketplace` (customers, bricks, streams, data assets, competition), `maas` (products, deployment), `freight-logistics-orchestration` (adjacent-domain boundary, icon set).

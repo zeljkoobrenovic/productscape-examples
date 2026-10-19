@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "online-retail-marketplace", "name": "Online Retail Marketplace", "description": "Covers the shopper, Prime fulfillment, third-party seller, retail media, and marketplace trust workflows required to run a scaled online retail marketplace like Amazon."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "search-browse-facets", "name": "Search, Browse & Facets", "kind": "logical-object", "description": "Search, browse, filters, category navigation, and ranking for broad and explicit shopping intent.", "businessMeaning": "Reusable domain data centered on Search, Browse & Facets.", "status": "active", "tags": ["shopper-experience"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "systemOfRecordBrickId": "sear", "ownerTeamId": "shopping-discovery", "stewardTeamIds": [], "derivedFromAssetIds": [], "stores": [{"storeId": "search-browse-facets-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "search-browse-facets api", "description": "Access interface for Search, Browse & Facets."}], "governance": {"retention": "active lifecycle plus audit window", "residency": "eu", "sharingPolicy": "internal and approved domain consumers only"}, "rootGroup": "Core Domain Records", "group": "Core Records"};
+    const currentAsset = {"id": "search-browse-facets", "name": "Search, Browse & Facets", "kind": "logical-object", "description": "Search, browse, filters, category navigation, and ranking for broad and explicit shopping intent.", "businessMeaning": "Reusable domain data centered on Search, Browse & Facets.", "status": "active", "tags": ["shopper-experience"], "classification": "internal", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "systemOfRecordBrickId": "sear", "derivedFromAssetIds": [], "stores": [{"storeId": "search-browse-facets-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "search-browse-facets api", "description": "Access interface for Search, Browse & Facets."}], "governance": {"retention": "active lifecycle plus audit window", "residency": "eu", "sharingPolicy": "internal and approved domain consumers only"}, "rootGroup": "Core Domain Records", "group": "Core Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "sear", "name": "Search, Browse & Facets", "role": "own", "description": "Acts as the primary owning brick for Search, Browse & Facets."}];
     const consumingBricks = [{"id": "home", "name": "Shopping Home & Entry", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "pdet", "name": "Product Detail Experience", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "deal", "name": "Deals, Promotions & Merchandising", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "deli", "name": "Delivery Promise & Last Mile", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "prim", "name": "Prime Membership & Benefits", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "price", "name": "Pricing & Offer Health", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "fbao", "name": "FBA Inbound & Operations", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "dspm", "name": "DSP Audiences & Programmatic Media", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "repr", "name": "Retail Analytics & Reporting", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "reco", "name": "Personalization & Recommendations", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}, {"id": "apii", "name": "Commerce APIs & External Integrations", "role": "read", "description": "Reads Search, Browse & Facets to support domain workflows."}];
-    const ownerTeam = {"teamId": "shopping-discovery", "teamName": "Shopping Discovery", "teamType": "stream-aligned", "groupName": "Shopper Growth"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "transport-order", "name": "Transport Order", "kind": "logical-object", "description": "The canonical transport order: loads imported from shipper ERPs (SAP, Oracle, plant systems) or created by planners, with pickup and delivery stops, time windows, cargo lines, equipment requirements, and assigned carrier. Consumed by planning, tendering, execution, dock scheduling, settlement, and analytics. Stop contacts carry names and phone numbers of warehouse staff.", "businessMeaning": "The unit of work the whole platform revolves around: one order equals one movement of goods a shipper needs executed and a carrier gets paid for.", "status": "active", "tags": ["shipper-products", "execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "owning shipper organization, assigned carrier, and internal execution workflows", "systemOfRecordBrickId": "tord", "ownerTeamId": "transport-planning", "stewardTeamIds": ["transport-execution"], "derivedFromAssetIds": [], "stores": [{"storeId": "transport-order-db", "role": "system-of-record"}, {"storeId": "transport-order-events", "role": "event-source"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "transport-order api", "description": "CRUD and lifecycle API for transport orders, used by the TMS UI, Transport Execution API clients, and the ERP integration hub."}, {"type": "event", "name": "transport-order state events", "description": "Order created, tendered, accepted, dispatched, delivered, and cancelled events consumed by visibility, dock scheduling, and settlement."}], "governance": {"retention": "active lifecycle plus 24 months operational history; stop-contact personal data minimized after delivery closure", "residency": "eu", "sharingPolicy": "visible only to the owning shipper organization and the carriers assigned to the order; never shared across shipper tenants"}, "rootGroup": "Transport Order and Execution Data", "group": "Order Lifecycle Records"};
+    const currentAsset = {"id": "transport-order", "name": "Transport Order", "kind": "logical-object", "description": "The canonical transport order: loads imported from shipper ERPs (SAP, Oracle, plant systems) or created by planners, with pickup and delivery stops, time windows, cargo lines, equipment requirements, and assigned carrier. Consumed by planning, tendering, execution, dock scheduling, settlement, and analytics. Stop contacts carry names and phone numbers of warehouse staff.", "businessMeaning": "The unit of work the whole platform revolves around: one order equals one movement of goods a shipper needs executed and a carrier gets paid for.", "status": "active", "tags": ["shipper-products", "execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "owning shipper organization, assigned carrier, and internal execution workflows", "systemOfRecordBrickId": "tord", "derivedFromAssetIds": [], "stores": [{"storeId": "transport-order-db", "role": "system-of-record"}, {"storeId": "transport-order-events", "role": "event-source"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "transport-order api", "description": "CRUD and lifecycle API for transport orders, used by the TMS UI, Transport Execution API clients, and the ERP integration hub."}, {"type": "event", "name": "transport-order state events", "description": "Order created, tendered, accepted, dispatched, delivered, and cancelled events consumed by visibility, dock scheduling, and settlement."}], "governance": {"retention": "active lifecycle plus 24 months operational history; stop-contact personal data minimized after delivery closure", "residency": "eu", "sharingPolicy": "visible only to the owning shipper organization and the carriers assigned to the order; never shared across shipper tenants"}, "rootGroup": "Transport Order and Execution Data", "group": "Order Lifecycle Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "tord", "name": "Transport Order Management", "role": "own", "description": "System of record for the Transport Order asset across its full lifecycle."}, {"id": "csel", "name": "Carrier Selection and Load Tendering", "role": "write", "description": "Writes carrier assignment and tender outcome onto the transport order."}, {"id": "intg", "name": "ERP and Systems Integration Hub", "role": "write", "description": "Relays ERP deliveries and stock transfers into transport-order creation flows."}];
     const consumingBricks = [{"id": "plan", "name": "Transport Planning and Optimization", "role": "read-write", "description": "Reads open orders as planning input and updates them with load and sequence assignments."}, {"id": "texe", "name": "Transport Execution Orchestration", "role": "read", "description": "Reads order details when loads originate from the TMS rather than an external shipper system."}];
-    const ownerTeam = {"teamId": "transport-planning", "teamName": "Transport Planning", "teamType": "stream-aligned", "groupName": "Shipper Product Group"};
-    const stewardTeams = [{"teamId": "transport-execution", "teamName": "Transport Execution", "teamType": "stream-aligned", "groupName": "Execution Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

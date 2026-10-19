@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "rght", "name": "Time-Relevant Parking-Right Verification", "type": "integration", "status": "invest", "description": "Check required permit and payment sources for the observation time. Distinguish confirmed rights, confirmed absence and unknown results; unknown must never be treated as non-payment.", "links": [{"group": "Public source context", "description": "Sources establish product or operating context. The proposed modules, storage and control design are inferred, not verified implementation evidence.", "links": [{"label": "Parkeerhandhaving", "link": "https://www.twyns.com/parkeerhandhaving", "description": "Primary public context; accessed 2026-09-06."}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-rght-api", "name": "Time-Relevant Parking-Right Verification API", "type": "api", "description": "Proposed versioned contract for this capability, scoped to authority, actor and purpose.", "dependencies": {"modules": [{"moduleId": "module-rght-evaluate", "type": "uses", "description": "Calls the capability boundary for authorized behavior."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-rght-work", "name": "Time-Relevant Parking-Right Verification Background Processing", "type": "message-consumer", "description": "Process resumable work with an original business identifier, explicit rejection state and recorded completion.", "dependencies": {"modules": [{"moduleId": "module-rght-evaluate", "type": "uses", "description": "Calls the capability boundary for authorized behavior."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-rght-evaluate", "name": "Parking-Right Evaluation", "type": "stateless-service", "description": "Combine observation-time source results into confirmed-right, confirmed-absence or unknown. Orchestrate qualified source queries and persist response snapshots through the state module; own no durable state.", "dependencies": {"modules": [{"moduleId": "module-rght-state", "type": "uses", "description": "Calls the capability boundary for authorized behavior."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-rght-state", "name": "Time-Relevant Parking-Right Verification Domain State", "type": "stateful-service", "description": "Source-response snapshots, observation time, freshness and verification outcome. Logical state boundary within a shared modular application; not a claim of an independently deployed service.", "dependencies": {"modules": [{"moduleId": "module-rght-adapter", "type": "uses", "description": "Use the qualified adapter for the authorized outbound contract; preserve results in the capability record."}]}}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-rght-adapter", "name": "Time-Relevant Parking-Right Verification Adapter", "type": "integration", "description": "Adapt the approved external contract or device protocol; access and provider selection require customer qualification."}]}], "dataDependencies": [{"assetId": "rght", "moduleIds": ["module-rght-state"], "role": "own", "description": "System of record for the modeled Parking-Right Verification Snapshot. External original records retain their original authority."}, {"assetId": "scns", "moduleIds": ["module-rght-evaluate"], "role": "read", "description": "Consume the permitted projection of Parking Scan Observation. Access remains purpose- and authority-scoped."}, {"assetId": "zone", "moduleIds": ["module-rght-evaluate"], "role": "read", "description": "Consume the permitted projection of Parking Zone and Regime. Access remains purpose- and authority-scoped."}, {"assetId": "exch", "moduleIds": ["module-rght-evaluate"], "role": "read", "description": "Consume the permitted projection of Partner Exchange Journal. Access remains purpose- and authority-scoped."}], "brickDependencies": [{"targetBrickId": "zone", "moduleId": "module-zone-api", "sourceModuleId": "module-rght-evaluate", "type": "uses", "description": "Select applicable entitlements and effective tolerances."}, {"targetBrickId": "xchg", "moduleId": "module-xchg-api", "sourceModuleId": "module-rght-evaluate", "type": "uses", "description": "Obtain acknowledged source responses or explicit unavailability."}], "externalSystemsThisBrickDependsOn": [{"system": "Authority-approved permit and parking-payment sources", "type": "integration", "interface": "Rights query through Partner Exchange", "description": "A local response snapshot is not the source register; unavailability remains unknown.", "sourceModuleId": "module-rght-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Parking Compliance", "group": "Observation and Entitlements"};
-    const relatedTeams = [{"teamId": "prkt", "teamName": "Parking and Decision Remedies", "teamType": "stream-aligned", "groupId": "twop", "groupName": "Twyns-Informed Product and Service Organization", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "park", "name": "Twyns Parking Enforcement", "icon": "", "type": "B2G / B2B parking operations; public beneficiaries", "whyUsed": "Provides time-relevant parking-right verification within the modeled offer."}];
     const supportedJobs = [{"customerId": "pkmg", "customerName": "Parking Operations Manager", "customerGroup": "Authority Buyers and Service Operators", "customerIcon": "customer-pkmg-portrait.jpg", "productId": "park", "productName": "Twyns Parking Enforcement", "productIcon": "", "jobId": "pacc", "jobName": "Establish parking compliance with a defensible disposition", "jobWhatItIs": "Coordinate scans, rights checks and review while protecting compliant visitors.", "jobOutcome": "Each relevant observation receives an explained and supported outcome.", "supportRationale": "Establish Parking Compliance without Avoidable Errors supports this step: Choose zones, effective regimes and achievable review capacity.", "usedInSteps": [{"step": "Prepare policy and coverage", "description": "Choose zones, effective regimes and achievable review capacity.", "howItSupports": "Establish Parking Compliance without Avoidable Errors supports this step: Choose zones, effective regimes and achievable review capacity.", "media": []}, {"step": "Check observations and rights", "description": "Resolve plate ambiguity and verify payments or exemptions; hold uncertain cases.", "howItSupports": "Establish Parking Compliance without Avoidable Errors supports this step: Resolve plate ambiguity and verify payments or exemptions; hold uncertain cases.", "media": []}, {"step": "Authorize follow-up", "description": "Avoid duplicates and route a justified assessment or referral to the responsible authority.", "howItSupports": "Establish Parking Compliance without Avoidable Errors supports this step: Avoid duplicates and route a justified assessment or referral to the responsible authority.", "media": []}]}, {"customerId": "pkmg", "customerName": "Parking Operations Manager", "customerGroup": "Authority Buyers and Service Operators", "customerIcon": "customer-pkmg-portrait.jpg", "productId": "park", "productName": "Twyns Parking Enforcement", "productIcon": "", "jobId": "prec", "jobName": "Recover parking operations after a source or decision error", "jobWhatItIs": "Limit the effects of missing entitlements, repeated scans or a faulty rule.", "jobOutcome": "Affected observations are rechecked and corrected without duplicate penalties.", "supportRationale": "Establish Parking Compliance without Avoidable Errors supports this step: Suspend unsupported issuance and re-evaluate against trustworthy source responses.", "usedInSteps": [{"step": "Pause and reconcile", "description": "Suspend unsupported issuance and re-evaluate against trustworthy source responses.", "howItSupports": "Establish Parking Compliance without Avoidable Errors supports this step: Suspend unsupported issuance and re-evaluate against trustworthy source responses.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "emtl", "name": "Enterprise metric layer", "type": "service", "status": "invest", "description": "Defines KPI semantics, freshness, and reusable metrics across the domain.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-enterprise-metric-layer-workspace", "name": "Enterprise metric layer Workspace", "type": "web-component", "description": "Primary operator or user-facing workspace for Enterprise metric layer.", "dependencies": {"modules": [{"moduleId": "module-enterprise-metric-layer-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-enterprise-metric-layer-api", "name": "Enterprise metric layer API", "type": "api", "description": "Programmatic interface exposed by Enterprise metric layer.", "dependencies": {"modules": [{"moduleId": "module-enterprise-metric-layer-core", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-enterprise-metric-layer-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-enterprise-metric-layer-event-stream", "name": "Enterprise metric layer Event Stream", "type": "message-consumer", "description": "Event surface published by Enterprise metric layer.", "dependencies": {"modules": [{"moduleId": "module-enterprise-metric-layer-core", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-enterprise-metric-layer-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-enterprise-metric-layer-core", "name": "Enterprise metric layer Core", "type": "service", "description": "Owns the main workflow logic and state for Enterprise metric layer.", "dependencies": {"modules": [{"moduleId": "module-enterprise-metric-layer-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-enterprise-metric-layer-controls", "name": "Enterprise metric layer Controls", "type": "service", "description": "Applies policy, audit, and operational control concerns inside Enterprise metric layer."}]}], "dataDependencies": [{"assetId": "enterprise-metric", "moduleIds": ["module-enterprise-metric-layer-core", "module-enterprise-metric-layer-controls"], "role": "own", "description": "Acts as the primary owning brick for enterprise-metric."}, {"assetId": "access-entitlement", "moduleIds": ["module-enterprise-metric-layer-core", "module-enterprise-metric-layer-controls"], "role": "read", "description": "Reads access-entitlement to support enterprise workflows."}], "brickDependencies": [{"targetBrickId": "prad", "moduleId": "module-process-automation-designer-api", "sourceModuleId": "module-enterprise-metric-layer-api", "type": "service-api", "description": "Depends on prad to provide reusable enterprise capability needed by Enterprise metric layer."}, {"targetBrickId": "eidg", "moduleId": "module-employee-identity-graph-event-stream", "sourceModuleId": "module-enterprise-metric-layer-event-stream", "type": "event-subscription", "description": "Depends on eidg to provide reusable enterprise capability needed by Enterprise metric layer."}], "externalSystemsThisBrickDependsOn": [{"system": "HRIS, ERP, ITSM, collaboration, and identity platforms", "type": "enterprise-system", "interface": "Enterprise APIs and event feeds", "description": "Enterprise metric layer exchanges data with core enterprise systems.", "sourceModuleId": "module-enterprise-metric-layer-core"}], "externalSystemsDependingOnThisBrick": [{"system": "Employee workspaces and shared-service operations", "type": "internal-consumer", "interface": "APIs, UI modules, and event streams", "description": "Enterprise workflows depend on Enterprise metric layer for reusable capability.", "moduleId": "module-enterprise-metric-layer-api"}], "domain": "Product, Technology & Enablement", "group": "Workflow automation & enterprise operations"};
-    const relatedTeams = [{"teamId": "enterprise-platforms-workflow-and-integration", "teamName": "Enterprise Platforms - Workflow and Integration", "teamType": "platform", "groupId": "enterprise-platforms", "groupName": "Product, Technology & Enablement / Enterprise Platforms", "role": "related", "roleLabel": "Related team"}, {"teamId": "finance-platforms-planning-and-treasury", "teamName": "Finance Platforms - Planning and Treasury", "teamType": "stream-aligned", "groupId": "finance-platforms", "groupName": "Service, Operations & Finance / Finance Platforms", "role": "related", "roleLabel": "Related team"}, {"teamId": "security-and-it-operations-resilience", "teamName": "Security and IT Operations - Resilience", "teamType": "stream-aligned", "groupId": "security-and-it-operations", "groupName": "Control, Risk & Trust / Security and IT Operations", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p4", "name": "Employee Work Hub", "icon": "", "type": "Employee & Workplace Workflow", "whyUsed": "Needed to support the employee work hub workflow."}, {"id": "p6", "name": "Enterprise Service Flow", "icon": "", "type": "Service, Operations & Finance Workflow", "whyUsed": "Needed to support the enterprise service flow workflow."}, {"id": "p7", "name": "Automation and Insight Studio", "icon": "", "type": "Product, Technology & Enablement Workflow", "whyUsed": "Needed to support the automation and insight studio workflow."}];
     const supportedJobs = [{"customerId": "opsl", "customerName": "Shared Services Operations Lead", "customerGroup": "Shared Service Operators", "customerIcon": "support_agent", "productId": "p6", "productName": "Enterprise Service Flow", "productIcon": "", "jobId": "mrpa", "jobName": "Move requests through policy and approvals", "jobWhatItIs": "Convert fragmented requests into standard intake, policy-aware routing, and controlled completion across service teams.", "jobOutcome": "Higher throughput, shorter cycle time, and less avoidable rework in shared-service operations.", "supportRationale": "Measures throughput, control quality, and exceptions.", "usedInSteps": [{"step": "Close with evidence", "description": "Complete the work with the required audit trail, documents, and service narrative intact.", "howItSupports": "Measures throughput, control quality, and exceptions.", "media": []}]}, {"customerId": "opsl", "customerName": "Shared Services Operations Lead", "customerGroup": "Shared Service Operators", "customerIcon": "support_agent", "productId": "p6", "productName": "Enterprise Service Flow", "productIcon": "", "jobId": "rebe", "jobName": "Resolve exceptions before they become escalations", "jobWhatItIs": "Detect bottlenecks, route exceptions early, and resolve blocked work before service quality degrades.", "jobOutcome": "Lower backlog volatility, fewer escalations, and more confidence in service commitments.", "supportRationale": "Provides trusted SLA and flow metrics.", "usedInSteps": [{"step": "Watch queue health and SLA risk", "description": "Track queues, age, ownership gaps, and workload spikes in one place.", "howItSupports": "Provides trusted SLA and flow metrics.", "media": []}]}, {"customerId": "itad", "customerName": "Enterprise Platform Administrator", "customerGroup": "Platform and Technology Admins", "customerIcon": "admin_panel_settings", "productId": "p7", "productName": "Automation and Insight Studio", "productIcon": "", "jobId": "acws", "jobName": "Automate cross-system work safely", "jobWhatItIs": "Build reusable workflow automations that connect enterprise systems while keeping audit, policy, and human review intact.", "jobOutcome": "Faster deployment of enterprise workflows, higher reuse, and lower risk from automation sprawl.", "supportRationale": "Measures impact and reliability.", "usedInSteps": [{"step": "Monitor value and reliability", "description": "Track automation coverage, failures, and business impact after rollout.", "howItSupports": "Measures impact and reliability.", "media": []}]}, {"customerId": "itad", "customerName": "Enterprise Platform Administrator", "customerGroup": "Platform and Technology Admins", "customerIcon": "admin_panel_settings", "productId": "p7", "productName": "Automation and Insight Studio", "productIcon": "", "jobId": "kdap", "jobName": "Keep identity, devices, and access in policy", "jobWhatItIs": "Automate access and device operations for joiners, movers, and leavers while preserving security and operational continuity.", "jobOutcome": "Faster provisioning, fewer access gaps, and lower policy or security drift.", "supportRationale": "Measures provisioning reliability and policy adherence.", "usedInSteps": [{"step": "Prove compliance and recover quickly", "description": "Provide evidence, remediation steps, and fast rollback when something fails.", "howItSupports": "Measures provisioning reliability and policy adherence.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

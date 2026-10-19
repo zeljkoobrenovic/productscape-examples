@@ -13,7 +13,7 @@ Updated: 2026-09-06
 
 ### High-priority findings
 
-No customer-model P1 findings remain. Job steps describe work; journeys describe adopting Assai, including discovery, evaluation and bounded trial. Supplier and receiving-operations roles both connect to products, streams and accountable teams.
+No customer-model P1 findings remain. Job steps describe work; journeys describe adopting Assai, including discovery, evaluation and bounded trial. Supplier and receiving-operations roles both connect to products and streams.
 
 ### Medium-priority findings and open assumptions
 
@@ -33,7 +33,7 @@ Updated: 2026-09-06
 
 - Twenty-four bricks span three root groups and eight subgroups. Module responsibilities include browser experiences, APIs, workers, stateless assembly, durable domain records and external adapters.
 - Seven outcome streams include explicit decisions, exception handling and accountable completion. Controlled document approval, derived asset context and verified change closure have distinct ownership.
-- Twenty-three logical data assets use five proposed stores. Every asset has an owning team, steward, producing module and consuming module; external source authority and derived search state remain distinct.
+- Twenty-three logical data assets use five proposed stores. Every asset has a producing module and consuming module; external source authority and derived search state remain distinct.
 - Public source links support capability context. Internal APIs, schemas, store technologies and deployment topology remain proposed, with no fabricated repository or production-infrastructure evidence.
 
 ### Critical and traceability findings
@@ -43,28 +43,7 @@ Updated: 2026-09-06
 
 ### Edit backlog
 
-Completed the conditional migration reference, product dependency closure, all data/module/team links and generated navigation checks. Preserve the existing separation of approval, exchange and verification. Defer API or provider specificity until reliable implementation evidence exists.
-
-## Teams Review
-
-Updated: 2026-09-06
-
-### Operating-model assessment
-
-- Eight proposed teams own all 24 bricks once each. Shared-platform consumption is represented through explicit team dependencies; supporting teams do not duplicate primary ownership.
-- The model allocates 73 people across teams plus six group-level leaders. These are differentiated planning allocations, not Assai headcount or a complete company organization.
-- Four customer-facing delivery teams, one specialist asset-context team and platform responsibilities cover review, supplier exchange, handover, change, integration, access, reliability, custody and enablement. Team topology follows the work rather than separate frontend/backend departments.
-- Engineering approval, operating authorization, assurance acceptance and source-system authority remain customer responsibilities. AI-assisted relationships are product proposals subject to stewardship, not autonomous organizational decision-makers.
-
-### Ownership, topology and staffing findings
-
-- The final integrity pass confirms no orphan or duplicate primary brick ownership. The `assr` team owns audit and export software and does not claim to provide statutory engineering assurance.
-- **P2 — Capacity and specialist concentration.** Evidence: `teams/teams.json`, `plat`, `cntx`, `enab`. A nine-person platform team includes three reliability specialists; asset context requires specialized search and visualization skills; implementation consultants share responsibility with product engineers. Why it matters: parallel enterprise rollouts and incident coverage could exceed these allocations. Direction: validate workload and rotation assumptions before using this model for hiring. Domain teams participate in incident response.
-- **P2 — Organizational scope.** Evidence: `orgDesign.companyProfile`. Corporate selling, finance, people operations and other company functions are outside the product/delivery model. Direction: add those functions only if a whole-company operating model is requested.
-
-### Strategy alignment and edit backlog
-
-Every team names customer outcome metrics and supported streams. Preserve the connection between source freshness and operating trust (`cntx`, `data`, `plat`), between accepted changes and receiving-system evidence (`life`), and between go-live and customer independence (`enab`). Validate staffing against actual demand and confirmed service obligations rather than expanding team count to match the brick taxonomy.
+Completed the conditional migration reference, product dependency closure, all data/module links and generated navigation checks. Preserve the existing separation of approval, exchange and verification. Defer API or provider specificity until reliable implementation evidence exists.
 
 ## Balance Audit
 
@@ -78,15 +57,14 @@ Updated: 2026-09-06
 | Product bricks | 24 | 20+ across three levels |
 | Streams / flow steps | 7 / 28 | Outcome-based, traceable flows |
 | Logical data assets / stores | 23 / 5 | 15+ assets |
-| Teams | 8 | 8+ |
 | Software offers / service offers | 3 / 1 | Match public product boundary |
 | Competitors, excluding Assai | 8 | 8+ |
 | Sourced insights / source pages | 12 / 12 | 8+ insights |
 | Candidate stress tests | 5 | Optional, no claimed incidents |
 
-Integrity: both `.claude` and `.codex` domain validators pass with `--strict-ids` (13 JSON files, 24 bricks). The KPI checker confirms 16 branching pyramids, unique metric IDs and matching strategy names. An additional integrity pass confirms sole primary brick and data ownership, all steward/store/module references, complete customer/job/stream/product/team coverage, required product dependency closure and source/statistic provenance.
+Integrity: both `.claude` and `.codex` domain validators pass with `--strict-ids` (13 JSON files, 24 bricks). The KPI checker confirms 16 branching pyramids, unique metric IDs and matching strategy names. An additional integrity pass confirms data ownership, all store/module references, complete customer/job/stream/product coverage, required product dependency closure and source/statistic provenance.
 
-P1: none remaining; the optional native-source/migration composition finding is resolved. P2: empirical, contract and staffing calibration remain explicit research gaps. P3: custom illustrations and complete competitor corporate details are optional polish.
+P1: none remaining; the optional native-source/migration composition finding is resolved. P2: empirical and contract calibration remain explicit research gaps. P3: custom illustrations and complete competitor corporate details are optional polish.
 
 Overall: mature research-based source model with integrity and scoped generation verification completed. It is suitable for strategy and architecture discussion, not a verified reconstruction of Assai internals.
 
@@ -100,4 +78,4 @@ Overall: mature research-based source model with integrity and scoped generation
 
 ### Applied skills
 
-Used `.claude/skills/new-product-domain`, `set-domain-strategy`, the customer/bricks/streams/data/products/teams/competition edit skills, `validate-domain` and `audit-domain-balance`. Applied `.codex/skills/gpa-product-domain-review`, `gpa-product-bricks-review` and `gpa-teams-review` to this combined review. Current canonical schema and generator behavior resolve older prompt references to retired product/ownership fields and the old `bus` layer.
+Used `.claude/skills/new-product-domain`, `set-domain-strategy`, the customer/bricks/streams/data/products/competition edit skills, `validate-domain` and `audit-domain-balance`. Applied `.codex/skills/gpa-product-domain-review` and `gpa-product-bricks-review` to this combined review. Current canonical schema and generator behavior resolve older prompt references to retired product/ownership fields and the old `bus` layer.

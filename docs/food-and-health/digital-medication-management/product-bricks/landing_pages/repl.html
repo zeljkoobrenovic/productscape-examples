@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "repl", "name": "Device Replenishment and Stock Signals", "type": "service", "status": "sustaining", "description": "Watches each device's remaining pouch stock and lead times, and signals when a fresh roll must be ordered and delivered before the device runs empty.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-replenishment-api", "name": "Replenishment API", "type": "api", "description": "Serves device stock levels and replenishment recommendations.", "dependencies": {"modules": [{"moduleId": "module-replenishment-service", "type": "delegates", "description": "Delegates stock logic to the replenishment service."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-stock-monitor", "name": "Stock Level Monitor", "type": "daemon", "description": "Tracks remaining doses per device against consumption and lead time.", "dependencies": {"modules": [{"moduleId": "module-replenishment-service", "type": "processes", "description": "Feeds stock state into the replenishment service."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-replenishment-service", "name": "Replenishment Service", "type": "stateful-service", "description": "Computes when each device needs a new roll and raises replenishment signals."}]}], "dataDependencies": [{"assetId": "device-telemetry", "moduleIds": ["module-stock-monitor"], "role": "read", "description": "Reads pouch-stock telemetry per device."}, {"assetId": "dose-packaging-order", "moduleIds": ["module-replenishment-service"], "role": "write", "description": "Requests replenishment orders when stock runs low."}], "brickDependencies": [{"targetBrickId": "conn", "moduleId": "module-device-gateway-api", "sourceModuleId": "module-stock-monitor", "type": "telemetry", "description": "Reads device stock telemetry."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Pharmacy and Medication Supply", "group": "pouch-logistics"};
-    const relatedTeams = [{"teamId": "pharmacy-supply-team", "teamName": "Pharmacy Supply", "teamType": "stream-aligned", "groupId": "pharmacy-supply-group", "groupName": "Pharmacy and Medication Supply", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "anna", "name": "Evondos Anna Dispensing Service", "icon": "pati.png", "type": "B2G / B2B Managed Medical-Device Service", "whyUsed": "Replenishment for Anna devices."}, {"id": "pharm", "name": "Pharmacy Supply Connect", "icon": "phar.png", "type": "Supply Partner Platform", "whyUsed": "Device replenishment and stock signals."}];
     const supportedJobs = [{"customerId": "caom", "customerName": "Care-Provider / Municipality Manager", "customerGroup": "Care Providers and Funders", "customerIcon": "caom.png", "productId": "anna", "productName": "Evondos Anna Dispensing Service", "productIcon": "pati.png", "jobId": "deploy-service", "jobName": "Roll out automated dispensing across our home-care service", "jobWhatItIs": "Move from a small pilot to dependable population-scale use of automated dispensing across the organisation's clients and staff.", "jobOutcome": "A reliable, compliant service running at scale, delivering safer medication and lower cost-to-serve across the population.", "supportRationale": "Ensures accurate pouch supply keeps every device stocked on schedule.", "usedInSteps": [{"step": "Run the service reliably at scale", "description": "Operate a growing fleet with high uptime, dependable pharmacy supply, and monitoring that staff trust across many teams.", "howItSupports": "Ensures accurate pouch supply keeps every device stocked on schedule.", "media": [{"type": "image", "src": "media/jbtd-caom-deploy-service-2.jpg", "title": "Care-Provider / Municipality Manager JTBD step 2: Run the service reliably at scale", "alt": "Enterprise infographic for step 2 of the job \"Roll out automated dispensing across our home-care service\": Run the service reliably at scale."}]}]}, {"customerId": "phar", "customerName": "Pharmacy Dose-Packaging Partner", "customerGroup": "Supply Partners", "customerIcon": "phar.png", "productId": "pharm", "productName": "Pharmacy Supply Connect", "productIcon": "phar.png", "jobId": "fulfil-pouches", "jobName": "Fill and supply accurate multi-dose pouch rolls on time", "jobWhatItIs": "Produce and deliver patient-specific pouch rolls that are correct, device-compatible, and available before each device needs them.", "jobOutcome": "Every device stays stocked with an accurate, correctly formatted roll, with no dangerous gaps or mismatches.", "supportRationale": "Delivers structured, device-linked dose-packaging orders to the pharmacy.", "usedInSteps": [{"step": "Receive a clean, device-linked order", "description": "Get dose-packaging orders that specify the patient, current medication schedule, device, and timing in a structured, unambiguous form.", "howItSupports": "Delivers structured, device-linked dose-packaging orders to the pharmacy.", "media": [{"type": "image", "src": "media/jbtd-phar-fulfil-pouches-1.jpg", "title": "Pharmacy Dose-Packaging Partner JTBD step 1: Receive a clean, device-linked order", "alt": "Enterprise infographic for step 1 of the job \"Fill and supply accurate multi-dose pouch rolls on time\": Receive a clean, device-linked order."}]}, {"step": "Pack and format the roll for the device", "description": "Produce the pouch roll with each occasion's medication, sequenced and formatted so the device can pre-cut and dispense it reliably.", "howItSupports": "Specifies device-compatible pouch sequencing and formatting for reliable dispensing.", "media": [{"type": "image", "src": "media/jbtd-phar-fulfil-pouches-2.jpg", "title": "Pharmacy Dose-Packaging Partner JTBD step 2: Pack and format the roll for the device", "alt": "Enterprise infographic for step 2 of the job \"Fill and supply accurate multi-dose pouch rolls on time\": Pack and format the roll for the device."}]}, {"step": "Deliver in time and confirm loading", "description": "Get the roll to the home or care team before the device runs low, and confirm it has been loaded so supply and dispensing stay in sync.", "howItSupports": "Signals device stock levels and confirms roll loading back to the pharmacy.", "media": [{"type": "image", "src": "media/jbtd-phar-fulfil-pouches-3.jpg", "title": "Pharmacy Dose-Packaging Partner JTBD step 3: Deliver in time and confirm loading", "alt": "Enterprise infographic for step 3 of the job \"Fill and supply accurate multi-dose pouch rolls on time\": Deliver in time and confirm loading."}]}]}, {"customerId": "phar", "customerName": "Pharmacy Dose-Packaging Partner", "customerGroup": "Supply Partners", "customerIcon": "phar.png", "productId": "pharm", "productName": "Pharmacy Supply Connect", "productIcon": "phar.png", "jobId": "integrate-orders", "jobName": "Keep dose-packaging orders aligned with prescriptions and devices", "jobWhatItIs": "Ensure that what is packed always reflects the patient's current prescription and the device it will run in, even as medications change.", "jobOutcome": "Packed rolls always match the current prescription and the correct device, with changes handled safely mid-cycle.", "supportRationale": "Coordinates roll rework and re-supply when a schedule changes mid-cycle.", "usedInSteps": [{"step": "Handle changes safely mid-cycle", "description": "When a prescription changes, reconcile the in-progress roll so the wrong medication is never dispensed.", "howItSupports": "Coordinates roll rework and re-supply when a schedule changes mid-cycle.", "media": [{"type": "image", "src": "media/jbtd-phar-integrate-orders-2.jpg", "title": "Pharmacy Dose-Packaging Partner JTBD step 2: Handle changes safely mid-cycle", "alt": "Enterprise infographic for step 2 of the job \"Keep dose-packaging orders aligned with prescriptions and devices\": Handle changes safely mid-cycle."}]}, {"step": "Reconcile ordered, packed, and dispensed", "description": "Close the loop by matching what was ordered, what was packed, and what the device actually dispensed for accuracy and audit.", "howItSupports": "Reconciles order, pack, and dispense records for accuracy and audit.", "media": [{"type": "image", "src": "media/jbtd-phar-integrate-orders-3.jpg", "title": "Pharmacy Dose-Packaging Partner JTBD step 3: Reconcile ordered, packed, and dispensed", "alt": "Enterprise infographic for step 3 of the job \"Keep dose-packaging orders aligned with prescriptions and devices\": Reconcile ordered, packed, and dispensed."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

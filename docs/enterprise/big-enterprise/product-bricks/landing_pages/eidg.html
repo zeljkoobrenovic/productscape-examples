@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "eidg", "name": "Employee identity graph", "type": "service", "status": "invest", "description": "Maintains the employee, contractor, role, and team graph used across enterprise workflows.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-employee-identity-graph-workspace", "name": "Employee identity graph Workspace", "type": "web-component", "description": "Primary operator or user-facing workspace for Employee identity graph.", "dependencies": {"modules": [{"moduleId": "module-employee-identity-graph-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-employee-identity-graph-api", "name": "Employee identity graph API", "type": "api", "description": "Programmatic interface exposed by Employee identity graph.", "dependencies": {"modules": [{"moduleId": "module-employee-identity-graph-core", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-employee-identity-graph-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-employee-identity-graph-event-stream", "name": "Employee identity graph Event Stream", "type": "message-consumer", "description": "Event surface published by Employee identity graph.", "dependencies": {"modules": [{"moduleId": "module-employee-identity-graph-core", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-employee-identity-graph-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-employee-identity-graph-core", "name": "Employee identity graph Core", "type": "service", "description": "Owns the main workflow logic and state for Employee identity graph.", "dependencies": {"modules": [{"moduleId": "module-employee-identity-graph-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-employee-identity-graph-controls", "name": "Employee identity graph Controls", "type": "service", "description": "Applies policy, audit, and operational control concerns inside Employee identity graph."}]}], "dataDependencies": [{"assetId": "employee-profile", "moduleIds": ["module-employee-identity-graph-core", "module-employee-identity-graph-controls"], "role": "own", "description": "Acts as the primary owning brick for employee-profile."}, {"assetId": "org-structure", "moduleIds": ["module-employee-identity-graph-core", "module-employee-identity-graph-controls"], "role": "read", "description": "Reads org-structure to support enterprise workflows."}], "brickDependencies": [{"targetBrickId": "rpws", "moduleId": "module-recruitment-pipeline-workspace-api", "sourceModuleId": "module-employee-identity-graph-api", "type": "service-api", "description": "Depends on rpws to provide reusable enterprise capability needed by Employee identity graph."}], "externalSystemsThisBrickDependsOn": [{"system": "HRIS, ERP, ITSM, collaboration, and identity platforms", "type": "enterprise-system", "interface": "Enterprise APIs and event feeds", "description": "Employee identity graph exchanges data with core enterprise systems.", "sourceModuleId": "module-employee-identity-graph-core"}], "externalSystemsDependingOnThisBrick": [{"system": "Employee workspaces and shared-service operations", "type": "internal-consumer", "interface": "APIs, UI modules, and event streams", "description": "Enterprise workflows depend on Employee identity graph for reusable capability.", "moduleId": "module-employee-identity-graph-api"}], "domain": "Employee & Workplace", "group": "Employee work access & navigation"};
-    const relatedTeams = [{"teamId": "employee-experience-work-hub", "teamName": "Employee Experience - Work Hub", "teamType": "stream-aligned", "groupId": "employee-experience", "groupName": "Employee & Workplace / Employee Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "enterprise-platforms-workflow-and-integration", "teamName": "Enterprise Platforms - Workflow and Integration", "teamType": "platform", "groupId": "enterprise-platforms", "groupName": "Product, Technology & Enablement / Enterprise Platforms", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p4", "name": "Employee Work Hub", "icon": "", "type": "Employee & Workplace Workflow", "whyUsed": "Needed to support the employee work hub workflow."}, {"id": "p7", "name": "Automation and Insight Studio", "icon": "", "type": "Product, Technology & Enablement Workflow", "whyUsed": "Needed to support the automation and insight studio workflow."}];
     const supportedJobs = [{"customerId": "eemp", "customerName": "Enterprise Employee", "customerGroup": "Everyday Employees", "customerIcon": "badge", "productId": "p4", "productName": "Employee Work Hub", "productIcon": "", "jobId": "sdcp", "jobName": "Start the day with clear priorities", "jobWhatItIs": "Open one workspace that shows the most important work, decisions, and follow-ups for the day.", "jobOutcome": "Less time spent orienting, lower coordination drag, and higher in-flow completion of work.", "supportRationale": "Resolves the right identity, role, and team context.", "usedInSteps": [{"step": "Resolve identity and role context", "description": "Recognize the person, team, location, and current responsibilities before showing work.", "howItSupports": "Resolves the right identity, role, and team context.", "media": []}]}, {"customerId": "itad", "customerName": "Enterprise Platform Administrator", "customerGroup": "Platform and Technology Admins", "customerIcon": "admin_panel_settings", "productId": "p7", "productName": "Automation and Insight Studio", "productIcon": "", "jobId": "acws", "jobName": "Automate cross-system work safely", "jobWhatItIs": "Build reusable workflow automations that connect enterprise systems while keeping audit, policy, and human review intact.", "jobOutcome": "Faster deployment of enterprise workflows, higher reuse, and lower risk from automation sprawl.", "supportRationale": "Provides identity context across systems.", "usedInSteps": [{"step": "Connect systems and events", "description": "Link workflow steps to identity, HR, finance, and collaboration systems.", "howItSupports": "Provides identity context across systems.", "media": []}]}, {"customerId": "itad", "customerName": "Enterprise Platform Administrator", "customerGroup": "Platform and Technology Admins", "customerIcon": "admin_panel_settings", "productId": "p7", "productName": "Automation and Insight Studio", "productIcon": "", "jobId": "kdap", "jobName": "Keep identity, devices, and access in policy", "jobWhatItIs": "Automate access and device operations for joiners, movers, and leavers while preserving security and operational continuity.", "jobOutcome": "Faster provisioning, fewer access gaps, and lower policy or security drift.", "supportRationale": "Captures authoritative identity changes.", "usedInSteps": [{"step": "Detect employment or role change", "description": "Observe new hires, moves, leaves, and contractor changes as workflow triggers.", "howItSupports": "Captures authoritative identity changes.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

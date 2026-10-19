@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "payment-guarantee-case", "name": "Payment Guarantee Case", "kind": "financial-record", "description": "A payment-security case on an exchange transaction: the guaranteed amount, covered parties, underlying transaction references, debtor payment status, dunning and collection steps, payout decisions, and recovery outcomes. Originates when a carrier books a load under payment guarantee or reports non-payment; consumed by collections operations, trust scoring (payment behavior), guarantee underwriting, and finance reporting. Contains debtor financial data, claim correspondence, and bank details for payouts.", "businessMeaning": "The product that removes a carrier's worst fear on the spot market: if the freight payer defaults, the case record is the basis on which the carrier still gets paid.", "status": "active", "tags": ["network-and-carrier-products", "commercial-and-insight"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner", "customer"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "collections and guarantee operations, the claiming carrier for its own cases, and finance", "systemOfRecordBrickId": "pgar", "ownerTeamId": "network-trust", "stewardTeamIds": ["settlement"], "derivedFromAssetIds": [], "stores": [{"storeId": "payment-guarantee-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "payment-guarantee api", "description": "Case creation, status, and payout API for the carrier portal and internal collections tooling."}], "governance": {"retention": "10 years per financial-record obligations; collection correspondence retained for the legal claim period", "residency": "eu", "sharingPolicy": "case details visible only to the claiming carrier and internal operations; debtor payment behavior feeds trust scores in aggregated form only"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Carrier Identity and Trust"};
+    const currentAsset = {"id": "payment-guarantee-case", "name": "Payment Guarantee Case", "kind": "financial-record", "description": "A payment-security case on an exchange transaction: the guaranteed amount, covered parties, underlying transaction references, debtor payment status, dunning and collection steps, payout decisions, and recovery outcomes. Originates when a carrier books a load under payment guarantee or reports non-payment; consumed by collections operations, trust scoring (payment behavior), guarantee underwriting, and finance reporting. Contains debtor financial data, claim correspondence, and bank details for payouts.", "businessMeaning": "The product that removes a carrier's worst fear on the spot market: if the freight payer defaults, the case record is the basis on which the carrier still gets paid.", "status": "active", "tags": ["network-and-carrier-products", "commercial-and-insight"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["partner", "customer"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "collections and guarantee operations, the claiming carrier for its own cases, and finance", "systemOfRecordBrickId": "pgar", "derivedFromAssetIds": [], "stores": [{"storeId": "payment-guarantee-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "payment-guarantee api", "description": "Case creation, status, and payout API for the carrier portal and internal collections tooling."}], "governance": {"retention": "10 years per financial-record obligations; collection correspondence retained for the legal claim period", "residency": "eu", "sharingPolicy": "case details visible only to the claiming carrier and internal operations; debtor payment behavior feeds trust scores in aggregated form only"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Carrier Identity and Trust"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "pgar", "name": "Payment Guarantee and Collections", "role": "own", "description": "System of record for guarantee coverage, overdue cases, claims, and payouts."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "network-trust", "teamName": "Network Trust", "teamType": "complicated-subsystem", "groupName": "Network Product Group"};
-    const stewardTeams = [{"teamId": "settlement", "teamName": "Settlement", "teamType": "stream-aligned", "groupName": "Commercial and Insight Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

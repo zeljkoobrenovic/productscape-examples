@@ -6,4 +6,4 @@ Why this domain:
 
 - Salesforce's core public positioning remains centered on CRM, sales execution, service operations, Data Cloud, and agentic AI across the customer lifecycle.
 - The repository's product-brick model fits Salesforce best when framed as an enterprise operating platform rather than as isolated clouds.
-- A lead-to-cash plus service-operations frame allows realistic modeling of products, delivery channels, platform teams, and monetization without forcing unrelated clouds into one schema.
+- A lead-to-cash plus service-operations frame allows realistic modeling of products, delivery channels, platform capabilities, and monetization without forcing unrelated clouds into one schema.

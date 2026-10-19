@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "prcm", "name": "ProcessMining Visualizer", "type": "full-stack", "status": "sustaining", "description": "A process-mining view inside Tableau: from an event log (case id, activity, timestamp, optional resource and cost) the extension discovers the real process graph, shows the most frequent paths, rework loops, bottlenecks and durations between steps, and lets users filter the dashboard by variant or by cases that pass through a chosen edge. It brings the core of dedicated process-mining tools to the dashboards operations and audit teams already use for order-to-cash, purchase-to-pay, claims or patient flows, without a separate platform.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-prcm-viz", "name": "Process Graph Visualization", "type": "web-component", "description": "Directed process graph with frequency and duration overlays, variant list, path highlighting, animation of case flow and selection broadcast to the dashboard.", "dependencies": {"modules": [{"moduleId": "module-prcm-bff", "type": "uses", "description": "Visualization requests discovered graphs and variant statistics through the BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-prcm-bff", "name": "ProcessMining BFF", "type": "bff", "description": "Serves discovered graphs, variants and case statistics for the current filter context.", "dependencies": {"modules": [{"moduleId": "module-prcm-miner", "type": "delegates", "description": "BFF delegates discovery and statistics to the mining service."}, {"moduleId": "module-prcm-eventlog", "type": "uses", "description": "BFF reads prepared event logs from the event log cache."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-prcm-miner", "name": "Process Discovery Service", "type": "stateless-service", "description": "Discovers the directly-follows graph, variants, cycle times and bottlenecks from an event log without owning state.", "dependencies": {"modules": [{"moduleId": "module-prcm-eventlog", "type": "uses", "description": "Miner reads the sorted event log for the current context."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-prcm-eventlog", "name": "Event Log Cache", "type": "stateful-service", "description": "Prepares and caches sorted, case-grouped event logs derived from worksheet rows so repeated interactions stay fast."}]}], "dataDependencies": [{"assetId": "process-event-log", "moduleIds": ["module-prcm-eventlog", "module-prcm-miner"], "role": "own", "description": "Owns the prepared event log and discovered process model derived from the customer's worksheet rows, held only inside the customer's session and environment."}, {"assetId": "extension-configuration", "moduleIds": ["module-prcm-bff", "module-prcm-viz"], "role": "read-write", "description": "Stores column mappings and display settings."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-prcm-viz", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell, settings persistence, theming and Tableau Extensions API bindings."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-prcm-eventlog", "type": "data", "description": "Reads the case, activity and timestamp columns of the event log worksheet, and applies variant selections as filters through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-prcm-viz", "type": "licensing", "description": "On every extension load checks the organisation's plan and records the anonymous unique user token that meters active users over a rolling 12 months."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Cloud, Tableau Server and Tableau Desktop", "type": "channel", "interface": "Tableau Extensions API", "description": "Hosts the process graph and applies variant selections as filters.", "sourceModuleId": "module-prcm-viz"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Products", "group": "Self-Service Tables and Discovery"};
-    const relatedTeams = [{"teamId": "tables-and-discovery", "teamName": "Tables and Discovery", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "discovery-extensions", "name": "Discovery Extensions", "icon": "discovery-extensions.png", "type": "B2B Dashboard Extension Bundle", "whyUsed": "Visualises process flows and variants from event logs in Tableau."}];
     const supportedJobs = [{"customerId": "bviw", "customerName": "Business Dashboard Viewer", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-bviw-portrait.jpg", "productId": "discovery-extensions", "productName": "Discovery Extensions", "productIcon": "discovery-extensions.png", "jobId": "jtbd-bviw-1", "jobName": "Answer my own question from the dashboard without asking for a new one", "jobWhatItIs": "When the published dashboard does not show the cut the viewer needs, by customer group, by plant, by month with subtotals, reshape the data inside the dashboard: pivot, group, filter, drill down, add a calculated column and format the result, then save that view for next time, instead of filing a request with the BI team or exporting raw rows into Excel and rebuilding the pivot there.", "jobOutcome": "The viewer has the answer within the same session, in a table whose totals match the dashboard, and the dashboard creator's request queue shrinks because one dashboard now serves many questions.", "supportRationale": "Presents the SuperTable with the columns, filters and features the creator exposed.", "usedInSteps": [{"step": "Open the dashboard and orient", "description": "Open the Tableau or Power BI dashboard from the portal or a shared link, follow the DashboardGuide overlay that explains what the SuperTable, filters and drill-downs can do, and find the table that holds the question.", "howItSupports": "Presents the SuperTable with the columns, filters and features the creator exposed.", "media": []}, {"step": "Pivot, group and filter to the cut I need", "description": "Drag a dimension to rows or columns, group by region or product family, add subtotals and grand totals, sort, narrow the scope with HierarchyFilter and apply conditional formatting so variances stand out.", "howItSupports": "Runs pivot, grouping, sorting, filtering and formatting in the grid on the full row set through the server-side row model.", "media": []}, {"step": "Drill down to the underlying rows", "description": "Expand a group or use DrillDownTree to walk from a total to the transactions behind it, inspect an outlier, and step back up without losing filters; switch to the ProcessMining view when the question is about where a flow stalls.", "howItSupports": "Provides drill-down, hierarchy navigation and process views that keep filter context across levels.", "media": []}, {"step": "Add a calculated column or a generated fill", "description": "Add a formula column such as margin or variance percentage, or use generative fill to derive a classification from existing columns, and sanity-check the result against a row whose value is known.", "howItSupports": "Evaluates formulas and generative fill inside the grid and keeps them in the viewer's session.", "media": []}, {"step": "Save the view and come back to it", "description": "Save the layout as a personal view with a name, reopen it next week and share the view name with colleagues so the team looks at the same cut.", "howItSupports": "Persists personalised saved views per user and restores them on the next visit.", "media": []}]}, {"customerId": "bviw", "customerName": "Business Dashboard Viewer", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-bviw-portrait.jpg", "productId": "discovery-extensions", "productName": "Discovery Extensions", "productIcon": "discovery-extensions.png", "jobId": "jtbd-bviw-2", "jobName": "Take the numbers with me to Excel, a meeting or a slide", "jobWhatItIs": "Get the table exactly as shown, with filters, grouping, formatting and totals, out of the dashboard and into Excel for a reconciliation, into a PDF or image for a meeting, or into a slide deck for the monthly review, without retyping, re-pivoting or rebuilding it, and where the same cut is needed every week, have it delivered instead of re-exported.", "jobOutcome": "What the viewer shows in the meeting is what the dashboard shows, produced in one click, with the date and filters stated and an obvious way back to the source.", "supportRationale": "Holds the current grid state, totals and saved view that the export will reproduce.", "usedInSteps": [{"step": "Prepare the exact cut", "description": "Apply the filters, grouping and formatting the audience needs, check that subtotals and grand totals match the dashboard's headline figures, and save the view so the export can be repeated.", "howItSupports": "Holds the current grid state, totals and saved view that the export will reproduce.", "media": []}, {"step": "Export to Excel with formatting", "description": "Export the SuperTable to Excel with grouping, number formats and conditional formatting preserved, open it for the reconciliation or further modelling, and keep the source dashboard name and date in the file.", "howItSupports": "Produces the formatted Excel export that mirrors the grid rather than a raw data dump.", "media": []}]}, {"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "discovery-extensions", "productName": "Discovery Extensions", "productIcon": "discovery-extensions.png", "jobId": "jtbd-dcre-1", "jobName": "Deliver an Excel-friendly interactive dashboard without building ten variants", "jobWhatItIs": "Take a business request such as 'a sales dashboard by region, product and month that people can slice as they like' and deliver one published dashboard on Tableau Cloud, Tableau Server or Power BI in which viewers can pivot, group, filter, drill, format, save their own view and export to Excel, using SuperTables, ShowMeMore, PowerKPIs, HierarchyFilter and DrillDownTree instead of building a separate worksheet for every column combination.", "jobOutcome": "The requesting team adopts one dashboard for their recurring questions, the creator's backlog of variant requests for that subject shrinks to near zero, and the dashboard stays maintainable because layout, formatting and drill paths are configuration in the workbook rather than duplicated worksheets.", "supportRationale": "Delivers the pivot, group, filter, saved-view and Excel-export experience that viewers use once the dashboard is published.", "usedInSteps": [{"step": "Configure the SuperTable for self-service", "description": "Set up the grid: default columns and pivots, grouping and subtotals, conditional formatting and sparklines, calculated columns and formulas, number formats per column, row limits and server-side row model for large data, and allow viewers to save personalised views and export to Excel with formatting preserved.", "howItSupports": "Delivers the pivot, group, filter, saved-view and Excel-export experience that viewers use once the dashboard is published.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

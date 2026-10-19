@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "dest", "name": "Destination Discovery", "type": "full-stack", "status": "sustaining", "description": "Destination entry, inspiration, map context, and landing surfaces that move travelers from broad trip intent into accommodation search.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-destination-discovery-ui", "name": "Destination Discovery UI", "type": "web-component", "description": "Traveler-facing destination exploration experience.", "dependencies": {"modules": [{"moduleId": "module-destination-metadata-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-destination-metadata-api", "name": "Destination Metadata API", "type": "api", "description": "API surface for place and market discovery context.", "dependencies": {"modules": [{"moduleId": "module-destination-context-graph", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-travel-intent-resolution", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-destination-experience-layer", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-destination-signal-feed", "name": "Destination Signal Feed", "type": "message-consumer", "description": "Event stream carrying destination-demand and interaction signals.", "dependencies": {"modules": [{"moduleId": "module-destination-context-graph", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-travel-intent-resolution", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-destination-experience-layer", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-destination-context-graph", "name": "Destination Context Graph", "type": "service", "description": "Builds place, district, landmark, and event context for travel discovery."}, {"id": "module-travel-intent-resolution", "name": "Travel Intent Resolution", "type": "service", "description": "Converts destination and date intent into searchable marketplace parameters."}, {"id": "module-destination-experience-layer", "name": "Destination Experience Layer", "type": "service", "description": "Renders destination overviews, nearby areas, and next-step entry points."}]}], "dataDependencies": [{"assetId": "destination-discovery", "moduleIds": ["module-destination-context-graph", "module-travel-intent-resolution", "module-destination-experience-layer"], "role": "own", "description": "Acts as the primary owning brick for Destination Discovery."}, {"assetId": "marketplace-home-destination-landing", "moduleIds": ["module-destination-context-graph", "module-travel-intent-resolution", "module-destination-experience-layer"], "role": "read", "description": "Reads Marketplace Home Destination Landing to support domain workflows."}, {"assetId": "search-ranking-filters", "moduleIds": ["module-destination-context-graph", "module-travel-intent-resolution", "module-destination-experience-layer"], "role": "read", "description": "Reads Search Ranking Filters to support domain workflows."}], "brickDependencies": [{"targetBrickId": "geoa", "moduleId": "module-geo-and-localization-api", "sourceModuleId": "module-destination-metadata-api", "type": "geo", "description": "Uses geo, market, and localization data to represent destinations correctly."}, {"targetBrickId": "srch", "moduleId": "module-search-and-ranking-api", "sourceModuleId": "module-destination-metadata-api", "type": "handoff", "description": "Hands high-intent destination context into search and ranking."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Traveler Experience", "group": "Discovery and consideration"};
-    const relatedTeams = [{"teamId": "traveler-discovery-ranking", "teamName": "Traveler Discovery & Ranking", "teamType": "stream-aligned", "groupId": "traveler-marketplace", "groupName": "Traveler Marketplace", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Traveler Discovery and Booking Experience", "icon": "", "type": "B2C", "whyUsed": "Converts destination intent into high-intent search entry."}];
     const supportedJobs = [{"customerId": "cg1-p1", "customerName": "Leisure Traveler / Stay Booker", "customerGroup": "Demand-Side Travelers", "customerIcon": "traveler.png", "productId": "p1", "productName": "Traveler Discovery and Booking Experience", "productIcon": "", "jobId": "jtbd-cg1-1", "jobName": "Find and book the right stay with confidence", "jobWhatItIs": "Turn a destination and trip intention into a booked accommodation with the right mix of location, value, quality, and policy fit.", "jobOutcome": "A confirmed booking with high confidence and low decision regret.", "supportRationale": "Helps travelers move from broad intent into relevant market and property discovery.", "usedInSteps": [{"step": "Define destination intent and shortlist relevant options", "description": "Start with destination, dates, party size, and important preferences such as neighborhood, amenities, breakfast, or free cancellation.", "howItSupports": "Helps travelers move from broad intent into relevant market and property discovery.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-1.jpg", "title": "Leisure Traveler / Stay Booker JTBD step 1: Define destination intent and shortlist relevant options", "alt": "Enterprise infographic for step 1 of the job \"Find and book the right stay with confidence\": Define destination intent and shortlist relevant options."}]}]}, {"customerId": "cg2-p1", "customerName": "Managed Travel Booker / Travel Coordinator", "customerGroup": "Demand-Side Travelers", "customerIcon": "business.png", "productId": "p1", "productName": "Traveler Discovery and Booking Experience", "productIcon": "", "jobId": "jtbd-cg2-1", "jobName": "Book compliant accommodation fast for a work trip", "jobWhatItIs": "Find accommodation that fits traveler needs and company controls without turning every booking into a bespoke manual process.", "jobOutcome": "A policy-compliant booking created quickly with clean downstream data.", "supportRationale": "Accelerates business-location discovery near offices, venues, or airports.", "usedInSteps": [{"step": "Search against location, traveler, and policy needs", "description": "Start with destination, dates, company budget, traveler profile, and invoice expectations.", "howItSupports": "Accelerates business-location discovery near offices, venues, or airports.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-1.jpg", "title": "Managed Travel Booker / Travel Coordinator JTBD step 1: Search against location, traveler, and policy needs", "alt": "Enterprise infographic for step 1 of the job \"Book compliant accommodation fast for a work trip\": Search against location, traveler, and policy needs."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "shipment-execution-record", "name": "Shipment Execution Record", "kind": "operational-state", "description": "The execution-side record of a dispatched shipment: carrier acceptance, assigned vehicle and driver, planned vs actual times, milestone confirmations, deviations, and completion status. Originates from carrier confirmations via the portal, mobile app, and connectivity gateway; consumed by exception management, settlement, trust scoring, and emissions calculation. Contains driver names, phone numbers, and vehicle plates.", "businessMeaning": "The single account of how a transport actually went, and the evidence base for paying carriers, scoring reliability, and computing CO2.", "status": "active", "tags": ["execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "shipper and carrier parties to the shipment, plus internal settlement, trust, and analytics workflows", "systemOfRecordBrickId": "texe", "ownerTeamId": "transport-execution", "stewardTeamIds": ["visibility"], "derivedFromAssetIds": [], "stores": [{"storeId": "shipment-execution-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "shipment-execution api", "description": "Milestone and status API used by the carrier portal, mobile app, and Transport Execution integrations."}, {"type": "event", "name": "execution milestone events", "description": "Pickup, in-transit, delivery, and deviation events feeding exception management and downstream derivations."}], "governance": {"retention": "36 months for operational and dispute use; driver personal identifiers pseudonymized after 12 months", "residency": "eu", "sharingPolicy": "shared between the shipper and carrier parties to a shipment; only anonymized aggregates leave the transaction context (trust scores, benchmarks, emissions)"}, "rootGroup": "Transport Order and Execution Data", "group": "Order Lifecycle Records"};
+    const currentAsset = {"id": "shipment-execution-record", "name": "Shipment Execution Record", "kind": "operational-state", "description": "The execution-side record of a dispatched shipment: carrier acceptance, assigned vehicle and driver, planned vs actual times, milestone confirmations, deviations, and completion status. Originates from carrier confirmations via the portal, mobile app, and connectivity gateway; consumed by exception management, settlement, trust scoring, and emissions calculation. Contains driver names, phone numbers, and vehicle plates.", "businessMeaning": "The single account of how a transport actually went, and the evidence base for paying carriers, scoring reliability, and computing CO2.", "status": "active", "tags": ["execution-and-visibility"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "high", "accessScope": "shipper and carrier parties to the shipment, plus internal settlement, trust, and analytics workflows", "systemOfRecordBrickId": "texe", "derivedFromAssetIds": [], "stores": [{"storeId": "shipment-execution-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "shipment-execution api", "description": "Milestone and status API used by the carrier portal, mobile app, and Transport Execution integrations."}, {"type": "event", "name": "execution milestone events", "description": "Pickup, in-transit, delivery, and deviation events feeding exception management and downstream derivations."}], "governance": {"retention": "36 months for operational and dispute use; driver personal identifiers pseudonymized after 12 months", "residency": "eu", "sharingPolicy": "shared between the shipper and carrier parties to a shipment; only anonymized aggregates leave the transaction context (trust scores, benchmarks, emissions)"}, "rootGroup": "Transport Order and Execution Data", "group": "Order Lifecycle Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "texe", "name": "Transport Execution Orchestration", "role": "own", "description": "System of record for per-load execution state across channels and carriers."}];
     const consumingBricks = [{"id": "excp", "name": "Exception Management", "role": "read-write", "description": "Reads execution state for detection and writes exception and resolution outcomes back."}];
-    const ownerTeam = {"teamId": "transport-execution", "teamName": "Transport Execution", "teamType": "stream-aligned", "groupName": "Execution Group"};
-    const stewardTeams = [{"teamId": "visibility", "teamName": "Visibility", "teamType": "stream-aligned", "groupName": "Execution Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

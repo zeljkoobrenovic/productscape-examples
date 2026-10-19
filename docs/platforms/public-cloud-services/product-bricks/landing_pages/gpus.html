@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "gpus", "name": "Accelerated Compute", "type": "service", "status": "invest", "description": "GPU, TPU, custom accelerator, high-performance networking, quota, reservation, and capacity allocation services for AI training, inference, and technical computing.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-capacity-reservation-and-quota-console", "name": "Capacity reservation and quota console", "type": "web-component", "description": "Shows regional availability, reservation status, quota requests, and utilization.", "dependencies": {"modules": [{"moduleId": "module-accelerator-provisioning-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}, "direction": "public"}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-accelerator-provisioning-api", "name": "Accelerator provisioning API", "type": "api", "description": "Requests accelerator-backed instances, clusters, reservations, quotas, and topology constraints.", "dependencies": {"modules": [{"moduleId": "module-accelerator-capacity-broker", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-ai-cluster-fabric-manager", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-accelerator-quota-and-utilization-analytics", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-training-and-inference-telemetry-stream", "name": "Training and inference telemetry stream", "type": "message-consumer", "description": "Publishes accelerator utilization, throttling, memory, and job efficiency metrics.", "dependencies": {"modules": [{"moduleId": "module-accelerator-capacity-broker", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-ai-cluster-fabric-manager", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-accelerator-quota-and-utilization-analytics", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}, "direction": "internal"}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-accelerator-capacity-broker", "name": "Accelerator capacity broker", "type": "service", "description": "Allocates scarce accelerator inventory across reservations, queues, priority classes, and regions."}, {"id": "module-ai-cluster-fabric-manager", "name": "AI cluster fabric manager", "type": "service", "description": "Coordinates high-throughput networking, storage attachment, drivers, and topology-aware placement."}, {"id": "module-accelerator-quota-and-utilization-analytics", "name": "Accelerator quota and utilization analytics", "type": "service", "description": "Tracks quota, usage, idle capacity, job efficiency, and commitment utilization."}]}], "dataDependencies": [{"assetId": "resource-inventory", "moduleIds": ["module-accelerator-capacity-broker", "module-ai-cluster-fabric-manager", "module-accelerator-quota-and-utilization-analytics"], "role": "own", "description": "Tracks accelerator inventory, reservations, quotas, topology, and allocation status."}, {"assetId": "usage-meter", "moduleIds": ["module-training-and-inference-telemetry-stream"], "role": "publish", "description": "Publishes accelerator-hours, reservation usage, and under-utilization signals."}, {"assetId": "audit-log", "moduleIds": ["module-training-and-inference-telemetry-stream"], "role": "publish", "description": "Publishes quota, reservation, and provisioning events."}], "brickDependencies": [{"targetBrickId": "vms", "moduleId": "module-compute-provisioning-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "runtime", "description": "Uses Virtual Machine Compute capabilities for governed public-cloud delivery."}, {"targetBrickId": "vnet", "moduleId": "module-virtual-network-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "runtime", "description": "Uses Virtual Networking capabilities for governed public-cloud delivery."}, {"targetBrickId": "objs", "moduleId": "module-object-storage-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "control-plane", "description": "Uses Object Storage capabilities for governed public-cloud delivery."}, {"targetBrickId": "obsr", "moduleId": "module-telemetry-ingest-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "runtime", "description": "Uses Monitoring and Observability capabilities for governed public-cloud delivery."}, {"targetBrickId": "cost", "moduleId": "module-cost-management-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "control-plane", "description": "Uses FinOps and Commercial Controls capabilities for governed public-cloud delivery."}, {"targetBrickId": "iamx", "moduleId": "module-iam-administration-api", "sourceModuleId": "module-accelerator-provisioning-api", "type": "control-plane", "description": "Uses Identity and Access Management capabilities for governed public-cloud delivery."}], "externalSystemsThisBrickDependsOn": [{"system": "Customer AI training pipelines", "type": "mlops", "interface": "job scheduling and model artifact interface", "description": "Receives training and inference jobs that consume accelerator capacity.", "sourceModuleId": "module-accelerator-capacity-broker"}], "externalSystemsDependingOnThisBrick": [{"system": "Enterprise capacity planning tools", "type": "finops", "interface": "quota and reservation reports", "description": "Use capacity and commitment signals for AI budget planning.", "moduleId": "module-accelerator-provisioning-api"}], "domain": "Infrastructure Services", "group": "Compute and Acceleration"};
-    const relatedTeams = [{"teamId": "compute-acceleration", "teamName": "Compute and Acceleration", "teamType": "stream-aligned", "groupId": "infrastructure-services", "groupName": "Infrastructure Services", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Elastic Infrastructure Cloud", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}, {"id": "p3", "name": "Cloud Data and AI Services", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}];
     const supportedJobs = [{"customerId": "cg1-p1", "customerName": "Startup CTO", "customerGroup": "Builders & Transformers", "customerIcon": "cg1-p1.png", "productId": "p1", "productName": "Elastic Infrastructure Cloud", "productIcon": "", "jobId": "jtbd-cg1-2", "jobName": "Experiment with data and AI before hiring specialists", "jobWhatItIs": "Use managed analytics and AI services to test product intelligence and automation ideas.", "jobOutcome": "The startup validates AI-powered experiences without building a full data platform first.", "supportRationale": "Provides a core public-cloud building block for this step.", "usedInSteps": [{"step": "Provision governed foundation", "description": "Provision governed foundation for the job \"Experiment with data and AI before hiring specialists\" with clear success criteria and operational ownership.", "howItSupports": "Provides a core public-cloud building block for this step.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-2.jpg", "title": "Startup CTO JTBD step 2: Provision governed foundation", "alt": "Enterprise infographic for step 2 of the job \"Experiment with data and AI before hiring specialists\": Provision governed foundation."}]}]}, {"customerId": "cg1-p1", "customerName": "Startup CTO", "customerGroup": "Builders & Transformers", "customerIcon": "cg1-p1.png", "productId": "p3", "productName": "Cloud Data and AI Services", "productIcon": "", "jobId": "jtbd-cg1-2", "jobName": "Experiment with data and AI before hiring specialists", "jobWhatItIs": "Use managed analytics and AI services to test product intelligence and automation ideas.", "jobOutcome": "The startup validates AI-powered experiences without building a full data platform first.", "supportRationale": "Provides a core public-cloud building block for this step.", "usedInSteps": [{"step": "Provision governed foundation", "description": "Provision governed foundation for the job \"Experiment with data and AI before hiring specialists\" with clear success criteria and operational ownership.", "howItSupports": "Provides a core public-cloud building block for this step.", "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-2.jpg", "title": "Startup CTO JTBD step 2: Provision governed foundation", "alt": "Enterprise infographic for step 2 of the job \"Experiment with data and AI before hiring specialists\": Provision governed foundation."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

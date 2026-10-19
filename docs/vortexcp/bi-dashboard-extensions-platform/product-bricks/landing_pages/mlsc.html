@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "mlsc", "name": "MailScheduler Report Distribution", "type": "full-stack", "status": "invest", "description": "Enterprise-only report distribution that reaches people who never open Tableau: administrators or creators define schedules, recipients and filters, and MailScheduler renders each dashboard per recipient (a regional manager only sees her region) as PDF, PNG, CSV or Excel and delivers it to email, Microsoft Teams, Slack or a network drive with subject and body placeholders such as recipient name, date and KPI values. Deliveries can be triggered by a REST API from ETL jobs, are logged in an audit trail, and run entirely on the customer's infrastructure, which keeps reports inside the network and off third-party mail relays.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-mlsc-web", "name": "MailScheduler Console", "type": "web-component", "description": "Web console and dashboard extension for defining schedules, recipient lists, per-recipient filters, formats, delivery channels, placeholders and for reviewing the delivery audit trail.", "dependencies": {"modules": [{"moduleId": "module-mlsc-api", "type": "uses", "description": "Console manages schedules and reads delivery logs through the API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-mlsc-api", "name": "MailScheduler REST API", "type": "api", "description": "REST API for schedules, recipients, ad-hoc triggers and delivery status used by the console, other extensions and customer ETL jobs.", "dependencies": {"modules": [{"moduleId": "module-mlsc-store", "type": "delegates", "description": "API delegates schedule persistence to the schedule store."}, {"moduleId": "module-mlsc-scheduler", "type": "uses", "description": "API triggers ad-hoc runs through the scheduler."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-mlsc-scheduler", "name": "Schedule Runner", "type": "daemon", "description": "Background daemon that evaluates cron-style schedules, expands recipients, requests renders and dispatches deliveries with retries.", "dependencies": {"modules": [{"moduleId": "module-mlsc-personaliser", "type": "uses", "description": "Runner asks the personaliser for the filter and placeholder set per recipient."}, {"moduleId": "module-mlsc-store", "type": "processes", "description": "Runner reads due schedules and writes run status to the store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-mlsc-personaliser", "name": "Recipient Personalisation Service", "type": "stateless-service", "description": "Resolves per-recipient filter values, user impersonation context and placeholder substitutions for subject, body and file names without owning state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-mlsc-store", "name": "Schedule and Recipient Store", "type": "stateful-service", "description": "Owns schedules, recipient lists, filter mappings, templates and run history on the customer's server."}]}], "dataDependencies": [{"assetId": "report-schedule", "moduleIds": ["module-mlsc-store", "module-mlsc-api"], "role": "own", "description": "System of record for schedules, recipients and personalisation rules."}, {"assetId": "report-delivery-log", "moduleIds": ["module-mlsc-scheduler", "module-mlsc-web"], "role": "read-write", "description": "Writes run outcomes and reads the audit trail for the console."}, {"assetId": "rendered-report-artifact", "moduleIds": ["module-mlsc-scheduler"], "role": "read", "description": "Reads rendered files to attach to deliveries."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-mlsc-web", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell so schedules can be created from inside a dashboard."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-mlsc-personaliser", "type": "data", "description": "Reads filter and parameter definitions used to build per-recipient filter sets through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "rndr", "moduleId": "module-rndr-api", "sourceModuleId": "module-mlsc-scheduler", "type": "rendering", "description": "Renders each personalised dashboard to PDF, PNG, CSV or Excel."}, {"targetBrickId": "msgd", "moduleId": "module-msgd-api", "sourceModuleId": "module-mlsc-scheduler", "type": "notification", "description": "Delivers rendered files to email, Microsoft Teams, Slack, network drives and webhooks."}, {"targetBrickId": "idnt", "moduleId": "module-idnt-api", "sourceModuleId": "module-mlsc-api", "type": "identity", "description": "Authenticates console users and resolves the Tableau identity to impersonate per recipient."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-mlsc-api", "type": "licensing", "description": "On every extension load validates the Enterprise license key and records active-user tokens for the console."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Server and Tableau Cloud", "type": "channel", "interface": "Tableau REST API", "description": "Impersonates recipients and requests views for rendering.", "sourceModuleId": "module-mlsc-scheduler"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer ETL and scheduling tools", "type": "channel-consumer", "interface": "MailScheduler REST API", "description": "Customer pipelines trigger report runs after a data refresh completes.", "moduleId": "module-mlsc-api"}], "domain": "Extension Products", "group": "Distribution and Adoption"};
-    const relatedTeams = [{"teamId": "distribution-and-adoption", "teamName": "Distribution and Adoption", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "mailscheduler", "name": "MailScheduler", "icon": "mailscheduler.png", "type": "B2B Enterprise Extension", "whyUsed": "Schedules, personalises and delivers dashboards as PDF, PNG, CSV and Excel."}];
     const supportedJobs = [{"customerId": "exec", "customerName": "Executive Report Recipient", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-exec-portrait.jpg", "productId": "mailscheduler", "productName": "MailScheduler", "productIcon": "mailscheduler.png", "jobId": "jtbd-exec-1", "jobName": "Receive the right report at the right time where I work", "jobWhatItIs": "Get the weekly and monthly KPI reports and month-end statements automatically, filtered to the executive's own scope, in the format they use, PDF for reading and Excel for the finance meeting, in their mailbox or Teams channel before the meeting, with certainty that a failed delivery is noticed and retried rather than silently missing.", "jobOutcome": "The executive opens the report on time in the channel they already use, with the right scope and numbers that match the dashboard, and never chases the analytics team for it.", "supportRationale": "Captures the schedule, recipient list, per-recipient filters and output formats.", "usedInSteps": [{"step": "Agree the report, scope and rhythm", "description": "Tell the dashboard creator or BI lead which dashboards, which filters such as region or business unit, which format and which schedule are needed, and keep the recipient list current as the team changes.", "howItSupports": "Captures the schedule, recipient list, per-recipient filters and output formats.", "media": []}, {"step": "Receive the personalised delivery", "description": "MailScheduler renders the dashboard with the recipient's filters at the scheduled time and delivers it to email, Teams, Slack or a network drive with placeholders for date, scope and headline KPI values in the message.", "howItSupports": "Renders and delivers personalised PDF, PNG, CSV and Excel outputs to the chosen channel.", "media": []}, {"step": "Read, forward and act", "description": "Open the PDF on a phone, forward it to the team, open the Excel attachment in the finance meeting, and click through to the live dashboard when licensed to explore further.", "howItSupports": "Includes links, attachments and placeholders that make the delivery usable without the BI tool.", "media": []}, {"step": "Adjust and trust the delivery", "description": "Ask for a change of scope, format or schedule, see in the delivery audit trail what was sent to whom and when, and rely on failed deliveries being retried and reported to the BI team.", "howItSupports": "Keeps the delivery audit trail, retries failures and reports delivery status.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Report Recipient", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-exec-portrait.jpg", "productId": "mailscheduler", "productName": "MailScheduler", "productIcon": "mailscheduler.png", "jobId": "jtbd-exec-2", "jobName": "See the KPIs that matter and drill only when something is off", "jobWhatItIs": "Open one KPI page, in the delivered report or in the dashboard, that shows the handful of measures the executive owns with status against target and trend, defined the same way across the organisation, and go from a red KPI to the explaining detail in one or two clicks or to a precise question for the analyst, rather than reading fourteen dashboards to find the problem.", "jobOutcome": "The executive spends minutes rather than hours on the KPI review, catches deviations early, and the follow-up questions to the analytics team are specific and answerable.", "supportRationale": "Sends threshold-based alerts and narrative deliveries when KPI conditions are met.", "usedInSteps": [{"step": "Get alerted on thresholds", "description": "Receive a conditional MailScheduler delivery or a Teams or Slack alert when a KPI crosses its threshold, with a narrative insight that states what changed and where.", "howItSupports": "Sends threshold-based alerts and narrative deliveries when KPI conditions are met.", "media": []}, {"step": "Decide and record the follow-up", "description": "Add a comment or approve the proposed action in the dashboard, or forward the finding with the export to the responsible manager, so the decision is traceable.", "howItSupports": "Delivers the finding and export to the responsible manager.", "media": []}]}, {"customerId": "bilr", "customerName": "BI Platform Lead", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-bilr-portrait.jpg", "productId": "mailscheduler", "productName": "MailScheduler", "productIcon": "mailscheduler.png", "jobId": "jtbd-bilr-1", "jobName": "Grow dashboard adoption across creators, explorers and viewers", "jobWhatItIs": "Run the analytics centre of excellence's adoption programme: understand why licensed users do not open dashboards or export everything to Excel, equip creators with a standard interactive toolkit (SuperTables, PowerKPIs, DashboardGuide, ShowMeMore), reach non-Tableau stakeholders through scheduled delivery, and manage adoption as a monthly metric per business unit rather than as anecdotes.", "jobOutcome": "Monthly active dashboard users grow across all three roles, Excel exports and shadow spreadsheets decline, and the platform lead can show the steering committee that the BI investment, including the extensions, is used by the people it was bought for.", "supportRationale": "Schedules and delivers personalised dashboard exports with a delivery log that counts reach beyond Tableau viewers.", "usedInSteps": [{"step": "Reach users who never open the platform", "description": "Roll out MailScheduler for scheduled, per-recipient filtered PDF and Excel delivery to email, Microsoft Teams and Slack, and PowerKPIs entry points for executives, so directors and field staff consume governed numbers without becoming Tableau explorers.", "howItSupports": "Schedules and delivers personalised dashboard exports with a delivery log that counts reach beyond Tableau viewers.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

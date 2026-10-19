@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "netw", "name": "Network Care and Family Sharing", "type": "full-stack", "status": "sustaining", "description": "Quli's distinguishing feature: the citizen decides who sees what. Family members, informal carers, a case manager or a coach get granular access to parts of the personal health environment, exchange secure messages and video calls in the care network, share tasks and appointments, and the citizen can withdraw access at any time. The brick also runs the GGZ appwijzer with single login to more than 50 e-health apps and the IC aftercare and network programmes Quli delivers with care organisations. Sharing permissions defined here are honoured by the GGZ client portal and by every data view in Quli.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-netw-web", "name": "Quli Network and Sharing", "type": "web-component", "description": "Web screens to invite network members, set per-person and per-category sharing, manage shared tasks and appointments, open the appwijzer and review the access log of who saw what.", "dependencies": {"modules": [{"moduleId": "module-netw-api", "type": "uses", "description": "Screens manage the network through the Network Care API."}]}}, {"id": "module-netw-mobile", "name": "Quli App", "type": "mobile-component", "description": "Quli mobile app with the personal health environment, network overview, secure messaging and video calls with network members and reminders.", "dependencies": {"modules": [{"moduleId": "module-netw-api", "type": "uses", "description": "App reads and manages the network through the Network Care API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-netw-api", "name": "Network Care API", "type": "api", "description": "API for network members, invitations, sharing permissions per data category, shared tasks and the appwijzer catalogue with single sign-on launch; used by Quli, the GGZ client portal, diaries and the MedMij exchange.", "dependencies": {"modules": [{"moduleId": "module-netw-policy", "type": "delegates", "description": "Interface delegates every access decision to the Sharing Policy Evaluator."}, {"moduleId": "module-netw-store", "type": "delegates", "description": "Interface delegates persistence to the Network Store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-netw-policy", "name": "Sharing Policy Evaluator", "type": "stateless-service", "description": "Evaluates whether a network member may read or write a data category, message or task for a citizen, applying granted permissions, withdrawal, legal representation of minors and the care organisation's programme rules.", "dependencies": {"modules": [{"moduleId": "module-netw-store", "type": "uses", "description": "Evaluator reads permissions and network membership."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-netw-store", "name": "Network Store", "type": "stateful-service", "description": "Owns network memberships and invitations, sharing permissions per category with history, shared tasks and appointments, and the appwijzer catalogue with app connections per citizen."}, {"id": "module-netw-appwijzer-service", "name": "Appwijzer Launch Service", "type": "service", "description": "Manages the catalogue of e-health apps in the GGZ appwijzer and launches them with single sign-on tokens scoped to the citizen.", "dependencies": {"modules": [{"moduleId": "module-netw-store", "type": "uses", "description": "Launch service reads app connections and writes launch records."}]}}]}], "dataDependencies": [{"assetId": "family-share-permission", "moduleIds": ["module-netw-store", "module-netw-policy"], "role": "own", "description": "System of record for the Family Share Permission asset: network members and granular permissions with history."}, {"assetId": "client-portal-account", "moduleIds": ["module-netw-api"], "role": "read-write", "description": "Reads citizen and network member accounts and links invited members to accounts."}], "brickDependencies": [{"targetBrickId": "pgom", "moduleId": "module-pgom-api", "sourceModuleId": "module-netw-policy", "type": "data", "description": "Reads imported health data categories to which sharing permissions apply."}, {"targetBrickId": "diar", "moduleId": "module-diar-api", "sourceModuleId": "module-netw-api", "type": "data", "description": "Shares diaries and self-measurements with permitted network members."}, {"targetBrickId": "econ", "moduleId": "module-econ-api", "sourceModuleId": "module-netw-api", "type": "workflow", "description": "Provides secure messaging between citizen, network members and care professionals."}, {"targetBrickId": "vidc", "moduleId": "module-vidc-api", "sourceModuleId": "module-netw-mobile", "type": "workflow", "description": "Starts video calls between citizen and network members or care professionals."}, {"targetBrickId": "pgoa", "moduleId": "module-pgoa-api", "sourceModuleId": "module-netw-api", "type": "identity", "description": "Uses the shared patient account for citizens and invited network members."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-netw-api", "type": "identity", "description": "Resolves the citizen owning the environment and each invited network member under their own account, including representative status for minors, before the sharing policy is evaluated."}, {"targetBrickId": "audt", "moduleId": "module-audt-ingest-queue", "sourceModuleId": "module-netw-store", "type": "audit", "description": "Publishes invitation, permission grant and withdrawal and shared-data access events to the audit log queue so that the account holder can review who saw what, the basis of Quli's sharing model."}], "externalSystemsThisBrickDependsOn": [{"system": "E-health apps in the GGZ appwijzer", "type": "service", "interface": "Single sign-on launch links", "description": "Third-party e-health apps opened from Quli with one login.", "sourceModuleId": "module-netw-appwijzer-service"}], "externalSystemsDependingOnThisBrick": [], "domain": "Patient Environments", "group": "Quli Personal Health Environment"};
-    const relatedTeams = [{"teamId": "quli-and-medmij-team", "teamName": "Quli and MedMij", "teamType": "stream-aligned", "groupId": "ptpl", "groupName": "Patient Platforms", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "quli", "name": "Quli Personal Health Environment", "icon": "quli.png", "type": "Personal Health Environment (MedMij PGO)", "whyUsed": "Network care: granular sharing with family and informal carers and a shared care network. Sharing controls, family and carer access and the shared care network managed from the phone."}];
     const supportedJobs = [{"customerId": "ptnt", "customerName": "Patient and Client", "customerGroup": "Patients and Primary Care Network", "customerIcon": "customer-ptnt-portrait.jpg", "productId": "quli", "productName": "Quli Personal Health Environment", "productIcon": "quli.png", "jobId": "jtbd-ptnt-2", "jobName": "See and share my health data on my own terms", "jobWhatItIs": "Have one personal health environment, Quli or Uw Zorg Online, in which she can retrieve her data from the GP, the pharmacy, the hospital and the GGZ institution under MedMij, read her record, treatment plan, results and letters in language she understands, keep her own measurements and a diary next to it, and decide precisely who else may see what: a partner during a pregnancy, a daughter who manages an elderly mother's care, a new therapist who needs the history. The job includes understanding what a PGO is, choosing one, connecting providers, keeping the data current, sharing and unsharing, and checking who has looked.", "jobOutcome": "Her data from at least two providers is in one personal health environment and refreshes without effort, she can read her record and treatment plan before and after a consultation, family members or carers see only what she chose to share and lose access when she says so, and she can see every access to her data.", "supportRationale": "Explains in the app what a PGO does, which providers can be connected and what the MedMij label guarantees.", "usedInSteps": [{"step": "Understand what a personal health environment is and choose one", "description": "Hear from the GGZ institution, the GP practice or a government campaign that she can collect her own health data in a personal health environment, check that Quli or Uw Zorg Online carries the MedMij label, and decide to use it, reassured that it is free and that she keeps control.", "howItSupports": "Explains in the app what a PGO does, which providers can be connected and what the MedMij label guarantees.", "media": []}, {"step": "Log in with DigiD and retrieve data from my care providers", "description": "Log in with DigiD, select her GP practice, pharmacy, hospital and GGZ institution from the list of connected providers, give consent per provider, and watch her medication, allergies, measurements, letters and treatment information arrive in one overview.", "howItSupports": "Runs the MedMij consent and retrieval per provider and merges the data into one timeline in Quli or Uw Zorg Online.", "media": []}, {"step": "Keep my own measurements and a diary next to the record", "description": "Log blood pressure, weight, glucose, mood or sleep and keep a diary in the app, on her own or because her GP, dietitian or therapist asked for it, and let the provider see the series when she agrees, so that a consultation starts from data instead of memory.", "howItSupports": "Stores self-measurements and diary entries in her PGO and shares the series with a chosen provider under her consent.", "media": []}, {"step": "Share with family, carers and other providers on my terms", "description": "Give her partner access to the pregnancy correspondence, let her daughter manage the repeat prescriptions of her elderly mother, or share the GGZ treatment history with a new therapist, choosing per person which parts and for how long, and take access away when the situation changes.", "howItSupports": "Provides granular sharing with family members, informal carers and network care, per data category and per period, with revocation at any time.", "media": []}, {"step": "See who looked at my data and withdraw consent", "description": "Open the access log to see which provider or person retrieved or viewed what and when, withdraw the consent for a provider she no longer visits, and delete a share she no longer wants, without calling anyone.", "howItSupports": "Removes the provider connection or share from her PGO and stops future retrieval or viewing immediately.", "media": []}]}, {"customerId": "ptnt", "customerName": "Patient and Client", "customerGroup": "Patients and Primary Care Network", "customerIcon": "customer-ptnt-portrait.jpg", "productId": "quli", "productName": "Quli Personal Health Environment", "productIcon": "quli.png", "jobId": "jtbd-ptnt-3", "jobName": "Follow my treatment programme at home", "jobWhatItIs": "Do the part of a treatment that happens between sessions, physiotherapy exercises after a knee operation, an Embloom module and questionnaires during GGZ treatment, a food diary for the dietitian, or remote follow-up after a hospital discharge, in one app that tells her what to do and when, that her therapist can see, and that shows her whether she is getting better. The job runs from the moment the therapist assigns the programme to the closure of the trajectory with results she keeps.", "jobOutcome": "She knows at any moment what is expected of her this week, questionnaires are completed before the session so they are discussed rather than chased, most exercises and module sessions are done on time, contact about progress goes through the app or a video consult instead of an extra visit, and at the end she can see and keep the outcome of the trajectory.", "supportRationale": "Keeps the measurements and diary entries in her own environment, so the picture stays hers after the trajectory ends.", "usedInSteps": [{"step": "See whether I am getting better", "description": "Look at the questionnaire scores, measurements and completed tasks over the weeks in a chart she understands, compare with the goals in the treatment plan, and bring the picture to the session so that the decision to continue, scale down or stop is taken together.", "howItSupports": "Keeps the measurements and diary entries in her own environment, so the picture stays hers after the trajectory ends.", "media": []}, {"step": "Close the programme and keep the results", "description": "At the end of the trajectory complete the final measurement, read the closing report that goes to the GP, keep the exercise programme and the results in her personal health environment for the next time, and rate how the programme worked for her.", "howItSupports": "Stores the programme, results and report in her PGO so they remain available after the practice closes the dossier.", "media": []}]}, {"customerId": "ggzi", "customerName": "GGZ Institution Application Manager", "customerGroup": "Mental Health Care (GGZ)", "customerIcon": "customer-ggzi-portrait.jpg", "productId": "quli", "productName": "Quli Personal Health Environment", "productIcon": "quli.png", "jobId": "jtbd-ggzi-2", "jobName": "Roll out the client portal and e-health to all teams", "jobWhatItIs": "Take the institution from a client portal used by a few enthusiastic teams to one in which every client in treatment is invited at intake, can read their treatment plan and correspondence, message their team, complete questionnaires and work in Embloom, Therapieland or Minddistrict modules, and, through Quli, retrieve their data from other providers under MedMij and share it with family. The job covers the proposition and consent model, e-health configuration per team, training and embedding in the intake process, activating clients and their networks, and monitoring activation and usage per team so laggards are helped rather than reported.", "jobOutcome": "Three quarters of clients in active treatment have an activated portal account, most active trajectories have an e-health module in use, e-consults are answered within two working days, questionnaire results and module progress land in the dossier automatically, and no team is below half activation a year after rollout.", "supportRationale": "Adds Quli as MedMij-labelled personal health environment with retrieval from other providers, network care and family sharing under the client's control.", "usedInSteps": [{"step": "Choose the portal proposition and the consent model", "description": "Decide with the board, the client council and the privacy officer what clients get: the CRS client portal for treatment plan, correspondence and messaging, Quli as personal health environment with MedMij retrieval and family sharing, which data is disclosed when, and how consent and representation for minors and family members are recorded.", "howItSupports": "Adds Quli as MedMij-labelled personal health environment with retrieval from other providers, network care and family sharing under the client's control.", "media": []}, {"step": "Activate clients and their networks", "description": "Support clients in activating the portal with DigiD, retrieving their GP or hospital data into Quli through MedMij, and granting family or informal carers access to what they choose, including the client's own e-health apps from the GGZ appwijzer under one login.", "howItSupports": "Handles MedMij consent and retrieval, granular sharing with family and single sign-on to e-health apps in Quli.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

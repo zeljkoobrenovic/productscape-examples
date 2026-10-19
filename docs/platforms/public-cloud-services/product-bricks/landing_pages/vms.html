@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "vms", "name": "Virtual Machine Compute", "type": "service", "status": "sustaining", "description": "Elastic VM families, machine images, placement, capacity reservations, autoscaling, and lifecycle operations for general-purpose, enterprise, and regulated workloads.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-console-instance-manager", "name": "Console instance manager", "type": "web-component", "description": "Operator and developer UI for lifecycle, diagnostics, resize, snapshot, and recovery actions.", "dependencies": {"modules": [{"moduleId": "module-compute-provisioning-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}, {"moduleId": "module-instance-metadata-and-bootstrap-service", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}, "direction": "public"}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-compute-provisioning-api", "name": "Compute provisioning API", "type": "api", "description": "Creates and manages VM instances, images, placement groups, launch templates, and capacity reservations.", "dependencies": {"modules": [{"moduleId": "module-instance-lifecycle-control-plane", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-image-and-template-catalog", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-autoscaling-and-capacity-placement", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}, {"id": "module-instance-metadata-and-bootstrap-service", "name": "Instance metadata and bootstrap service", "type": "api", "description": "Provides instance identity, configuration, secrets references, and bootstrapping data to running workloads.", "dependencies": {"modules": [{"moduleId": "module-instance-lifecycle-control-plane", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-image-and-template-catalog", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-autoscaling-and-capacity-placement", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "internal"}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-instance-lifecycle-control-plane", "name": "Instance lifecycle control plane", "type": "service", "description": "Provisions, starts, stops, resizes, and retires VM instances while preserving tenancy, quota, and placement constraints."}, {"id": "module-image-and-template-catalog", "name": "Image and template catalog", "type": "service", "description": "Maintains hardened images, bootstrap scripts, patch baselines, and customer-approved templates."}, {"id": "module-autoscaling-and-capacity-placement", "name": "Autoscaling and capacity placement", "type": "service", "description": "Balances scale policies, availability zones, reservations, and spot or preemptible capacity for workload demand."}]}], "dataDependencies": [{"assetId": "resource-inventory", "moduleIds": ["module-instance-lifecycle-control-plane", "module-image-and-template-catalog", "module-autoscaling-and-capacity-placement"], "role": "own", "description": "Tracks instance, image, placement, reservation, quota, and lifecycle state."}, {"assetId": "usage-meter", "moduleIds": ["module-instance-lifecycle-control-plane", "module-image-and-template-catalog", "module-autoscaling-and-capacity-placement"], "role": "publish", "description": "Publishes instance-hours, storage attachment, accelerator, and reservation consumption."}, {"assetId": "audit-log", "moduleIds": ["module-instance-lifecycle-control-plane", "module-image-and-template-catalog", "module-autoscaling-and-capacity-placement"], "role": "publish", "description": "Publishes administrative and lifecycle API events."}], "brickDependencies": [{"targetBrickId": "iamx", "moduleId": "module-iam-administration-api", "sourceModuleId": "module-compute-provisioning-api", "type": "control-plane", "description": "Uses Identity and Access Management capabilities for governed public-cloud delivery."}, {"targetBrickId": "vnet", "moduleId": "module-virtual-network-api", "sourceModuleId": "module-compute-provisioning-api", "type": "runtime", "description": "Uses Virtual Networking capabilities for governed public-cloud delivery."}, {"targetBrickId": "obsr", "moduleId": "module-telemetry-ingest-api", "sourceModuleId": "module-compute-provisioning-api", "type": "runtime", "description": "Uses Monitoring and Observability capabilities for governed public-cloud delivery."}, {"targetBrickId": "cost", "moduleId": "module-cost-management-api", "sourceModuleId": "module-compute-provisioning-api", "type": "control-plane", "description": "Uses FinOps and Commercial Controls capabilities for governed public-cloud delivery."}], "externalSystemsThisBrickDependsOn": [{"system": "Customer image pipelines", "type": "ci-cd", "interface": "image import and golden image publishing", "description": "Consumes customer-approved images, patch baselines, and bootstrap artifacts.", "sourceModuleId": "module-image-and-template-catalog"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer workload schedulers", "type": "runtime", "interface": "compute provisioning api", "description": "Provision and manage fleets for applications, batch jobs, and enterprise systems.", "moduleId": "module-compute-provisioning-api"}], "domain": "Infrastructure Services", "group": "Compute and Acceleration"};
-    const relatedTeams = [{"teamId": "infrastructure-services-compute-and-acceleration-2", "teamName": "Infrastructure Services Virtual Machine Compute", "teamType": "platform", "groupId": "infrastructure-services", "groupName": "Infrastructure Services", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Elastic Infrastructure Cloud", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

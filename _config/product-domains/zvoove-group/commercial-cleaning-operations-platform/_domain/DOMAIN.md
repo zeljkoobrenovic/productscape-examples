@@ -34,6 +34,5 @@ zvoove-clean.com; fortytools.com; zvoove.com news (KleanApp); PR Newswire releas
 ## Assumptions
 
 - **All KPI values are modeled seed values** unless a description quotes a zvoove figure.
-- Teams, headcounts and the shared-platform organisation are modeled, not zvoove's actual structure.
 - Leviy's acquisition year is reported as 2019 in Nocore coverage and 2021 on zvoove's timeline; the model does not depend on it.
 - Stressors `brandsprawl` and `robots` are plausible scenarios, not announced events.

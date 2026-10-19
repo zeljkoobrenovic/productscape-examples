@@ -20,9 +20,9 @@ To regenerate only this domain:
 
 ## Additional snapshot audit
 
-The build-time integrity audit checked customer-to-job-to-stream links, stream composition against individual flow dependencies, product/customer references, all deployed bricks and transitive product dependencies, exactly one team per brick, data system-of-record and owner agreement, stores and stewardship, insight/job/KPI references, and internal adapter connections. No orphan, duplicate ownership, unresolved reference or runtime dependency cycle remained.
+The build-time integrity audit checked customer-to-job-to-stream links, stream composition against individual flow dependencies, product/customer references, all deployed bricks and transitive product dependencies, data system-of-record, stores, insight/job/KPI references, and internal adapter connections. No orphan, unresolved reference or runtime dependency cycle remained.
 
-Inventory: four groups, nine personas, eighteen jobs, nine adoption journeys, three products, twenty-four bricks, 105 modules, eight streams, twenty-four assets, five stores, five proposed runtime partitions, eight teams, fourteen sources and insights, twenty-three curated research links, ten landscape entries and four candidate stressors. The staffing scenario is 78 FTE including six group leadership FTE.
+Inventory: four groups, nine personas, eighteen jobs, nine adoption journeys, three products, twenty-four bricks, 105 modules, eight streams, twenty-four assets, five stores, five proposed runtime partitions, fourteen sources and insights, twenty-three curated research links, ten landscape entries and four candidate stressors.
 
 ## Generated artifacts
 
@@ -34,7 +34,6 @@ Output: docs/vortexcp/invoice-to-cash-and-credit-management/
 | Customers | 10 |
 | Products and deployment | 9 |
 | Bricks, streams and data assets | 57 |
-| Teams | 9 |
 | Competition | 11 |
 | Residuality | 1 |
 | Total | 98 |

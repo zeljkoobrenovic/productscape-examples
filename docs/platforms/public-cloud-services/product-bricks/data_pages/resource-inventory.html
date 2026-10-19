@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "public-cloud-services", "name": "Public Cloud Services", "description": "Public Cloud Services provides on-demand, API-first, globally distributed infrastructure, platform, data, AI, security, and operational services that let customers build, run, secure, and scale digital workloads without owning most underlying physical infrastructure."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "resource-inventory", "name": "Resource Inventory", "kind": "logical-object", "description": "Provisioned compute, storage, network, platform, and security resource metadata.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "employee"], "legalTags": ["gdpr", "contractual-confidentiality"], "securityCriticality": "critical", "accessScope": "approved cloud product and operations workflows", "businessMeaning": "Provisioned compute, storage, network, platform, and security resource metadata.", "status": "active", "stores": [{"storeId": "resource-inventory-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "resource-inventory api", "description": "Access interface for Resource Inventory."}], "ownerTeamId": "cost-platform-operations", "stewardTeamIds": ["security-governance", "cost-platform-operations"], "derivedFromAssetIds": [], "governance": {"retention": "contractual and regulated retention window", "residency": "customer-selected cloud region", "sharingPolicy": "strictly controlled internal and customer-authorized usage"}, "rootGroup": "Product, Catalog, and Content Data", "group": "Core Records"};
+    const currentAsset = {"id": "resource-inventory", "name": "Resource Inventory", "kind": "logical-object", "description": "Provisioned compute, storage, network, platform, and security resource metadata.", "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "employee"], "legalTags": ["gdpr", "contractual-confidentiality"], "securityCriticality": "critical", "accessScope": "approved cloud product and operations workflows", "businessMeaning": "Provisioned compute, storage, network, platform, and security resource metadata.", "status": "active", "stores": [{"storeId": "resource-inventory-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "resource-inventory api", "description": "Access interface for Resource Inventory."}], "derivedFromAssetIds": [], "governance": {"retention": "contractual and regulated retention window", "residency": "customer-selected cloud region", "sharingPolicy": "strictly controlled internal and customer-authorized usage"}, "rootGroup": "Product, Catalog, and Content Data", "group": "Core Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "vms", "name": "Virtual Machine Compute", "role": "own", "description": "Tracks instance, image, placement, reservation, quota, and lifecycle state."}, {"id": "cont", "name": "Container and Kubernetes Platform", "role": "publish", "description": "Publishes node, pod, service, and cluster inventory."}, {"id": "gpus", "name": "Accelerated Compute", "role": "own", "description": "Tracks accelerator inventory, reservations, quotas, topology, and allocation status."}, {"id": "objs", "name": "Object Storage", "role": "own", "description": "Tracks buckets, prefixes, policies, replication state, and storage classes."}, {"id": "blok", "name": "Block and File Storage", "role": "own", "description": "Tracks volumes, file systems, attachments, snapshots, performance tiers, and encryption state."}, {"id": "cdnx", "name": "CDN and Edge Delivery", "role": "own", "description": "Tracks distributions, origins, cache policies, TLS certificates, and edge rules."}, {"id": "vnet", "name": "Virtual Networking", "role": "own", "description": "Tracks network topology, routes, security rules, endpoints, and hybrid connectivity."}, {"id": "load", "name": "Load Balancing and Traffic Management", "role": "own", "description": "Tracks listeners, target groups, health checks, certificates, and routing policies."}, {"id": "bkdr", "name": "Backup and Disaster Recovery", "role": "own", "description": "Tracks protected resources, policies, vaults, recovery plans, and replication state."}, {"id": "secr", "name": "Secrets and Configuration", "role": "publish", "description": "Publishes secret, parameter, certificate, and dependency metadata."}, {"id": "keym", "name": "Key Management and Encryption", "role": "publish", "description": "Publishes key, certificate, alias, and HSM inventory metadata."}];
     const consumingBricks = [{"id": "thrt", "name": "Threat Detection and Posture", "role": "consume", "description": "Uses resource inventory to evaluate exposure, configuration, and workload risk."}, {"id": "obsr", "name": "Monitoring and Observability", "role": "consume", "description": "Uses resource inventory to map telemetry to services, owners, regions, and accounts."}];
-    const ownerTeam = {"teamId": "cost-platform-operations", "teamName": "Cost and Platform Operations", "teamType": "stream-aligned", "groupName": "Trust and Operations"};
-    const stewardTeams = [{"teamId": "security-governance", "teamName": "Security and Governance", "teamType": "stream-aligned", "groupName": "Trust and Operations"}, {"teamId": "cost-platform-operations", "teamName": "Cost and Platform Operations", "teamType": "stream-aligned", "groupName": "Trust and Operations"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

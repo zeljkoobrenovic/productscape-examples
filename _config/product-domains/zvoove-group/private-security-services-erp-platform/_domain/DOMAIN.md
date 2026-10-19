@@ -17,6 +17,6 @@ freematica.com security solution page (features, 600+ companies, 33%/40%/70% cla
 ## Assumptions
 
 - **All KPI values are modeled seed values** unless a description quotes a Freematica figure.
-- Evidence is thinner than for staffing and cleaning; the domain is deliberately smaller (18 bricks, 6 personas, 7 teams).
+- Evidence is thinner than for staffing and cleaning; the domain is deliberately smaller (18 bricks, 6 personas).
 - Regulatory details (TIP, habilitations, refresher training, Segurpri audits, Supervigilancia) are described generically; exact filing formats were not verified.
 - Stressors `techsecurity` and `globalstd` are plausible scenarios, not announced events.

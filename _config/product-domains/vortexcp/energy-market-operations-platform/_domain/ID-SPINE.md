@@ -96,74 +96,43 @@ Root "Market and Data Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 prod→energy-product-and-tariff,price-curve; camp→campaign,energy-product-and-tariff; quot→b2b-quote,price-curve,consumption-profile; intk→customer-account,connection-point,supply-contract; swch→switch-request,connection-point,market-message; cntr→supply-contract,connection-point,customer-account; bill→invoice,supply-contract,meter-reading; recn→billing-correction,invoice,allocation-volume; paym→payment-transaction,debtor-case,invoice; port→portal-account,invoice,meter-reading; care→service-case,customer-account; comm→customer-communication,customer-account; mdat→meter-reading,connection-point; allo→allocation-volume,reconciliation-volume,meter-reading; fcst→portfolio-forecast,consumption-profile; nomi→nomination,portfolio-forecast,portfolio-position; intr→intraday-position,steering-signal; imbs→imbalance-settlement,allocation-volume,nomination; gass→nomination,portfolio-position; srcg→hedge-transaction,portfolio-position; pric→price-curve; risk→portfolio-position,hedge-transaction,price-curve; ctrd→customer-trade,supply-contract,price-curve; cons→consumption-profile,meter-reading; mcom→market-message,connection-point; imcm→market-message,connection-point; dash→analytics-dataset; regs→regulatory-report,analytics-dataset; iden→tenant-organization,portal-account; wflw→workflow-task; apip→integration-connection; migr→tenant-organization,customer-account.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `energy-product-and-tariff` → products-and-pricing
-- `campaign` → products-and-pricing
-- `b2b-quote` → products-and-pricing
-- `customer-account` → customer-onboarding
-- `connection-point` → customer-onboarding
-- `switch-request` → customer-onboarding
-- `supply-contract` → contract-and-billing
-- `invoice` → contract-and-billing
-- `billing-correction` → contract-and-billing
-- `payment-transaction` → contract-and-billing
-- `debtor-case` → contract-and-billing
-- `portal-account` → customer-interfacing (system of record brick: `port`; `iden` only authenticates)
-- `service-case` → customer-interfacing
-- `customer-communication` → customer-interfacing
-- `meter-reading` → meter-data-and-allocation
-- `allocation-volume` → meter-data-and-allocation
-- `reconciliation-volume` → meter-data-and-allocation
-- `portfolio-forecast` → forecasting-and-nomination
-- `nomination` → forecasting-and-nomination
-- `intraday-position` → intraday-and-settlement
-- `steering-signal` → intraday-and-settlement
-- `imbalance-settlement` → intraday-and-settlement
-- `hedge-transaction` → sourcing-and-portfolio
-- `price-curve` → sourcing-and-portfolio
-- `portfolio-position` → sourcing-and-portfolio
-- `customer-trade` → customer-trading
-- `consumption-profile` → customer-trading
-- `market-message` → market-communication
-- `regulatory-report` → data-and-insight
-- `analytics-dataset` → data-and-insight
-- `tenant-organization` → platform-core
-- `workflow-task` → platform-core
-- `integration-connection` → integration-hub
+- `energy-product-and-tariff`
+- `campaign`
+- `b2b-quote`
+- `customer-account`
+- `connection-point`
+- `switch-request`
+- `supply-contract`
+- `invoice`
+- `billing-correction`
+- `payment-transaction`
+- `debtor-case`
+- `portal-account`
+- `service-case`
+- `customer-communication`
+- `meter-reading`
+- `allocation-volume`
+- `reconciliation-volume`
+- `portfolio-forecast`
+- `nomination`
+- `intraday-position`
+- `steering-signal`
+- `imbalance-settlement`
+- `hedge-transaction`
+- `price-curve`
+- `portfolio-position`
+- `customer-trade`
+- `consumption-profile`
+- `market-message`
+- `regulatory-report`
+- `analytics-dataset`
+- `tenant-organization`
+- `workflow-task`
+- `integration-connection`
 
 33 assets.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Eneve has about 180 people (post-Nemon, 2026) across the Netherlands, Spain, Portugal, the UK and Paraguay; model 15 teams of 5–14 people. Every brick exactly once.
-
-Org group "Supplier Suite Group":
-- `products-and-pricing` (stream-aligned) owns prod, camp, quot
-- `customer-onboarding` (stream-aligned) owns intk, swch
-- `contract-and-billing` (stream-aligned) owns cntr, bill, recn, paym
-- `customer-interfacing` (stream-aligned) owns port, care, comm
-
-Org group "Balancing and Shipping Group":
-- `meter-data-and-allocation` (complicated-subsystem) owns mdat, allo
-- `forecasting-and-nomination` (stream-aligned) owns fcst, nomi
-- `intraday-and-settlement` (stream-aligned) owns intr, imbs, gass
-
-Org group "Trade and Portfolio Group":
-- `sourcing-and-portfolio` (stream-aligned) owns srcg, pric, risk
-- `customer-trading` (stream-aligned) owns ctrd, cons
-
-Org group "Market and Platform Group":
-- `market-communication` (complicated-subsystem) owns mcom, imcm
-- `data-and-insight` (stream-aligned) owns dash, regs
-- `platform-core` (platform) owns iden, wflw, migr
-- `integration-hub` (platform) owns apip
-
-Org group "Expertise Services Group":
-- `market-enablement-and-brp-services` (enabling) owns no bricks; runs BRP as a Service operations desk, market-entry scans, ACM/CNMC licensing support; customer dependencies on newe, brpo, exec, port
-- `customer-success-and-academy` (enabling) owns no bricks; implementation, migration of heritage-product customers, Eneve Academy training, ongoing support; customer dependencies on bilo, csrv, exec, prop
-
-15 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

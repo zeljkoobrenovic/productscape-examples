@@ -98,66 +98,38 @@ Root "Platform Foundation":
 ### Brick dataDependencies → data asset ids (see below); wire at least these
 objt→property-object,rental-unit,legal-entity; valu→valuation-record,property-object; proj→project-budget,property-object; rela→contact-relation; docm→document-record,contact-relation; vacm→vacancy-listing,candidate-application,rental-unit; cntr→lease-contract,contact-relation,document-record; indx→lease-contract,rent-invoice; svcc→service-charge-settlement,lease-contract; rent→rent-invoice,lease-contract; bank→bank-statement-line,payment-transaction; dunn→rent-invoice,payment-transaction,contact-relation; ledg→general-ledger-entry,legal-entity; payb→supplier-invoice,general-ledger-entry; vatx→general-ledger-entry,rent-invoice; tick→maintenance-ticket,rental-unit; work→work-order,supplier-invoice; inst→installation-record,property-object; mjop→maintenance-plan,installation-record; vveb→association-budget-and-contribution,legal-entity; vvem→association-meeting-decision,contact-relation; dash→analytics-dataset,property-object; ivrp→analytics-dataset,general-ledger-entry; tenp→portal-account,rent-invoice,maintenance-ticket; ownp→portal-account,analytics-dataset,document-record; sprp→portal-account,work-order; auto→automation-job-run; aiag→automation-job-run,document-record; apip→integration-connection; iden→tenant-organization,portal-account; wflw→workflow-task; migr→tenant-organization,property-object.
 
-## Data assets (data/data-assets.json) — id → ownerTeamId
+## Data assets (data/data-assets.json)
 
-- `property-object` → portfolio-and-relations
-- `rental-unit` → portfolio-and-relations
-- `legal-entity` → portfolio-and-relations
-- `valuation-record` → portfolio-and-relations
-- `project-budget` → portfolio-and-relations
-- `contact-relation` → portfolio-and-relations
-- `document-record` → portfolio-and-relations
-- `vacancy-listing` → letting-and-contracts
-- `candidate-application` → letting-and-contracts
-- `lease-contract` → letting-and-contracts
-- `service-charge-settlement` → letting-and-contracts
-- `rent-invoice` → rent-and-collection
-- `payment-transaction` → rent-and-collection
-- `bank-statement-line` → rent-and-collection
-- `general-ledger-entry` → real-estate-accounting
-- `supplier-invoice` → real-estate-accounting
-- `maintenance-ticket` → technical-management
-- `work-order` → technical-management
-- `installation-record` → technical-management
-- `maintenance-plan` → technical-management
-- `association-budget-and-contribution` → owners-association-management
-- `association-meeting-decision` → owners-association-management
-- `analytics-dataset` → reporting-and-analytics
-- `portal-account` → stakeholder-portals
-- `automation-job-run` → automation-and-ai
-- `integration-connection` → integration-hub
-- `workflow-task` → platform-core
-- `tenant-organization` → platform-core
+- `property-object`
+- `rental-unit`
+- `legal-entity`
+- `valuation-record`
+- `project-budget`
+- `contact-relation`
+- `document-record`
+- `vacancy-listing`
+- `candidate-application`
+- `lease-contract`
+- `service-charge-settlement`
+- `rent-invoice`
+- `payment-transaction`
+- `bank-statement-line`
+- `general-ledger-entry`
+- `supplier-invoice`
+- `maintenance-ticket`
+- `work-order`
+- `installation-record`
+- `maintenance-plan`
+- `association-budget-and-contribution`
+- `association-meeting-decision`
+- `analytics-dataset`
+- `portal-account`
+- `automation-job-run`
+- `integration-connection`
+- `workflow-task`
+- `tenant-organization`
 
 28 assets.
-
-## Teams (teams.json) — every brick owned by exactly one team
-
-Bloxs had ~35 employees before the Informant acquisition; model the combined company at ~50 with small teams (2–6 people).
-
-Org group "Portfolio and Contracts Group":
-- `portfolio-and-relations` (stream-aligned) owns objt, valu, proj, rela, docm
-- `letting-and-contracts` (stream-aligned) owns vacm, cntr, indx, svcc
-
-Org group "Finance Group":
-- `rent-and-collection` (stream-aligned) owns rent, bank, dunn
-- `real-estate-accounting` (complicated-subsystem) owns ledg, payb, vatx
-
-Org group "Technical and VvE Group":
-- `technical-management` (stream-aligned) owns tick, work, inst, mjop
-- `owners-association-management` (stream-aligned) owns vveb, vvem
-
-Org group "Insight and Portals Group":
-- `reporting-and-analytics` (stream-aligned) owns dash, ivrp
-- `stakeholder-portals` (stream-aligned) owns tenp, ownp, sprp
-
-Org group "Platform and Enablement Group":
-- `platform-core` (platform) owns iden, wflw, migr
-- `integration-hub` (platform) owns apip
-- `automation-and-ai` (enabling) owns auto, aiag
-- `customer-success-and-implementation` (enabling) owns no bricks; runs implementation, data migration (incl. Informant customers), training and unlimited support; customer dependencies on mdir, finc, prpm, vvea
-
-12 teams.
 
 ## Products (product-deployments/products.json) — id, primary customers
 

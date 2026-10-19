@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "bfct", "name": "Business and Fleet Controls", "type": "full-stack", "status": "sustaining", "description": "Manages business travel policies, fleet accounts, supplier setup, reporting access, and account-level operational controls.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-admin-console", "name": "Admin Console", "type": "web-component", "description": "Web surface for program and supplier administration.", "dependencies": {"modules": [{"moduleId": "module-admin-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-admin-api", "name": "Admin API", "type": "api", "description": "API for business and fleet account controls.", "dependencies": {"modules": [{"moduleId": "module-account-and-policy-model", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-admin-workflow-services", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-reporting-and-export-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-account-and-policy-model", "name": "Account and Policy Model", "type": "service", "description": "Stores business, fleet, billing, and traveler or supplier rules."}, {"id": "module-admin-workflow-services", "name": "Admin Workflow Services", "type": "service", "description": "Runs setup, assignment, and governance tasks for admins and supplier operators.", "dependencies": {"modules": [{"moduleId": "module-account-and-policy-model", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-reporting-and-export-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-reporting-and-export-controls", "name": "Reporting and Export Controls", "type": "service", "description": "Controls access to reporting, invoice, and reconciliation workflows."}]}], "dataDependencies": [{"assetId": "identity-credential", "moduleIds": ["module-account-and-policy-model", "module-admin-workflow-services", "module-reporting-and-export-controls"], "role": "read", "description": "Reads Identity Credential to support domain workflows."}, {"assetId": "session-token", "moduleIds": ["module-account-and-policy-model", "module-admin-workflow-services", "module-reporting-and-export-controls"], "role": "own", "description": "Acts as the primary owning brick for Session Token."}, {"assetId": "access-policy", "moduleIds": ["module-account-and-policy-model", "module-admin-workflow-services", "module-reporting-and-export-controls"], "role": "own", "description": "Acts as the primary owning brick for Access Policy."}, {"assetId": "audit-log", "moduleIds": ["module-account-and-policy-model", "module-admin-workflow-services", "module-reporting-and-export-controls"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}], "brickDependencies": [{"targetBrickId": "ridp", "moduleId": "module-identity-and-billing-api", "sourceModuleId": "module-admin-api", "type": "identity", "description": "Depends on Rider Identity, Wallet and Payments for billing and receipt context."}, {"targetBrickId": "data", "moduleId": "module-reporting-feed", "sourceModuleId": "module-account-and-policy-model", "type": "analytics", "description": "Depends on Marketplace Intelligence and Analytics for reporting views."}, {"targetBrickId": "payx", "moduleId": "module-payments-platform-api", "sourceModuleId": "module-admin-api", "type": "financial-control", "description": "Depends on Payments Platform and Ledger for billing setup, invoicing, and reconciliation-aligned program controls."}, {"targetBrickId": "apix", "moduleId": "module-partner-api-gateway", "sourceModuleId": "module-admin-api", "type": "integration", "description": "Depends on Partner API and Integration Exchange for enterprise-facing configuration, exports, and downstream system connectivity."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Driver Supply and Operations", "group": "earnings-and-partner-control"};
-    const relatedTeams = [{"teamId": "fleet-programs", "teamName": "Business and Fleet Programs", "teamType": "stream-aligned", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}, {"teamId": "supply-growth-enablement", "teamName": "Driver and Fleet Supply Launch Readiness", "teamType": "enabling", "groupId": "supply-growth", "groupName": "Driver and Fleet Supply", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "bizc", "name": "Uber for Business Mobility Control", "icon": "", "type": "B2B SaaS", "whyUsed": "Owns policy, billing, and managed-program controls."}];
     const supportedJobs = [{"customerId": "ubiz", "customerName": "Business Travel and Mobility Admin", "customerGroup": "Business and Family Mobility Buyers", "customerIcon": "ubiz.png", "productId": "bizc", "productName": "Uber for Business Mobility Control", "productIcon": "", "jobId": "prog", "jobName": "Run a compliant and convenient business mobility program", "jobWhatItIs": "Set policies, onboard employees, and give travelers a usable ride option that still meets company controls.", "jobOutcome": "Higher program adoption with tighter spend and reporting discipline.", "supportRationale": "Handles policy, traveler groups, billing accounts, and admin settings.", "usedInSteps": [{"step": "Configure program rules and traveler access", "description": "Set who can travel, when, how much can be spent, and which trip types are allowed.", "howItSupports": "Handles policy, traveler groups, billing accounts, and admin settings.", "media": [{"type": "image", "src": "media/jbtd-ubiz-prog-1.jpg", "title": "Business Travel and Mobility Admin JTBD step 1: Configure program rules and traveler access", "alt": "Enterprise infographic for step 1 of the job \"Run a compliant and convenient business mobility program\": Configure program rules and traveler access."}]}, {"step": "Reconcile spend and improve policy", "description": "Review usage, out-of-policy trips, receipts, and supplier performance to tune the program.", "howItSupports": "Provides account reporting, policy exceptions, and billing management.", "media": [{"type": "image", "src": "media/jbtd-ubiz-prog-3.jpg", "title": "Business Travel and Mobility Admin JTBD step 3: Reconcile spend and improve policy", "alt": "Enterprise infographic for step 3 of the job \"Run a compliant and convenient business mobility program\": Reconcile spend and improve policy."}]}]}, {"customerId": "ubiz", "customerName": "Business Travel and Mobility Admin", "customerGroup": "Business and Family Mobility Buyers", "customerIcon": "ubiz.png", "productId": "bizc", "productName": "Uber for Business Mobility Control", "productIcon": "", "jobId": "expand", "jobName": "Prove the mobility program deserves broader rollout", "jobWhatItIs": "Translate traveler usage and spend control into evidence that finance, procurement, and leadership trust enough to expand the program.", "jobOutcome": "The program grows because it is easier to defend than unmanaged travel or reimbursement.", "supportRationale": "Surfaces policy compliance and billing performance.", "usedInSteps": [{"step": "Show policy and billing outcomes clearly", "description": "Demonstrate whether spend controls, receipts, and exceptions are improving finance operations.", "howItSupports": "Surfaces policy compliance and billing performance.", "media": [{"type": "image", "src": "media/jbtd-ubiz-expand-2.jpg", "title": "Business Travel and Mobility Admin JTBD step 2: Show policy and billing outcomes clearly", "alt": "Enterprise infographic for step 2 of the job \"Prove the mobility program deserves broader rollout\": Show policy and billing outcomes clearly."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

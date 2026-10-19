@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "secp", "name": "Security and ISO 27001 Controls", "type": "service", "status": "sustaining", "description": "The security controls behind Reptune's ISO 27001 certification: key management and encryption of client data and documents, secrets for integrations, security monitoring and alerting, vulnerability and access reviews, data residency and retention policies, and the control register and evidence that auditors and enterprise procurement teams ask for. Applies across the multi-tenant platform without installation on the client side.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-secp-api", "name": "Key and Secrets API", "type": "api", "description": "API for client-scoped encryption keys, integration secrets, signed download links and data handling policies used by document, integration, AI and rendering modules.", "dependencies": {"modules": [{"moduleId": "module-secp-kms", "type": "delegates", "description": "Interface delegates key operations to the key management service."}, {"moduleId": "module-secp-policy-store", "type": "delegates", "description": "Interface delegates policy lookups to the control register."}]}}, {"id": "module-secp-admin", "name": "Security Operations Console", "type": "backoffice-interface", "description": "Internal console for security officers to manage keys and secrets, review alerts, run access reviews and maintain the ISO 27001 control register and evidence.", "dependencies": {"modules": [{"moduleId": "module-secp-policy-store", "type": "uses", "description": "Console maintains controls, policies and evidence in the control register."}, {"moduleId": "module-secp-kms", "type": "uses", "description": "Console rotates keys and secrets through the key management service."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-secp-monitor-daemon", "name": "Security Monitoring and Alerting Daemon", "type": "daemon", "description": "Correlates authentication, access and audit events, vulnerability scan results and infrastructure alerts into security alerts and periodic control evidence.", "dependencies": {"modules": [{"moduleId": "module-secp-policy-store", "type": "processes", "description": "Daemon records alerts and evidence in the control register."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-secp-kms", "name": "Key Management and Encryption Service", "type": "service", "description": "Manages client-scoped data encryption keys, integration secrets and certificates with rotation, backed by the cloud provider's key management service."}, {"id": "module-secp-policy-store", "name": "Security Policy and Control Register", "type": "stateful-service", "description": "Owns security policies, data residency and retention rules, ISO 27001 controls, evidence, alerts, access reviews and risk register entries."}]}], "dataDependencies": [{"assetId": "audit-trail-entry", "moduleIds": ["module-secp-monitor-daemon"], "role": "read", "description": "Reads audit entries for monitoring, access reviews and ISO 27001 evidence."}, {"assetId": "user-account", "moduleIds": ["module-secp-monitor-daemon"], "role": "read", "description": "Reads accounts and sessions for access reviews and anomaly detection."}], "brickDependencies": [{"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-secp-monitor-daemon", "type": "audit", "description": "Reads audit entries for access reviews and control evidence."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-secp-monitor-daemon", "type": "identity", "description": "Reads authentication and session events and enforces MFA and session policies."}], "externalSystemsThisBrickDependsOn": [{"system": "Cloud hosting provider security services (key management, WAF, logging)", "type": "service", "interface": "Cloud KMS and security APIs", "description": "Hardware-backed key management, perimeter protection and centralised logging for the ISO 27001-certified environment.", "sourceModuleId": "module-secp-kms"}, {"system": "Penetration testing and certification bodies", "type": "service", "interface": "Assessment reports and audit evidence exchange", "description": "Annual penetration tests and ISO 27001 surveillance audits whose findings and evidence are tracked in the control register.", "sourceModuleId": "module-secp-admin"}], "externalSystemsDependingOnThisBrick": [], "domain": "Platform Foundation", "group": "Core Services"};
-    const relatedTeams = [{"teamId": "ai-and-assistance", "teamName": "AI and Assistance", "teamType": "enabling", "groupId": "plag", "groupName": "Platform and AI Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "platform-core-and-security", "teamName": "Platform Core and Security", "teamType": "platform", "groupId": "plag", "groupName": "Platform and AI Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "reptune-net-platform", "name": "Reptune.net Platform", "icon": "reptune-net-platform.png", "type": "B2B Vertical Compliance SaaS", "whyUsed": "ISO 27001-certified security controls applied to every client environment."}, {"id": "integrations-and-data-exchange", "name": "ERP and Operational TP Integrations, Excel Data Exchange and SSO", "icon": "integrations-and-data-exchange.png", "type": "API and Integration Add-on", "whyUsed": "Access control and security review of every external connection."}];
     const supportedJobs = [{"customerId": "htax", "customerName": "Group Head of Tax / Transfer Pricing Director", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-htax-portrait.jpg", "productId": "reptune-net-platform", "productName": "Reptune.net Platform", "productIcon": "reptune-net-platform.png", "jobId": "jtbd-htax-3", "jobName": "See group-wide compliance and risk status at a glance", "jobWhatItIs": "Know at any moment which entities and countries are documented, in progress or at risk, which deadlines are coming for Master File, Local Files, CbCR and notifications, which entities sit outside their arm's-length range, and where the value chain creates audit exposure, and be able to show that picture to the CFO and the audit committee without assembling it by hand.", "jobOutcome": "Group-wide compliance status per country and entity is live on one dashboard, no deadline is discovered after the fact, outliers against benchmark ranges are visible before year-end so they can be corrected or explained, and the quarterly tax risk report to the audit committee is produced from the platform in hours.", "supportRationale": "Gives finance leadership read-only, SSO-based access to the same dashboard rather than a forwarded PDF.", "usedInSteps": [{"step": "Report to the CFO and the audit committee from one source", "description": "Produce the quarterly tax risk and compliance report from the dashboard: coverage, deadlines met, open risks, audits in progress and their exposure, and the cost of the cycle, with figures the tax team can trace back to entities and documents.", "howItSupports": "Gives finance leadership read-only, SSO-based access to the same dashboard rather than a forwarded PDF.", "media": []}]}, {"customerId": "tpmg", "customerName": "Transfer Pricing Manager / Documentation Coordinator", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-tpmg-portrait.jpg", "productId": "reptune-net-platform", "productName": "Reptune.net Platform", "productIcon": "reptune-net-platform.png", "jobId": "jtbd-tpmg-1", "jobName": "Set up a transfer pricing model that generates consistent documentation everywhere", "jobWhatItIs": "Build and maintain the structured transfer pricing model from which all documentation is generated: legal entities and ownership, company types and functional analyses, transfer pricing methods per transaction type, the register of intercompany transactions per entity, benchmarks, intercompany agreements, templates, styling and custom text. The job is to make the model complete and correct enough that generated Local Files need no manual changes in the exported files.", "jobOutcome": "The model is live within days of starting, covers every entity and transaction type in scope, generates Master File and Local Files that are consistent with each other and with the policy, and needs only incremental maintenance when the business changes.", "supportRationale": "Connects the ERP, operational transfer pricing solutions and Excel data exchange so financial data flows into the model without re-keying.", "usedInSteps": [{"step": "Connect data sources and validate before first generation", "description": "Set up Excel data exchange templates or the ERP integration for entity financials and transactional data, run the built-in validation, resolve the actions required and generate a first draft for a pilot entity to prove the model before the whole cycle depends on it.", "howItSupports": "Connects the ERP, operational transfer pricing solutions and Excel data exchange so financial data flows into the model without re-keying.", "media": []}]}, {"customerId": "lfin", "customerName": "Local Finance Controller / Country Tax Contact", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-lfin-portrait.jpg", "productId": "reptune-net-platform", "productName": "Reptune.net Platform", "productIcon": "reptune-net-platform.png", "jobId": "jtbd-lfin-1", "jobName": "Provide correct entity financials and transactional data with minimal effort", "jobWhatItIs": "Deliver the entity's statutory financials, segmented P&L per activity and transaction type, and intercompany transaction amounts per counterparty for the fiscal year to group tax in the required structure, validated and reconciled, without spending days on reformatting and without repeated correction rounds.", "jobOutcome": "The data request is completed in hours rather than days, uploads pass validation the first time, segmented results reconcile to statutory accounts, and the controller hears from group tax only when something needs a decision, not a correction.", "supportRationale": "Delivers entity financials and intercompany transaction data directly from the ERP or an operational transfer pricing solution where the integration is set up.", "usedInSteps": [{"step": "Extract entity financials and intercompany transactions from the ERP", "description": "Pull the statutory P&L and balance sheet, and the intercompany revenues, costs, royalties, services and financing per counterparty from the ERP, or let the direct ERP or operational transfer pricing integration deliver them to the platform.", "howItSupports": "Delivers entity financials and intercompany transaction data directly from the ERP or an operational transfer pricing solution where the integration is set up.", "media": []}]}, {"customerId": "lfin", "customerName": "Local Finance Controller / Country Tax Contact", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-lfin-portrait.jpg", "productId": "integrations-and-data-exchange", "productName": "ERP and Operational TP Integrations, Excel Data Exchange and SSO", "productIcon": "integrations-and-data-exchange.png", "jobId": "jtbd-lfin-1", "jobName": "Provide correct entity financials and transactional data with minimal effort", "jobWhatItIs": "Deliver the entity's statutory financials, segmented P&L per activity and transaction type, and intercompany transaction amounts per counterparty for the fiscal year to group tax in the required structure, validated and reconciled, without spending days on reformatting and without repeated correction rounds.", "jobOutcome": "The data request is completed in hours rather than days, uploads pass validation the first time, segmented results reconcile to statutory accounts, and the controller hears from group tax only when something needs a decision, not a correction.", "supportRationale": "Delivers entity financials and intercompany transaction data directly from the ERP or an operational transfer pricing solution where the integration is set up.", "usedInSteps": [{"step": "Extract entity financials and intercompany transactions from the ERP", "description": "Pull the statutory P&L and balance sheet, and the intercompany revenues, costs, royalties, services and financing per counterparty from the ERP, or let the direct ERP or operational transfer pricing integration deliver them to the platform.", "howItSupports": "Delivers entity financials and intercompany transaction data directly from the ERP or an operational transfer pricing solution where the integration is set up.", "media": []}]}, {"customerId": "tpmg", "customerName": "Transfer Pricing Manager / Documentation Coordinator", "customerGroup": "In-house Tax Teams of Multinationals", "customerIcon": "customer-tpmg-portrait.jpg", "productId": "integrations-and-data-exchange", "productName": "ERP and Operational TP Integrations, Excel Data Exchange and SSO", "productIcon": "integrations-and-data-exchange.png", "jobId": "jtbd-tpmg-1", "jobName": "Set up a transfer pricing model that generates consistent documentation everywhere", "jobWhatItIs": "Build and maintain the structured transfer pricing model from which all documentation is generated: legal entities and ownership, company types and functional analyses, transfer pricing methods per transaction type, the register of intercompany transactions per entity, benchmarks, intercompany agreements, templates, styling and custom text. The job is to make the model complete and correct enough that generated Local Files need no manual changes in the exported files.", "jobOutcome": "The model is live within days of starting, covers every entity and transaction type in scope, generates Master File and Local Files that are consistent with each other and with the policy, and needs only incremental maintenance when the business changes.", "supportRationale": "Connects the ERP, operational transfer pricing solutions and Excel data exchange so financial data flows into the model without re-keying.", "usedInSteps": [{"step": "Connect data sources and validate before first generation", "description": "Set up Excel data exchange templates or the ERP integration for entity financials and transactional data, run the built-in validation, resolve the actions required and generate a first draft for a pilot entity to prove the model before the whole cycle depends on it.", "howItSupports": "Connects the ERP, operational transfer pricing solutions and Excel data exchange so financial data flows into the model without re-keying.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

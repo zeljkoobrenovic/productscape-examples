@@ -53,7 +53,7 @@ Make every serious home-improvement project easier to start with confidence and 
 
 ## Public evidence and modeling stance
 
-Public facts are grounded in Solvari's website, current terms and privacy material, official acquisition posts, Vortex Capital Partners, official regulator and government sources, and official competitor pages. The internal product-brick decomposition, team topology, deployment boundaries, KPI targets, and system-of-record choices are Productscape modeling assumptions; they describe a plausible product architecture, not a claim about Solvari's confidential implementation or organization.
+Public facts are grounded in Solvari's website, current terms and privacy material, official acquisition posts, Vortex Capital Partners, official regulator and government sources, and official competitor pages. The internal product-brick decomposition, deployment boundaries, KPI targets, and system-of-record choices are Productscape modeling assumptions; they describe a plausible product architecture, not a claim about Solvari's confidential implementation or organization.
 
 Primary references:
 

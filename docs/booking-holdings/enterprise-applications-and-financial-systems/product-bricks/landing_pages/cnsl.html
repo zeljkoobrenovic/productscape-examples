@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "cnsl", "name": "Consolidation and External Reporting", "type": "service", "status": "invest", "description": "Consolidates legal-entity ledgers into Booking Holdings group results under US GAAP: currency translation, intercompany elimination, segment and brand views, and the disclosure data behind the 10-K and 10-Q (merchant, agency and advertising revenue lines, deferred merchant bookings). Modeled on a consolidation SaaS such as OneStream (assumed: named only in an unverified third-party job listing).", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-cnsl-api", "name": "Consolidation API", "type": "api", "description": "Serves consolidated balances, revenue disaggregation and disclosure datasets to reporting and planning.", "dependencies": {"modules": [{"moduleId": "module-cnsl-core", "type": "uses", "description": "Reads consolidated results."}]}}, {"id": "module-cnsl-reporting-console", "name": "Disclosure and Reporting Console", "type": "backoffice-interface", "description": "Workspace for external reporting to manage consolidation runs, top-side adjustments and disclosure tie-outs.", "dependencies": {"modules": [{"moduleId": "module-cnsl-core", "type": "uses", "description": "Runs and reviews consolidations."}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-cnsl-run-orchestrator", "name": "Consolidation Run Orchestrator", "type": "stateless-service", "description": "Sequences entity loads, FX translation, eliminations and adjustments for each close cycle.", "dependencies": {"modules": [{"moduleId": "module-cnsl-core", "type": "uses", "description": "Executes consolidation steps."}, {"moduleId": "module-entm-api", "type": "uses", "description": "Fetches intercompany balances and FX rates.", "targetBrickId": "entm"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-cnsl-core", "name": "Consolidation Engine and Cube", "type": "stateful-service", "description": "Entity, account, brand and segment dimensional model with versioned actuals and adjustments."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-cnsl-vendor-adapter", "name": "Consolidation SaaS Adapter", "type": "integration", "description": "Connector between the consolidation SaaS tenant, SAP and the disclosure-management tool."}]}], "dataDependencies": [{"assetId": "consolidated-financial-statement", "moduleIds": ["module-cnsl-core", "module-cnsl-api", "module-cnsl-reporting-console"], "role": "own", "description": "System of record for consolidated results and disclosure data."}, {"assetId": "general-ledger-journal", "moduleIds": ["module-cnsl-run-orchestrator"], "role": "read", "description": "Reads entity balances."}, {"assetId": "legal-entity-and-intercompany-register", "moduleIds": ["module-cnsl-run-orchestrator"], "role": "read", "description": "Uses the entity hierarchy and ownership for consolidation."}], "brickDependencies": [{"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-cnsl-run-orchestrator", "type": "data", "description": "Loads entity trial balances."}, {"targetBrickId": "entm", "moduleId": "module-entm-api", "sourceModuleId": "module-cnsl-run-orchestrator", "type": "data", "description": "Uses intercompany matches and FX rates for eliminations and translation."}, {"targetBrickId": "clse", "moduleId": "module-clse-api", "sourceModuleId": "module-cnsl-run-orchestrator", "type": "control", "description": "Starts consolidation only when close certifications are complete."}, {"targetBrickId": "rrec", "moduleId": "module-rrec-api", "sourceModuleId": "module-cnsl-run-orchestrator", "type": "data", "description": "Takes revenue disaggregation (merchant, agency, advertising) for disclosures."}], "externalSystemsThisBrickDependsOn": [{"system": "Consolidation SaaS (e.g. OneStream, assumed)", "type": "platform", "interface": "Vendor API", "description": "Hosts the consolidation engine.", "sourceModuleId": "module-cnsl-vendor-adapter"}, {"system": "SEC EDGAR filing agent", "type": "regulator", "interface": "XBRL filing", "description": "Receives 10-K and 10-Q filings.", "sourceModuleId": "module-cnsl-vendor-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "Investor relations and external reporting", "type": "consumer", "interface": "Disclosure datasets", "description": "Earnings releases and filings draw on consolidated data.", "moduleId": "module-cnsl-api"}, {"system": "External auditor (Deloitte & Touche)", "type": "consumer", "interface": "Read-only audit access", "description": "Audits consolidation and disclosures.", "moduleId": "module-cnsl-reporting-console"}], "domain": "Close, Reporting and Controls", "group": "Close and Consolidation"};
-    const relatedTeams = [{"teamId": "clsr", "teamName": "Close and Consolidation", "teamType": "stream-aligned", "groupId": "rtrc", "groupName": "Close, Reporting and Controls", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "r2rcl", "name": "Close, Consolidation and Reporting Workbench", "icon": "r2rcl.png", "type": "Enterprise application", "whyUsed": "Consolidation and External Reporting as part of Close, Consolidation and Reporting Workbench."}];
     const supportedJobs = [{"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "r2rcl", "productName": "Close, Consolidation and Reporting Workbench", "productIcon": "r2rcl.png", "jobId": "ctrl-close", "jobName": "Close the books fast and clean every month and quarter", "jobWhatItIs": "Complete entity closes, reconciliations, consolidation and reporting within the calendar.", "jobOutcome": "Consolidated results are final on schedule with reconciled balances and no late audit adjustments.", "supportRationale": "Close orchestration with task dependencies and status.", "usedInSteps": [{"step": "Run the close calendar", "description": "Sequence tasks across entities and teams and track completion.", "howItSupports": "Close orchestration with task dependencies and status.", "media": []}, {"step": "Reconcile balance sheet accounts", "description": "Match subledgers, banks and intercompany and resolve exceptions.", "howItSupports": "Automated matching and exception queues.", "media": []}, {"step": "Consolidate and report", "description": "Eliminate intercompany, translate currencies and produce statements.", "howItSupports": "Consolidation and disclosure workflow for SEC filings.", "media": []}, {"step": "Provide evidence", "description": "Hand auditors complete, linked evidence for key controls.", "howItSupports": "Evidence linked to controls and journal entries.", "media": []}]}, {"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "r2rcl", "productName": "Close, Consolidation and Reporting Workbench", "productIcon": "r2rcl.png", "jobId": "fldr-steer", "jobName": "Steer the company on one trusted global financial view", "jobWhatItIs": "Run monthly performance reviews, quarterly guidance and capital allocation from consolidated, brand-comparable numbers.", "jobOutcome": "Leadership decides on the same numbers the auditors and investors will see, without reconciling spreadsheets.", "supportRationale": "Orchestrated close across entities with reconciled subledgers.", "usedInSteps": [{"step": "Close and consolidate the period", "description": "Get every brand and entity closed and consolidated on schedule.", "howItSupports": "Orchestrated close across entities with reconciled subledgers.", "media": []}, {"step": "Review performance against plan", "description": "Compare actuals to plan and forecast per brand, channel and merchant versus agency model.", "howItSupports": "Shared actuals and forecast on one metric layer.", "media": []}, {"step": "Certify and publish", "description": "Sign quarterly and annual filings with confidence in control evidence.", "howItSupports": "Consolidated statements with linked SOX evidence.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

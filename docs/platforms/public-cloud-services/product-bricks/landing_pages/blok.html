@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "blok", "name": "Block and File Storage", "type": "service", "status": "sustaining", "description": "Low-latency block volumes and managed file systems with snapshots, encryption, resizing, performance tiers, shared access, and enterprise workload support.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-block-volume-api", "name": "Block volume API", "type": "api", "description": "Manages volumes, attachments, snapshots, clones, encryption, and performance settings.", "dependencies": {"modules": [{"moduleId": "module-volume-and-file-system-manager", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-performance-tier-controller", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-snapshot-and-clone-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}, {"id": "module-managed-file-system-api", "name": "Managed file system API", "type": "api", "description": "Creates and operates shared file systems, mounts, access rules, and throughput modes.", "dependencies": {"modules": [{"moduleId": "module-volume-and-file-system-manager", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-performance-tier-controller", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-snapshot-and-clone-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}, "direction": "public"}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-storage-performance-telemetry", "name": "Storage performance telemetry", "type": "message-consumer", "description": "Publishes latency, IOPS, throughput, queue depth, and capacity metrics.", "dependencies": {"modules": [{"moduleId": "module-volume-and-file-system-manager", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-performance-tier-controller", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-snapshot-and-clone-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}, "direction": "internal"}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-volume-and-file-system-manager", "name": "Volume and file system manager", "type": "service", "description": "Creates, attaches, resizes, snapshots, and retires block volumes and file systems."}, {"id": "module-performance-tier-controller", "name": "Performance tier controller", "type": "service", "description": "Manages IOPS, throughput, burst credits, caching, and workload-specific storage classes."}, {"id": "module-snapshot-and-clone-engine", "name": "Snapshot and clone engine", "type": "service", "description": "Coordinates crash-consistent snapshots, clones, copy, retention, and recovery workflows.", "dependencies": {"modules": [{"moduleId": "module-performance-tier-controller", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}]}], "dataDependencies": [{"assetId": "resource-inventory", "moduleIds": ["module-volume-and-file-system-manager", "module-performance-tier-controller", "module-snapshot-and-clone-engine"], "role": "own", "description": "Tracks volumes, file systems, attachments, snapshots, performance tiers, and encryption state."}, {"assetId": "usage-meter", "moduleIds": ["module-storage-performance-telemetry"], "role": "publish", "description": "Publishes provisioned capacity, IOPS, throughput, snapshot, and retrieval usage."}, {"assetId": "audit-log", "moduleIds": ["module-storage-performance-telemetry"], "role": "publish", "description": "Publishes storage lifecycle and access events."}], "brickDependencies": [{"targetBrickId": "vms", "moduleId": "module-compute-provisioning-api", "sourceModuleId": "module-block-volume-api", "type": "runtime", "description": "Uses Virtual Machine Compute capabilities for governed public-cloud delivery."}, {"targetBrickId": "iamx", "moduleId": "module-iam-administration-api", "sourceModuleId": "module-block-volume-api", "type": "control-plane", "description": "Uses Identity and Access Management capabilities for governed public-cloud delivery."}, {"targetBrickId": "keym", "moduleId": "module-key-management-api", "sourceModuleId": "module-block-volume-api", "type": "control-plane", "description": "Uses Key Management and Encryption capabilities for governed public-cloud delivery."}, {"targetBrickId": "bkdr", "moduleId": "module-backup-and-recovery-api", "sourceModuleId": "module-block-volume-api", "type": "control-plane", "description": "Uses Backup and Disaster Recovery capabilities for governed public-cloud delivery."}, {"targetBrickId": "obsr", "moduleId": "module-telemetry-ingest-api", "sourceModuleId": "module-block-volume-api", "type": "runtime", "description": "Uses Monitoring and Observability capabilities for governed public-cloud delivery."}, {"targetBrickId": "cost", "moduleId": "module-cost-management-api", "sourceModuleId": "module-block-volume-api", "type": "control-plane", "description": "Uses FinOps and Commercial Controls capabilities for governed public-cloud delivery."}], "externalSystemsThisBrickDependsOn": [{"system": "Enterprise backup platforms", "type": "data-protection", "interface": "snapshot and restore APIs", "description": "Integrates with backup, restore, and data protection workflows.", "sourceModuleId": "module-snapshot-and-clone-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer databases and enterprise apps", "type": "runtime", "interface": "volume attachment and file mount", "description": "Use persistent low-latency storage for stateful workloads.", "moduleId": "module-block-volume-api"}], "domain": "Infrastructure Services", "group": "Storage and Data Movement"};
-    const relatedTeams = [{"teamId": "infrastructure-services-storage-and-data-movement", "teamName": "Infrastructure Services Block and File Storage", "teamType": "platform", "groupId": "infrastructure-services", "groupName": "Infrastructure Services", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p1", "name": "Elastic Infrastructure Cloud", "icon": "", "type": "B2B", "whyUsed": "Required to deliver the product experience and operating model."}];
     const supportedJobs = [];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

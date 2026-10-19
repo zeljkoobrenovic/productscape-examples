@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "gass", "name": "Gas Shipping and Trading", "type": "full-stack", "status": "sustaining", "description": "Gas-specific shipping and position management for suppliers and shippers such as EBN: daily and within-day nominations per exit point and shipper code to GTS and the Iberian TSOs, TTF and PVB trade capture, storage and capacity bookings, temperature-driven demand allocation and portfolio balancing, and the shipper position per gas day. Shares the position and nomination engines with electricity where the market processes align and adds the gas-day, calorific-value and capacity constructs where they do not, so one desk can run both commodities.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-gass-web", "name": "Gas Desk Console", "type": "web-component", "description": "Shipper and trader screens for gas-day positions, nominations per exit point, storage and capacity bookings, TTF and PVB trades and temperature-driven demand.", "dependencies": {"modules": [{"moduleId": "module-gass-api", "type": "uses", "description": "Console calls the Gas Shipping API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-gass-api", "name": "Gas Shipping API", "type": "api", "description": "Serves gas positions, nominations, trades and capacity bookings per shipper and gas day to portfolio, settlement and the open API.", "dependencies": {"modules": [{"moduleId": "module-gass-store", "type": "delegates", "description": "Interface delegates persistence to the gas book."}, {"moduleId": "module-gass-balancing", "type": "delegates", "description": "Interface delegates gas-day balancing."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-gass-gasday", "name": "Gas-Day Nomination Daemon", "type": "daemon", "description": "Runs the gas-day nomination and re-nomination cycle per exit point and shipper against GTS and Iberian TSO timetables.", "dependencies": {"modules": [{"moduleId": "module-gass-balancing", "type": "uses", "description": "Daemon builds nominations from the balanced position."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-gass-balancing", "name": "Gas Portfolio Balancing Service", "type": "service", "description": "Balances supply, storage, trades and temperature-corrected demand per gas day and exit point, applying calorific-value conversion and capacity constraints.", "dependencies": {"modules": [{"moduleId": "module-gass-store", "type": "uses", "description": "Service reads and writes gas positions."}]}}, {"id": "module-gass-store", "name": "Gas Book and Position Store", "type": "stateful-service", "description": "Owns gas trades, capacity and storage bookings, positions per gas day and nomination records per shipper."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-gass-gas-tso", "name": "Gas TSO and Hub Adapter", "type": "integration", "description": "Connects GTS, Enag\u00e1s and REN nomination portals, TTF and PVB hub trade confirmations and storage operators."}]}], "dataDependencies": [{"assetId": "nomination", "moduleIds": ["module-gass-gasday", "module-gass-store"], "role": "read-write", "description": "Creates and tracks gas nominations per exit point and gas day."}, {"assetId": "portfolio-position", "moduleIds": ["module-gass-balancing", "module-gass-store"], "role": "read-write", "description": "Computes and snapshots gas portfolio positions per gas day."}, {"assetId": "hedge-transaction", "moduleIds": ["module-gass-balancing"], "role": "read", "description": "Reads gas hedges contributing to the position."}], "brickDependencies": [{"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-gass-api", "type": "identity", "description": "Resolves the tenant's shipper code and GTS, Enag\u00e1s and REN credentials, and enforces trader mandate limits for gas trades and manual nominations."}, {"targetBrickId": "wflw", "moduleId": "module-wflw-api", "sourceModuleId": "module-gass-api", "type": "workflow", "description": "Raises tasks for nomination mismatches with counterparties, within-day imbalance alerts against shipper limits and unconfirmed hub trades."}, {"targetBrickId": "nomi", "moduleId": "module-nomi-api", "sourceModuleId": "module-gass-gasday", "type": "data", "description": "Reuses nomination submission and position snapshots for gas nominations."}, {"targetBrickId": "fcst", "moduleId": "module-fcst-api", "sourceModuleId": "module-gass-balancing", "type": "data", "description": "Reads temperature-driven gas demand forecasts."}, {"targetBrickId": "srcg", "moduleId": "module-srcg-api", "sourceModuleId": "module-gass-balancing", "type": "data", "description": "Reads gas hedges and procurement deals."}, {"targetBrickId": "pric", "moduleId": "module-pric-api", "sourceModuleId": "module-gass-balancing", "type": "data", "description": "Reads TTF and PVB price curves."}], "externalSystemsThisBrickDependsOn": [{"system": "Gas TSOs (GTS, Enag\u00e1s, REN), TTF and PVB hubs, storage operators", "type": "transaction", "interface": "Gas nomination and trade confirmation interfaces", "description": "Gas nominations, hub trade confirmations and storage and capacity bookings.", "sourceModuleId": "module-gass-gas-tso"}], "externalSystemsDependingOnThisBrick": [], "domain": "Balancing and Shipping Suite", "group": "Intraday and Settlement"};
-    const relatedTeams = [{"teamId": "intraday-and-settlement", "teamName": "Intraday and Settlement", "teamType": "stream-aligned", "groupId": "bsg", "groupName": "Balancing and Shipping Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "balancing-and-shipping-suite", "name": "Balancing and Shipping Suite", "icon": "balancing-and-shipping-suite.png", "type": "B2B Market Operations SaaS", "whyUsed": "Manages gas nominations to GTS, shipping positions and trades, as operated for EBN. Submits gas nominations and shipper positions to GTS for shippers such as EBN. Used by Eneve's shipping operators for gas trading and shipping run for EBN."}];
     const supportedJobs = [{"customerId": "brpo", "customerName": "BRP and Balancing Operator", "customerGroup": "Balancing, Trading and Portfolio Operators", "customerIcon": "customer-brpo-portrait.jpg", "productId": "balancing-and-shipping-suite", "productName": "Balancing and Shipping Suite", "productIcon": "balancing-and-shipping-suite.png", "jobId": "jtbd-brpo-1", "jobName": "Forecast and nominate the portfolio accurately and on time", "jobWhatItIs": "Every day, for every EAN type in the portfolio, produce the day-ahead forecast, match it to the procured position, build and submit the E-programme to TenneT and the gas nominations to the gas TSO before gate closure, update the forecast intraday and re-nominate when the position changes, and review ex post how good the forecast was.", "jobOutcome": "Nominations reflect the best available forecast and the procured volumes, arrive before every gate closure with a confirmed receipt, and are corrected intraday as the position changes, so the imbalance the desk has to settle is the residual that could not be known, not the result of a missed deadline or a stale forecast.", "supportRationale": "Runs the day-ahead forecast models per EAN type and presents the forecast and its expected error for review.", "usedInSteps": [{"step": "Produce the day-ahead forecast per EAN type", "description": "Run the day-ahead forecast per 15-minute block from consumption profiles, telemetry history, weather and solar and wind production forecasts, including the batteries and flexible assets whose planned schedules the desk knows, and review the segments with the largest expected error.", "howItSupports": "Runs the day-ahead forecast models per EAN type and presents the forecast and its expected error for review.", "media": []}, {"step": "Match the forecast to the procured position and build the E-programme", "description": "Compare the forecast with the volumes procured on the forward and 15-minute day-ahead markets, decide how to close the difference, and compile the E-programme and gas nominations per grid area and counterparty.", "howItSupports": "Builds the position per 15-minute block and compiles the E-programme and gas nominations from forecast and trades.", "media": []}, {"step": "Submit nominations to TenneT and the gas TSO before gate closure", "description": "Send the E-programme to TenneT and the hourly gas nominations to the gas TSO through the certified interfaces, confirm the acknowledgements, and handle rejections before the deadline, with an alert to the shift operator when an interface or acknowledgement is missing.", "howItSupports": "Submits the nominations, tracks acknowledgements and rejections and escalates when a deadline is at risk.", "media": []}, {"step": "Update the forecast intraday and re-nominate", "description": "Refresh the forecast as telemetry, weather updates and intraday trades come in, and submit re-nominations up to the intraday gate closure whenever the position has moved enough to matter.", "howItSupports": "Runs the intraday forecast update and generates re-nominations from the changed position.", "media": []}, {"step": "Review forecast quality ex post", "description": "Compare nominated, forecast and allocated volumes per EAN type and 15-minute block after allocation arrives, attribute the error to weather, profiles, switches or assets, and tune the models and the review rules.", "howItSupports": "Runs the ex-post forecast evaluation and stores the error attribution used to retune the models.", "media": []}]}, {"customerId": "port", "customerName": "Portfolio and Trading Manager", "customerGroup": "Balancing, Trading and Portfolio Operators", "customerIcon": "customer-port-portrait.jpg", "productId": "balancing-and-shipping-suite", "productName": "Balancing and Shipping Suite", "productIcon": "balancing-and-shipping-suite.png", "jobId": "jtbd-port-1", "jobName": "Source and hedge the portfolio at the right cost and risk", "jobWhatItIs": "From the demand and production forecast per segment to a portfolio that is procured on forward, day-ahead and PPA markets according to a hedging strategy, with open positions kept inside risk limits and the sourcing cost reported against the margin the propositions were priced on.", "jobOutcome": "The portfolio is covered as the strategy prescribes for every delivery period, hedges are executed with little slippage, open positions stay within limits as customers come and go, and the sourcing cost per MWh is known and reconcilable at all times.", "supportRationale": "Produces the day-ahead, intraday and long-horizon portfolio forecast per segment that the hedging plan is built on.", "usedInSteps": [{"step": "Build the demand and production forecast per segment", "description": "Combine contract volumes, allocated history, weather-driven profiles, solar and wind production and expected churn and inflow into a volume forecast per segment and delivery period, from tomorrow's 15-minute blocks to the forward years the desk hedges.", "howItSupports": "Produces the day-ahead, intraday and long-horizon portfolio forecast per segment that the hedging plan is built on.", "media": []}]}, {"customerId": "port", "customerName": "Portfolio and Trading Manager", "customerGroup": "Balancing, Trading and Portfolio Operators", "customerIcon": "customer-port-portrait.jpg", "productId": "balancing-and-shipping-suite", "productName": "Balancing and Shipping Suite", "productIcon": "balancing-and-shipping-suite.png", "jobId": "jtbd-port-2", "jobName": "See positions, volumes and value per segment every 15 minutes", "jobWhatItIs": "Keep a live view of the portfolio per customer segment and per 15-minute block: allocated and forecast volumes, hedged volumes, valuation against current price curves, and the risks and deviations that need an action, so the desk steers the portfolio on facts instead of month-old reports.", "jobOutcome": "The desk, the proposition team and the CFO look at the same position, volume and value per segment, refreshed every 15 minutes, and every deviation from plan has an owner and an action before it becomes a settlement surprise.", "supportRationale": "Fills the forward part of the position with the forecast per segment used for nominations.", "usedInSteps": [{"step": "Get allocated and forecast volumes per segment per 15-minute block", "description": "Pull the allocated volumes from Allocation 2.0, the validated telemetry of large connections and the portfolio forecast for periods not yet allocated, and aggregate them per segment and 15-minute block for the current day, the week and the delivery months ahead.", "howItSupports": "Fills the forward part of the position with the forecast per segment used for nominations.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "home-improvement-services-marketplace", "name": "Home Improvement Services Marketplace", "description": "The Home Improvement Services Marketplace domain covers the trusted discovery, qualification, matching, comparison, and professional-growth capabilities required to connect homeowners with vetted renovation, maintenance, and residential sustainability specialists across the Benelux and adjacent European markets."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "lead-transaction", "name": "Lead Transaction", "kind": "logical-object", "description": "Lead availability, preview, reservation, acquisition or campaign allocation, recipient disclosure, credit movement reference, status, and outcome.", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["homeowner", "professional-contact"], "legalTags": ["gdpr", "contract", "financial-record"], "securityCriticality": "critical", "accessScope": "The involved homeowner and professional plus authorized lead, campaign, trust, case, finance, support, and audit workflows.", "businessMeaning": "The auditable commercial and disclosure event by which a professional receives a homeowner opportunity.", "status": "active", "stores": [{"storeId": "lead-ledger-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "lead transaction api", "description": "Safe preview, acquisition, recipient, status, and outcome access."}], "ownerTeamId": "pdmd", "stewardTeamIds": ["pmon", "mqua"], "derivedFromAssetIds": ["project-request", "match-decision", "lead-price-decision", "lead-entitlement"], "governance": {"retention": "Retain through contact, claims, complaints, commercial reconciliation, and approved analytical periods; then minimize or anonymize.", "residency": "eu", "sharingPolicy": "Before acquisition expose safe preview fields; after acquisition disclose only the consented project and contact data to selected recipients."}, "rootGroup": "Project, Supply, and Marketplace Decision Data", "group": "Qualification, matching, pricing, and lead lifecycle"};
+    const currentAsset = {"id": "lead-transaction", "name": "Lead Transaction", "kind": "logical-object", "description": "Lead availability, preview, reservation, acquisition or campaign allocation, recipient disclosure, credit movement reference, status, and outcome.", "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["homeowner", "professional-contact"], "legalTags": ["gdpr", "contract", "financial-record"], "securityCriticality": "critical", "accessScope": "The involved homeowner and professional plus authorized lead, campaign, trust, case, finance, support, and audit workflows.", "businessMeaning": "The auditable commercial and disclosure event by which a professional receives a homeowner opportunity.", "status": "active", "stores": [{"storeId": "lead-ledger-db", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "lead transaction api", "description": "Safe preview, acquisition, recipient, status, and outcome access."}], "derivedFromAssetIds": ["project-request", "match-decision", "lead-price-decision", "lead-entitlement"], "governance": {"retention": "Retain through contact, claims, complaints, commercial reconciliation, and approved analytical periods; then minimize or anonymize.", "residency": "eu", "sharingPolicy": "Before acquisition expose safe preview fields; after acquisition disclose only the consented project and contact data to selected recipients."}, "rootGroup": "Project, Supply, and Marketplace Decision Data", "group": "Qualification, matching, pricing, and lead lifecycle"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "lead", "name": "Lead Marketplace and Eligibility", "role": "own", "description": "Owns lead availability, reservation, purchase, disclosure, recipients, and outcome state."}, {"id": "camp", "name": "Campaign Allocation and Lead Delivery", "role": "write", "description": "Creates campaign-driven recipient and delivery records."}];
     const consumingBricks = [{"id": "data", "name": "Marketplace Analytics and Experimentation", "role": "consume", "description": "Consumes lead lifecycle and outcome events."}];
-    const ownerTeam = {"teamId": "pdmd", "teamName": "Professional Demand", "teamType": "stream-aligned", "groupName": "Professional Growth"};
-    const stewardTeams = [{"teamId": "pmon", "teamName": "Professional Monetization", "teamType": "stream-aligned", "groupName": "Professional Growth"}, {"teamId": "mqua", "teamName": "Marketplace Quality", "teamType": "stream-aligned", "groupName": "Marketplace Control"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

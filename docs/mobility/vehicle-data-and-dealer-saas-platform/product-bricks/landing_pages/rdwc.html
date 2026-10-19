@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "rdwc", "name": "RDW Registry Connector and Vehicle Register", "type": "service", "status": "sustaining", "description": "Direct, authorised connection to the RDW (Dutch vehicle authority) as an officially recognised information and application provider, plus a continuously refreshed vehicle register keyed by license plate. Every plate lookup, RDW transaction and data product starts here.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs, BFFs and back-office interfaces.", "modules": [{"id": "module-plate-register-api", "name": "Plate Register API", "type": "api", "description": "Internal lookup of registration, technical and status data by plate or VIN.", "dependencies": {"modules": [{"moduleId": "module-vehicle-register", "type": "uses", "description": "Reads the current register."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-register-change-consumer", "name": "Register Change Consumer", "type": "message-consumer", "description": "Applies RDW mutation feeds (ownership changes, APK, WOK, export) to the register.", "dependencies": {"modules": [{"moduleId": "module-vehicle-register", "type": "uses", "description": "Writes mutations."}]}}, {"id": "module-rdw-session-monitor", "name": "RDW Session Monitor", "type": "daemon", "description": "Monitors RDW channel availability, certificates and quota so transactions fail fast."}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-vehicle-register", "name": "Vehicle Register", "type": "stateful-service", "description": "Plate-keyed register of registration, technical, APK and status facts with change history."}]}, {"layer": "integration", "description": "Adapters to RDW, data partners, channels and providers.", "modules": [{"id": "module-rdw-channel-adapter", "name": "RDW Channel Adapter", "type": "integration", "description": "Authenticated adapter to RDW information and transaction channels."}]}], "dataDependencies": [{"assetId": "vehicle-registration-record", "moduleIds": ["module-vehicle-register", "module-register-change-consumer", "module-plate-register-api"], "role": "own", "description": "System of record for the RDW-derived register."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [{"system": "RDW information and transaction services", "type": "data", "interface": "RDW provider channel", "description": "Source of registration data and the channel for official transactions.", "sourceModuleId": "module-rdw-channel-adapter"}], "externalSystemsDependingOnThisBrick": [{"system": "Dealer and lease back-office systems", "type": "channel-consumer", "interface": "Plate Register API (via data API)", "description": "Plate lookups embedded in third-party software.", "moduleId": "module-plate-register-api"}], "domain": "Vehicle Data Foundation", "group": "Registry and Identity"};
-    const relatedTeams = [{"teamId": "vehicle-data-core", "teamName": "Vehicle Data Core", "teamType": "platform", "groupId": "vehicle-data", "groupName": "Vehicle Data and Valuation", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "mijnvwe", "name": "MijnVWE Dealer Platform", "icon": "product.png", "type": "B2B Vertical SaaS (modular)", "whyUsed": "Plate data in every dossier."}, {"id": "rdw-diensten", "name": "VWE RDW-diensten", "icon": "product.png", "type": "Transaction service", "whyUsed": "RDW channel."}, {"id": "vwe-data-api", "name": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "icon": "product.png", "type": "Data API", "whyUsed": "RDW data categories."}, {"id": "finnik", "name": "Finnik", "icon": "product.png", "type": "Consumer app (freemium)", "whyUsed": "Basic plate data."}];
     const supportedJobs = [{"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "lsco-fleet", "jobName": "Keep fleet administration correct and automated", "jobWhatItIs": "Keep thousands of registrations and records correct with minimal manual work.", "jobOutcome": "Fleet data matches RDW and no RDW action is missed.", "supportRationale": "Batch enrichment.", "usedInSteps": [{"step": "Enrich the fleet register", "description": "Update characteristics from RDW.", "howItSupports": "Batch enrichment.", "media": []}, {"step": "Integrate vehicle data", "description": "Plate data in quoting and fleet systems.", "howItSupports": "Data API.", "media": []}, {"step": "Automate RDW actions", "description": "Run registrations and transfers via API.", "howItSupports": "Transaction API.", "media": []}]}, {"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "rdw-diensten", "productName": "VWE RDW-diensten", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "rdw-diensten", "productName": "VWE RDW-diensten", "productIcon": "product.png", "jobId": "lsco-fleet", "jobName": "Keep fleet administration correct and automated", "jobWhatItIs": "Keep thousands of registrations and records correct with minimal manual work.", "jobOutcome": "Fleet data matches RDW and no RDW action is missed.", "supportRationale": "Batch enrichment.", "usedInSteps": [{"step": "Enrich the fleet register", "description": "Update characteristics from RDW.", "howItSupports": "Batch enrichment.", "media": []}, {"step": "Integrate vehicle data", "description": "Plate data in quoting and fleet systems.", "howItSupports": "Data API.", "media": []}, {"step": "Automate RDW actions", "description": "Run registrations and transfers via API.", "howItSupports": "Transaction API.", "media": []}]}, {"customerId": "trex", "customerName": "Car Trader and Importer-Exporter", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-trex-portrait.jpg", "productId": "rdw-diensten", "productName": "VWE RDW-diensten", "productIcon": "product.png", "jobId": "trex-import", "jobName": "Import cars profitably and legally", "jobWhatItIs": "Bring a car from abroad to Dutch registration with the lowest correct BPM.", "jobOutcome": "Landed cost is known before buying and registration happens within days.", "supportRationale": "History and valuation.", "usedInSteps": [{"step": "Check before buying abroad", "description": "International damage history and value.", "howItSupports": "History and valuation.", "media": []}]}, {"customerId": "ivnd", "customerName": "Automotive Software Vendor Product Owner", "customerGroup": "Data and Software Clients", "customerIcon": "customer-ivnd-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "ivnd-embed", "jobName": "Embed reliable vehicle data in our product", "jobWhatItIs": "Offer plate-based vehicle data inside garage or dealer software.", "jobOutcome": "Plate lookups succeed instantly for every end customer.", "supportRationale": "Category and licence catalogue.", "usedInSteps": [{"step": "Choose categories and licence", "description": "Decide which data and terms to buy.", "howItSupports": "Category and licence catalogue.", "media": []}, {"step": "Build and test", "description": "Integrate XML/JSON services.", "howItSupports": "Developer portal and test keys.", "media": []}, {"step": "Operate in production", "description": "Monitor availability and usage.", "howItSupports": "Metered gateway.", "media": []}]}, {"customerId": "ivnd", "customerName": "Automotive Software Vendor Product Owner", "customerGroup": "Data and Software Clients", "customerIcon": "customer-ivnd-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "ivnd-transact", "jobName": "Offer RDW transactions inside our software", "jobWhatItIs": "Let garages and lessors run RDW actions without leaving the vendor product.", "jobOutcome": "RDW actions complete in-product with clear errors.", "supportRationale": "Transaction API.", "usedInSteps": [{"step": "Integrate transactions", "description": "Use the transaction API with end-customer authorisation.", "howItSupports": "Transaction API.", "media": []}, {"step": "Keep data current", "description": "Refresh vehicle data for end customers.", "howItSupports": "Enrichment and API.", "media": []}, {"step": "Reconcile usage", "description": "Allocate usage per end customer.", "howItSupports": "Usage billing.", "media": []}]}, {"customerId": "dcli", "customerName": "Importer and Insurer Data Analyst", "customerGroup": "Data and Software Clients", "customerIcon": "customer-dcli-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "dcli-enrich", "jobName": "Enrich our customer and policy data with vehicle facts", "jobWhatItIs": "Add accurate vehicle characteristics to portfolios for pricing and risk.", "jobOutcome": "Every policy or customer record has current, correct vehicle data.", "supportRationale": "Licence governance.", "usedInSteps": [{"step": "Agree data use", "description": "Licence and purpose definition.", "howItSupports": "Licence governance.", "media": []}, {"step": "Enrich files", "description": "Upload plate lists for enrichment.", "howItSupports": "Batch enrichment.", "media": []}, {"step": "Integrate live lookups", "description": "Plate API in quoting flows.", "howItSupports": "Data API.", "media": []}]}, {"customerId": "lsco", "customerName": "Lease and Rental Fleet Remarketing Manager", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-lsco-portrait.jpg", "productId": "vwe-data-api", "productName": "VWE Data API (Interdata, XMLmode, Voertuigkenmerken)", "productIcon": "product.png", "jobId": "lsco-fleet", "jobName": "Keep fleet administration correct and automated", "jobWhatItIs": "Keep thousands of registrations and records correct with minimal manual work.", "jobOutcome": "Fleet data matches RDW and no RDW action is missed.", "supportRationale": "Batch enrichment.", "usedInSteps": [{"step": "Enrich the fleet register", "description": "Update characteristics from RDW.", "howItSupports": "Batch enrichment.", "media": []}, {"step": "Integrate vehicle data", "description": "Plate data in quoting and fleet systems.", "howItSupports": "Data API.", "media": []}, {"step": "Automate RDW actions", "description": "Run registrations and transfers via API.", "howItSupports": "Transaction API.", "media": []}]}, {"customerId": "cons", "customerName": "Private Car Buyer and Motorist", "customerGroup": "Consumers", "customerIcon": "customer-cons-portrait.jpg", "productId": "finnik", "productName": "Finnik", "productIcon": "product.png", "jobId": "cons-check", "jobName": "Avoid a bad private car purchase", "jobWhatItIs": "Verify a car's history and value before paying the seller.", "jobOutcome": "The buyer pays a fair price for a car without hidden problems.", "supportRationale": "Finnik free check.", "usedInSteps": [{"step": "Run a free check", "description": "Basic facts by plate.", "howItSupports": "Finnik free check.", "media": []}, {"step": "Buy the full report", "description": "History, odometer and value.", "howItSupports": "Paid report.", "media": []}, {"step": "Negotiate with facts", "description": "Use the report in negotiation.", "howItSupports": "Value estimate.", "media": []}]}, {"customerId": "cons", "customerName": "Private Car Buyer and Motorist", "customerGroup": "Consumers", "customerIcon": "customer-cons-portrait.jpg", "productId": "finnik", "productName": "Finnik", "productIcon": "product.png", "jobId": "cons-travel", "jobName": "Drive abroad without fines", "jobWhatItIs": "Get the right environmental sticker, vignette or insurance before a trip.", "jobOutcome": "All documents arrive before departure.", "supportRationale": "Eligibility by plate.", "usedInSteps": [{"step": "Check requirements", "description": "Which documents the car needs.", "howItSupports": "Eligibility by plate.", "media": []}, {"step": "Order documents", "description": "Order online or via retail partners.", "howItSupports": "Consumer shop.", "media": []}, {"step": "Receive in time", "description": "Track delivery.", "howItSupports": "Fulfilment.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

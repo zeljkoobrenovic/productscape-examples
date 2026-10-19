@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "scmo", "name": "Service Case & Maintenance Orchestration", "type": "service", "status": "sustaining", "description": "Coordinates diagnostics, maintenance, repair, inspections, replacement, and service closure workflows.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-operator-console", "name": "Operator Console", "type": "web-component", "description": "User interface for task handling, interventions, and operational control within Service Case & Maintenance Orchestration.", "dependencies": {"modules": [{"moduleId": "module-workflow-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-workflow-api", "name": "Workflow API", "type": "api", "description": "API for starting, updating, or querying operational workflows managed by Service Case & Maintenance Orchestration.", "dependencies": {"modules": [{"moduleId": "module-workflow-and-state-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-capacity-and-exception-management", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-operations-console-logic", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-lifecycle-status-events", "name": "Lifecycle Status Events", "type": "message-consumer", "description": "Event stream exposing state changes and exceptions produced by Service Case & Maintenance Orchestration.", "dependencies": {"modules": [{"moduleId": "module-workflow-and-state-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-capacity-and-exception-management", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-operations-console-logic", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-workflow-and-state-engine", "name": "Workflow and State Engine", "type": "service", "description": "Orchestrates the main lifecycle, state transitions, and task flow handled by Service Case & Maintenance Orchestration."}, {"id": "module-capacity-and-exception-management", "name": "Capacity and Exception Management", "type": "service", "description": "Manages inventory, reservations, workload, and exception handling inside Service Case & Maintenance Orchestration."}, {"id": "module-operations-console-logic", "name": "Operations Console Logic", "type": "service", "description": "Supports operator actions, escalations, and manual interventions required by Service Case & Maintenance Orchestration."}]}], "dataDependencies": [{"assetId": "order-orchestration-checkout", "moduleIds": ["module-workflow-and-state-engine", "module-capacity-and-exception-management", "module-operations-console-logic"], "role": "read", "description": "Reads Order Orchestration Checkout to support domain workflows."}], "brickDependencies": [{"targetBrickId": "eppm", "moduleId": "module-decision-api", "sourceModuleId": "module-workflow-api", "type": "decisioning", "description": "Depends on Employer Policy & Program Management to provide policy capabilities required by Service Case & Maintenance Orchestration."}, {"targetBrickId": "ride", "moduleId": "module-audit-event-stream", "sourceModuleId": "module-lifecycle-status-events", "type": "event-subscription", "description": "Depends on Rider Identity, Wallet & App Experience to provide identity capabilities required by Service Case & Maintenance Orchestration."}, {"targetBrickId": "elpy", "moduleId": "module-partner-connector-surface", "sourceModuleId": "module-workflow-and-state-engine", "type": "partner-connectivity", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Service Case & Maintenance Orchestration."}], "externalSystemsThisBrickDependsOn": [{"system": "ERP and Operational Systems", "type": "back-office", "interface": "Operational API", "description": "Service Case & Maintenance Orchestration coordinates execution with external ERP, servicing, or operations platforms.", "sourceModuleId": "module-workflow-and-state-engine"}, {"system": "CRM and Case Management Tools", "type": "workflow", "interface": "Case Interface", "description": "Service Case & Maintenance Orchestration exchanges tasks, statuses, or escalations with customer and operations tooling.", "sourceModuleId": "module-workflow-and-state-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Operator Workflows", "type": "workflow-consumer", "interface": "Workflow / Status API", "description": "Operational teams and services depend on Service Case & Maintenance Orchestration to coordinate task flow, status, and exception handling.", "moduleId": "module-workflow-api"}, {"system": "Customer and Partner Touchpoints", "type": "journey-consumer", "interface": "Lifecycle Event Interface", "description": "Customer and partner-facing journeys depend on Service Case & Maintenance Orchestration to advance fulfillment, servicing, or case progress.", "moduleId": "module-workflow-api"}], "domain": "service_and_claims", "group": "maintenance-repair-and-claims"};
-    const relatedTeams = [{"teamId": "bike-service-orchestration", "teamName": "Bike Service Orchestration", "teamType": "stream-aligned", "groupId": "bike-partner-and-service", "groupName": "Bike Partner and Service Operations", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prod_rider_app", "name": "Rider Experience", "icon": "bicycle.png", "type": "B2C", "whyUsed": "Supports repair and maintenance continuity when incidents happen."}, {"id": "prod_partner_hub", "name": "Dealer and Service Partner Hub", "icon": "storefront.png", "type": "B2B Partner Platform", "whyUsed": "Coordinates service work and helps partners manage throughput predictably."}, {"id": "prod_fleet_ops", "name": "Pool Bike and Fleet Operations", "icon": "warehouse.png", "type": "B2B Operations", "whyUsed": "Keeps fleet assets safe and available with planned service workflows."}];
     const supportedJobs = [{"customerId": "knowledge_worker_commuter", "customerName": "Urban Knowledge Worker Commuter", "customerGroup": "Employees and Riders", "customerIcon": "bicycle.png", "productId": "prod_rider_app", "productName": "Rider Experience", "productIcon": "bicycle.png", "jobId": "jtbd-rider-2", "jobName": "Stay mobile when service or claims problems happen", "jobWhatItIs": "Get maintenance, repairs, or claims handled with minimal downtime and clear ownership.", "jobOutcome": "A rider stays confident in bike commuting because incidents are resolved quickly and visibly.", "supportRationale": "Creates structured workflows for repairs, inspections, and maintenance events.", "usedInSteps": [{"step": "Report and triage the issue", "description": "Capture the problem, route it to the right party, and provide rider-visible status.", "howItSupports": "Creates structured workflows for repairs, inspections, and maintenance events.", "media": [{"type": "image", "src": "media/jbtd-knowledge-worker-commuter-jtbd-rider-2-1.jpg", "title": "Urban Knowledge Worker Commuter JTBD step cartoon: Report and triage the issue", "alt": "Cartoon illustration of step 1 of the job \"Stay mobile when service or claims problems happen\": Report and triage the issue."}]}]}, {"customerId": "dealer_network_operator", "customerName": "Multi-location Dealer and Service Network Operator", "customerGroup": "Dealers and Service Partners", "customerIcon": "storefront.png", "productId": "prod_partner_hub", "productName": "Dealer and Service Partner Hub", "productIcon": "storefront.png", "jobId": "jtbd-dealer-2", "jobName": "Run workshop and claims operations with predictable economics", "jobWhatItIs": "Manage maintenance, repairs, and claims work so workshop time stays productive and commercially recoverable.", "jobOutcome": "A dealer network keeps riders moving while protecting workshop utilization and service margin.", "supportRationale": "Creates standardized workflows for diagnostics, repair authorization, and closure.", "usedInSteps": [{"step": "Intake service demand", "description": "Capture service cases with enough structure to route work correctly.", "howItSupports": "Creates standardized workflows for diagnostics, repair authorization, and closure.", "media": [{"type": "image", "src": "media/jbtd-dealer-network-operator-jtbd-dealer-2-1.jpg", "title": "Multi-location Dealer and Service Network Operator JTBD step cartoon: Intake service demand", "alt": "Cartoon illustration of step 1 of the job \"Run workshop and claims operations with predictable economics\": Intake service demand."}]}]}, {"customerId": "corporate_fleet_ops_manager", "customerName": "Corporate Fleet and Field Operations Manager", "customerGroup": "Corporate Fleet and Operations Managers", "customerIcon": "warehouse.png", "productId": "prod_fleet_ops", "productName": "Pool Bike and Fleet Operations", "productIcon": "warehouse.png", "jobId": "jtbd-fleet-1", "jobName": "Deploy and run a shared or assigned bike fleet", "jobWhatItIs": "Set up pooled or assigned bikes for operational work and ensure staff can access them when needed without creating transport chaos.", "jobOutcome": "A reliable short-distance fleet that replaces car trips where bikes are operationally superior.", "supportRationale": "Keeps vehicles safe and available through planned and reactive maintenance workflows.", "usedInSteps": [{"step": "Maintain operational readiness", "description": "Schedule inspections, repairs, and replacements before outages affect work.", "howItSupports": "Keeps vehicles safe and available through planned and reactive maintenance workflows.", "media": [{"type": "image", "src": "media/jbtd-corporate-fleet-ops-manager-jtbd-fleet-1-3.jpg", "title": "Corporate Fleet and Field Operations Manager JTBD step cartoon: Maintain operational readiness", "alt": "Cartoon illustration of step 3 of the job \"Deploy and run a shared or assigned bike fleet\": Maintain operational readiness."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

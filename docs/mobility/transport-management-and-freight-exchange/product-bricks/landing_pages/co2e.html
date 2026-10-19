@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "co2e", "name": "Emissions Reporting", "type": "service", "status": "invest", "description": "Calculates well-to-wheel greenhouse-gas emissions per shipment along ISO 14083 and the GLEC framework, using actual distances, vehicle classes, and load factors where telematics data exists and modelled defaults where it does not. Produces lane and carrier footprints and CSRD-ready reporting exports for shipper sustainability teams.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-co2e-web", "name": "Emissions Reports", "type": "web-component", "description": "Report views of per-shipment, per-lane, and per-carrier footprints with CSRD export.", "dependencies": {"modules": [{"moduleId": "module-co2e-api", "type": "uses", "description": "UI module reads emissions results and exports through the brick API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-co2e-api", "name": "Emissions API", "type": "api", "description": "Serves per-shipment and aggregated emissions results and reporting exports.", "dependencies": {"modules": [{"moduleId": "module-co2e-record-store", "type": "delegates", "description": "Interface module reads emissions records from the record store."}, {"moduleId": "module-co2e-engine", "type": "delegates", "description": "Interface module requests recalculations from the emissions engine."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-co2e-engine", "name": "Emissions Calculation Engine", "type": "stateless-service", "description": "Applies ISO 14083 / GLEC methodology with actual or default factors per shipment; owns no durable state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-co2e-record-store", "name": "Emissions Record Store", "type": "stateful-service", "description": "Owns per-shipment emissions records, factor provenance, and reporting aggregates."}]}], "dataDependencies": [{"assetId": "emissions-record", "moduleIds": ["module-co2e-engine", "module-co2e-record-store"], "role": "own", "description": "System of record for per-shipment emissions calculations and their factor provenance."}], "brickDependencies": [{"targetBrickId": "trck", "moduleId": "module-trck-api", "sourceModuleId": "module-co2e-engine", "type": "data", "description": "Uses actual driven distances and telematics-derived data for primary-data emissions calculations."}, {"targetBrickId": "tord", "moduleId": "module-tord-api", "sourceModuleId": "module-co2e-engine", "type": "data", "description": "Reads shipment weights, equipment, and lane data as calculation input."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-co2e-api", "type": "identity", "description": "Resolves organizations, users, roles, and entitlements from the identity backbone."}], "externalSystemsThisBrickDependsOn": [{"system": "Emission factor databases", "type": "data", "interface": "GLEC/ISO 14083 Factor Sets", "description": "Supplies default emission factors per vehicle class, fuel, and load factor for modelled calculations.", "sourceModuleId": "module-co2e-engine"}], "externalSystemsDependingOnThisBrick": [], "domain": "Commercial and Insight", "group": "Analytics"};
-    const relatedTeams = [{"teamId": "analytics", "teamName": "Analytics", "teamType": "stream-aligned", "groupId": "cing", "groupName": "Commercial and Insight Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "network-analytics", "name": "Network Analytics and Benchmarking", "icon": "tdir.png", "type": "B2B Data and Analytics", "whyUsed": "Turns executed transport data into CO2 and CSRD-ready emissions reporting per lane, carrier, and period."}];
     const supportedJobs = [{"customerId": "tdir", "customerName": "Transportation Director", "customerGroup": "Enterprise Shippers", "customerIcon": "tdir.png", "productId": "network-analytics", "productName": "Network Analytics and Benchmarking", "productIcon": "tdir.png", "jobId": "jtbd-tdir-1", "jobName": "Secure yearly capacity at target cost", "jobWhatItIs": "Run the annual and mid-year transport procurement cycle: baseline lane volumes, tender to incumbent and new carriers, negotiate rates against market benchmarks, award, and publish enforceable routing guides.", "jobOutcome": "Contracted rate cards and routing guides that cover planned volumes at or below market cost, with qualified fallback capacity for every critical lane.", "supportRationale": "Provides lane-level cost, volume, and service history plus market rate benchmarks to build the tender baseline.", "usedInSteps": [{"step": "Baseline lanes, volumes, and market position", "description": "Pull twelve months of shipment history per lane, equipment type, and season; compare paid rates against lane benchmarks to find overpriced corridors and coverage gaps before the RFP starts.", "howItSupports": "Provides lane-level cost, volume, and service history plus market rate benchmarks to build the tender baseline.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-1-1.png", "title": "Transportation Director JTBD step 1: Baseline lanes, volumes, and market position", "alt": "Enterprise infographic for step 1 of the job \"Secure yearly capacity at target cost\": Baseline lanes, volumes, and market position."}]}, {"step": "Negotiate and award against the market", "description": "Compare bid rounds against benchmark corridors, negotiate target lanes, and balance cheapest-bid temptation against carrier performance history and concentration risk.", "howItSupports": "Benchmarks every bid against current market rates and the carrier's historical acceptance and punctuality.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-1-3.png", "title": "Transportation Director JTBD step 3: Negotiate and award against the market", "alt": "Enterprise infographic for step 3 of the job \"Secure yearly capacity at target cost\": Negotiate and award against the market."}]}, {"step": "Monitor compliance and close gaps", "description": "Track routing-guide compliance, carrier acceptance, and rate erosion quarterly; re-tender broken lanes and cover structural gaps with managed spot buying rather than panic phone calls.", "howItSupports": "Reports guide compliance, acceptance decay, and realized-vs-contracted cost per lane each quarter.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-1-5.png", "title": "Transportation Director JTBD step 5: Monitor compliance and close gaps", "alt": "Enterprise infographic for step 5 of the job \"Secure yearly capacity at target cost\": Monitor compliance and close gaps."}]}]}, {"customerId": "tdir", "customerName": "Transportation Director", "customerGroup": "Enterprise Shippers", "customerIcon": "tdir.png", "productId": "network-analytics", "productName": "Network Analytics and Benchmarking", "productIcon": "tdir.png", "jobId": "jtbd-tdir-2", "jobName": "Control total freight spend end to end", "jobWhatItIs": "Keep the freight budget honest from planned cost through executed order to audited invoice: expected costs at order creation, automatic audit against rate cards, self-billing where possible, and variance analysis that names causes.", "jobOutcome": "Freight spend that closes each month within budget tolerance, with deviations explained by cause \u2014 not discovered in quarter-end accruals.", "supportRationale": "Models budget scenarios from volume forecasts and historical accessorial patterns.", "usedInSteps": [{"step": "Set budgets and expected costs per lane", "description": "Translate rate cards and forecast volumes into lane- and plant-level freight budgets with expected cost attached to every planned shipment.", "howItSupports": "Models budget scenarios from volume forecasts and historical accessorial patterns.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-2-1.png", "title": "Transportation Director JTBD step 1: Set budgets and expected costs per lane", "alt": "Enterprise infographic for step 1 of the job \"Control total freight spend end to end\": Set budgets and expected costs per lane."}]}, {"step": "Explain variance and act", "description": "Review monthly cost variance by cause \u2014 volume, mix, diesel, spot exposure, accessorials \u2014 and feed systematic causes back into planning rules and the next tender.", "howItSupports": "Decomposes budget variance by cause and lane, and tracks the effect of corrective actions.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-2-4.png", "title": "Transportation Director JTBD step 4: Explain variance and act", "alt": "Enterprise infographic for step 4 of the job \"Control total freight spend end to end\": Explain variance and act."}]}]}, {"customerId": "tdir", "customerName": "Transportation Director", "customerGroup": "Enterprise Shippers", "customerIcon": "tdir.png", "productId": "network-analytics", "productName": "Network Analytics and Benchmarking", "productIcon": "tdir.png", "jobId": "jtbd-tdir-3", "jobName": "De-risk and decarbonize the carrier base", "jobWhatItIs": "Keep the carrier portfolio compliant, fraud-free, resilient, and progressively lower-carbon: continuous vetting, diversified capacity, shipment-level emissions measurement, and CSRD-grade reporting.", "jobOutcome": "A carrier base the shipper can defend to auditors, insurers, and customers \u2014 with emissions numbers built from primary execution data and a credible reduction path.", "supportRationale": "Computes shipment-level emissions from execution records and aggregates them by lane, carrier, and business unit.", "usedInSteps": [{"step": "Measure emissions per shipment", "description": "Calculate CO2e per shipment from actual distance, vehicle class, load factor, and fuel type captured during execution, replacing spend-based estimates lane by lane.", "howItSupports": "Computes shipment-level emissions from execution records and aggregates them by lane, carrier, and business unit.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-3-3.png", "title": "Transportation Director JTBD step 3: Measure emissions per shipment", "alt": "Enterprise infographic for step 3 of the job \"De-risk and decarbonize the carrier base\": Measure emissions per shipment."}]}, {"step": "Report and steer reduction", "description": "Produce auditable CSRD scope-3 transport disclosures, set lane-level reduction targets, and make emissions a scored criterion in the next procurement cycle.", "howItSupports": "Generates auditable emissions reports and tracks reduction against targets.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-3-4.png", "title": "Transportation Director JTBD step 4: Report and steer reduction", "alt": "Enterprise infographic for step 4 of the job \"De-risk and decarbonize the carrier base\": Report and steer reduction."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

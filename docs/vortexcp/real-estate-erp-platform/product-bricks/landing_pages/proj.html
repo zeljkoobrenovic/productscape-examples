@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "proj", "name": "Development and Transformation Projects", "type": "full-stack", "status": "invest", "description": "Financial management of new-build, renovation and transformation projects (Bloxs' Projecten module): project structure and phases, budgets and budget revisions, commitments from contracts and purchase orders, actuals from supplier invoices, forecasts to complete and milestone monitoring, with a controlled hand-over of delivered buildings and units into exploitation so that letting and billing start the day the project completes.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-proj-web", "name": "Project Finance Workbench", "type": "web-component", "description": "Screens for project managers and controllers to structure projects, maintain budgets and revisions, register commitments, monitor actuals versus budget and forecast, and hand over completed units.", "dependencies": {"modules": [{"moduleId": "module-proj-api", "type": "uses", "description": "Workbench calls the Project API for budgets, commitments, actuals and hand-over actions."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-proj-api", "name": "Project and Budget API", "type": "api", "description": "API for projects, phases, budget lines, commitments, actuals and milestones; used by accounts payable coding, dashboards, investor reporting and the open API.", "dependencies": {"modules": [{"moduleId": "module-proj-store", "type": "delegates", "description": "Interface delegates project persistence and budget-control rules to the project store."}, {"moduleId": "module-proj-handover", "type": "delegates", "description": "Interface delegates hand-over into exploitation to the hand-over orchestrator."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-proj-commit-consumer", "name": "Commitment and Actuals Consumer", "type": "message-consumer", "description": "Consumes approved supplier invoice and ledger posting events coded to a project and updates commitments, actuals and forecast-to-complete.", "dependencies": {"modules": [{"moduleId": "module-proj-store", "type": "processes", "description": "Consumer updates commitment and actual amounts in the project store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-proj-handover", "name": "Exploitation Hand-over Orchestrator", "type": "stateless-service", "description": "Turns a delivered project phase into exploitable objects and units, capitalises project cost to the asset and opens letting for the new units.", "dependencies": {"modules": [{"moduleId": "module-proj-store", "type": "uses", "description": "Orchestrator reads delivered phases and capitalisable cost from the project store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-proj-store", "name": "Project Budget Store", "type": "stateful-service", "description": "Owns projects, phases, budget versions, commitments, actuals, milestones, forecasts and hand-over status per legal entity."}]}], "dataDependencies": [{"assetId": "project-budget", "moduleIds": ["module-proj-store", "module-proj-commit-consumer"], "role": "own", "description": "System of record for the Project Budget asset: budgets, commitments, actuals and forecasts."}, {"assetId": "property-object", "moduleIds": ["module-proj-handover"], "role": "read-write", "description": "Reads project objects and writes delivered buildings and units into the portfolio at hand-over."}], "brickDependencies": [{"targetBrickId": "objt", "moduleId": "module-objt-api", "sourceModuleId": "module-proj-handover", "type": "data", "description": "Creates or updates objects and units when a project phase is handed over into exploitation."}, {"targetBrickId": "payb", "moduleId": "module-payb-api", "sourceModuleId": "module-proj-commit-consumer", "type": "data", "description": "Reads supplier invoices coded to project budget lines for actuals."}, {"targetBrickId": "ledg", "moduleId": "module-ledg-api", "sourceModuleId": "module-proj-handover", "type": "data", "description": "Capitalises project cost to fixed assets and reads project cost postings."}, {"targetBrickId": "docm", "moduleId": "module-docm-api", "sourceModuleId": "module-proj-store", "type": "documents", "description": "Links building permits, contracts and drawings to projects and phases."}, {"targetBrickId": "wflw", "moduleId": "module-wflw-api", "sourceModuleId": "module-proj-api", "type": "workflow", "description": "Routes budget revisions and commitment approvals through tasks and notifications."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-proj-api", "type": "identity", "description": "Resolves users, tenant organisation scope, roles and entitlements from the identity backbone before serving requests."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Portfolio and Relations", "group": "Objects and Projects"};
-    const relatedTeams = [{"teamId": "portfolio-and-relations", "teamName": "Portfolio and Relations", "teamType": "stream-aligned", "groupId": "pfcg", "groupName": "Portfolio and Contracts Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "projects-and-development", "name": "Projects and Development Finance", "icon": "asmg.png", "type": "B2B SaaS Module", "whyUsed": "The Projecten workspace for new-build, renovation and transformation projects from budget to hand-over."}];
     const supportedJobs = [{"customerId": "asmg", "customerName": "Asset and Portfolio Manager", "customerGroup": "Real Estate Investors and Asset Managers", "customerIcon": "customer-asmg-portrait.jpg", "productId": "projects-and-development", "productName": "Projects and Development Finance", "productIcon": "asmg.png", "jobId": "jtbd-asmg-1", "jobName": "Know portfolio performance in real time", "jobWhatItIs": "Maintain a continuously correct operational and financial picture of the whole portfolio: which units are let, vacant or in notice, what rent is contracted, invoiced and collected per entity, how valuations and yields move against the market, and how capex and project spend track their budgets. The picture must hold for every legal entity and fund structure the investor uses, in the Netherlands and increasingly in Germany.", "jobOutcome": "Occupancy, rent roll, arrears, valuations and capex are available per unit, complex, entity and fund from one system of record, are reconciled with the ledger without a monthly reconciliation exercise, and the asset manager can answer any performance question the same day with figures that survive audit and due diligence.", "supportRationale": "Holds project budgets, commitments, invoices and milestones per object and moves delivered units into exploitation without re-keying.", "usedInSteps": [{"step": "Watch capex and project spend against budget", "description": "Track renovation, sustainability and transformation projects per object with budget, commitments, invoices and milestones, see forecast-to-complete against the business case, and follow the hand-over of a delivered building or renovated units into the exploitation books and the rent roll.", "howItSupports": "Holds project budgets, commitments, invoices and milestones per object and moves delivered units into exploitation without re-keying.", "media": [{"type": "image", "src": "media/jbtd-asmg-jtbd-asmg-1-5.png", "title": "Asset and Portfolio Manager JTBD step 5: Watch capex and project spend against budget", "alt": "Enterprise infographic for step 5 of the job \"Know portfolio performance in real time\": Watch capex and project spend against budget."}]}]}, {"customerId": "asmg", "customerName": "Asset and Portfolio Manager", "customerGroup": "Real Estate Investors and Asset Managers", "customerIcon": "customer-asmg-portrait.jpg", "productId": "projects-and-development", "productName": "Projects and Development Finance", "productIcon": "asmg.png", "jobId": "jtbd-asmg-2", "jobName": "Grow rental income through indexation, letting and active asset management", "jobWhatItIs": "Increase net rental income of the portfolio year on year within the legal frame: apply annual rent indexation correctly on every eligible contract, shorten vacancy and turnover time, manage renewals, break options and rent reviews on commercial leases, recover service charges fully, and decide where capex, transformation or a sale creates more value than holding. In the Netherlands this means CPI-based indexation, regulated-sector rent rules and the Huurcommissie; in Germany Indexmiete and Staffelmiete clauses, the Mietpreisbremse and Betriebskosten settlements.", "jobOutcome": "Every eligible contract is indexed on time with the correct index and cap, vacancy days per turnover and structural vacancy fall, renewals and rent reviews are decided before deadlines pass, service charges are recovered rather than absorbed, and net rental income grows like-for-like without a compliance incident.", "supportRationale": "Carries the approved project budget, commitments and milestones and hands the delivered units over into exploitation.", "usedInSteps": [{"step": "Decide on capex, transformation and hold or sell", "description": "Build the case for a renovation, energy-label upgrade, transformation of offices into housing or a disposal on the object's rent roll, vacancy, valuation, capex forecast and financing, run the project when approved, and compare the realised rent and value uplift with the business case afterwards.", "howItSupports": "Carries the approved project budget, commitments and milestones and hands the delivered units over into exploitation.", "media": [{"type": "image", "src": "media/jbtd-asmg-jtbd-asmg-2-5.png", "title": "Asset and Portfolio Manager JTBD step 5: Decide on capex, transformation and hold or sell", "alt": "Enterprise infographic for step 5 of the job \"Grow rental income through indexation, letting and active asset management\": Decide on capex, transformation and hold or sell."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "brim", "name": "High-Volume Transaction Subledger (FI-CA/BRIM)", "type": "service", "status": "invest", "description": "Contract-accounting subledger that turns booking, payment, cancellation and commission events into business partner and contract-account postings at booking scale (1,235M room nights in 2025). FI-CA and BRIM appear in Booking.com Financial Systems job postings. It keeps transaction detail out of the general ledger, posts summarised entries, and provides open-item clearing for traveler payments, partner balances and commission receivables.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-brim-api", "name": "Subledger Posting API", "type": "api", "description": "Accepts normalised financial events and exposes contract-account balances and open items.", "dependencies": {"modules": [{"moduleId": "module-brim-core", "type": "uses", "description": "Writes and reads subledger documents."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-brim-event-consumer", "name": "Booking Financial Event Consumer", "type": "message-consumer", "description": "Consumes booking, modification and cancellation events from the finance integration hub with idempotent processing.", "dependencies": {"modules": [{"moduleId": "module-brim-rating", "type": "uses", "description": "Prices events into billable items."}, {"moduleId": "module-brim-core", "type": "uses", "description": "Posts items."}]}}, {"id": "module-brim-gl-transfer", "name": "GL Summarisation Job", "type": "daemon", "description": "Summarises subledger documents and transfers them to the general ledger with reconciliation keys.", "dependencies": {"modules": [{"moduleId": "module-brim-core", "type": "uses", "description": "Reads documents to summarise."}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-brim-rating", "name": "Convergent Charging and Invoicing", "type": "service", "description": "Converts events into billable and postable items (BRIM convergent invoicing) per brand, model and currency."}, {"id": "module-brim-core", "name": "Contract Accounting Subledger", "type": "stateful-service", "description": "FI-CA business partners, contract accounts, open items and clearing history."}]}], "dataDependencies": [{"assetId": "contract-account-subledger-posting", "moduleIds": ["module-brim-core", "module-brim-api", "module-brim-gl-transfer"], "role": "own", "description": "System of record for transaction-level subledger documents and open items."}, {"assetId": "booking-financial-event", "moduleIds": ["module-brim-event-consumer"], "role": "consume", "description": "Input event stream from brand booking platforms."}], "brickDependencies": [{"targetBrickId": "fint", "moduleId": "module-fint-api", "sourceModuleId": "module-brim-event-consumer", "type": "data", "description": "Receives normalised booking financial events from the integration hub."}, {"targetBrickId": "glco", "moduleId": "module-glco-api", "sourceModuleId": "module-brim-gl-transfer", "type": "data", "description": "Transfers summarised postings into the universal journal."}, {"targetBrickId": "rrec", "moduleId": "module-rrec-api", "sourceModuleId": "module-brim-core", "type": "composition", "description": "Revenue recognition schedules are driven from subledger items."}, {"targetBrickId": "itax", "moduleId": "module-itax-api", "sourceModuleId": "module-brim-rating", "type": "context", "description": "Calls tax determination for invoiced items."}], "externalSystemsThisBrickDependsOn": [{"system": "SAP S/4HANA FI-CA and BRIM", "type": "platform", "interface": "FI-CA / Convergent Invoicing", "description": "Vendor subledger platform.", "sourceModuleId": "module-brim-core"}], "externalSystemsDependingOnThisBrick": [{"system": "Finance operations users", "type": "consumer", "interface": "Subledger Posting API", "description": "Account displays and clearing for settlement and receivables teams.", "moduleId": "module-brim-api"}], "domain": "Global Finance Core", "group": "Subledger and Revenue"};
-    const relatedTeams = [{"teamId": "sbrv", "teamName": "Subledger and Revenue", "teamType": "complicated-subsystem", "groupId": "fcor", "groupName": "Finance Core Engineering", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "sublr", "name": "Subledger and Revenue Platform", "icon": "sublr.png", "type": "Internal finance platform", "whyUsed": "High-Volume Transaction Subledger (FI-CA/BRIM) as part of Subledger and Revenue Platform."}];
     const supportedJobs = [{"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "ctrl-close", "jobName": "Close the books fast and clean every month and quarter", "jobWhatItIs": "Complete entity closes, reconciliations, consolidation and reporting within the calendar.", "jobOutcome": "Consolidated results are final on schedule with reconciled balances and no late audit adjustments.", "supportRationale": "Close orchestration with task dependencies and status.", "usedInSteps": [{"step": "Run the close calendar", "description": "Sequence tasks across entities and teams and track completion.", "howItSupports": "Close orchestration with task dependencies and status.", "media": []}, {"step": "Reconcile balance sheet accounts", "description": "Match subledgers, banks and intercompany and resolve exceptions.", "howItSupports": "Automated matching and exception queues.", "media": []}]}, {"customerId": "ctrl", "customerName": "Global Controller and Record-to-Report Lead", "customerGroup": "Accounting, Tax and Treasury", "customerIcon": "customer-ctrl-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "ctrl-revenue", "jobName": "Recognise merchant and agency revenue correctly at booking scale", "jobWhatItIs": "Turn hundreds of millions of bookings, payments, cancellations and commissions into correct revenue and liabilities.", "jobOutcome": "Revenue, deferred merchant bookings and receivables are correct by period and traceable to the source transaction.", "supportRationale": "Normalised financial events into the subledger.", "usedInSteps": [{"step": "Capture booking financial events", "description": "Receive complete booking, payment and cancellation events from every brand.", "howItSupports": "Normalised financial events into the subledger.", "media": []}, {"step": "Apply recognition rules", "description": "Determine gross or net, timing and deferral for each booking type.", "howItSupports": "Revenue recognition engine posts schedules.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Reverse or adjust revenue and liabilities after cancellations and disputes.", "howItSupports": "Refund and dispute postings linked to the original booking.", "media": []}, {"step": "Account for agency commission", "description": "Recognise commission and receivables from partner invoices.", "howItSupports": "Commission invoices post to receivables and revenue.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-launch", "jobName": "Launch payment methods and markets without finance blockers", "jobWhatItIs": "Add a payment method, PSP, currency or market (for example local methods in Asia through a partner such as Antom) with accounting, tax, settlement and controls ready on day one.", "jobOutcome": "New payment options go live on the product timeline and post correctly to the ledger from the first transaction.", "supportRationale": "Onboarding defines entity, master data and accounting set-up for a new flow.", "usedInSteps": [{"step": "Define the money flow and entity", "description": "Agree which licensed entity, currency and settlement path the new method uses.", "howItSupports": "Onboarding defines entity, master data and accounting set-up for a new flow.", "media": []}, {"step": "Map payment events to finance contracts", "description": "Map authorisation, capture, settlement and fee events to the canonical schema.", "howItSupports": "Payment events feed the subledger and revenue posting for merchant bookings.", "media": []}, {"step": "Pass finance readiness and launch", "description": "Confirm reconciliation, tax and controls are in place before turning on traffic.", "howItSupports": "Readiness gates check reconciliation rules, controls and reporting for the new flow.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "sublr", "productName": "Subledger and Revenue Platform", "productIcon": "sublr.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Payment event ingestion normalises PSP settlements into one record.", "usedInSteps": [{"step": "Ingest PSP and acquirer settlement data", "description": "Normalise settlement reports from all PSPs and acquirers daily.", "howItSupports": "Payment event ingestion normalises PSP settlements into one record.", "media": []}, {"step": "Match bookings, payments and settlements", "description": "Run three-way matching and route breaks to owners.", "howItSupports": "Settlement reconciliation matches payments to bookings and bank receipts.", "media": []}, {"step": "Account for refunds and chargebacks", "description": "Post refunds, chargebacks and dispute outcomes against the original booking.", "howItSupports": "Dispute accounting links each case to the original payment and reverses revenue correctly.", "media": []}, {"step": "Clear breaks and report", "description": "Resolve or write off breaks and report status for the close.", "howItSupports": "Break ageing and write-off reporting feed the close and controls.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "stav", "name": "Stock, Availability & Handover Planning", "type": "service", "status": "sustaining", "description": "Tracks inventory, reservations, appointment capacity, and fulfillment readiness across dealers and service partners.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-operator-console", "name": "Operator Console", "type": "web-component", "description": "User interface for task handling, interventions, and operational control within Stock, Availability & Handover Planning.", "dependencies": {"modules": [{"moduleId": "module-workflow-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-workflow-api", "name": "Workflow API", "type": "api", "description": "API for starting, updating, or querying operational workflows managed by Stock, Availability & Handover Planning.", "dependencies": {"modules": [{"moduleId": "module-workflow-and-state-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-capacity-and-exception-management", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-operations-console-logic", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-lifecycle-status-events", "name": "Lifecycle Status Events", "type": "message-consumer", "description": "Event stream exposing state changes and exceptions produced by Stock, Availability & Handover Planning.", "dependencies": {"modules": [{"moduleId": "module-workflow-and-state-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-capacity-and-exception-management", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-operations-console-logic", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-workflow-and-state-engine", "name": "Workflow and State Engine", "type": "service", "description": "Orchestrates the main lifecycle, state transitions, and task flow handled by Stock, Availability & Handover Planning."}, {"id": "module-capacity-and-exception-management", "name": "Capacity and Exception Management", "type": "service", "description": "Manages inventory, reservations, workload, and exception handling inside Stock, Availability & Handover Planning."}, {"id": "module-operations-console-logic", "name": "Operations Console Logic", "type": "service", "description": "Supports operator actions, escalations, and manual interventions required by Stock, Availability & Handover Planning."}]}], "dataDependencies": [{"assetId": "stock-availability-handover-planning", "moduleIds": ["module-workflow-and-state-engine", "module-capacity-and-exception-management", "module-operations-console-logic"], "role": "own", "description": "Acts as the primary owning brick for Stock Availability Handover Planning."}], "brickDependencies": [{"targetBrickId": "eppm", "moduleId": "module-decision-api", "sourceModuleId": "module-workflow-api", "type": "decisioning", "description": "Depends on Employer Policy & Program Management to provide policy capabilities required by Stock, Availability & Handover Planning."}, {"targetBrickId": "ride", "moduleId": "module-audit-event-stream", "sourceModuleId": "module-lifecycle-status-events", "type": "event-subscription", "description": "Depends on Rider Identity, Wallet & App Experience to provide identity capabilities required by Stock, Availability & Handover Planning."}, {"targetBrickId": "elpy", "moduleId": "module-partner-connector-surface", "sourceModuleId": "module-workflow-and-state-engine", "type": "partner-connectivity", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Stock, Availability & Handover Planning."}], "externalSystemsThisBrickDependsOn": [{"system": "ERP and Operational Systems", "type": "back-office", "interface": "Operational API", "description": "Stock, Availability & Handover Planning coordinates execution with external ERP, servicing, or operations platforms.", "sourceModuleId": "module-workflow-and-state-engine"}, {"system": "CRM and Case Management Tools", "type": "workflow", "interface": "Case Interface", "description": "Stock, Availability & Handover Planning exchanges tasks, statuses, or escalations with customer and operations tooling.", "sourceModuleId": "module-workflow-and-state-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Operator Workflows", "type": "workflow-consumer", "interface": "Workflow / Status API", "description": "Operational teams and services depend on Stock, Availability & Handover Planning to coordinate task flow, status, and exception handling.", "moduleId": "module-workflow-api"}, {"system": "Customer and Partner Touchpoints", "type": "journey-consumer", "interface": "Lifecycle Event Interface", "description": "Customer and partner-facing journeys depend on Stock, Availability & Handover Planning to advance fulfillment, servicing, or case progress.", "moduleId": "module-workflow-api"}], "domain": "partner_operations", "group": "dealer-and-service-ecosystem"};
-    const relatedTeams = [{"teamId": "bike-partner-network", "teamName": "Bike Partner Network", "teamType": "stream-aligned", "groupId": "bike-partner-and-service", "groupName": "Bike Partner and Service Operations", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prod_partner_hub", "name": "Dealer and Service Partner Hub", "icon": "storefront.png", "type": "B2B Partner Platform", "whyUsed": "Matches demand with stock and workshop or handover capacity."}];
     const supportedJobs = [{"customerId": "dealer_network_operator", "customerName": "Multi-location Dealer and Service Network Operator", "customerGroup": "Dealers and Service Partners", "customerIcon": "storefront.png", "productId": "prod_partner_hub", "productName": "Dealer and Service Partner Hub", "productIcon": "storefront.png", "jobId": "jtbd-dealer-1", "jobName": "Sell, deliver, and activate leased bikes profitably", "jobWhatItIs": "Turn leasing demand into well-prepared orders, efficient handovers, and clean commercial closure.", "jobOutcome": "A dealer can handle leasing business at scale without sacrificing conversion, margin, or customer satisfaction.", "supportRationale": "Provides inventory and appointment planning across dealers and brands.", "usedInSteps": [{"step": "Reserve stock and schedule handover", "description": "Match demand to available bikes, accessories, and appointment windows.", "howItSupports": "Provides inventory and appointment planning across dealers and brands.", "media": [{"type": "image", "src": "media/jbtd-dealer-network-operator-jtbd-dealer-1-2.jpg", "title": "Multi-location Dealer and Service Network Operator JTBD step cartoon: Reserve stock and schedule handover", "alt": "Cartoon illustration of step 2 of the job \"Sell, deliver, and activate leased bikes profitably\": Reserve stock and schedule handover."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

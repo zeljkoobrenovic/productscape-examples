@@ -41,7 +41,6 @@ Agencies pay subscriptions per module and user (and, for services, per payslip o
 ## Assumptions and inferences
 
 - **All KPI current and target values are modeled seed values** for a representative customer, except where a description quotes a zvoove figure (payroll volume, workers, VMS invoicing, installations).
-- Teams describe a **target shared-capability organisation**; zvoove's real organisation by brand and country is not public. Headcounts are modeled.
 - Bricks generalise functionality across brands; not every brand implements every brick.
 - Residuality stressors marked `candidate` (equal pay from day one, WhatsApp policy, demand collapse, global competitor) are plausible scenarios, not announced changes.
 

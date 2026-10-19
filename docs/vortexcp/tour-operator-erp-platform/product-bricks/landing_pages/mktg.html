@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "mktg", "name": "Email Marketing and Segmentation", "type": "integration", "status": "sustaining", "description": "Segment customers on travel history, destination interest, booking value and lifecycle stage, manage marketing consent, and sync audiences and campaign results with Spotler and comparable email marketing platforms. Retention campaigns, brochure requests and abandoned-quote follow-ups start from ERP data rather than exported lists.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-mktg-web", "name": "Segmentation and Campaign Workbench", "type": "web-component", "description": "Screens to build segments from CRM and booking attributes, manage consent, map segments to Spotler lists and view campaign performance per segment.", "dependencies": {"modules": [{"moduleId": "module-mktg-api", "type": "uses", "description": "Workbench calls the Segment and Consent API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-mktg-api", "name": "Segment and Consent API", "type": "api", "description": "API for segment definitions, membership and marketing consent, used by CRM, website sign-ups and BI.", "dependencies": {"modules": [{"moduleId": "module-mktg-store", "type": "delegates", "description": "Interface delegates segment and consent persistence to the store."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-mktg-sync-consumer", "name": "Audience Sync Consumer", "type": "message-consumer", "description": "Consumes customer, consent and booking events to recompute segment membership and push audience changes to the email platform.", "dependencies": {"modules": [{"moduleId": "module-mktg-store", "type": "processes", "description": "Consumer updates segment membership in the store."}, {"moduleId": "module-mktg-spotler-adapter", "type": "uses", "description": "Consumer pushes audience changes through the Spotler adapter."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-mktg-store", "name": "Consent and Segment Store", "type": "stateful-service", "description": "Owns segment definitions, membership snapshots, consent records and campaign attribution."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-mktg-spotler-adapter", "name": "Spotler Adapter", "type": "integration", "description": "Syncs contacts, lists and campaign results with Spotler and imports unsubscribes and bounces."}]}], "dataDependencies": [{"assetId": "marketing-consent-and-segment", "moduleIds": ["module-mktg-store", "module-mktg-sync-consumer"], "role": "own", "description": "System of record for the Marketing Consent and Segment asset."}, {"assetId": "customer-profile", "moduleIds": ["module-mktg-sync-consumer"], "role": "read", "description": "Reads profiles and consent flags for segment membership."}], "brickDependencies": [{"targetBrickId": "crmr", "moduleId": "module-crmr-api", "sourceModuleId": "module-mktg-sync-consumer", "type": "data", "description": "Reads customer profiles and consent for segmentation."}, {"targetBrickId": "book", "moduleId": "module-book-events", "sourceModuleId": "module-mktg-sync-consumer", "type": "data", "description": "Consumes booking events to update travel history segments."}, {"targetBrickId": "intg", "moduleId": "module-intg-connector-framework", "sourceModuleId": "module-mktg-spotler-adapter", "type": "integration", "description": "Runs the email marketing connector on the shared connector framework."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-mktg-api", "type": "identity", "description": "Resolves users, tenant scope, roles and entitlements from the identity and tenant backbone before serving requests."}], "externalSystemsThisBrickDependsOn": [{"system": "Spotler", "type": "channel", "interface": "Contact and campaign API", "description": "Audience sync, campaign sending and result import.", "sourceModuleId": "module-mktg-spotler-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Finance and Insight", "group": "Marketing and Analytics"};
-    const relatedTeams = [{"teamId": "marketing-and-insight", "teamName": "Marketing and Insight", "teamType": "stream-aligned", "groupId": "fing", "groupName": "Finance and Insight Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "marketing-and-insight", "name": "Marketing and Business Intelligence", "icon": "town.png", "type": "B2B SaaS Module", "whyUsed": "Builds segments from booking history and consent and hands them to email campaigns. Pushes segments and lifecycle triggers to Spotler for campaigns."}];
     const supportedJobs = [{"customerId": "town", "customerName": "Travel Company Owner", "customerGroup": "Travel Business Owners and Finance", "customerIcon": "customer-town-portrait.jpg", "productId": "marketing-and-insight", "productName": "Marketing and Business Intelligence", "productIcon": "town.png", "jobId": "jtbd-town-1", "jobName": "Scale bookings and revenue without scaling headcount", "jobWhatItIs": "Grow the number of departures, trip files and passengers the organisation handles per season while keeping the back office the same size, by removing re-keying between product, sales, operations and finance and by automating the routine work of the booking desk.", "jobOutcome": "Revenue per FTE rises season over season; peak weeks are absorbed without temporary staff; the owner can add a new destination or a second brand without a new administrator.", "supportRationale": "Moves document delivery, payment and passenger-data capture to traveler self-service.", "usedInSteps": [{"step": "Let travelers, resellers and suppliers serve themselves", "description": "Open the my-trip portal, reseller portal and supplier portal so that document downloads, payments, passenger details and confirmations happen without a phone call to the office.", "howItSupports": "Moves document delivery, payment and passenger-data capture to traveler self-service.", "media": [{"type": "image", "src": "media/jbtd-town-jtbd-town-1-4.png", "title": "Travel Company Owner JTBD step 4: Let travelers, resellers and suppliers serve themselves", "alt": "Enterprise infographic for step 4 of the job \"Scale bookings and revenue without scaling headcount\": Let travelers, resellers and suppliers serve themselves."}]}]}, {"customerId": "town", "customerName": "Travel Company Owner", "customerGroup": "Travel Business Owners and Finance", "customerIcon": "customer-town-portrait.jpg", "productId": "marketing-and-insight", "productName": "Marketing and Business Intelligence", "productIcon": "town.png", "jobId": "jtbd-town-2", "jobName": "Grow direct online sales under the own brand", "jobWhatItIs": "Shift bookings from commissioned resellers, bed banks and phone calls to a real-time bookable website and customer portal in the operator's own brand, fed directly from the back office inventory and prices, and supported by segmented email marketing and reviews.", "jobOutcome": "A higher online booking share at lower distribution cost, a brand that customers book with directly, and repeat bookings driven from the operator's own CRM data.", "supportRationale": "Runs segmentation, campaigns, review collection and repeat-booking programmes from the CRM data.", "usedInSteps": [{"step": "Turn the customer base into a marketing asset", "description": "Segment the CRM by destination, travel type, season and past spend, run email campaigns through Spotler, collect Trustpilot reviews after each trip and show them on the website.", "howItSupports": "Runs segmentation, campaigns, review collection and repeat-booking programmes from the CRM data.", "media": [{"type": "image", "src": "media/jbtd-town-jtbd-town-2-3.png", "title": "Travel Company Owner JTBD step 3: Turn the customer base into a marketing asset", "alt": "Enterprise infographic for step 3 of the job \"Grow direct online sales under the own brand\": Turn the customer base into a marketing asset."}]}, {"step": "Turn the customer base into a marketing asset", "description": "Segment the CRM by destination, travel type, season and past spend, run email campaigns through Spotler, collect Trustpilot reviews after each trip and show them on the website.", "howItSupports": "Triggers the post-trip survey and review request that feeds the marketing loop.", "media": [{"type": "image", "src": "media/jbtd-town-jtbd-town-2-3.png", "title": "Travel Company Owner JTBD step 3: Turn the customer base into a marketing asset", "alt": "Enterprise infographic for step 3 of the job \"Grow direct online sales under the own brand\": Turn the customer base into a marketing asset."}]}, {"step": "Open the customer portal for repeat business", "description": "Give travelers a login where they see past bookings, download documents, message the office and rebook, so the brand relationship survives between trips.", "howItSupports": "Provides the my-trip portal and app with booking history, documents and messaging.", "media": [{"type": "image", "src": "media/jbtd-town-jtbd-town-2-4.png", "title": "Travel Company Owner JTBD step 4: Open the customer portal for repeat business", "alt": "Enterprise infographic for step 4 of the job \"Grow direct online sales under the own brand\": Open the customer portal for repeat business."}]}, {"step": "Open the customer portal for repeat business", "description": "Give travelers a login where they see past bookings, download documents, message the office and rebook, so the brand relationship survives between trips.", "howItSupports": "Uses portal activity and booking history to target the next trip.", "media": [{"type": "image", "src": "media/jbtd-town-jtbd-town-2-4.png", "title": "Travel Company Owner JTBD step 4: Open the customer portal for repeat business", "alt": "Enterprise infographic for step 4 of the job \"Grow direct online sales under the own brand\": Open the customer portal for repeat business."}]}]}, {"customerId": "fina", "customerName": "Finance and Administration Lead", "customerGroup": "Travel Business Owners and Finance", "customerIcon": "customer-fina-portrait.jpg", "productId": "marketing-and-insight", "productName": "Marketing and Business Intelligence", "productIcon": "town.png", "jobId": "jtbd-fina-1", "jobName": "Collect every customer payment on time", "jobWhatItIs": "Invoice every booking correctly, collect deposits and balances by their due dates through payment links and reminders, handle changes, cancellations and refunds without manual recalculation, and know at any moment which bookings are unpaid before departure.", "jobOutcome": "Deposits and balances arrive on time for the vast majority of bookings, overdue receivables are a short exception list, and no traveler departs unpaid or is chased for money already received.", "supportRationale": "Offers travelers a place in the portal to see open amounts and pay them.", "usedInSteps": [{"step": "Collect through payment links and reminders", "description": "Send Mollie payment links with the invoice, let travelers pay in the my-trip portal, and let reminders and alerts run on due dates so the team only handles exceptions.", "howItSupports": "Offers travelers a place in the portal to see open amounts and pay them.", "media": [{"type": "image", "src": "media/jbtd-fina-jtbd-fina-1-3.png", "title": "Finance and Administration Lead JTBD step 3: Collect through payment links and reminders", "alt": "Enterprise infographic for step 3 of the job \"Collect every customer payment on time\": Collect through payment links and reminders."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

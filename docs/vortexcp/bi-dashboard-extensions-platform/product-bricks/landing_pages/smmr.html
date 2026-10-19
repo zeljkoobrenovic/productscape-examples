@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "smmr", "name": "ShowMeMore Chart Library", "type": "full-stack", "status": "sustaining", "description": "The company's first product, demonstrated in the Tableau Conference 2018 keynote weeks after dashboard extensions shipped in Tableau 2018.2 and winner of the Tableau Innovative Solution Award 2018. ShowMeMore adds chart types Tableau does not draw natively (sunburst, sankey, chord, radar, funnel, gauge, network, calendar heatmap, word cloud, treemap variants and more) as a configurable extension driven by a worksheet, with interactive tooltips, selection back to the dashboard and creator-defined styling. It is the generic visual escape hatch for creators who would otherwise need custom SDK development.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-smmr-viz", "name": "ShowMeMore Visualization", "type": "web-component", "description": "Chart canvas that renders the configured chart type from worksheet data with tooltips, legends, selection and responsive layout, including the Viz Extension variant that appears in Tableau's Marks card.", "dependencies": {"modules": [{"moduleId": "module-smmr-bff", "type": "uses", "description": "Visualization loads chart templates and prepared series through the BFF."}, {"moduleId": "module-smmr-chart-engine", "type": "uses", "description": "Visualization renders through the chart engine."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-smmr-bff", "name": "ShowMeMore BFF", "type": "bff", "description": "Serves chart templates, prepared series and style presets to the visualization.", "dependencies": {"modules": [{"moduleId": "module-smmr-templates", "type": "delegates", "description": "BFF delegates template persistence to the template store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-smmr-chart-engine", "name": "Chart Type Engine", "type": "stateless-service", "description": "Implements the library of chart types and their data shaping (hierarchies, flows, distributions) without owning state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-smmr-templates", "name": "Chart Template Store", "type": "stateful-service", "description": "Owns reusable chart templates and style presets that creators share across workbooks."}]}], "dataDependencies": [{"assetId": "extension-configuration", "moduleIds": ["module-smmr-bff", "module-smmr-viz", "module-smmr-templates"], "role": "read-write", "description": "Stores chart type, field mapping and styling per dashboard."}, {"assetId": "dashboard-data-snapshot", "moduleIds": ["module-smmr-chart-engine"], "role": "read", "description": "Reads worksheet data to draw the chart."}], "brickDependencies": [{"targetBrickId": "xfrm", "moduleId": "module-xfrm-settings-api", "sourceModuleId": "module-smmr-viz", "type": "runtime", "description": "Runs inside the shared extension framework and uses the extension shell, settings persistence, theming and Tableau Extensions API bindings."}, {"targetBrickId": "dcon", "moduleId": "module-dcon-api", "sourceModuleId": "module-smmr-bff", "type": "data", "description": "Reads the worksheet summary data that drives the chart, and pushes chart selections back as filters through the Dashboard Data Connector instead of talking to Tableau directly."}, {"targetBrickId": "gall", "moduleId": "module-gall-api", "sourceModuleId": "module-smmr-bff", "type": "documents", "description": "Publishes example chart templates to the gallery and demo workbooks."}, {"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-smmr-viz", "type": "licensing", "description": "On every extension load checks the organisation's plan and records the anonymous unique user token that meters active users over a rolling 12 months."}], "externalSystemsThisBrickDependsOn": [{"system": "Tableau Cloud, Tableau Server and Tableau Desktop", "type": "channel", "interface": "Tableau Extensions API and Viz Extensions", "description": "Hosts the chart as a dashboard extension or a viz extension on the Marks card.", "sourceModuleId": "module-smmr-viz"}], "externalSystemsDependingOnThisBrick": [], "domain": "Extension Products", "group": "Visual Storytelling"};
-    const relatedTeams = [{"teamId": "visual-storytelling", "teamName": "Visual Storytelling", "teamType": "stream-aligned", "groupId": "xprd", "groupName": "Extension Product Teams", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "visual-storytelling-extensions", "name": "Visual Storytelling Extensions", "icon": "visual-storytelling-extensions.png", "type": "B2B Dashboard Extension Bundle", "whyUsed": "Chart types Tableau lacks natively, the original Apps for Tableau product."}];
     const supportedJobs = [{"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "visual-storytelling-extensions", "productName": "Visual Storytelling Extensions", "productIcon": "visual-storytelling-extensions.png", "jobId": "jtbd-dcre-1", "jobName": "Deliver an Excel-friendly interactive dashboard without building ten variants", "jobWhatItIs": "Take a business request such as 'a sales dashboard by region, product and month that people can slice as they like' and deliver one published dashboard on Tableau Cloud, Tableau Server or Power BI in which viewers can pivot, group, filter, drill, format, save their own view and export to Excel, using SuperTables, ShowMeMore, PowerKPIs, HierarchyFilter and DrillDownTree instead of building a separate worksheet for every column combination.", "jobOutcome": "The requesting team adopts one dashboard for their recurring questions, the creator's backlog of variant requests for that subject shrinks to near zero, and the dashboard stays maintainable because layout, formatting and drill paths are configuration in the workbook rather than duplicated worksheets.", "supportRationale": "Provides the extension catalogue, design patterns and demo workbooks that map a business question to an extension configuration.", "usedInSteps": [{"step": "Capture the requirement and choose the extension pattern", "description": "Sit with the requesting team, list the questions they ask each week and the Excel workbook they currently maintain, and decide which pattern fits: a SuperTable for grid-heavy analysis, a PowerKPIs entry point with drill-through for executives, a DrillDownTree or HierarchyFilter for organisational hierarchies, or ShowMeMore for chart types Tableau lacks. Check the gallery and documentation for a demo workbook that is close.", "howItSupports": "Provides the extension catalogue, design patterns and demo workbooks that map a business question to an extension configuration.", "media": []}, {"step": "Add the extension to the dashboard and connect worksheet data", "description": "Drag the extension object onto the dashboard in Tableau Desktop or the web authoring client, select the worksheet whose data it should read, and confirm that filters, parameters and actions on the dashboard flow into the extension. On Tableau Server or Cloud verify that the extension URL is safelisted; on Power BI import the custom visual from AppSource.", "howItSupports": "Connects the extension to worksheet data through the dashboard data connector and keeps filters and parameters in sync.", "media": []}, {"step": "Configure the SuperTable for self-service", "description": "Set up the grid: default columns and pivots, grouping and subtotals, conditional formatting and sparklines, calculated columns and formulas, number formats per column, row limits and server-side row model for large data, and allow viewers to save personalised views and export to Excel with formatting preserved.", "howItSupports": "Stores the SuperTables configuration in the workbook so it publishes with the dashboard and survives version upgrades.", "media": []}, {"step": "Add charts, KPI tiles and guidance the platform lacks", "description": "Complement the grid with ShowMeMore chart types such as Sankey, bullet or radar, a PowerKPIs tile row as the entry point with sparklines and drill-through, PictureThis for product images, and a short DashboardGuide tour that explains how to pivot and export, so the first session does not end with a request for a new variant.", "howItSupports": "Provides ShowMeMore, PowerKPIs, PictureThis and DashboardGuide as configurable extensions on the same runtime and data connector.", "media": []}, {"step": "Publish, verify with users and retire the variants", "description": "Publish to the production project on Tableau Server or Cloud, walk the requesting team through the dashboard, check that saved views and Excel export behave as expected for explorers and viewers, and then archive the older worksheet variants and the Excel workbook the team used to maintain.", "howItSupports": "Publishes the dashboard with its extension configuration and verifies rendering on the target platform version.", "media": []}]}, {"customerId": "dcre", "customerName": "Dashboard Creator", "customerGroup": "Dashboard Builders and BI Platform Teams", "customerIcon": "customer-dcre-portrait.jpg", "productId": "visual-storytelling-extensions", "productName": "Visual Storytelling Extensions", "productIcon": "visual-storytelling-extensions.png", "jobId": "jtbd-dcre-3", "jobName": "Guide users through a dashboard and prove it is used", "jobWhatItIs": "After publishing, make sure the intended audience finds, understands and returns to the dashboard: add DashboardGuide onboarding overlays, measure views, interactions and drop-off with DashboardUsage, deliver the same content to people who never open Tableau through MailScheduler, and report adoption back to the BI platform lead so the dashboard earns its place in the portfolio.", "jobOutcome": "New users complete their first session without asking the creator for help, usage data shows which dashboards and views are alive and which can be retired, and the creator can show the BI platform lead evidence of adoption instead of anecdotes.", "supportRationale": "Places the guide extension on the dashboard and links it to the objects it explains.", "usedInSteps": [{"step": "Add onboarding overlays to the published dashboard", "description": "Configure a DashboardGuide tour with step markers on the filters, the SuperTable pivot controls and the export button, add contextual help for KPI definitions, and set the tour to run on first visit and on demand thereafter.", "howItSupports": "Places the guide extension on the dashboard and links it to the objects it explains.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Report Recipient", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-exec-portrait.jpg", "productId": "visual-storytelling-extensions", "productName": "Visual Storytelling Extensions", "productIcon": "visual-storytelling-extensions.png", "jobId": "jtbd-exec-1", "jobName": "Receive the right report at the right time where I work", "jobWhatItIs": "Get the weekly and monthly KPI reports and month-end statements automatically, filtered to the executive's own scope, in the format they use, PDF for reading and Excel for the finance meeting, in their mailbox or Teams channel before the meeting, with certainty that a failed delivery is noticed and retried rather than silently missing.", "jobOutcome": "The executive opens the report on time in the channel they already use, with the right scope and numbers that match the dashboard, and never chases the analytics team for it.", "supportRationale": "Provides the dashboards and KPI pages that the deliveries render.", "usedInSteps": [{"step": "Agree the report, scope and rhythm", "description": "Tell the dashboard creator or BI lead which dashboards, which filters such as region or business unit, which format and which schedule are needed, and keep the recipient list current as the team changes.", "howItSupports": "Provides the dashboards and KPI pages that the deliveries render.", "media": []}]}, {"customerId": "exec", "customerName": "Executive Report Recipient", "customerGroup": "Business Users and Decision Makers", "customerIcon": "customer-exec-portrait.jpg", "productId": "visual-storytelling-extensions", "productName": "Visual Storytelling Extensions", "productIcon": "visual-storytelling-extensions.png", "jobId": "jtbd-exec-2", "jobName": "See the KPIs that matter and drill only when something is off", "jobWhatItIs": "Open one KPI page, in the delivered report or in the dashboard, that shows the handful of measures the executive owns with status against target and trend, defined the same way across the organisation, and go from a red KPI to the explaining detail in one or two clicks or to a precise question for the analyst, rather than reading fourteen dashboards to find the problem.", "jobOutcome": "The executive spends minutes rather than hours on the KPI review, catches deviations early, and the follow-up questions to the analytics team are specific and answerable.", "supportRationale": "Provides the PowerKPIs hub configured with consistent definitions and thresholds.", "usedInSteps": [{"step": "Open the KPI entry point", "description": "Open the PowerKPIs page in the dashboard or the delivered report and see KPI tiles with status, trend and target, with the same definition wherever the KPI appears.", "howItSupports": "Provides the PowerKPIs hub configured with consistent definitions and thresholds.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

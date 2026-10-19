@@ -8,7 +8,7 @@ This domain models the customer and delivery landscape around Assai. Engineering
 
 Vortex records a 2019 buyout, describes support for cloud modernization and organizational development, and reports the 2024 acquisition of viewport.ai. Its profile labels Assai a current investment. These establish investment context; they do not establish Assai's present internal architecture or staffing. [Vortex investment profile](https://vortexcp.com/investment/assai/)
 
-All customer strategies, personas, KPI trees, milestones, product bricks, module boundaries, stores, deployment boundaries, team sizes and stress-test scenarios below are analytical proposals. They are not Assai's published roadmap, organization chart, commercial terms, measured performance or production design. Product names and explicitly attributed capabilities are public facts. Undated pages are recorded with access dates in `customers/insights.json`; customer case studies remain vendor-reported examples.
+All customer strategies, personas, KPI trees, milestones, product bricks, module boundaries, stores, deployment boundaries and stress-test scenarios below are analytical proposals. They are not Assai's published roadmap, organization chart, commercial terms, measured performance or production design. Product names and explicitly attributed capabilities are public facts. Undated pages are recorded with access dates in `customers/insights.json`; customer case studies remain vendor-reported examples.
 
 ## Scope and value exchange
 
@@ -39,11 +39,9 @@ REST exchange, changed-data synchronization, Power BI extraction and scheduled f
 
 The proposed MVP is a bounded DMS project with supplier intake, governed revisions, accountable review, controlled issue and an accepted handover. Viewport can also start from existing repositories, with clear provenance and access controls. Enterprise adds named obligations and completion evidence across affected systems. Migration and adoption services are a service offer, not an asserted fourth software SKU. [Assai DMS](https://assai-software.com/platform/assai-dms/), [Viewport](https://assai-software.com/platform/assai-viewport/), [implementation services](https://assai-software.com/professional-services/implementation/)
 
-Every brick has one primary team, at least one deployment/product mapping and an outcome stream. Logical data assets name accountable teams, producing and consuming modules, provenance and retention assumptions. Customer-owned source data and derived context are distinguished from Assai-controlled document records. Tenant/project access, source revocation, stale-data handling and human review of inferred tag associations are explicit design controls to validate, not verified vendor implementation claims.
+Every brick has at least one deployment/product mapping and an outcome stream. Logical data assets name producing and consuming modules, provenance and retention assumptions. Customer-owned source data and derived context are distinguished from Assai-controlled document records. Tenant/project access, source revocation, stale-data handling and human review of inferred tag associations are explicit design controls to validate, not verified vendor implementation claims.
 
 ## Operating model and assurance
-
-Eight proposed teams cover document records, engineering collaboration, handover/change, asset context, integration/data, platform reliability, information assurance and customer enablement. Team sizes are planning assumptions for product delivery and operation, not total company headcount. Corporate sales, finance, HR and leadership outside the modeled delivery groups are excluded. Customer-side engineering sign-off and plant operating responsibilities remain external.
 
 Assai publicly states ISO/IEC 27001 certification, SOC 2 Type II attestation and CSA STAR disclosures. The underlying certificates, report scope, exceptions and contractual assurances have not been independently reviewed here. These statements inform enterprise evaluation; they do not establish that a customer's deployment or operation complies with any particular legal requirement. Retention and residency are contract- and asset-specific assumptions, not universal country or duration claims. [Assai trust and security](https://assai-software.com/platform/security/)
 
@@ -51,7 +49,7 @@ Assai publicly states ISO/IEC 27001 certification, SOC 2 Type II attestation and
 
 Competition covers project CDEs, engineering document management, asset-information platforms and the existing SharePoint substitute. Competitor descriptions state the relevant buying alternative without inferring market share. Product-specific revenue and customer counts are omitted where the reviewed sources do not provide a comparable figure. Historic product names are retained only to explain current branding.
 
-Structure was checked against `technical-design-collaboration-platform`, `enterprise-integration-and-data-management-platform` and the mature `ride-sharing-marketplace` reference. Products/deployment and teams follow the canonical `maas` shapes. The current per-artifact skills and generators take precedence over older prompt examples: use the `worker` layer, wire product-to-brick composition through deployment `usedInProducts`, and use team `brickDependencies` for sole primary ownership.
+Structure was checked against `technical-design-collaboration-platform`, `enterprise-integration-and-data-management-platform` and the mature `ride-sharing-marketplace` reference. Products/deployment follow the canonical `maas` shapes. The current per-artifact skills and generators take precedence over older prompt examples: use the `worker` layer, and wire product-to-brick composition through deployment `usedInProducts`.
 
 ## Work checklist
 

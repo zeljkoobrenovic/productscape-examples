@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "digital-supervision-and-enforcement-platform", "name": "Digital Supervision and Enforcement Platform", "description": "A Twyns-informed domain for municipal, parking and transport supervision and enforcement, connecting resident reports and field observations to reviewed decisions, partner handoffs and public-service outcomes. Strategy, architecture and staffing are modeled assumptions."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "evid", "name": "Evidence Manifest and Document", "kind": "logical-object", "description": "Evidence manifests, original/derivative lineage and document references.", "businessMeaning": "Store originals and redacted derivatives separately; enforce the linked case purpose and approved holds.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["resident or visitor", "enforcement subject", "authorized staff"], "legalTags": ["gdpr", "wpg"], "securityCriticality": "high", "accessScope": "Named authority roles and purpose-approved service identities; supplier support only by scoped authorization.", "status": "active", "stores": [{"storeId": "objt", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Evidence and Document Provenance API", "description": "Purpose-scoped access; external systems of record are not replaced by local snapshots."}], "ownerTeamId": "fldt", "stewardTeamIds": ["fldt", "plat"], "derivedFromAssetIds": [], "governance": {"retention": "Authority-approved schedule per purpose, case route and record class, with explicit legal holds and verified disposal. No universal legal duration is asserted.", "residency": "Proposed EEA deployment subject to contractual verification; actual Twyns hosting location was not established.", "sharingPolicy": "Store originals and redacted derivatives separately; enforce the linked case purpose and approved holds. Legal tags describe potential regimes, not simultaneous permission to process under both. The authority determines the applicable purpose and rules."}, "rootGroup": "Field Supervision", "group": "Governed Records"};
+    const currentAsset = {"id": "evid", "name": "Evidence Manifest and Document", "kind": "logical-object", "description": "Evidence manifests, original/derivative lineage and document references.", "businessMeaning": "Store originals and redacted derivatives separately; enforce the linked case purpose and approved holds.", "classification": "restricted", "personalDataLevel": "sensitive", "dataSubjects": ["resident or visitor", "enforcement subject", "authorized staff"], "legalTags": ["gdpr", "wpg"], "securityCriticality": "high", "accessScope": "Named authority roles and purpose-approved service identities; supplier support only by scoped authorization.", "status": "active", "stores": [{"storeId": "objt", "role": "system-of-record"}], "interfaces": [{"type": "api", "name": "Evidence and Document Provenance API", "description": "Purpose-scoped access; external systems of record are not replaced by local snapshots."}], "derivedFromAssetIds": [], "governance": {"retention": "Authority-approved schedule per purpose, case route and record class, with explicit legal holds and verified disposal. No universal legal duration is asserted.", "residency": "Proposed EEA deployment subject to contractual verification; actual Twyns hosting location was not established.", "sharingPolicy": "Store originals and redacted derivatives separately; enforce the linked case purpose and approved holds. Legal tags describe potential regimes, not simultaneous permission to process under both. The authority determines the applicable purpose and rules."}, "rootGroup": "Field Supervision", "group": "Governed Records"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "evid", "name": "Evidence and Document Provenance", "role": "own", "description": "System of record for the modeled Evidence Manifest and Document. External original records retain their original authority."}];
     const consumingBricks = [{"id": "desk", "name": "Parking Desk Review", "role": "read", "description": "Consume the permitted projection of Evidence Manifest and Document. Access remains purpose- and authority-scoped."}, {"id": "remo", "name": "Clamping and Vehicle or Bicycle Custody", "role": "read", "description": "Consume the permitted projection of Evidence Manifest and Document. Access remains purpose- and authority-scoped."}, {"id": "adma", "name": "Administrative Intervention and Decision", "role": "read", "description": "Consume the permitted projection of Evidence Manifest and Document. Access remains purpose- and authority-scoped."}, {"id": "pena", "name": "Criminal Enforcement Dossier and Referral", "role": "read", "description": "Consume the permitted projection of Evidence Manifest and Document. Access remains purpose- and authority-scoped."}, {"id": "appe", "name": "Objections, Corrections and Remedy Routing", "role": "read", "description": "Consume the permitted projection of Evidence Manifest and Document. Access remains purpose- and authority-scoped."}];
-    const ownerTeam = {"teamId": "fldt", "teamName": "Field and Case Outcomes", "teamType": "stream-aligned", "groupName": "Twyns-Informed Product and Service Organization"};
-    const stewardTeams = [{"teamId": "fldt", "teamName": "Field and Case Outcomes", "teamType": "stream-aligned", "groupName": "Twyns-Informed Product and Service Organization"}, {"teamId": "plat", "teamName": "Platform, Data and Assurance", "teamType": "platform", "groupName": "Twyns-Informed Product and Service Organization"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

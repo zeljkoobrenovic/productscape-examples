@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "fint", "name": "Finance Integration Hub", "type": "integration", "status": "invest", "description": "The governed event, API and file backbone between brand booking platforms, the payments platform and the finance core. Receives booking, cancellation and modification events, validates them against the canonical financial event contract, enriches them with entity and account keys and guarantees complete, exactly-once delivery to the subledger, with control totals per source.", "links": [], "layers": [{"layer": "interfaces", "description": "APIs and back-office interfaces.", "modules": [{"id": "module-fint-api", "name": "Financial Event Intake API", "type": "api", "description": "Synchronous and batch intake of canonical booking financial events; exposes delivery status.", "dependencies": {"modules": [{"moduleId": "module-fint-event-bus", "type": "uses", "description": "Publishes accepted events."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-fint-event-bus", "name": "Financial Event Stream", "type": "message-queue", "description": "Durable, partitioned stream of validated booking financial events with replay."}, {"id": "module-fint-router", "name": "Subledger Router", "type": "message-consumer", "description": "Routes events to the subledger and data platform with idempotency keys and retries.", "dependencies": {"modules": [{"moduleId": "module-fint-event-bus", "type": "uses", "description": "Consumes events."}, {"moduleId": "module-brim-api", "type": "uses", "description": "Delivers postings.", "targetBrickId": "brim"}]}}]}, {"layer": "stateless-service", "description": "Orchestration without durable state.", "modules": [{"id": "module-fint-contract-validator", "name": "Contract Validator and Enricher", "type": "stateless-service", "description": "Validates schema and business rules; adds legal entity, currency and account derivation keys.", "dependencies": {"modules": [{"moduleId": "module-coam-api", "type": "uses", "description": "Looks up master data.", "targetBrickId": "coam"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-fint-core", "name": "Delivery Ledger and Control Totals", "type": "stateful-service", "description": "Per-source, per-day counts and amounts received, rejected, delivered and replayed."}]}, {"layer": "integration", "description": "Adapters to vendor systems, brands and providers.", "modules": [{"id": "module-fint-file-gateway", "name": "File and Batch Gateway", "type": "integration", "description": "Managed file transfer for bank, PSP and vendor batch interfaces."}]}], "dataDependencies": [{"assetId": "booking-financial-event", "moduleIds": ["module-fint-api", "module-fint-event-bus", "module-fint-core"], "role": "own", "description": "System of record for accepted booking financial events and delivery control totals."}, {"assetId": "chart-of-accounts-and-financial-master-data", "moduleIds": ["module-fint-contract-validator"], "role": "read", "description": "Enrichment keys."}], "brickDependencies": [{"targetBrickId": "brim", "moduleId": "module-brim-api", "sourceModuleId": "module-fint-router", "type": "data", "description": "Delivers billable items and postings to the FI-CA subledger."}, {"targetBrickId": "coam", "moduleId": "module-coam-api", "sourceModuleId": "module-fint-contract-validator", "type": "data", "description": "Uses master data for enrichment."}, {"targetBrickId": "fdbx", "moduleId": "module-fdbx-api", "sourceModuleId": "module-fint-router", "type": "data", "description": "Streams events to the finance data platform."}, {"targetBrickId": "stdg", "moduleId": "module-stdg-api", "sourceModuleId": "module-fint-contract-validator", "type": "governance", "description": "Enforces the canonical financial event standard."}], "externalSystemsThisBrickDependsOn": [{"system": "Message streaming platform (Kafka-class, assumed)", "type": "platform", "interface": "Streaming API", "description": "Runtime for the event stream.", "sourceModuleId": "module-fint-event-bus"}], "externalSystemsDependingOnThisBrick": [{"system": "Brand booking platforms (Booking.com, Priceline, Agoda, KAYAK, OpenTable)", "type": "producer", "interface": "Financial Event Intake API", "description": "Publish booking, cancellation and modification events.", "moduleId": "module-fint-api"}, {"system": "Payments platform (BHFS / Booking.com payments)", "type": "producer", "interface": "Financial Event Intake API", "description": "Publishes payment and payout lifecycle events.", "moduleId": "module-fint-api"}], "domain": "Finance Data and Integration Platform", "group": "Integration"};
-    const relatedTeams = [{"teamId": "fhub", "teamName": "Finance Integration Hub", "teamType": "platform", "groupId": "fdip", "groupName": "Finance Data and Integration", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "fdata", "name": "Finance Data and Integration Platform", "icon": "fdata.png", "type": "Internal platform", "whyUsed": "Finance Integration Hub as part of Finance Data and Integration Platform."}];
     const supportedJobs = [{"customerId": "bfin", "customerName": "Brand Finance Engineering Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-bfin-portrait.jpg", "productId": "fdata", "productName": "Finance Data and Integration Platform", "productIcon": "fdata.png", "jobId": "bfin-integrate", "jobName": "Feed brand transactions into the global finance core without bespoke work", "jobWhatItIs": "Get the brand's bookings, cancellations, payments and partner balances into the shared subledger and ledger with the right accounting, using shared contracts instead of a custom pipeline.", "jobOutcome": "Brand transactions post completely and correctly, close issues trace to a clear owner, and the brand runs no private copy of finance logic.", "supportRationale": "Defines the onboarding plan, target state and adapter scope for the brand.", "usedInSteps": [{"step": "Agree the onboarding scope and target state", "description": "Confirm entities, products, payment flows and the accounting model with the central team.", "howItSupports": "Defines the onboarding plan, target state and adapter scope for the brand.", "media": []}, {"step": "Map brand events to finance contracts", "description": "Map booking and payment events to the canonical finance event and chart of accounts.", "howItSupports": "The adapter kit provides schemas, mapping templates and master data lookups.", "media": []}, {"step": "Post merchant bookings to the subledger", "description": "Send bookings, modifications and cancellations so revenue and liabilities are recognised correctly.", "howItSupports": "The subledger and revenue engine apply merchant accounting to the brand's events.", "media": []}, {"step": "Prove completeness and cut over", "description": "Run parallel postings, reconcile totals and retire the legacy brand pipeline.", "howItSupports": "Parallel-run reconciliation and cutover checklists gate the switch.", "media": []}]}, {"customerId": "fldr", "customerName": "Group Finance Leadership (CFO, CAO, VP Finance)", "customerGroup": "Finance Leadership and Technology Sponsors", "customerIcon": "customer-fldr-portrait.jpg", "productId": "fdata", "productName": "Finance Data and Integration Platform", "productIcon": "fdata.png", "jobId": "fldr-transform", "jobName": "Deliver Transformation Program savings without raising control risk", "jobWhatItIs": "Turn the program's modernization of processes and systems and procurement optimization into retired systems, less manual effort and lower spend.", "jobOutcome": "Committed run-rate savings land on time and the ICFR conclusion stays effective.", "supportRationale": "Standard adapters shorten each brand migration.", "usedInSteps": [{"step": "Move brands onto shared platforms", "description": "Retire brand-specific ledgers and integrations in favour of the global core.", "howItSupports": "Standard adapters shorten each brand migration.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "fdata", "productName": "Finance Data and Integration Platform", "productIcon": "fdata.png", "jobId": "pymt-launch", "jobName": "Launch payment methods and markets without finance blockers", "jobWhatItIs": "Add a payment method, PSP, currency or market (for example local methods in Asia through a partner such as Antom) with accounting, tax, settlement and controls ready on day one.", "jobOutcome": "New payment options go live on the product timeline and post correctly to the ledger from the first transaction.", "supportRationale": "Onboarding defines entity, master data and accounting set-up for a new flow.", "usedInSteps": [{"step": "Define the money flow and entity", "description": "Agree which licensed entity, currency and settlement path the new method uses.", "howItSupports": "Onboarding defines entity, master data and accounting set-up for a new flow.", "media": []}, {"step": "Map payment events to finance contracts", "description": "Map authorisation, capture, settlement and fee events to the canonical schema.", "howItSupports": "Payment events feed the subledger and revenue posting for merchant bookings.", "media": []}, {"step": "Pass finance readiness and launch", "description": "Confirm reconciliation, tax and controls are in place before turning on traffic.", "howItSupports": "Readiness gates check reconciliation rules, controls and reporting for the new flow.", "media": []}]}, {"customerId": "pymt", "customerName": "Payments Platform Product Lead", "customerGroup": "Brand and Payments Engineering", "customerIcon": "customer-pymt-portrait.jpg", "productId": "fdata", "productName": "Finance Data and Integration Platform", "productIcon": "fdata.png", "jobId": "pymt-reconcile", "jobName": "Prove every payment reconciles to the ledger", "jobWhatItIs": "Show that every captured payment, refund, chargeback and PSP fee matches the booking, the PSP settlement and the ledger, so cash and revenue are complete and accurate.", "jobOutcome": "Daily reconciliation is near-complete, breaks are explained within days, and payment-related write-offs stay low.", "supportRationale": "Payment event ingestion normalises PSP settlements into one record.", "usedInSteps": [{"step": "Ingest PSP and acquirer settlement data", "description": "Normalise settlement reports from all PSPs and acquirers daily.", "howItSupports": "Payment event ingestion normalises PSP settlements into one record.", "media": []}, {"step": "Match bookings, payments and settlements", "description": "Run three-way matching and route breaks to owners.", "howItSupports": "Settlement reconciliation matches payments to bookings and bank receipts.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

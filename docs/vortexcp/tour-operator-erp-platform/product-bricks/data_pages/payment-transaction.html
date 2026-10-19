@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "tour-operator-erp-platform", "name": "Tour Operator ERP Platform", "description": "Covers the ERP-style software platform that tour operators, group and coach travel providers, tailor-made travel specialists, destination management companies, and travel agencies run their business on: travel product and contract management, visual tour building and quoting, bookings and departures, group operations such as seat allocation, room lists and guide assignment, supplier and reseller portals, real-time bookable customer websites, traveler portals and apps, payments, invoicing, accounting and guarantee-fund compliance, marketing, quality, and business intelligence across the Benelux and wider European travel trade."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "payment-transaction", "name": "Payment Transaction", "kind": "financial-record", "description": "A money movement against a customer invoice or booking: deposit and balance payments through payment links and the traveler portal (iDEAL, cards, bank transfer via a Mollie-style payment service provider), manual bank receipts matched to invoices, refunds and chargebacks, reseller agency-collect settlements, and the payment status and reconciliation state. Recorded by Invoicing, Payment Links and Collection (invc) and surfaced to travelers in the Traveler Portal and My-Trip App (mytp) as paid and outstanding amounts. Card data never touches the platform; only provider references are stored.", "businessMeaning": "Whether the operator has actually been paid: the trigger for confirming a booking, releasing documents, and stopping reminders, and the cash side of every month-end close.", "status": "active", "tags": ["finance-and-insight", "operations-and-traveler-service"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["customer"], "legalTags": ["gdpr", "fiscal-retention-nl"], "securityCriticality": "critical", "accessScope": "finance staff of the owning tenant; travelers see their own payment status; payment provider references only, no card data held", "systemOfRecordBrickId": "invc", "ownerTeamId": "payments-and-invoicing", "stewardTeamIds": ["accounting-and-compliance", "traveler-experience"], "derivedFromAssetIds": ["customer-invoice"], "stores": [{"storeId": "finance-ledger-db", "role": "system-of-record"}, {"storeId": "payment-provider-mirror", "role": "projection"}, {"storeId": "accounting-provider-mirror", "role": "projection"}, {"storeId": "travel-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "payment api", "description": "Create payment link, record payment, refund, and reconcile API used by the invoicing module, traveler portal checkout, online booking deposit step, and bank-statement matching."}, {"type": "event", "name": "payment status events", "description": "Payment initiated, paid, failed, expired, refunded, and chargeback events from the payment provider webhook, consumed by booking confirmation, document release, dunning, and cash dashboards."}], "governance": {"retention": "7 years after the fiscal year of the transaction under Dutch fiscal retention; provider payment references kept, card and bank details held only by the payment provider", "residency": "eu", "sharingPolicy": "exchanged with the payment service provider and the tenant's bank and accounting package; payment status shared with the paying customer or reseller; never shared between tenants"}, "rootGroup": "Finance and Compliance Data", "group": "Invoices and Payments"};
+    const currentAsset = {"id": "payment-transaction", "name": "Payment Transaction", "kind": "financial-record", "description": "A money movement against a customer invoice or booking: deposit and balance payments through payment links and the traveler portal (iDEAL, cards, bank transfer via a Mollie-style payment service provider), manual bank receipts matched to invoices, refunds and chargebacks, reseller agency-collect settlements, and the payment status and reconciliation state. Recorded by Invoicing, Payment Links and Collection (invc) and surfaced to travelers in the Traveler Portal and My-Trip App (mytp) as paid and outstanding amounts. Card data never touches the platform; only provider references are stored.", "businessMeaning": "Whether the operator has actually been paid: the trigger for confirming a booking, releasing documents, and stopping reminders, and the cash side of every month-end close.", "status": "active", "tags": ["finance-and-insight", "operations-and-traveler-service"], "classification": "restricted", "personalDataLevel": "personal", "dataSubjects": ["customer"], "legalTags": ["gdpr", "fiscal-retention-nl"], "securityCriticality": "critical", "accessScope": "finance staff of the owning tenant; travelers see their own payment status; payment provider references only, no card data held", "systemOfRecordBrickId": "invc", "derivedFromAssetIds": ["customer-invoice"], "stores": [{"storeId": "finance-ledger-db", "role": "system-of-record"}, {"storeId": "payment-provider-mirror", "role": "projection"}, {"storeId": "accounting-provider-mirror", "role": "projection"}, {"storeId": "travel-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "payment api", "description": "Create payment link, record payment, refund, and reconcile API used by the invoicing module, traveler portal checkout, online booking deposit step, and bank-statement matching."}, {"type": "event", "name": "payment status events", "description": "Payment initiated, paid, failed, expired, refunded, and chargeback events from the payment provider webhook, consumed by booking confirmation, document release, dunning, and cash dashboards."}], "governance": {"retention": "7 years after the fiscal year of the transaction under Dutch fiscal retention; provider payment references kept, card and bank details held only by the payment provider", "residency": "eu", "sharingPolicy": "exchanged with the payment service provider and the tenant's bank and accounting package; payment status shared with the paying customer or reseller; never shared between tenants"}, "rootGroup": "Finance and Compliance Data", "group": "Invoices and Payments"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "invc", "name": "Invoicing, Payment Links and Collection", "role": "own", "description": "System of record for the Payment Transaction asset."}];
     const consumingBricks = [{"id": "mytp", "name": "Traveler Portal and My-Trip App", "role": "read", "description": "Shows payment status and history to the traveler."}];
-    const ownerTeam = {"teamId": "payments-and-invoicing", "teamName": "Payments and Invoicing", "teamType": "stream-aligned", "groupName": "Finance and Insight Group"};
-    const stewardTeams = [{"teamId": "accounting-and-compliance", "teamName": "Accounting and Compliance", "teamType": "complicated-subsystem", "groupName": "Finance and Insight Group"}, {"teamId": "traveler-experience", "teamName": "Traveler Experience", "teamType": "stream-aligned", "groupName": "Operations and Traveler Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

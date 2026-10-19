@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "cloud-data-and-ai-platform", "name": "Cloud Data and AI Platform", "description": "Cloud Data and AI Platform covers the managed cloud services, developer experiences, governance controls, and operating workflows required to ingest data, analyze it, train and serve models, build AI applications, and run governed enterprise AI at scale."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "cost-allocation-signal", "name": "Cost Allocation Signal", "kind": "derived-metric", "description": "Unit-cost, margin, forecast, anomaly, chargeback, and budget attribution metrics by workspace, workload, product brick, model, and customer journey.", "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["contractual-confidentiality"], "securityCriticality": "high", "accessScope": "approved product, platform operations, security, and customer-authorized workflows", "businessMeaning": "Unit-cost, margin, forecast, anomaly, chargeback, and budget attribution metrics by workspace, workload, product brick, model, and customer journey.", "status": "active", "tags": ["unit-economics", "finops"], "systemOfRecordBrickId": "cost", "ownerTeamId": "finops-unit-economics", "stewardTeamIds": ["finops-unit-economics", "observability-incident-ops"], "derivedFromAssetIds": ["usage-meter"], "stores": [{"storeId": "cost-allocation-mart", "role": "serving"}], "interfaces": [{"type": "api", "name": "cost-allocation-signal api", "description": "Governed service interface for Cost Allocation Signal."}], "governance": {"retention": "contractual lifecycle plus customer-configured retention and audit window", "residency": "customer-selected cloud region with approved control-plane metadata replication only", "sharingPolicy": "least-privilege internal use and customer-authorized product workflows only"}, "rootGroup": "Commercial and Financial Data", "group": "Analytics and Derived Data"};
+    const currentAsset = {"id": "cost-allocation-signal", "name": "Cost Allocation Signal", "kind": "derived-metric", "description": "Unit-cost, margin, forecast, anomaly, chargeback, and budget attribution metrics by workspace, workload, product brick, model, and customer journey.", "classification": "restricted", "personalDataLevel": "none", "dataSubjects": [], "legalTags": ["contractual-confidentiality"], "securityCriticality": "high", "accessScope": "approved product, platform operations, security, and customer-authorized workflows", "businessMeaning": "Unit-cost, margin, forecast, anomaly, chargeback, and budget attribution metrics by workspace, workload, product brick, model, and customer journey.", "status": "active", "tags": ["unit-economics", "finops"], "systemOfRecordBrickId": "cost", "derivedFromAssetIds": ["usage-meter"], "stores": [{"storeId": "cost-allocation-mart", "role": "serving"}], "interfaces": [{"type": "api", "name": "cost-allocation-signal api", "description": "Governed service interface for Cost Allocation Signal."}], "governance": {"retention": "contractual lifecycle plus customer-configured retention and audit window", "residency": "customer-selected cloud region with approved control-plane metadata replication only", "sharingPolicy": "least-privilege internal use and customer-authorized product workflows only"}, "rootGroup": "Commercial and Financial Data", "group": "Analytics and Derived Data"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "cost", "name": "FinOps and Unit Cost Management", "role": "own", "description": "Owns the authoritative data product for Cost Allocation Signal, including schema, lifecycle, access, and governance responsibilities."}];
     const consumingBricks = [{"id": "whse", "name": "Cloud Data Warehouse", "role": "query", "description": "Queries Cost Allocation Signal for diagnostics, analytics, recommendations, planning, or operational decisions."}, {"id": "foma", "name": "Foundation Model Marketplace", "role": "query", "description": "Queries Cost Allocation Signal for diagnostics, analytics, recommendations, planning, or operational decisions."}, {"id": "cmpt", "name": "Elastic Compute and Accelerator Pools", "role": "query", "description": "Queries Cost Allocation Signal for diagnostics, analytics, recommendations, planning, or operational decisions."}, {"id": "obsv", "name": "Observability and Incident Operations", "role": "query", "description": "Queries Cost Allocation Signal for diagnostics, analytics, recommendations, planning, or operational decisions."}, {"id": "adop", "name": "Customer Success Playbooks", "role": "query", "description": "Queries Cost Allocation Signal for diagnostics, analytics, recommendations, planning, or operational decisions."}];
-    const ownerTeam = {"teamId": "finops-unit-economics", "teamName": "FinOps Unit Economics", "teamType": "stream-aligned", "groupName": "Cloud Operations"};
-    const stewardTeams = [{"teamId": "finops-unit-economics", "teamName": "FinOps Unit Economics", "teamType": "stream-aligned", "groupName": "Cloud Operations"}, {"teamId": "observability-incident-ops", "teamName": "Observability and Incident Operations", "teamType": "platform", "groupName": "Cloud Operations"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "vehicle-capacity-offer", "name": "Vehicle Capacity Offer", "kind": "logical-object", "description": "A free truck posted to the exchange: current or future availability location, radius or preferred destination lanes, vehicle type and equipment, available dates, and the dispatcher's contact details. Originates from carrier dispatchers and owner-operators looking for return loads; consumed by matching and recommendations (freight-to-truck pairing), exchange search, and network capacity analytics. Availability positions approximate vehicle whereabouts and are treated as personal data for owner-operators.", "businessMeaning": "The other side of marketplace liquidity: empty capacity looking for freight, the raw material for cutting empty kilometers.", "status": "active", "tags": ["network-and-carrier-products"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "authenticated exchange members within the offer's visibility rules", "systemOfRecordBrickId": "fxch", "ownerTeamId": "freight-exchange", "stewardTeamIds": [], "derivedFromAssetIds": [], "stores": [{"storeId": "exchange-offer-db", "role": "system-of-record"}, {"storeId": "exchange-offer-search", "role": "serving"}], "interfaces": [{"type": "api", "name": "capacity-offer api", "description": "Post and search API for available vehicles, used by the exchange web app and carrier mobile app."}], "governance": {"retention": "30 days after expiry; capacity patterns retained only as anonymized aggregates", "residency": "eu", "sharingPolicy": "visible to vetted exchange members; owner-operator location data never exposed outside the exchange context"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Marketplace Offers"};
+    const currentAsset = {"id": "vehicle-capacity-offer", "name": "Vehicle Capacity Offer", "kind": "logical-object", "description": "A free truck posted to the exchange: current or future availability location, radius or preferred destination lanes, vehicle type and equipment, available dates, and the dispatcher's contact details. Originates from carrier dispatchers and owner-operators looking for return loads; consumed by matching and recommendations (freight-to-truck pairing), exchange search, and network capacity analytics. Availability positions approximate vehicle whereabouts and are treated as personal data for owner-operators.", "businessMeaning": "The other side of marketplace liquidity: empty capacity looking for freight, the raw material for cutting empty kilometers.", "status": "active", "tags": ["network-and-carrier-products"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["partner"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "authenticated exchange members within the offer's visibility rules", "systemOfRecordBrickId": "fxch", "derivedFromAssetIds": [], "stores": [{"storeId": "exchange-offer-db", "role": "system-of-record"}, {"storeId": "exchange-offer-search", "role": "serving"}], "interfaces": [{"type": "api", "name": "capacity-offer api", "description": "Post and search API for available vehicles, used by the exchange web app and carrier mobile app."}], "governance": {"retention": "30 days after expiry; capacity patterns retained only as anonymized aggregates", "residency": "eu", "sharingPolicy": "visible to vetted exchange members; owner-operator location data never exposed outside the exchange context"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Marketplace Offers"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "fxch", "name": "Freight Exchange Marketplace", "role": "own", "description": "System of record for posted free truck capacity and its booking state."}];
     const consumingBricks = [{"id": "mtch", "name": "Freight Matching and Recommendations", "role": "read", "description": "Reads capacity offers to recommend return loads and fill empty legs."}];
-    const ownerTeam = {"teamId": "freight-exchange", "teamName": "Freight Exchange", "teamType": "stream-aligned", "groupName": "Network Product Group"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

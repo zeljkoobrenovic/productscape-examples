@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "tender-event", "name": "Tender Event", "kind": "event", "description": "The event history of freight procurement: RFP/RFQ rounds published to carriers, per-lane bids received, negotiation rounds, and award decisions, plus the daily-tendering trail of load offers sent through the routing guide and each carrier's accept, reject, or timeout response. Originates in the tendering and carrier-selection products; consumed by procurement analytics (bid comparison, savings tracking), tender acceptance KPIs, and lane rate benchmarking. Bids are strictly confidential between the bidding carrier and the tendering shipper.", "businessMeaning": "The negotiation record: what capacity was asked for, who bid what, who won, and how carriers respond to offered loads day to day.", "status": "active", "tags": ["shipper-products"], "classification": "confidential", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "tendering shipper, each bidding carrier for its own bids, and internal procurement analytics", "systemOfRecordBrickId": "tndr", "ownerTeamId": "freight-procurement", "stewardTeamIds": ["analytics"], "derivedFromAssetIds": [], "stores": [{"storeId": "tender-event-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "tender api", "description": "Tender publication, bidding, and award API for the procurement web application and carrier portal."}, {"type": "event", "name": "tender response events", "description": "Bid submitted, load accepted, load rejected, and tender awarded events feeding acceptance-rate analytics."}], "governance": {"retention": "7 years to support procurement audits and savings verification", "residency": "eu", "sharingPolicy": "bids visible only to the bidding carrier and the tendering shipper; aggregated and anonymized before entering cross-customer benchmarks"}, "rootGroup": "Procurement and Rate Data", "group": "Contracts and Tenders"};
+    const currentAsset = {"id": "tender-event", "name": "Tender Event", "kind": "event", "description": "The event history of freight procurement: RFP/RFQ rounds published to carriers, per-lane bids received, negotiation rounds, and award decisions, plus the daily-tendering trail of load offers sent through the routing guide and each carrier's accept, reject, or timeout response. Originates in the tendering and carrier-selection products; consumed by procurement analytics (bid comparison, savings tracking), tender acceptance KPIs, and lane rate benchmarking. Bids are strictly confidential between the bidding carrier and the tendering shipper.", "businessMeaning": "The negotiation record: what capacity was asked for, who bid what, who won, and how carriers respond to offered loads day to day.", "status": "active", "tags": ["shipper-products"], "classification": "confidential", "personalDataLevel": "none", "dataSubjects": [], "legalTags": [], "securityCriticality": "medium", "accessScope": "tendering shipper, each bidding carrier for its own bids, and internal procurement analytics", "systemOfRecordBrickId": "tndr", "derivedFromAssetIds": [], "stores": [{"storeId": "tender-event-db", "role": "system-of-record"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "tender api", "description": "Tender publication, bidding, and award API for the procurement web application and carrier portal."}, {"type": "event", "name": "tender response events", "description": "Bid submitted, load accepted, load rejected, and tender awarded events feeding acceptance-rate analytics."}], "governance": {"retention": "7 years to support procurement audits and savings verification", "residency": "eu", "sharingPolicy": "bids visible only to the bidding carrier and the tendering shipper; aggregated and anonymized before entering cross-customer benchmarks"}, "rootGroup": "Procurement and Rate Data", "group": "Contracts and Tenders"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "tndr", "name": "Freight Procurement and Tendering", "role": "own", "description": "System of record for RFP events, rounds, bids, and awards."}];
     const consumingBricks = [];
-    const ownerTeam = {"teamId": "freight-procurement", "teamName": "Freight Procurement", "teamType": "stream-aligned", "groupName": "Shipper Product Group"};
-    const stewardTeams = [{"teamId": "analytics", "teamName": "Analytics", "teamType": "stream-aligned", "groupName": "Commercial and Insight Group"}];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

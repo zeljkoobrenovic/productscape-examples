@@ -23,7 +23,7 @@ No unresolved P1 realism or traceability defect identified. All six journeys fol
 
 ### Open assumptions
 
-The architecture, roadmap, metric definitions, operating model, staffing, store technologies and commercial allocation policy are proposed. Private deployment details, contractual SLAs, actual headcount, training permissions and revenue were not established. Public pages without dates carry access dates. All cited source observations were reviewed on 2026-09-06; the Gracenote partnership announcement retains its historical date.
+The architecture, roadmap, metric definitions, operating model, store technologies and commercial allocation policy are proposed. Private deployment details, contractual SLAs, actual headcount, training permissions and revenue were not established. Public pages without dates carry access dates. All cited source observations were reviewed on 2026-09-06; the Gracenote partnership announcement retains its historical date.
 
 ## Product Bricks Review
 
@@ -32,8 +32,8 @@ Updated: 2026-09-06
 ### Architecture assessment
 
 - Three root groups and eight subgroups contain 24 buildable bricks with 78 modules. Responsibilities cover ingestion and identity, multimodal understanding, playback/ads, discovery, sports and service operation.
-- Eight outcome streams contain 32 steps with decisions, pain points and brick dependencies. Every brick participates in a stream, a product deployment and exactly one primary team.
-- Twenty-four logical assets each have one primary system-of-record brick, a matching owning team, resolvable stewards and one of four proposed stores. Derived assets retain source lineage; rights and editorial decisions remain separate authorities.
+- Eight outcome streams contain 32 steps with decisions, pain points and brick dependencies. Every brick participates in a stream, and a product deployment.
+- Twenty-four logical assets each have one primary system-of-record brick and one of four proposed stores. Derived assets retain source lineage; rights and editorial decisions remain separate authorities.
 - All six supported architectural layers are used where appropriate. Model execution is asynchronous; retrieval and sports composition have stateless modules; source and consumer boundaries use integrations. Dependency source modules identify processing callers, and data ownership remains with stateful registries.
 - Products follow the current `maas`-shaped version-4 deployment model: composition is expressed by `deployedBricks[].usedInProducts`. Legacy `neededBricks` and per-product interface catalogues are absent.
 
@@ -46,30 +46,6 @@ No unresolved P1 finding. Both repository validators pass strict IDs. Additional
 1. **P2 — Provider and interface contracts require implementation discovery.** Evidence: `product-bricks/product-bricks.json`, `ingp`, `catl`, `apii`, `conn`; `product-deployments/deployment.json`, `proc`, `dapi`. Why it matters: public API positioning and the Gracenote example do not reveal the vendor's private protocols or topology. Suggested direction: use `edit-product-bricks` and `edit-products` when approved interface specifications are available; attach the concrete timebase, versioning, retry and invalidation contracts.
 2. **P2 — Governance must become tenant-specific before operation.** Evidence: `data/data-assets.json`, `feed`, `tran`, `modl`, `crul`, `clip`, `shlt`; `product-bricks/product-bricks.json`, `rght`. Why it matters: licensed source content may include personal or sensitive material, and permission to process does not establish permission for training or promotional reuse. Suggested direction: use `edit-data-assets` to record supplied retention, location, evaluation permission, downstream withdrawal and source-subject constraints. Current text is explicitly a proposal, not compliance evidence.
 3. **P2 — Residues are design candidates.** Evidence: `residuality/residuality.json`, `peak`, `drft`, `rgts`, `subs`. Why it matters: plausible checkpoints and tombstones do not prove recovery under load or withdrawal through partner caches. Suggested direction: exercise these cases with an operator and attach acceptance evidence before changing candidate status.
-
-## Teams Review
-
-Updated: 2026-09-06
-
-### Operating-model assessment
-
-- Six teams own all 24 bricks once: Playback and Revenue (4), Discovery and Editorial Intelligence (5), Sports Experience (2), Video Understanding and Model Quality (5), Platform Trust and Reliability (4), Solutions and Customer Value (4).
-- Staffing totals 36 delivery FTE plus two shared leadership roles. This is a proposed scale-up option, not Media Distillery's actual organization or total company headcount. Sales, finance and legal services are explicitly outside this delivery count.
-- Product teams own end-to-end outcomes; the specialist AI team owns source/model quality; Platform owns isolation, supplied policy and recovery; Solutions owns accepted integrations, review tooling and renewal evidence.
-- Team metrics match KPI names for the customers each team serves. Customer, stream, team and data-steward dependencies resolve. Production AI lives in product bricks; no customer-facing decision agents are disguised as staff.
-
-### Ownership findings
-
-No unresolved P1 ownership finding: zero unowned bricks, zero duplicate primary owners, zero teams without a meaningful owned capability. Every data asset owner matches its primary producing brick's owner. Other-team dependencies express service consumption or named collaboration, rather than a second primary ownership claim.
-
-### Topology, staffing and strategy findings
-
-1. **P2 — Small-team coverage is conditional.** Evidence: `teams/teams.json`, `spor` (5 FTE), `plat` (6), `vaim` (7). Why it matters: simultaneous live sports and continuous processing exceed a small team's isolated on-call capacity. Suggested direction: validate the stated joint rotation, supported event windows, escalation staffing and provider responsibilities before committing capacity; expand staffing only against measured workload.
-2. **P2 — Solutions combines several related account workflows.** Evidence: `teams/teams.json`, `solu`; owned bricks `conn`, `edqa`, `usag`, `outc`. Why it matters: integration work, editorial tooling and value evidence can contend during account expansion. Suggested direction: instrument queue age, activation time and support effort, then split a mission only if recurring load justifies another viable team.
-
-### Edit backlog
-
-Use `edit-teams` after validating delivery workload and supported service hours. Preserve current single ownership and customer/KPI alignment. Do not create eight teams merely to satisfy a density heuristic or infer staffing from public biographies.
 
 ## Balance Audit
 
@@ -85,7 +61,6 @@ Integrity: passed both domain validators with `--strict-ids`, KPI checks and add
 | Bricks / root groups / subgroups | 24 / 3 / 8 | 20+ bricks in three-level hierarchy |
 | Modules / outcome streams | 78 / 8 | Realistic layered and end-to-end coverage |
 | Data assets / stores | 24 / 4 | 15+ owned and connected assets |
-| Teams / delivery FTE | 6 / 36 | 8+ teams is a heuristic; smaller scope justified |
 | Products / deployment subchannels | 3 / 5 | Public offers connected to real delivery responsibilities |
 | Insights / research sources | 12 / 12 | 8+ sourced insights |
 | Competition entries | 10 | 8+ relevant competitors/substitutes; roles distinguished |
@@ -93,7 +68,7 @@ Integrity: passed both domain validators with `--strict-ids`, KPI checks and add
 
 **P1:** None unresolved.
 
-**P2:** Empirical customer baselines, actual interface and governance contracts, and sustainable small-team coverage remain explicit validation assumptions. These are the edit-ready items above.
+**P2:** Empirical customer baselines, and actual interface and governance contracts remain explicit validation assumptions. These are the edit-ready items above.
 
 **P3:** Custom persona, brick and competition artwork is omitted. Existing repository icon conventions are used; no unverified company logos or paid image-generation output is required for this model.
 

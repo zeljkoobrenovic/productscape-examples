@@ -34,7 +34,7 @@ All KPI baselines are unmeasured. No numeric target is presented as an observed 
 
 ## Modeling assumptions and boundaries
 
-- Personas, jobs, journeys, priorities, bricks, modules, dependencies, stores, teams and headcount are authored design hypotheses informed by public product descriptions.
+- Personas, jobs, journeys, priorities, bricks, modules, dependencies and stores are authored design hypotheses informed by public product descriptions.
 - Proposed runtime zones are logical responsibility boundaries, not claims about cloud vendors, regions, accounts, microservices or database technology used by Studytube.
 - The employer owns role requirements and qualification policy. Human reviewers approve content, assess contested evidence and decide exemptions; the model does not claim automated legal compliance.
 - Governance text is a proposed operating policy. Residency, retention, processor terms, subprocessor coverage and certificate applicability must be confirmed against the relevant contract.
@@ -48,6 +48,6 @@ Current product facts and their implications are recorded with canonical URLs an
 
 ## Structure and quality workflow
 
-Structural references: `ride-sharing-marketplace` for customers, bricks, streams, data and competition; `maas` for the current product/deployment/team schema; `occupational-health-and-safety-platform` for workforce and qualification boundaries; `enterprise-integration-and-data-management-platform` for integration/service ownership.
+Structural references: `ride-sharing-marketplace` for customers, bricks, streams, data and competition; `maas` for the current product/deployment schema; `occupational-health-and-safety-platform` for workforce and qualification boundaries; `enterprise-integration-and-data-management-platform` for integration/service ownership.
 
 Authoring follows `.claude/skills/new-product-domain` and its per-artifact skills. Strategy, architecture and operating-model reviews follow the three `.codex/skills/gpa-*-review` skills and are saved in the domain-root `REVIEW.md`. The live deployment schema records brick-to-product composition in `deployedBricks[].usedInProducts`; retired `neededBricks` fields in older guidance are not added.

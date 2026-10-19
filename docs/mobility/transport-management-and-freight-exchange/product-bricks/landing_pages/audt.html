@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "audt", "name": "Freight Audit and Self-Billing", "type": "full-stack", "status": "invest", "description": "Matches carrier invoices against expected costs and delivery evidence, auto-approves within tolerance, and routes discrepancies into a dispute workflow. Supports self-billing \u2014 the shipper issues the settlement document from confirmed deliveries and PODs \u2014 plus VAT-compliant e-invoicing across European jurisdictions, making settlement a standard attach on every account.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-audt-web", "name": "Audit and Dispute Workbench", "type": "web-component", "description": "Workbench for reviewing matches, working disputes, and releasing approved invoices and self-bills.", "dependencies": {"modules": [{"moduleId": "module-audt-api", "type": "uses", "description": "UI module works audit and dispute cases through the brick API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-audt-api", "name": "Freight Audit API", "type": "api", "description": "API for invoice intake, match results, dispute handling, and self-billing runs.", "dependencies": {"modules": [{"moduleId": "module-audt-invoice-store", "type": "delegates", "description": "Interface module delegates invoice and dispute state to the invoice store."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-audt-matching-consumer", "name": "Invoice Matching Consumer", "type": "message-consumer", "description": "Matches incoming carrier invoices against expected costs and POD evidence; auto-approves within tolerance bands.", "dependencies": {"modules": [{"moduleId": "module-audt-invoice-store", "type": "processes", "description": "Asynchronous module records match results and dispute triggers in the invoice store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-audt-invoice-store", "name": "Invoice and Settlement Store", "type": "stateful-service", "description": "Owns carrier invoices, match results, disputes, self-billing documents, and approval state."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-audt-einvoicing-adapter", "name": "e-Invoicing Adapter", "type": "integration", "description": "Exchanges compliant e-invoices and self-bills with Peppol and national VAT clearance platforms."}]}], "dataDependencies": [{"assetId": "freight-invoice", "moduleIds": ["module-audt-invoice-store", "module-audt-matching-consumer"], "role": "own", "description": "System of record for carrier invoices, match outcomes, disputes, and self-billing documents."}], "brickDependencies": [{"targetBrickId": "cost", "moduleId": "module-cost-api", "sourceModuleId": "module-audt-matching-consumer", "type": "data", "description": "Reads expected costs and accruals as the matching baseline for every invoice."}, {"targetBrickId": "edoc", "moduleId": "module-edoc-api", "sourceModuleId": "module-audt-matching-consumer", "type": "data", "description": "Pulls PODs and eCMR completion as delivery evidence for approval and self-billing."}, {"targetBrickId": "intg", "moduleId": "module-intg-bus", "sourceModuleId": "module-audt-invoice-store", "type": "integration", "description": "Posts approved invoices and self-bills to shipper ERP accounts-payable."}], "externalSystemsThisBrickDependsOn": [{"system": "e-Invoicing and VAT clearance networks", "type": "service", "interface": "Peppol and Clearance APIs", "description": "Delivers compliant e-invoices and self-bills through Peppol and country-specific VAT clearance platforms.", "sourceModuleId": "module-audt-einvoicing-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Commercial and Insight", "group": "Settlement"};
-    const relatedTeams = [{"teamId": "settlement", "teamName": "Settlement", "teamType": "stream-aligned", "groupId": "cing", "groupName": "Commercial and Insight Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "enterprise-tms", "name": "Enterprise TMS", "icon": "tdir.png", "type": "B2B Enterprise SaaS", "whyUsed": "Makes audited invoices and self-billing a standard attach to the execution flow."}];
     const supportedJobs = [{"customerId": "tdir", "customerName": "Transportation Director", "customerGroup": "Enterprise Shippers", "customerIcon": "tdir.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tdir-2", "jobName": "Control total freight spend end to end", "jobWhatItIs": "Keep the freight budget honest from planned cost through executed order to audited invoice: expected costs at order creation, automatic audit against rate cards, self-billing where possible, and variance analysis that names causes.", "jobOutcome": "Freight spend that closes each month within budget tolerance, with deviations explained by cause \u2014 not discovered in quarter-end accruals.", "supportRationale": "Registers the rated amount as the audit reference the carrier invoice must match.", "usedInSteps": [{"step": "Capture actual costs at order level", "description": "Rate every transport order at tender time \u2014 base rate, diesel floater, tolls, accessorials \u2014 so cost is known when the load is booked, not when the invoice arrives.", "howItSupports": "Registers the rated amount as the audit reference the carrier invoice must match.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-2-2.png", "title": "Transportation Director JTBD step 2: Capture actual costs at order level", "alt": "Enterprise infographic for step 2 of the job \"Control total freight spend end to end\": Capture actual costs at order level."}]}, {"step": "Audit invoices and run self-billing", "description": "Auto-match carrier invoices against rated orders and proof of delivery; move high-volume contracted carriers to self-billing so invoices are generated from execution data instead of being checked against it.", "howItSupports": "Matches invoice lines to rated orders and PODs, flags deviations, and issues self-billing statements.", "media": [{"type": "image", "src": "media/jbtd-tdir-jtbd-tdir-2-3.png", "title": "Transportation Director JTBD step 3: Audit invoices and run self-billing", "alt": "Enterprise infographic for step 3 of the job \"Control total freight spend end to end\": Audit invoices and run self-billing."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-2", "jobName": "Track shipments and resolve exceptions before customers notice", "jobWhatItIs": "Monitor every in-transit shipment against plan, catch delays and disruptions early, execute recovery \u2014 re-slot, re-route, inform \u2014 and close each order with clean delivery evidence.", "jobOutcome": "Disruptions are caught and handled before consignees feel them, and closed orders carry complete documentation into settlement.", "supportRationale": "Receives closed orders with documents attached so audit and self-billing run without queries.", "usedInSteps": [{"step": "Close orders with clean evidence", "description": "Confirm delivery with digital POD and eCMR, log deviations with causes, and hand a complete, auditable order to settlement without paper chasing.", "howItSupports": "Receives closed orders with documents attached so audit and self-billing run without queries.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-4.png", "title": "Transport Planner JTBD step 4: Close orders with clean evidence", "alt": "Enterprise infographic for step 4 of the job \"Track shipments and resolve exceptions before customers notice\": Close orders with clean evidence."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "etar", "name": "ETA, Maps and Routing Intelligence", "type": "service", "status": "invest", "description": "Provides route estimation, pickup guidance, airport geofencing, and live map context for riders and drivers.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}, {"group": "References", "description": "External references and background reading.", "links": [{"label": "ETA Phone Home: How Uber Engineers an Efficient Route", "link": "https://www.uber.com/en-US/blog/engineering-routing-engine/", "description": "Covers an in-house routing and ETA stack for pickup and trip-time estimation at marketplace scale."}, {"label": "How We Built Uber Engineering's Highest Query per Second Service Using Go", "link": "https://www.uber.com/en-CI/blog/go-geofence-highest-query-per-second-service/", "description": "Explains the geofence service used for geo-based product availability, airports, and surge zones."}, {"label": "Improving Uber's Mapping Accuracy with CatchME", "link": "https://www.uber.com/en-US/blog/mapping-accuracy-with-catchme/", "description": "Shows how mapping feedback loops improve route quality and ETA accuracy."}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-eta-and-routing-api", "name": "ETA and Routing API", "type": "api", "description": "Returns routes, ETAs, and pickup guidance.", "dependencies": {"modules": [{"moduleId": "module-eta-prediction-models", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-pickup-and-drop-off-guidance", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-geofence-and-zone-rules", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-live-location-events", "name": "Live Location Events", "type": "message-consumer", "description": "Emits location and route progress events.", "dependencies": {"modules": [{"moduleId": "module-eta-prediction-models", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-pickup-and-drop-off-guidance", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-geofence-and-zone-rules", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-eta-prediction-models", "name": "ETA Prediction Models", "type": "service", "description": "Predicts pickup and trip arrival timing."}, {"id": "module-pickup-and-drop-off-guidance", "name": "Pickup and Drop-off Guidance", "type": "service", "description": "Optimizes exact meeting points and constrained-zone handoffs."}, {"id": "module-geofence-and-zone-rules", "name": "Geofence and Zone Rules", "type": "service", "description": "Maintains airport, venue, and city-specific navigation constraints."}]}], "dataDependencies": [{"assetId": "eta-maps-and-routing-intelligence", "moduleIds": ["module-eta-prediction-models", "module-pickup-and-drop-off-guidance", "module-geofence-and-zone-rules"], "role": "own", "description": "Acts as the primary owning brick for Eta Maps And Routing Intelligence."}, {"assetId": "rider-identity-wallet-and-payments", "moduleIds": ["module-eta-prediction-models", "module-pickup-and-drop-off-guidance", "module-geofence-and-zone-rules"], "role": "read", "description": "Reads Rider Identity Wallet And Payments to support domain workflows."}, {"assetId": "driver-onboarding-and-compliance", "moduleIds": ["module-eta-prediction-models", "module-pickup-and-drop-off-guidance", "module-geofence-and-zone-rules"], "role": "read", "description": "Reads Driver Onboarding And Compliance to support domain workflows."}], "brickDependencies": [{"targetBrickId": "infr", "moduleId": "module-edge-and-traffic-control-apis", "sourceModuleId": "module-eta-and-routing-api", "type": "runtime", "description": "Depends on Service Runtime and Reliability Foundation for low-latency routing calls, failover, and resilient map-serving paths."}], "externalSystemsThisBrickDependsOn": [{"system": "Maps and traffic providers", "type": "data", "interface": "Routing APIs", "description": "Provides road network, traffic, and geospatial context.", "sourceModuleId": "module-geofence-and-zone-rules"}], "externalSystemsDependingOnThisBrick": [], "domain": "Rider Demand and Trip Experience", "group": "live-trip-and-confidence"};
-    const relatedTeams = [{"teamId": "marketplace-dispatch", "teamName": "Marketplace Dispatch and Pricing", "teamType": "platform", "groupId": "marketplace-controls", "groupName": "Marketplace and Trust Controls", "role": "related", "roleLabel": "Related team"}, {"teamId": "rider-core", "teamName": "Rider Core Experience", "teamType": "stream-aligned", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "rider-growth-live-trip-and-confidence", "teamName": "Rider Growth and Trip Experience ETA, Maps and Routing Intelligence", "teamType": "platform", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}, {"teamId": "rider-growth-operations-excellence", "teamName": "Rider Growth and Trip Experience Service Quality", "teamType": "enabling", "groupId": "rider-growth", "groupName": "Rider Growth and Trip Experience", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "rapp", "name": "Rider Mobility App", "icon": "", "type": "B2C Mobility", "whyUsed": "Improves pickup execution, ETAs, and map-based rider guidance."}];
     const supportedJobs = [{"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "book", "jobName": "Book a reliable ride for a time-sensitive trip", "jobWhatItIs": "Turn a need to get somewhere into a completed ride with predictable pickup, travel time, and payment.", "jobOutcome": "A completed trip that feels fast, safe, and worth the price paid.", "supportRationale": "Guides both rider and driver to a workable pickup and provides live ETA updates.", "usedInSteps": [{"step": "Get matched and navigate pickup", "description": "Confirm who is arriving, whether pickup is still on plan, and where the best meeting point is.", "howItSupports": "Guides both rider and driver to a workable pickup and provides live ETA updates.", "media": [{"type": "image", "src": "media/jbtd-ridu-book-2.jpg", "title": "Urban Time-Sensitive Rider JTBD step 2: Get matched and navigate pickup", "alt": "Enterprise infographic for step 2 of the job \"Book a reliable ride for a time-sensitive trip\": Get matched and navigate pickup."}]}]}, {"customerId": "ridu", "customerName": "Urban Time-Sensitive Rider", "customerGroup": "Rider Demand", "customerIcon": "ridu.png", "productId": "rapp", "productName": "Rider Mobility App", "productIcon": "", "jobId": "trust", "jobName": "Use ride sharing confidently in high-anxiety situations", "jobWhatItIs": "Rely on the marketplace for late-night, teen, family, airport, or unfamiliar-city travel without feeling exposed or unsupported.", "jobOutcome": "The rider chooses the service in moments where trust matters, not only when convenience matters.", "supportRationale": "Shows route progress and expected trip-state changes.", "usedInSteps": [{"step": "Monitor the trip and stay connected", "description": "Track route progress, share trip status, and act quickly if something looks wrong.", "howItSupports": "Shows route progress and expected trip-state changes.", "media": [{"type": "image", "src": "media/jbtd-ridu-trust-2.jpg", "title": "Urban Time-Sensitive Rider JTBD step 2: Monitor the trip and stay connected", "alt": "Enterprise infographic for step 2 of the job \"Use ride sharing confidently in high-anxiety situations\": Monitor the trip and stay connected."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

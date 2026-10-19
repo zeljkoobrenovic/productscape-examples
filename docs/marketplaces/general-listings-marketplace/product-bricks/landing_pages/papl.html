@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "papl", "name": "Payment Platform", "type": "integration", "status": "invest", "description": "Ability to have a generic payment that can be used across the actor domains.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-finance-operations-workspace", "name": "Finance Operations Workspace", "type": "web-component", "description": "User interface for reconciliation, exception handling, and financial oversight in Payment Platform.", "dependencies": {"modules": [{"moduleId": "module-transaction-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-transaction-api", "name": "Transaction API", "type": "api", "description": "API surface for submitting or retrieving financial transactions handled by Payment Platform.", "dependencies": {"modules": [{"moduleId": "module-transaction-and-ledger-core", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-settlement-and-reconciliation", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-billing-rules-and-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-settlement-and-ledger-events", "name": "Settlement and Ledger Events", "type": "message-consumer", "description": "Event stream carrying posting, settlement, and status changes from Payment Platform.", "dependencies": {"modules": [{"moduleId": "module-transaction-and-ledger-core", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-settlement-and-reconciliation", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-billing-rules-and-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-transaction-and-ledger-core", "name": "Transaction and Ledger Core", "type": "service", "description": "Records the core financial or commercial transactions handled by Payment Platform.", "dependencies": {"modules": [{"moduleId": "module-billing-rules-and-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-settlement-and-reconciliation", "name": "Settlement and Reconciliation", "type": "service", "description": "Matches external outcomes, balances, and exceptions flowing through Payment Platform."}, {"id": "module-billing-rules-and-controls", "name": "Billing Rules and Controls", "type": "service", "description": "Applies pricing, billing, tax, or financial control logic inside Payment Platform."}]}], "dataDependencies": [{"assetId": "transaction", "moduleIds": ["module-transaction-and-ledger-core", "module-settlement-and-reconciliation", "module-billing-rules-and-controls"], "role": "own", "description": "Owns marketplace transaction state used by billing, checkout, and settlement flows.", "criticality": "high"}, {"assetId": "payment-ledger", "moduleIds": ["module-transaction-and-ledger-core", "module-settlement-and-reconciliation", "module-billing-rules-and-controls"], "role": "own", "description": "Maintains postings, settlement outcomes, and ledger entries for payment operations.", "criticality": "high"}], "brickDependencies": [{"targetBrickId": "svih", "moduleId": "module-inbound-api", "sourceModuleId": "module-transaction-and-ledger-core", "type": "partner-connectivity", "description": "Connects to external payment service providers and acquirers via the integration hub."}, {"targetBrickId": "frde", "moduleId": "module-service-api", "sourceModuleId": "module-transaction-and-ledger-core", "type": "event-subscription", "description": "Submits payment events for fraud scoring before settlement."}], "externalSystemsThisBrickDependsOn": [{"system": "Payment service providers and acquirers", "type": "financial-network", "interface": "PSP / acquiring APIs", "description": "Authorizes, captures, and settles protected payments through external PSPs and acquirers.", "sourceModuleId": "module-transaction-and-ledger-core"}], "externalSystemsDependingOnThisBrick": [{"system": "Protected-transaction and monetization flows", "type": "transaction-consumer", "interface": "Payment API", "description": "Buyer protection, visibility upgrades, and billing call the payment platform.", "moduleId": "module-transaction-api"}], "domain": "Platform Experience", "group": "Payment"};
-    const relatedTeams = [{"teamId": "merchant-crm-contracts", "teamName": "Merchant CRM & Contracts", "teamType": "platform", "groupId": "experience-platform", "groupName": "Experience Platform", "role": "related", "roleLabel": "Related team"}, {"teamId": "payments-and-transactions", "teamName": "Payments & Transactions", "teamType": "platform", "groupId": "payments-and-transactions", "groupName": "Payments & Transactions", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "p2", "name": "Seller Listing Studio", "icon": "", "type": "C2C", "whyUsed": "Supports seller payouts and optional on-platform payment flows."}];
     const supportedJobs = [{"customerId": "cg2-p1", "customerName": "Casual Seller / Household Lister", "customerGroup": "Supply-Side Individuals", "customerIcon": "seller.png", "productId": "p2", "productName": "Seller Listing Studio", "productIcon": "", "jobId": "jtbd-cg2-2", "jobName": "Turn buyer interest into a completed sale", "jobWhatItIs": "Handle buyer questions, negotiate quickly, and complete the exchange safely.", "jobOutcome": "Faster sale-through with fewer no-shows, disputes, or moderation incidents.", "supportRationale": "Closes the sale through protected payment and a coordinated, evidenced handoff.", "usedInSteps": [{"step": "Close and handoff", "description": "Reserve the item, agree on payment or pickup, and confirm completion.", "howItSupports": "Closes the sale through protected payment and a coordinated, evidenced handoff.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-2-2.jpg", "title": "Casual Seller / Household Lister JTBD step 2: Close and handoff", "alt": "Enterprise infographic for step 2 of the job \"Turn buyer interest into a completed sale\": Close and handoff."}]}, {"step": "Close and handoff", "description": "Reserve the item, agree on payment or pickup, and confirm completion.", "howItSupports": "Handles optional payment, payout, and dispute workflows.", "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-2-2.jpg", "title": "Casual Seller / Household Lister JTBD step 2: Close and handoff", "alt": "Enterprise infographic for step 2 of the job \"Turn buyer interest into a completed sale\": Close and handoff."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

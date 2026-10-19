@@ -45,4 +45,3 @@ That makes the airline product domain wider than "book a flight". It is an integ
 - The domain includes both external customers and one internal operations persona because airline product quality depends directly on operational control quality.
 - Holidays, loyalty, disruption recovery, and cargo are modeled as first-class products rather than secondary features.
 - Product bricks are designed to bridge revenue management, passenger retail, airport operations, alliance connectivity, and cargo workflows.
-- Teams are organized around guest, holiday, commercial distribution, operations, cargo, and shared platform foundations.

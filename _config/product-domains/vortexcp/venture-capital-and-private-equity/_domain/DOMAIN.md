@@ -111,7 +111,7 @@ versus diversification, and investment pace versus evidence quality.
    strategies or countries remains a separate mandate decision.
 
 Per-persona customer and business KPI pyramids and horizons are in
-`customers/customers.json`; team charter metrics reuse their exact names. KPI trees
+`customers/customers.json`. KPI trees
 describe outcome drivers and diagnostic relationships, not necessarily additive
 formulas. No private baseline is available: terminal `currentValue` fields are null.
 Targets must be agreed after establishing a measurement period and baseline.
@@ -120,21 +120,14 @@ returns. Fund DPI, TVPI, and IRR require explicit cash-flow basis, valuation dat
 fees/carry treatment, currency, and vintage; [ILPA's performance template](https://ilpa.org/industry-guidance/templates-standards-model-documents/ilpa-templates-hub/ilpa-performance-template/)
 is an external design reference, not evidence of Vortex adopting that template.
 
-## Architecture and ownership assumptions
+## Architecture assumptions
 
-All product names, bricks, modules, stores, APIs, deployment channels, logical
-ownership assignments, and strategy horizons are **proposed modeling constructs**.
+All product names, bricks, modules, stores, APIs, deployment channels, and
+strategy horizons are **proposed modeling constructs**.
 They are not a discovered inventory of Vortex software or a claim that Vortex sells
 these separately. Capabilities can be delivered using configured third-party tools
-and human workflows; a brick does not imply a new microservice or engineering team.
+and human workflows; a brick does not imply a new microservice.
 Statuses express model investment priorities, not implementation maturity.
-
-The operating model uses five responsibility teams, sized to a specialist manager
-through shared roles and external providers. They are not five staffed software
-squads. Headcounts and group leadership counts are omitted because actual staffing
-allocations are unknown. Team ownership denotes accountability for a capability,
-not the authority to override a fund agreement, investment committee, company
-board, or management decision. Each brick has one primary owner.
 
 Proposed controls include company/fund access boundaries, conflicts and mandate
 checks, versioned source evidence, valuation review, and independently approved

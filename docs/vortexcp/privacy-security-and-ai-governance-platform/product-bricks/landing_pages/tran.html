@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "tran", "name": "Transfer Review", "type": "full-stack", "status": "sustaining", "description": "Records transfer context, mechanism, recipient evidence and case-specific decisions linked to the relevant processing and assessment. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "Transfer Impact Assessment", "link": "https://privacyperfect.com/services/transfer-impact-assessment/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-tran-ui", "name": "Review transfer safeguards and exceptions", "type": "web-component", "description": "Review transfer safeguards and exceptions with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-tran-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-tran-api", "name": "Transfer Review API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-tran-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-tran-worker", "name": "Transfer change review worker", "type": "message-consumer", "description": "Transfer change review worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-tran-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-tran-service", "name": "Version transfer context and decision rationale", "type": "stateful-service", "description": "Records transfer context, mechanism, recipient evidence and case-specific decisions linked to the relevant processing and assessment."}]}], "dataDependencies": [{"assetId": "proc", "moduleIds": ["module-tran-service"], "role": "read", "description": "Use the approved scope and version of Processing Activity through its owning capability; no independent source-of-truth copy."}, {"assetId": "ases", "moduleIds": ["module-tran-service"], "role": "read", "description": "Use the approved scope and version of Assessment Record through its owning capability; no independent source-of-truth copy."}, {"assetId": "xfer", "moduleIds": ["module-tran-service"], "role": "own", "description": "Authoritative owner of Transfer Decision. Transfer mechanism, destination context, importer evidence and case-specific reviewed safeguards linked to processing."}, {"assetId": "vnds", "moduleIds": ["module-tran-service"], "role": "read", "description": "Use the approved scope and version of Supplier Relationship through its owning capability; no independent source-of-truth copy."}, {"assetId": "ctrt", "moduleIds": ["module-tran-service"], "role": "read", "description": "Use the approved scope and version of Contract and Safeguard through its owning capability; no independent source-of-truth copy."}, {"assetId": "frms", "moduleIds": ["module-tran-service"], "role": "read", "description": "Use the approved scope and version of Reviewed Framework Content through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "ropi", "moduleId": "module-ropi-api", "sourceModuleId": "module-tran-service", "type": "context", "description": "Use Processing Register as the authoritative source of its context or workflow; keep Transfer Review responsible for its own decision state."}, {"targetBrickId": "asmt", "moduleId": "module-asmt-api", "sourceModuleId": "module-tran-service", "type": "context", "description": "Use Assessment Case Management as the authoritative source of its context or workflow; keep Transfer Review responsible for its own decision state."}, {"targetBrickId": "cont", "moduleId": "module-cont-api", "sourceModuleId": "module-tran-service", "type": "context", "description": "Use Contract and Safeguard Register as the authoritative source of its context or workflow; keep Transfer Review responsible for its own decision state."}, {"targetBrickId": "rule", "moduleId": "module-rule-api", "sourceModuleId": "module-tran-service", "type": "context", "description": "Use Framework and Assessment Content as the authoritative source of its context or workflow; keep Transfer Review responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-tran-api", "type": "context", "description": "Enforce tenant, role and record access for Transfer Review."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-tran-service", "type": "context", "description": "Record attributable state changes and decision context from Transfer Review."}, {"targetBrickId": "vreg", "moduleId": "module-vreg-api", "sourceModuleId": "module-tran-service", "type": "data", "description": "Read Supplier Relationship from its owner with record-scope checks and source version."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Privacy Operations", "group": "Assessment and Decisions"};
-    const relatedTeams = [{"teamId": "case", "teamName": "Privacy Assessment and Casework", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prmg", "name": "Privacy Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Privacy Management. Shared capability availability does not imply every adjacent commercial module is licensed."}, {"id": "vdrm", "name": "Third Party Risk Management", "icon": "product.png", "type": "B2B SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Third Party Risk Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "dpof", "customerName": "Privacy Officer", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "lawf", "jobName": "Reach a defensible decision on a proposed processing change", "jobWhatItIs": "Before a department commits to a new use of data, assess necessity, risk and safeguards.", "jobOutcome": "The accountable owner can proceed, change the proposal or stop with documented reasons.", "supportRationale": "Propose a review route using versioned questions.", "usedInSteps": [{"step": "Screen the proposed change", "description": "Collect enough factual context to select the required assessment; uncertain applicability goes to a specialist.", "howItSupports": "Propose a review route using versioned questions.", "media": []}, {"step": "Evaluate effects and safeguards", "description": "Consult affected owners, test alternatives and examine transfers where relevant; do not equate a filled questionnaire with acceptable risk.", "howItSupports": "Coordinate assessment, transfer context and evidence.", "media": []}, {"step": "Record advice and the accountable decision", "description": "Preserve disagreements, conditions and follow-up owners; the controller retains decision authority.", "howItSupports": "Separate specialist advice from risk acceptance.", "media": []}]}, {"customerId": "proc", "customerName": "Business Process Owner", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "prop", "jobName": "Get a proposed business change assessed in time", "jobWhatItIs": "When changing a process, supply enough reliable context for an accountable decision.", "jobOutcome": "The proposal receives clear conditions or a reasoned stop before commitment.", "supportRationale": "Route questions and preserve the decision context.", "usedInSteps": [{"step": "Resolve review questions", "description": "Provide missing facts and evidence without rewriting already accepted information.", "howItSupports": "Route questions and preserve the decision context.", "media": []}, {"step": "Implement agreed conditions", "description": "Assign business actions, provide proof and seek confirmation where conditions require it.", "howItSupports": "Track approval conditions and completion evidence.", "media": []}]}, {"customerId": "vndr", "customerName": "Supplier Risk Manager", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "vdrm", "productName": "Third Party Risk Management", "productIcon": "product.png", "jobId": "slct", "jobName": "Select a supplier with an understood risk position", "jobWhatItIs": "Before a commitment, establish whether the intended supplier relationship is acceptable.", "jobOutcome": "The sponsor understands gaps, conditions and contractual safeguards before selection.", "supportRationale": "Connect supplier and business context.", "usedInSteps": [{"step": "Define the relationship and criticality", "description": "Identify data use, business dependency, supplier identity and the relevant contract scope.", "howItSupports": "Connect supplier and business context.", "media": []}, {"step": "Collect proportionate evidence", "description": "Request only relevant answers and documents, preserve provenance and flag unanswered or contradictory points.", "howItSupports": "Coordinate review without treating supplier assertions as verification.", "media": []}, {"step": "Record a conditional decision", "description": "Escalate unresolved issues and capture the authorized decision before the contract is accepted.", "howItSupports": "Connect assessment, contract conditions and review ownership.", "media": []}]}, {"customerId": "vndr", "customerName": "Supplier Risk Manager", "customerGroup": "Distributed Contribution and Administration", "customerIcon": "customer.png", "productId": "vdrm", "productName": "Third Party Risk Management", "productIcon": "product.png", "jobId": "vren", "jobName": "Keep supplier decisions valid through renewal and exit", "jobWhatItIs": "Supplier services, subprocessors and safeguards change during the relationship.", "jobOutcome": "Renewal or exit follows an up-to-date assessment with an accountable exception record.", "supportRationale": "Surface pending reviews and expiring evidence.", "usedInSteps": [{"step": "Check change and expiry signals", "description": "Review contract dates, new uses and supplier-reported changes; a failed integration remains an explicit gap.", "howItSupports": "Surface pending reviews and expiring evidence.", "media": []}, {"step": "Reassess affected obligations", "description": "Review transfer and processing impacts only where the relationship has changed materially.", "howItSupports": "Maintain relationship history.", "media": []}, {"step": "Reassess affected obligations", "description": "Review transfer and processing impacts only where the relationship has changed materially.", "howItSupports": "Revisit the relevant processing or transfer assessment.", "media": []}, {"step": "Renew, restrict or exit", "description": "Record the authorized outcome and assign operational exit obligations to customer system owners.", "howItSupports": "Preserve the renewal decision and outstanding conditions.", "media": []}]}, {"customerId": "dpof", "customerName": "Privacy Officer", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "vdrm", "productName": "Third Party Risk Management", "productIcon": "product.png", "jobId": "lawf", "jobName": "Reach a defensible decision on a proposed processing change", "jobWhatItIs": "Before a department commits to a new use of data, assess necessity, risk and safeguards.", "jobOutcome": "The accountable owner can proceed, change the proposal or stop with documented reasons.", "supportRationale": "Propose a review route using versioned questions.", "usedInSteps": [{"step": "Screen the proposed change", "description": "Collect enough factual context to select the required assessment; uncertain applicability goes to a specialist.", "howItSupports": "Propose a review route using versioned questions.", "media": []}, {"step": "Evaluate effects and safeguards", "description": "Consult affected owners, test alternatives and examine transfers where relevant; do not equate a filled questionnaire with acceptable risk.", "howItSupports": "Coordinate assessment, transfer context and evidence.", "media": []}, {"step": "Record advice and the accountable decision", "description": "Preserve disagreements, conditions and follow-up owners; the controller retains decision authority.", "howItSupports": "Separate specialist advice from risk acceptance.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

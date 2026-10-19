@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "brch", "name": "Breach Decision Register", "type": "full-stack", "status": "sustaining", "description": "Records incident facts, awareness, organizational role, risk evaluation and notification decisions, including reasons not to notify and phased follow-up evidence. Modeled capability boundary; public sources do not establish this implementation.", "links": [{"group": "Public Capability Context", "description": "Supports the capability scope only. Modules, data design and operating boundaries are modeled, not verified implementation evidence.", "links": [{"label": "Data Breach Register", "link": "https://privacyperfect.com/services/data-breach-register/", "description": "Primary source; accessed 2026-09-06."}]}], "layers": [{"layer": "ui", "description": "Role-appropriate browser workflow.", "modules": [{"id": "module-brch-ui", "name": "Triage an incident and review communications", "type": "web-component", "description": "Triage an incident and review communications with context, validation and an explicit next action.", "dependencies": {"modules": [{"moduleId": "module-brch-api", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "interfaces", "description": "Proposed scoped API boundary, not a claim of an existing public endpoint.", "modules": [{"id": "module-brch-api", "name": "Breach Decision Register API", "type": "api", "description": "Validates caller scope and inputs, returns version and conflict information, and delegates to the capability\u2019s behavior.", "dependencies": {"modules": [{"moduleId": "module-brch-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "worker", "description": "Durable, observable background work with idempotency and recoverable failure state.", "modules": [{"id": "module-brch-worker", "name": "Breach escalation and follow-up worker", "type": "message-consumer", "description": "Breach escalation and follow-up worker; retain last-success time, correlation and a visible retry or escalation state.", "dependencies": {"modules": [{"moduleId": "module-brch-service", "type": "uses", "description": "Delegates to the explicitly owned behavior within this capability."}]}}]}, {"layer": "service", "description": "Owns durable domain state.", "modules": [{"id": "module-brch-service", "name": "Preserve incident chronology and authorized decisions", "type": "stateful-service", "description": "Records incident facts, awareness, organizational role, risk evaluation and notification decisions, including reasons not to notify and phased follow-up evidence.", "dependencies": {"modules": [{"moduleId": "module-brch-adapter", "type": "uses", "description": "Invokes the controlled adapter for the external part of this capability."}]}}]}, {"layer": "integration", "description": "Explicit system boundary; validate protocol, contract, permissions and failure behavior.", "modules": [{"id": "module-brch-adapter", "name": "Breach Decision Register Boundary Adapter", "type": "integration", "description": "Translate only approved information across the named external boundaries; reject unexpected schema versions and preserve reconciliation evidence."}]}], "dataDependencies": [{"assetId": "incs", "moduleIds": ["module-brch-service"], "role": "own", "description": "Authoritative owner of Incident and Breach Decision. Incident facts, awareness event, organizational role, affected categories, risk evaluation and notification or non-notification rationale."}, {"assetId": "rsks", "moduleIds": ["module-brch-service"], "role": "read", "description": "Use the approved scope and version of Risk and Treatment through its owning capability; no independent source-of-truth copy."}, {"assetId": "work", "moduleIds": ["module-brch-service"], "role": "read", "description": "Use the approved scope and version of Review Task and Communication through its owning capability; no independent source-of-truth copy."}, {"assetId": "docs", "moduleIds": ["module-brch-service"], "role": "read", "description": "Use the approved scope and version of Evidence Document and Provenance through its owning capability; no independent source-of-truth copy."}], "brickDependencies": [{"targetBrickId": "risk", "moduleId": "module-risk-api", "sourceModuleId": "module-brch-service", "type": "context", "description": "Use Risk and Treatment Register as the authoritative source of its context or workflow; keep Breach Decision Register responsible for its own decision state."}, {"targetBrickId": "evdn", "moduleId": "module-evdn-api", "sourceModuleId": "module-brch-service", "type": "context", "description": "Use Evidence Vault as the authoritative source of its context or workflow; keep Breach Decision Register responsible for its own decision state."}, {"targetBrickId": "task", "moduleId": "module-task-api", "sourceModuleId": "module-brch-service", "type": "context", "description": "Use Review Tasks and Communications as the authoritative source of its context or workflow; keep Breach Decision Register responsible for its own decision state."}, {"targetBrickId": "rpts", "moduleId": "module-rpts-api", "sourceModuleId": "module-brch-service", "type": "context", "description": "Use Assurance Reporting and Export as the authoritative source of its context or workflow; keep Breach Decision Register responsible for its own decision state."}, {"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-brch-api", "type": "context", "description": "Enforce tenant, role and record access for Breach Decision Register."}, {"targetBrickId": "audt", "moduleId": "module-audt-api", "sourceModuleId": "module-brch-service", "type": "context", "description": "Record attributable state changes and decision context from Breach Decision Register."}], "externalSystemsThisBrickDependsOn": [{"system": "Supervisory authority submission channels", "type": "integration", "interface": "Human-approved report export and receipt upload", "description": "An authorized person submits through the relevant official channel; no universal regulator API is assumed.", "sourceModuleId": "module-brch-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Privacy Operations", "group": "Rights and Incidents"};
-    const relatedTeams = [{"teamId": "case", "teamName": "Privacy Assessment and Casework", "teamType": "stream-aligned", "groupId": "govs", "groupName": "Governance Value Delivery", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "prmg", "name": "Privacy Management", "icon": "product.png", "type": "B2B / B2G SaaS \u2014 observed solution area", "whyUsed": "Modeled composition for Privacy Management. Shared capability availability does not imply every adjacent commercial module is licensed."}];
     const supportedJobs = [{"customerId": "dpof", "customerName": "Privacy Officer", "customerGroup": "Accountability and Assurance", "customerIcon": "customer.png", "productId": "prmg", "productName": "Privacy Management", "productIcon": "product.png", "jobId": "resp", "jobName": "Protect people when a request or incident arrives", "jobWhatItIs": "A rights request or reported incident creates urgent work across teams.", "jobOutcome": "The organization makes timely, justified decisions and can show what it communicated.", "supportRationale": "Route breach assessment and escalation.", "usedInSteps": [{"step": "Triage the case and responsibility", "description": "Distinguish a rights request from an incident, identify the responsible entity and record receipt or awareness as appropriate.", "howItSupports": "Route breach assessment and escalation.", "media": []}, {"step": "Gather facts and evaluate action", "description": "Ask system owners for the minimum evidence needed; consider identity, other people\u2019s rights, incident effects and applicable duties.", "howItSupports": "Support risk-based notification decisions.", "media": []}, {"step": "Communicate and retain the decision trail", "description": "Have the authorized owner approve communications, record delivery evidence and schedule the case retention review.", "howItSupports": "Preserve notification or non-notification rationale.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

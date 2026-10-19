@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -960,7 +928,6 @@
     <a href="../../customers/index.html">Customers</a>
     <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
     <a href="../../product-deployments/index.html">Products</a>
-    <a href="../../teams/index.html">Teams</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
     <a href="../../tutorial/index.html">Domain Tutorial</a>
@@ -977,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "occm", "name": "Occasion Manager Stock and Pricing", "type": "full-stack", "status": "invest", "description": "Used-car stock management with market data: stock list, signal list for slow movers, pricing advice, buying advice with maximum purchase price, auction bid limits and import checks. Runs as a web app and PWA for iOS and Android.", "links": [], "layers": [{"layer": "ui", "description": "User-facing web, PWA and app surfaces.", "modules": [{"id": "module-stock-list-ui", "name": "Stock and Signal List", "type": "web-component", "description": "Stock overview with price position, stand-time and signals.", "dependencies": {"modules": [{"moduleId": "module-stock-bff", "type": "uses", "description": "Loads stock."}]}}, {"id": "module-buying-pwa", "name": "Buying PWA", "type": "mobile-component", "description": "Scan a plate on the lot or at auction and see maximum purchase price.", "dependencies": {"modules": [{"moduleId": "module-stock-bff", "type": "uses", "description": "Valuations."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs and back-office interfaces.", "modules": [{"id": "module-stock-bff", "name": "Stock BFF", "type": "bff", "description": "Stock, signals and buying advice for web and PWA.", "dependencies": {"modules": [{"moduleId": "module-pricing-advisor", "type": "uses", "description": "Advice."}, {"moduleId": "module-stock-store", "type": "uses", "description": "Stock."}]}}]}, {"layer": "worker", "description": "Queues, consumers and scheduled jobs.", "modules": [{"id": "module-signal-generator", "name": "Signal Generator", "type": "daemon", "description": "Nightly recomputes price position and raises stand-time and price signals.", "dependencies": {"modules": [{"moduleId": "module-stock-store", "type": "uses", "description": "Writes signals."}]}}]}, {"layer": "stateless-service", "description": "Orchestration and calculation without durable state.", "modules": [{"id": "module-pricing-advisor", "name": "Pricing and Buying Advisor", "type": "stateless-service", "description": "Combines valuation, market position and target margin into price and bid advice.", "dependencies": {"modules": [{"moduleId": "module-valuation-api", "type": "uses", "description": "Values.", "targetBrickId": "valu"}, {"moduleId": "module-market-query-api", "type": "uses", "description": "Competition.", "targetBrickId": "mktd"}]}}]}, {"layer": "service", "description": "Domain services that own state.", "modules": [{"id": "module-stock-store", "name": "Stock Store", "type": "stateful-service", "description": "Dealer stock items, cost, target margin, price history and signals."}]}], "dataDependencies": [{"assetId": "dealer-stock-item", "moduleIds": ["module-stock-store", "module-signal-generator"], "role": "own", "description": "Stock."}, {"assetId": "valuation-record", "moduleIds": ["module-pricing-advisor"], "role": "read", "description": "Values."}, {"assetId": "market-advertisement-observation", "moduleIds": ["module-pricing-advisor"], "role": "read", "description": "Competing adverts."}], "brickDependencies": [{"targetBrickId": "valu", "moduleId": "module-valuation-api", "sourceModuleId": "module-pricing-advisor", "type": "data", "description": "Retail and purchase values."}, {"targetBrickId": "mktd", "moduleId": "module-market-query-api", "sourceModuleId": "module-pricing-advisor", "type": "data", "description": "Competing listings."}, {"targetBrickId": "dosr", "moduleId": "module-dossier-bff", "sourceModuleId": "module-stock-bff", "type": "context", "description": "Stock items link to dossiers."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Dealer Operations (MijnVWE)", "group": "Stock and Purchasing"};
-    const relatedTeams = [{"teamId": "stock-and-pricing", "teamName": "Stock, Pricing and Appraisal", "teamType": "stream-aligned", "groupId": "dealer-platform", "groupName": "Dealer Platform (MijnVWE)", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "mijnvwe", "name": "MijnVWE Dealer Platform", "icon": "product.png", "type": "B2B Vertical SaaS (modular)", "whyUsed": "Stock module."}, {"id": "occasion-manager", "name": "Occasion Manager", "icon": "product.png", "type": "B2B SaaS module", "whyUsed": "Stock, signals and advice."}];
     const supportedJobs = [{"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}, {"step": "Price and advertise once bought", "description": "Set an asking price and go live everywhere.", "howItSupports": "Market-based price and 150+ channels.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "dhld-steer", "jobName": "Steer used-car performance across branches", "jobWhatItIs": "Set pricing and stock policy and see where branches deviate.", "jobOutcome": "Every branch prices within policy and group stand-time falls.", "supportRationale": "Group view in Occasion Manager.", "usedInSteps": [{"step": "Consolidate stock", "description": "See all branches in one stock and signal list.", "howItSupports": "Group view in Occasion Manager.", "media": []}, {"step": "Benchmark branches", "description": "Compare branch share and stand-time with the local market.", "howItSupports": "Market Performance Manager.", "media": []}, {"step": "Rebalance stock", "description": "Move cars between branches or to the trade.", "howItSupports": "Trade exchange and transfers.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "mijnvwe", "productName": "MijnVWE Dealer Platform", "productIcon": "product.png", "jobId": "dhld-grow", "jobName": "Grow used-car share in the group's regions", "jobWhatItIs": "Find where demand is and win more buyers in each branch area.", "jobOutcome": "Used-car share per region grows without margin erosion.", "supportRationale": "Price advice and signals.", "usedInSteps": [{"step": "Price for velocity", "description": "Apply market-based pricing in every branch.", "howItSupports": "Price advice and signals.", "media": []}]}, {"customerId": "udlr", "customerName": "Independent Used-Car Dealer", "customerGroup": "Car Dealers", "customerIcon": "customer-udlr-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "udlr-buy", "jobName": "Buy used cars that will sell at a healthy margin", "jobWhatItIs": "Decide quickly what a trade-in or trade car is worth and what to pay for it.", "jobOutcome": "Every purchase stays below the maximum purchase price and has no hidden surprises.", "supportRationale": "Combines RDW, SilverDAT, damage and NAP data.", "usedInSteps": [{"step": "Identify and check the car", "description": "Plate lookup, options and full history before an offer.", "howItSupports": "Combines RDW, SilverDAT, damage and NAP data.", "media": []}, {"step": "Price and advertise once bought", "description": "Set an asking price and go live everywhere.", "howItSupports": "Market-based price and 150+ channels.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "dhld-steer", "jobName": "Steer used-car performance across branches", "jobWhatItIs": "Set pricing and stock policy and see where branches deviate.", "jobOutcome": "Every branch prices within policy and group stand-time falls.", "supportRationale": "Group view in Occasion Manager.", "usedInSteps": [{"step": "Consolidate stock", "description": "See all branches in one stock and signal list.", "howItSupports": "Group view in Occasion Manager.", "media": []}, {"step": "Benchmark branches", "description": "Compare branch share and stand-time with the local market.", "howItSupports": "Market Performance Manager.", "media": []}, {"step": "Rebalance stock", "description": "Move cars between branches or to the trade.", "howItSupports": "Trade exchange and transfers.", "media": []}]}, {"customerId": "dhld", "customerName": "Dealer Group Used-Car Director", "customerGroup": "Car Dealers", "customerIcon": "customer-dhld-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "dhld-grow", "jobName": "Grow used-car share in the group's regions", "jobWhatItIs": "Find where demand is and win more buyers in each branch area.", "jobOutcome": "Used-car share per region grows without margin erosion.", "supportRationale": "Price advice and signals.", "usedInSteps": [{"step": "Price for velocity", "description": "Apply market-based pricing in every branch.", "howItSupports": "Price advice and signals.", "media": []}]}, {"customerId": "trex", "customerName": "Car Trader and Importer-Exporter", "customerGroup": "Traders, Lessors and Fleets", "customerIcon": "customer-trex-portrait.jpg", "productId": "occasion-manager", "productName": "Occasion Manager", "productIcon": "product.png", "jobId": "trex-import", "jobName": "Import cars profitably and legally", "jobWhatItIs": "Bring a car from abroad to Dutch registration with the lowest correct BPM.", "jobOutcome": "Landed cost is known before buying and registration happens within days.", "supportRationale": "History and valuation.", "usedInSteps": [{"step": "Check before buying abroad", "description": "International damage history and value.", "howItSupports": "History and valuation.", "media": []}]}];
     mermaid.initialize({
@@ -1324,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2356,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

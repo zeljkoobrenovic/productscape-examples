@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "trck", "name": "Real-Time Visibility and ETA", "type": "full-stack", "status": "invest", "description": "Real-time shipment visibility: normalizes positions and status events from telematics feeds, the driver app, and carrier messages, map-matches them to shipments, and computes ETAs that respect EU driving-time and rest-period rules. Shippers and consignees see live maps and receive at-risk arrival predictions early enough to act.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-trck-map-web", "name": "Live Tracking Map", "type": "web-component", "description": "Live map and shipment timeline embedded in shipper, consignee, and dock views.", "dependencies": {"modules": [{"moduleId": "module-trck-api", "type": "uses", "description": "UI module reads shipment positions, timelines, and ETAs through the visibility API."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-trck-api", "name": "Visibility API", "type": "api", "description": "Serves shipment positions, milestone timelines, and ETA predictions to product surfaces and shipper systems.", "dependencies": {"modules": [{"moduleId": "module-trck-event-store", "type": "delegates", "description": "Interface module reads tracking state from the event store."}, {"moduleId": "module-trck-eta-engine", "type": "delegates", "description": "Interface module requests fresh ETA computations from the ETA engine."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-trck-position-consumer", "name": "Position Event Consumer", "type": "message-consumer", "description": "Consumes normalized position and status events, map-matches them, and assigns them to active shipments.", "dependencies": {"modules": [{"moduleId": "module-trck-event-store", "type": "processes", "description": "Asynchronous module appends matched events to the tracking event store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-trck-eta-engine", "name": "ETA Prediction Engine", "type": "stateless-service", "description": "Predicts arrival times from live position, route, traffic, and driving-time/rest-period constraints; owns no durable state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-trck-event-store", "name": "Tracking Event Store", "type": "stateful-service", "description": "Owns the per-shipment tracking timeline, current position, and ETA history."}]}], "dataDependencies": [{"assetId": "tracking-event-stream", "moduleIds": ["module-trck-position-consumer", "module-trck-event-store"], "role": "own", "description": "System of record for the matched, shipment-assigned tracking event timeline."}, {"assetId": "eta-prediction", "moduleIds": ["module-trck-eta-engine", "module-trck-event-store"], "role": "own", "description": "System of record for ETA predictions and their accuracy history."}], "brickDependencies": [{"targetBrickId": "conn", "moduleId": "module-conn-message-bus", "sourceModuleId": "module-trck-position-consumer", "type": "data", "description": "Consumes the normalized position and status stream from the connectivity gateway."}, {"targetBrickId": "mdat", "moduleId": "module-mdat-api", "sourceModuleId": "module-trck-eta-engine", "type": "master-data", "description": "Uses location geofences and site opening hours for arrival detection and ETA context."}], "externalSystemsThisBrickDependsOn": [{"system": "Map and traffic providers", "type": "data", "interface": "Map Matching and Traffic API", "description": "Road-network map matching and live traffic used in position processing and ETA computation.", "sourceModuleId": "module-trck-eta-engine"}], "externalSystemsDependingOnThisBrick": [], "domain": "Execution and Visibility", "group": "Visibility and Sites"};
-    const relatedTeams = [{"teamId": "site-logistics", "teamName": "Site Logistics", "teamType": "stream-aligned", "groupId": "exeg", "groupName": "Execution Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "visibility", "teamName": "Visibility", "teamType": "stream-aligned", "groupId": "exeg", "groupName": "Execution Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "enterprise-tms", "name": "Enterprise TMS", "icon": "tdir.png", "type": "B2B Enterprise SaaS", "whyUsed": "Gives planners live position and ETA on every dispatched order without calling the carrier. Converts raw telematics positions into shipment-level tracking and ETAs for planners."}, {"id": "carrier-companion", "name": "Carrier Portal and Mobile App", "icon": "ownr.png", "type": "B2B Portal and Mobile", "whyUsed": "Turns the driver's phone into a tracking source when no telematics unit is connected."}, {"id": "network-analytics", "name": "Network Analytics and Benchmarking", "icon": "tdir.png", "type": "B2B Data and Analytics", "whyUsed": "Feeds executed-trip data into service-level and lane analytics."}];
     const supportedJobs = [{"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-1", "jobName": "Plan and tender the daily load plan", "jobWhatItIs": "Turn the overnight ERP order drop into optimized FTL/LTL loads, tender them through the routing guide, and get every load confirmed with carrier, driver, and dock slot before cutoff.", "jobOutcome": "The day's orders become confirmed, dispatched transport orders with minimal manual touches and no loads left silently uncovered.", "supportRationale": "Books matching dock slots at origin and destination for each confirmed load.", "usedInSteps": [{"step": "Confirm dispatch, documents, and dock slots", "description": "Lock in pickup times, generate transport documents including eCMR, and align dock slots at origin and destination so confirmed loads have somewhere to load and unload.", "howItSupports": "Books matching dock slots at origin and destination for each confirmed load.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-1-4.png", "title": "Transport Planner JTBD step 4: Confirm dispatch, documents, and dock slots", "alt": "Enterprise infographic for step 4 of the job \"Plan and tender the daily load plan\": Confirm dispatch, documents, and dock slots."}]}]}, {"customerId": "tpln", "customerName": "Transport Planner", "customerGroup": "Enterprise Shippers", "customerIcon": "tpln.png", "productId": "enterprise-tms", "productName": "Enterprise TMS", "productIcon": "tdir.png", "jobId": "jtbd-tpln-2", "jobName": "Track shipments and resolve exceptions before customers notice", "jobWhatItIs": "Monitor every in-transit shipment against plan, catch delays and disruptions early, execute recovery \u2014 re-slot, re-route, inform \u2014 and close each order with clean delivery evidence.", "jobOutcome": "Disruptions are caught and handled before consignees feel them, and closed orders carry complete documentation into settlement.", "supportRationale": "Aggregates telematics and status feeds into live ETAs matched against promised windows.", "usedInSteps": [{"step": "Watch live positions and ETAs", "description": "Track all moving shipments on one board fed by telematics and carrier updates, with ETAs recomputed against booked delivery windows and dock slots.", "howItSupports": "Aggregates telematics and status feeds into live ETAs matched against promised windows.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-1.png", "title": "Transport Planner JTBD step 1: Watch live positions and ETAs", "alt": "Enterprise infographic for step 1 of the job \"Track shipments and resolve exceptions before customers notice\": Watch live positions and ETAs."}]}, {"step": "Triage at-risk shipments", "description": "Work a ranked exception queue \u2014 late, silent, or off-route shipments scored by customer impact \u2014 instead of scanning hundreds of green rows for the three red ones.", "howItSupports": "Scores and ranks exceptions by lateness risk and customer criticality with suggested actions.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-2.png", "title": "Transport Planner JTBD step 2: Triage at-risk shipments", "alt": "Enterprise infographic for step 2 of the job \"Track shipments and resolve exceptions before customers notice\": Triage at-risk shipments."}]}, {"step": "Execute recovery actions", "description": "Rebook dock slots, notify consignees, arrange rescue capacity for breakdowns, and record what happened so the same failure is cheaper to handle next time.", "howItSupports": "Coordinates recovery playbooks and keeps all parties informed from one thread.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-3.png", "title": "Transport Planner JTBD step 3: Execute recovery actions", "alt": "Enterprise infographic for step 3 of the job \"Track shipments and resolve exceptions before customers notice\": Execute recovery actions."}]}, {"step": "Execute recovery actions", "description": "Rebook dock slots, notify consignees, arrange rescue capacity for breakdowns, and record what happened so the same failure is cheaper to handle next time.", "howItSupports": "Re-slots arrivals when delays make original bookings impossible.", "media": [{"type": "image", "src": "media/jbtd-tpln-jtbd-tpln-2-3.png", "title": "Transport Planner JTBD step 3: Execute recovery actions", "alt": "Enterprise infographic for step 3 of the job \"Track shipments and resolve exceptions before customers notice\": Execute recovery actions."}]}]}, {"customerId": "cdsp", "customerName": "Carrier Dispatcher", "customerGroup": "Carriers", "customerIcon": "cdsp.png", "productId": "carrier-companion", "productName": "Carrier Portal and Mobile App", "productIcon": "ownr.png", "jobId": "jtbd-cdsp-2", "jobName": "Win and execute enterprise shipper contracts digitally", "jobWhatItIs": "Get onto enterprise routing guides and stay there: respond to tenders, receive orders straight into dispatch, send statuses and eCMR automatically, and build the performance record that wins the next award.", "jobOutcome": "A growing base of contract lanes with enterprise shippers, executed digitally at a cost small fleets could not otherwise afford.", "supportRationale": "Passes live positions to the shipper so delays are managed jointly instead of discovered.", "usedInSteps": [{"step": "Send statuses and e-documents automatically", "description": "Let telematics feed pickup, in-transit, and delivery statuses automatically, with eCMR signed digitally at both ends \u2014 keeping shippers informed without drivers on the phone.", "howItSupports": "Passes live positions to the shipper so delays are managed jointly instead of discovered.", "media": [{"type": "image", "src": "media/jbtd-cdsp-jtbd-cdsp-2-3.png", "title": "Carrier Dispatcher JTBD step 3: Send statuses and e-documents automatically", "alt": "Enterprise infographic for step 3 of the job \"Win and execute enterprise shipper contracts digitally\": Send statuses and e-documents automatically."}]}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

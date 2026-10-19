@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "part", "name": "Partner Network Portal and Deal Registration", "type": "full-stack", "status": "invest", "description": "The programme behind the 32 consulting and reseller partners (Slalom, Biztory, USEReady, Big X Data and others) that sell and implement the extensions in their region and language: partner onboarding and tiers, deal registration and lead routing, demo and NFR licences, enablement content, co-marketing assets, margin and commission statements, and a partner directory shown on the website. Partner-sourced subscription revenue is the north star for the partner persona and the main lever for international expansion under Vortex.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-part-portal", "name": "Partner Portal", "type": "web-component", "description": "Portal for partners to register deals, request demo licences, access enablement and co-marketing content and view margin statements.", "dependencies": {"modules": [{"moduleId": "module-part-bff", "type": "uses", "description": "Portal reads and writes through the partner BFF."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-part-bff", "name": "Partner Portal BFF", "type": "bff", "description": "Aggregates partner profile, deals, licences, content and commissions into portal views and serves the public partner directory.", "dependencies": {"modules": [{"moduleId": "module-part-deals", "type": "delegates", "description": "BFF delegates profile and deal persistence to the partner store."}, {"moduleId": "module-part-demo", "type": "uses", "description": "BFF requests demo licences through the provisioning service."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-part-demo", "name": "Demo Licence Provisioning", "type": "stateless-service", "description": "Provisions and renews partner demo and NFR licences against the license service without owning state."}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-part-deals", "name": "Partner Profile and Deal Registration Store", "type": "stateful-service", "description": "Owns partner profiles, tiers, regions, certifications, registered deals, lead assignments and commission records."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-part-crm", "name": "Partner CRM Connector", "type": "integration", "description": "Syncs registered deals, partner leads and opportunity stages with the CRM."}]}], "dataDependencies": [{"assetId": "partner-profile-and-deal", "moduleIds": ["module-part-deals", "module-part-bff"], "role": "own", "description": "System of record for partner profiles, deals and commissions."}], "brickDependencies": [{"targetBrickId": "lics", "moduleId": "module-lics-api", "sourceModuleId": "module-part-demo", "type": "licensing", "description": "Creates demo and NFR entitlements and attributes subscriptions to partner deals."}, {"targetBrickId": "docs", "moduleId": "module-docs-build", "sourceModuleId": "module-part-bff", "type": "documents", "description": "Serves enablement courses and training material to partners."}, {"targetBrickId": "csuc", "moduleId": "module-csuc-health", "sourceModuleId": "module-part-bff", "type": "data", "description": "Shares account health of partner-sourced customers for joint success plans."}, {"targetBrickId": "idnt", "moduleId": "module-idnt-api", "sourceModuleId": "module-part-bff", "type": "identity", "description": "Authenticates partner users and scopes them to their firm."}], "externalSystemsThisBrickDependsOn": [{"system": "CRM platform", "type": "integration", "interface": "CRM API", "description": "Deal registration and opportunity sync.", "sourceModuleId": "module-part-crm"}], "externalSystemsDependingOnThisBrick": [{"system": "Consulting and reseller partners", "type": "channel-consumer", "interface": "Partner Portal", "description": "Partners register deals, request licences and pull enablement content.", "moduleId": "module-part-portal"}], "domain": "Go-to-Market and Customer Success", "group": "Growth and Partners"};
-    const relatedTeams = [{"teamId": "growth-and-partners", "teamName": "Growth and Partners", "teamType": "stream-aligned", "groupId": "gtmc", "groupName": "Go-to-Market and Customer Success", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "partner-network-program", "name": "Partner Network Program", "icon": "partner-network-program.png", "type": "Partner Program", "whyUsed": "Partner onboarding, deal registration, margin and directory."}];
     const supportedJobs = [{"customerId": "cpar", "customerName": "Consulting and Reseller Partner", "customerGroup": "Partners and Ecosystem", "customerIcon": "customer-cpar-portrait.jpg", "productId": "partner-network-program", "productName": "Partner Network Program", "productIcon": "partner-network-program.png", "jobId": "jtbd-cpar-1", "jobName": "Win and deliver extension projects for my clients in my region", "jobWhatItIs": "Recognise in a client's dashboard, planning or reporting project where an extension replaces custom development, demonstrate it with demo licences and gallery workbooks, register and quote the deal, implement and configure the extensions with the client's dashboard creators and IT, and hand the client over to vendor support and customer success.", "jobOutcome": "Registered deals close at a high rate, implementations finish within the estimated hours, clients go live on supported configurations, and each project produces a reference the partner can reuse in the region.", "supportRationale": "Provides use-case playbooks and qualification guidance for partner consultants.", "usedInSteps": [{"step": "Spot the opportunity in a client project", "description": "During a dashboard or planning engagement, recognise the requirement an extension fits: Excel-like tables for finance, forecast entry in Tableau, scheduled report delivery to non-Tableau users, or guided adoption of a new dashboard.", "howItSupports": "Provides use-case playbooks and qualification guidance for partner consultants.", "media": []}, {"step": "Spot the opportunity in a client project", "description": "During a dashboard or planning engagement, recognise the requirement an extension fits: Excel-like tables for finance, forecast entry in Tableau, scheduled report delivery to non-Tableau users, or guided adoption of a new dashboard.", "howItSupports": "Supplies the product pages, plan structure and pricing the consultant positions with the client.", "media": []}, {"step": "Demo with partner demo licences and gallery workbooks", "description": "Show the extension on the client's own data or on gallery workbooks using the partner demo licence, and set up a free plan or 30-day WriteBackExtreme trial in the client's environment so the client's creators can try it.", "howItSupports": "Issues and manages partner demo licences and demo environments.", "media": []}, {"step": "Demo with partner demo licences and gallery workbooks", "description": "Show the extension on the client's own data or on gallery workbooks using the partner demo licence, and set up a free plan or 30-day WriteBackExtreme trial in the client's environment so the client's creators can try it.", "howItSupports": "Provides gallery workbooks, the free plan and trials the client can activate.", "media": []}, {"step": "Register the deal and quote", "description": "Register the opportunity in the partner portal, obtain partner pricing for the plan and deployment model, prepare the quote with services, and coordinate purchase-order and security-review steps with the client's procurement and security teams.", "howItSupports": "Handles deal registration, partner pricing and quote approval.", "media": []}, {"step": "Register the deal and quote", "description": "Register the opportunity in the partner portal, obtain partner pricing for the plan and deployment model, prepare the quote with services, and coordinate purchase-order and security-review steps with the client's procurement and security teams.", "howItSupports": "Creates the subscription, licence keys and invoicing once the client signs.", "media": []}, {"step": "Hand over to support and customer success", "description": "Close the project with documentation, register the client's admin contacts with the support portal, and introduce the vendor's customer success manager so renewals, upgrades and questions do not fall back on the partner.", "howItSupports": "Records the delivered project and reference for partner recognition and renewals.", "media": []}]}, {"customerId": "cpar", "customerName": "Consulting and Reseller Partner", "customerGroup": "Partners and Ecosystem", "customerIcon": "customer-cpar-portrait.jpg", "productId": "partner-network-program", "productName": "Partner Network Program", "productIcon": "partner-network-program.png", "jobId": "jtbd-cpar-2", "jobName": "Earn recurring margin and enablement from the partner programme", "jobWhatItIs": "Run the partnership as a business line: complete onboarding and certification, co-market in the region and language, track renewals and expansions of the client base for recurring margin, and feed client requirements into the vendor roadmap so the partner's practice stays ahead of the market.", "jobOutcome": "The partner earns a growing, predictable margin on new and renewed subscriptions plus services, keeps a certified team, receives referrals from the vendor, and sees client requests reflected in the product.", "supportRationale": "Runs partner onboarding, agreements, portal access and demo licence issue.", "usedInSteps": [{"step": "Complete partner onboarding and certification", "description": "Sign the partner agreement, set up the partner portal account and demo licences, and have consultants complete product and Enterprise deployment training and certification.", "howItSupports": "Runs partner onboarding, agreements, portal access and demo licence issue.", "media": []}, {"step": "Co-market in the region and language", "description": "Run joint webinars, local-language case studies and Tableau or Power BI user-group sessions, be listed on the vendor's partner page, and receive referrals from website, Tableau Exchange and AppSource leads in the region.", "howItSupports": "Coordinates co-marketing, partner listing and regional lead referral.", "media": []}, {"step": "Co-market in the region and language", "description": "Run joint webinars, local-language case studies and Tableau or Power BI user-group sessions, be listed on the vendor's partner page, and receive referrals from website, Tableau Exchange and AppSource leads in the region.", "howItSupports": "Generates the inbound trials and signups that can be referred to partners.", "media": []}, {"step": "Track renewals and expansions of my clients", "description": "See the renewal dates, active-user metering and plan status of every client the partner sourced, propose upgrades from Professional to Enterprise or additional extensions, and receive renewal margin.", "howItSupports": "Shows renewal dates, active users and plan status of partner-sourced clients.", "media": []}, {"step": "Track renewals and expansions of my clients", "description": "See the renewal dates, active-user metering and plan status of every client the partner sourced, propose upgrades from Professional to Enterprise or additional extensions, and receive renewal margin.", "howItSupports": "Attributes renewals and expansions to the partner and pays margin.", "media": []}, {"step": "Feed client requirements into the roadmap", "description": "Collect feature requests and platform needs from client projects, raise them through the partner manager and prioritised feature-request channel, and get early access to releases and roadmap briefings.", "howItSupports": "Gives partners a formal voice in prioritisation and partner advisory sessions.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

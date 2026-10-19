@@ -290,38 +290,6 @@
             vertical-align: top;
         }
 
-        .team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px solid grey;
-            height: 140px;
-        }
-
-        .legacy-team {
-            text-align: center;
-            padding: 6px;
-            margin: 8px;
-            border-radius: 5px;
-            display: inline-block;
-            font-size: 13px;
-            width: 110px;
-            overflow: hidden;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-            white-space: nowrap;
-            vertical-align: top;
-            border: 2px dashed grey;
-            height: 140px;
-        }
-
         .number {
             display: inline-block;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
@@ -955,7 +923,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 24px;"></div>
 
@@ -968,7 +944,6 @@
     const modulesConfig = bricksMetadata.modulesConfig || {};
     const dataAssetsPayload = window.SHARED_DOMAIN_DATA.dataAssetsPayload;
     const brick = {"id": "host", "name": "HDS/ISO 27001 Hosting and Tenant Isolation", "type": "service", "status": "sustaining", "description": "The certified hosting layer of Kitry as a Service: shared SaaS tenants and dedicated SaaS environments on HDS-certified (H\u00e9bergeur de Donn\u00e9es de Sant\u00e9) and ISO 27001-certified infrastructure inside the EEA with no access from outside it, tenant isolation, encryption and key management, backups and restore tests, environment provisioning for implementation projects, availability monitoring and the security evidence customers request in their tenders.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-host-web", "name": "Hosting and Tenant Console", "type": "web-component", "description": "Screens for service managers and Kitry operations to see the tenant's hosting tier, certifications, availability, backup status, environments and security evidence, and to request environment changes.", "dependencies": {"modules": [{"moduleId": "module-host-api", "type": "uses", "description": "Hosting and Tenant Console calls the Tenant Hosting API for every read and write it performs."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-host-api", "name": "Tenant Hosting API", "type": "api", "description": "API to provision and query tenants and environments, manage encryption keys and secrets scopes, and expose availability and backup status.", "dependencies": {"modules": [{"moduleId": "module-host-store", "type": "delegates", "description": "Interface delegates persistence and consistency rules to the Tenant Registry Store."}, {"moduleId": "module-host-provisioner", "type": "delegates", "description": "Interface delegates orchestration to the Tenant Provisioner."}, {"moduleId": "module-host-cloud-adapter", "type": "delegates", "description": "Interface delegates external exchanges to the HDS Cloud Provider Adapter."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-host-backup-daemon", "name": "Backup and Restore Test Daemon", "type": "daemon", "description": "Scheduled worker that runs encrypted backups per tenant, executes periodic restore tests and records evidence.", "dependencies": {"modules": [{"moduleId": "module-host-store", "type": "uses", "description": "Backup and Restore Test Daemon reads work items from and writes results into the Tenant Registry Store."}]}}]}, {"layer": "stateless-service", "description": "Stateless orchestration services that aggregate other services without owning durable state.", "modules": [{"id": "module-host-provisioner", "name": "Tenant Provisioner", "type": "stateless-service", "description": "Provisions shared or dedicated tenant environments, applies isolation, network and key policies, and orchestrates upgrades within the release train.", "dependencies": {"modules": [{"moduleId": "module-host-store", "type": "uses", "description": "Tenant Provisioner reads and writes domain state through the Tenant Registry Store."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-host-store", "name": "Tenant Registry Store", "type": "stateful-service", "description": "Owns tenants, environments, hosting tiers, key references, backup and restore evidence and availability records."}]}, {"layer": "integration", "description": "Connectors, adapters, and integration modules for external systems, devices, or partner platforms.", "modules": [{"id": "module-host-cloud-adapter", "name": "HDS Cloud Provider Adapter", "type": "integration", "description": "Adapter for the HDS and ISO 27001 certified cloud infrastructure in the EEA: compute, encrypted storage, key management, backup vault and monitoring services.", "dependencies": {"modules": [{"moduleId": "module-host-store", "type": "uses", "description": "HDS Cloud Provider Adapter records connection state, exchanged payloads and receipts in the Tenant Registry Store."}]}}]}], "dataDependencies": [{"assetId": "tenant-configuration", "moduleIds": ["module-host-provisioner", "module-host-store"], "role": "read", "description": "Reads tenant hosting tier and environment settings to provision and isolate environments."}, {"assetId": "audit-trail-entry", "moduleIds": ["module-host-backup-daemon"], "role": "read", "description": "Reads and archives audit evidence with each backup cycle for certification audits."}], "brickDependencies": [{"targetBrickId": "iden", "moduleId": "module-iden-api", "sourceModuleId": "module-host-api", "type": "identity", "description": "Resolves the user, tenant, site scope, role (physician, nurse, prevention adviser, HR administrator, manager, employee, Kitry consultant) and medical-secrecy entitlements from the identity backbone before serving requests."}, {"targetBrickId": "cfgr", "moduleId": "module-cfgr-api", "sourceModuleId": "module-host-provisioner", "type": "configuration", "description": "Reads tenant-specific tenant hosting tier and environment settings published by the configuration engine, including sector pre-configurations and FR/NL/EN labels."}, {"targetBrickId": "audt", "moduleId": "module-audt-ingest-queue", "sourceModuleId": "module-host-store", "type": "audit", "description": "Publishes provisioning, key rotation, backup and restore events to the audit trail queue so every change is time-stamped, attributable and retained for the legal retention period."}], "externalSystemsThisBrickDependsOn": [{"system": "HDS and ISO 27001 certified cloud infrastructure in the EEA", "type": "service", "interface": "Cloud provider APIs (compute, storage, KMS, backup, monitoring)", "description": "Certified hosting for shared and dedicated SaaS environments with EEA-only access.", "sourceModuleId": "module-host-cloud-adapter"}], "externalSystemsDependingOnThisBrick": [], "domain": "Platform Foundation", "group": "Core Services"};
-    const relatedTeams = [{"teamId": "implementation-and-migration", "teamName": "Implementation and Migration", "teamType": "enabling", "groupId": "cusg", "groupName": "Customer Services Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "medical-records-and-confidentiality", "teamName": "Medical Records and Confidentiality", "teamType": "complicated-subsystem", "groupId": "ohpg", "groupName": "Occupational Health Product Group", "role": "related", "roleLabel": "Related team"}, {"teamId": "platform-core-and-security", "teamName": "Platform Core and Security", "teamType": "platform", "groupId": "pltg", "groupName": "Platform Group", "role": "related", "roleLabel": "Related team"}];
     const linkedProducts = [{"id": "kitry-saas-hosting", "name": "Kitry SaaS Hosting (Shared and Dedicated HDS)", "icon": "kitry-saas-hosting.png", "type": "B2B Certified SaaS Hosting Tier", "whyUsed": "The shared or dedicated HDS/ISO 27001 environment inside the EEA."}];
     const supportedJobs = [{"customerId": "ohsm", "customerName": "Occupational Health Service Manager / Coordinator", "customerGroup": "Occupational Health Services", "customerIcon": "customer-ohsm-portrait.jpg", "productId": "kitry-saas-hosting", "productName": "Kitry SaaS Hosting (Shared and Dedicated HDS)", "productIcon": "kitry-saas-hosting.png", "jobId": "jtbd-ohsm-3", "jobName": "Run the service on certified, secure infrastructure without an IT project", "jobWhatItIs": "Procure, deploy and operate the platform as a subscription: set the requirements for HDS and ISO 27001 hosting inside the EEA, medical secrecy and the DPIA, choose between shared and dedicated HDS SaaS, connect SSO and the HRIS with standard connectors, migrate the legacy files and go live through Kitry's four phases, and operate with a standard release train, regulatory updates, an account manager and support, so that the service never owns servers, code or a development team.", "jobOutcome": "The platform is live on certified hosting within the planned months, the legacy files are migrated completely, the DPO and IT security have signed off, releases and regulatory updates arrive as a service, and the service head spends time on the service rather than on the system.", "supportRationale": "Provides the functional assessment that translates the service's requirements into a deployment plan.", "usedInSteps": [{"step": "Set the requirements with the DPO and IT security", "description": "Write the requirements for HDS certification, ISO 27001, EEA-only access, medical secrecy and access segregation, the DPIA, retention and the exit clause with data return, and put them into the tender or framework agreement.", "howItSupports": "Provides the functional assessment that translates the service's requirements into a deployment plan.", "media": []}, {"step": "Set the requirements with the DPO and IT security", "description": "Write the requirements for HDS certification, ISO 27001, EEA-only access, medical secrecy and access segregation, the DPIA, retention and the exit clause with data return, and put them into the tender or framework agreement.", "howItSupports": "Describes the HDS and ISO 27001 hosting environments, EEA-only access and the identity model.", "media": []}, {"step": "Choose shared or dedicated HDS SaaS", "description": "Decide between the shared HDS SaaS and a dedicated HDS tenant based on the workforce size, the sensitivity of the sites, the group's security policy and the budget, and agree the service levels.", "howItSupports": "Offers the shared and dedicated HDS SaaS hosting environments and their tenant isolation.", "media": []}, {"step": "Choose shared or dedicated HDS SaaS", "description": "Decide between the shared HDS SaaS and a dedicated HDS tenant based on the workforce size, the sensitivity of the sites, the group's security policy and the budget, and agree the service levels.", "howItSupports": "Configures the chosen environment during the configuration phase.", "media": []}, {"step": "Connect SSO and the HRIS", "description": "Connect the group's identity provider for single sign-on and role mapping and the HRIS for the workforce synchronisation with the standard connectors, and validate the role model with the DPO.", "howItSupports": "Provides the SSO and HRIS connectors and the role mapping.", "media": []}, {"step": "Migrate and go live through the four phases", "description": "Run the functional assessment, configuration, project management and training phases with Kitry, test the migration of the legacy files on a pilot site, run in parallel where needed and go live site by site with change management.", "howItSupports": "Runs the four-phase deployment, the data migration and the training and change management.", "media": []}, {"step": "Operate on a subscription", "description": "Adopt the standard releases and regulatory updates, review the hosting and security reports, work with the account manager on the roadmap and escalate through support, without an internal development team.", "howItSupports": "Delivers ongoing regulatory updates, releases, support and account management.", "media": []}]}];
     mermaid.initialize({
@@ -1315,32 +1290,6 @@
             });
             sectionHtml += '</div>';
         });
-        sectionHtml += '</div>';
-        return sectionHtml;
-    }
-
-    function renderRelatedTeams() {
-        let sectionHtml = '<div class="home-section">';
-        sectionHtml += '<div class="home-section-title">Teams Owning Or Supporting This Brick</div>';
-        if (!relatedTeams.length) {
-            sectionHtml += '<div class="activity-muted">No owning or supporting teams are linked to this product brick.</div>';
-            sectionHtml += '</div>';
-            return sectionHtml;
-        }
-
-        relatedTeams.forEach(team => {
-            sectionHtml += '<a class="home-link-card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHomeHtml(team.teamId) + '.html">';
-            sectionHtml += '<div class="home-link-head">';
-            sectionHtml += '<img class="home-link-icon" src="../../teams/icons/logo.png" onerror="this.onerror=null;this.src=\'../../teams/icons/logo.png\'">';
-            sectionHtml += '<div>';
-            if (team.teamType) {
-                sectionHtml += '<div class="home-link-copy"><div class="page-type-badge" style="font-size: 70%;">' + escapeHomeHtml(team.teamType) + ' team</div></div>';
-            }
-            sectionHtml += '<div class="home-link-title">' + escapeHomeHtml('' + team.teamName) + '</div><div class="home-link-meta">' + escapeHomeHtml(team.roleLabel || '') + (team.groupName ? ' | ' + escapeHomeHtml(team.groupName) : '') + '</div></div>';
-            sectionHtml += '</div>';
-            sectionHtml += '</a>';
-        });
-
         sectionHtml += '</div>';
         return sectionHtml;
     }
@@ -2347,7 +2296,6 @@
     document.getElementById('Dependencies').innerHTML = html;
     html = '';
 
-    html += renderRelatedTeams();
     html += renderSupportedStreams();
     html += renderLinkedProducts();
     html += renderSupportedJobs();

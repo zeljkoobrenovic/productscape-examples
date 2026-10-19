@@ -485,7 +485,15 @@
     .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
     .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
 </style>
-<nav class="site-nav"><a href="../../start/index.html">Home</a><a href="../../customers/index.html">Customers</a><a href="../../product-deployments/index.html">Products</a><a href="../../product-bricks/index.html" class="active">Bricks &amp; Streams</a><a href="../../teams/index.html">Teams</a><a href="../../competition/index.html">Competition</a><a href="../../residuality/index.html">Stress Test</a></nav>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
 
 <div id="breadcrumbs" style="margin-left: 20px"></div>
 
@@ -494,12 +502,10 @@
     const config = {"domains": [{"id": "transport-management-and-freight-exchange", "name": "Transport Management and Freight Exchange", "description": "Covers the connected transport-software network that large European shippers and their carriers run freight on: transportation planning, freight procurement and tendering, API-driven transport execution, real-time visibility, dock scheduling, freight exchanges that match spot freight with truck capacity, freight settlement with payment security, and network analytics across road transport in Europe."}]};
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allAssets = window.SHARED_DOMAIN_DATA.allAssets;
-    const currentAsset = {"id": "spot-freight-offer", "name": "Spot Freight Offer", "kind": "logical-object", "description": "A load posted to the freight exchange: origin, destination, dates, cargo type, weight and loading meters, vehicle requirements, offered price, and the posting company's contact person with name and phone number. Posted by shippers, forwarders, and carriers, or automatically from uncovered TMS loads spilling to spot; consumed by matching, exchange search, and (anonymized) lane rate benchmarks. Short-lived: offers expire in hours to days.", "businessMeaning": "One side of the marketplace's liquidity: freight looking for a truck, priced by the spot market in near real time.", "status": "active", "tags": ["network-and-carrier-products"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "partner"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "authenticated exchange members within the offer's visibility rules; contact details revealed on interest", "systemOfRecordBrickId": "fxch", "ownerTeamId": "freight-exchange", "stewardTeamIds": [], "derivedFromAssetIds": [], "stores": [{"storeId": "exchange-offer-db", "role": "system-of-record"}, {"storeId": "exchange-offer-search", "role": "serving"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "freight-offer api", "description": "Post, search, and book API for spot freight offers, used by the exchange web app, mobile app, and TMS spot-spill integration."}, {"type": "event", "name": "offer lifecycle events", "description": "Offer posted, matched, booked, and expired events feeding matching and market analytics."}], "governance": {"retention": "90 days after expiry for dispute handling; anonymized transaction facts kept long-term for benchmarking", "residency": "eu", "sharingPolicy": "visible to vetted exchange members only; contact personal data shown on legitimate interest within a negotiation; aggregated and anonymized before any cross-customer analytics"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Marketplace Offers"};
+    const currentAsset = {"id": "spot-freight-offer", "name": "Spot Freight Offer", "kind": "logical-object", "description": "A load posted to the freight exchange: origin, destination, dates, cargo type, weight and loading meters, vehicle requirements, offered price, and the posting company's contact person with name and phone number. Posted by shippers, forwarders, and carriers, or automatically from uncovered TMS loads spilling to spot; consumed by matching, exchange search, and (anonymized) lane rate benchmarks. Short-lived: offers expire in hours to days.", "businessMeaning": "One side of the marketplace's liquidity: freight looking for a truck, priced by the spot market in near real time.", "status": "active", "tags": ["network-and-carrier-products"], "classification": "confidential", "personalDataLevel": "personal", "dataSubjects": ["customer", "partner"], "legalTags": ["gdpr"], "securityCriticality": "medium", "accessScope": "authenticated exchange members within the offer's visibility rules; contact details revealed on interest", "systemOfRecordBrickId": "fxch", "derivedFromAssetIds": [], "stores": [{"storeId": "exchange-offer-db", "role": "system-of-record"}, {"storeId": "exchange-offer-search", "role": "serving"}, {"storeId": "network-data-warehouse", "role": "analytics-warehouse"}], "interfaces": [{"type": "api", "name": "freight-offer api", "description": "Post, search, and book API for spot freight offers, used by the exchange web app, mobile app, and TMS spot-spill integration."}, {"type": "event", "name": "offer lifecycle events", "description": "Offer posted, matched, booked, and expired events feeding matching and market analytics."}], "governance": {"retention": "90 days after expiry for dispute handling; anonymized transaction facts kept long-term for benchmarking", "residency": "eu", "sharingPolicy": "visible to vetted exchange members only; contact personal data shown on legitimate interest within a negotiation; aggregated and anonymized before any cross-customer analytics"}, "rootGroup": "Freight Exchange and Network Trust Data", "group": "Marketplace Offers"};
     const allStores = window.SHARED_DOMAIN_DATA.allStores;
     const producingBricks = [{"id": "fxch", "name": "Freight Exchange Marketplace", "role": "own", "description": "System of record for posted spot loads and their negotiation and deal state."}];
     const consumingBricks = [{"id": "mtch", "name": "Freight Matching and Recommendations", "role": "read", "description": "Reads spot load offers to index and rank against available capacity."}];
-    const ownerTeam = {"teamId": "freight-exchange", "teamName": "Freight Exchange", "teamType": "stream-aligned", "groupName": "Network Product Group"};
-    const stewardTeams = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -688,30 +694,6 @@
                     html += '<div class="card-copy">' + escapeHtml(iface.description) + '</div>';
                 }
                 html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        // Ownership
-        html += '<div class="group"><div class="section-title">Ownership</div>';
-        if (!ownerTeam && !stewardTeams.length) {
-            html += '<div class="muted">No owning or steward teams listed for this asset.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            if (ownerTeam) {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(ownerTeam.teamId) + '.html">';
-                html += '<div class="card-meta">Owner Team</div>';
-                html += '<div class="card-title">' + escapeHtml(ownerTeam.teamName || ownerTeam.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(ownerTeam.groupName || '') + '</div>';
-                html += '</a>';
-            }
-            stewardTeams.forEach(team => {
-                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../teams/landing_pages/' + escapeHtml(team.teamId) + '.html">';
-                html += '<div class="card-meta">Steward Team</div>';
-                html += '<div class="card-title">' + escapeHtml(team.teamName || team.teamId) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(team.groupName || '') + '</div>';
-                html += '</a>';
             });
             html += '</div>';
         }

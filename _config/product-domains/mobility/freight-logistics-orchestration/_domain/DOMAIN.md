@@ -8,7 +8,7 @@ Structural references used while creating this domain:
 
 - `local-on-demand-delivery-marketplace` for multi-sided marketplace/customer, product brick, product capability, delivery, and objective structures.
 - `online-retail-marketplace` for marketplace trust, catalog, payment, operations, and portfolio conventions.
-- `enterprise-crm-and-revenue-operations` for B2B operational personas, team ownership, and platform foundation patterns.
+- `enterprise-crm-and-revenue-operations` for B2B operational personas and platform foundation patterns.
 
 Research assumptions:
 

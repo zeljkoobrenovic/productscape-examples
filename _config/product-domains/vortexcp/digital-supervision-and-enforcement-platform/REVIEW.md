@@ -47,8 +47,8 @@ Updated: 2026-09-06
 - Twenty-four bricks form four root groups and eight subgroups. They are reusable, ownable capabilities, rather than a claim that Twyns operates 24 separate services.
 - One hundred modules cover all six supported layers. The 58 brick dependencies use concrete source and target modules; public integration context is distinguished from unverified interface contracts.
 - Nine outcome streams contain 36 steps with facts, friction and capability dependencies. Recovery, review, no-action outcomes and correction are part of the flows.
-- Twenty-five data assets have explicit producers, primary team owners, stewards, stores and governance. The 83 brick-to-asset relationships resolve, and source snapshots are not confused with authoritative government, payment or permit records.
-- All bricks participate in a stream, a deployed offer and exactly one owning team. Every customer job's stream dependencies are covered by that customer's linked offer set. Product-to-brick relationships use the current deployment schema, rather than retired `neededBricks` fields.
+- Twenty-five data assets have explicit producers, stores and governance. The 83 brick-to-asset relationships resolve, and source snapshots are not confused with authoritative government, payment or permit records.
+- All bricks participate in a stream, and a deployed offer. Every customer job's stream dependencies are covered by that customer's linked offer set. Product-to-brick relationships use the current deployment schema, rather than retired `neededBricks` fields.
 
 ### Critical findings
 
@@ -66,7 +66,7 @@ No unresolved P1 architecture or reference findings.
 
 ### Traceability findings
 
-The reference audit found zero unresolved customer, job, stream, brick, module, product, deployment, asset, store, steward or primary-owner gaps. Every asset has one modeled system-of-record producer, and its owner matches that capability's primary team. All five residuality scenarios resolve their typed vision, product, stream, brick, team and competitor impacts through the current generator catalog. Job and KPI effects are named in narrative because their generator-qualified identifiers use a different format from the strict source-ID convention.
+The reference audit found zero unresolved customer, job, stream, brick, module, product, deployment, asset or store gaps. Every asset has one modeled system-of-record producer. All five residuality scenarios resolve their typed vision, product, stream, brick and competitor impacts through the current generator catalog. Job and KPI effects are named in narrative because their generator-qualified identifiers use a different format from the strict source-ID convention.
 
 Public-source links attached to bricks and streams establish operating context. They are not presented as repository, cloud-resource or production implementation evidence. No fictional evidence-database IDs were added.
 
@@ -75,38 +75,6 @@ Public-source links attached to bricks and streams establish operating context. 
 1. Replace unverified interface and deployment assumptions with customer-approved contracts in `product-bricks/product-bricks.json` and `product-deployments/deployment.json`.
 2. Add approved lifecycle and disclosure details to `data/data-assets.json`, preserving the `ppol`/`life` separation and local source authority.
 3. Validate the five stress scenarios with an implementation team and authority operators; revise only capabilities that the exercise shows are missing or overloaded.
-
-## Teams Review
-
-Updated: 2026-09-06
-
-### Operating-model assessment
-
-- Four teams and one shared leader form a 26-FTE proposed scenario. The comparison point is an undated company statement of about 25 people; the allocation is not asserted to be Twyns' organization chart.
-- The smaller team count is intentional. Eight conventional delivery teams would imply an organization substantially larger than the public company context without supporting evidence.
-- `fldt` owns eight field/case capabilities, `prkt` owns seven parking/remedy capabilities, `plat` owns seven shared platform/data/control capabilities, and `adpt` owns two configuration/adoption capabilities. Every brick has exactly one primary owner.
-- Customer and stream responsibilities are explicit. Team descriptions and customer-dependency records reuse customer-outcome KPI names. Shared needs are expressed through specific team collaboration and service relationships.
-- Supplier capabilities support human authority staff. Legal decision powers, resident remedies and processing-controller responsibilities remain with the appropriate authority. No operational AI agents are modeled.
-
-### Ownership findings
-
-No orphaned or multiply owned bricks were found. All 25 asset owners match the primary owning teams of their producer bricks. Cross-team cooperation for shared remedies is explicit: `prkt` owns `appe`, while `fldt` and authority reviewers supply the relevant non-parking procedure context.
-
-### Topology and staffing findings
-
-**P2 — compact platform capacity is a binding assumption.** Evidence: `teams/teams.json`, `plat` (6 FTE), `fldt` (8 FTE), `prkt` (7 FTE), `adpt` (4 FTE); `_domain/DOMAIN.md`. This allocation is plausible only for shared infrastructure, sequenced configurations and contracted specialist support. It does not establish a standalone 24/7 rota, multiple simultaneous bespoke implementations or separate service ownership per brick. Before promising coverage, validate actual staffing, supplier contracts, incident load and rollout concurrency. Split ownership only if measured operating load warrants it.
-
-**P2 — specialist assurance and public operational capacity are external.** Evidence: `plat` staffing description, `adpt` acceptance responsibilities, `dpof` persona and deployment service notes. The model depends on authority reviewers, physical enforcement operators and contracted hosting/assurance capacity. These are explicitly outside the supplier FTE count. Validate availability and handoff responsibilities during each rollout rather than adding invented internal departments.
-
-### Strategy alignment findings
-
-Year-1 acceptance has explicit ownership in `adpt`, with product and platform teams retaining behavior and control ownership. Parking review accuracy belongs to `prkt`; field and public-report outcomes to `fldt`; identity, exchange, data use and service recovery to `plat`. Every persona is served by a product and a team. No strategy priority is left without an accountable capability owner.
-
-### Edit backlog
-
-1. Replace the scenario in `teams/teams.json` with verified staffing and contracted coverage when available.
-2. Measure rollout concurrency and support effort before broadening year-3/5 commitments.
-3. Review `appe` and `plat` boundaries using actual change and incident load; preserve shared ownership semantics and authority decision powers.
 
 ## Balance Audit
 
@@ -122,12 +90,11 @@ Integrity: **pass** after corrections. Overall: **mature public-research seed wi
 | Bricks / streams | 24 / 9 | 20 / 10 | Four roots, eight subgroups, 36 flow steps |
 | Data assets | 25 | 17 | Producer, owner, stewardship and storage links resolve |
 | Products | 4 | 3 | Uses the current lean portfolio and deployment schema |
-| Teams | 4 | 24 | Intentional company-scale exception to the 8+ guideline |
 | Landscape entries | 10 | 11 | Modeled company, eight comparisons, one ecosystem partner |
 | Sourced insights | 13 | 8 | Twenty primary source entries |
 | Residuality scenarios | 5 | Not a density target | Qualitative scenarios with no assigned likelihood |
 
-P1: none unresolved. P2: measurement, commercial terms, deployment contracts, local assurance and staffing remain clearly labeled discovery work, as detailed above. P3: unverified headquarters cities and refreshed competitor context when needed for a specific decision.
+P1: none unresolved. P2: measurement, commercial terms, deployment contracts and local assurance remain clearly labeled discovery work, as detailed above. P3: unverified headquarters cities and refreshed competitor context when needed for a specific decision.
 
 ### Validation evidence
 
@@ -136,7 +103,7 @@ P1: none unresolved. P2: measurement, commercial terms, deployment contracts, lo
 - `.codex/skills/scripts/validate-domain-model.py digital-supervision-and-enforcement-platform --strict-ids`: passed.
 - `.claude/skills/scripts/check-kpi-pyramids.py digital-supervision-and-enforcement-platform`: passed; no one-child branches, duplicate KPI definitions or unresolved strategy metric names.
 - Additional full-path audit: all customer job streams are served by their linked offers; product dependencies close; all bricks occur in streams and deployments; one primary owner and one modeled producer per data asset; source, store, derivation, relation and flow references resolve.
-- All seven generators succeeded in an isolated temporary preview, producing 98 HTML pages: start 1, customers 9, products/deployment 12, bricks/streams/data 59, teams 5, competition 11, residuality 1.
+- All seven generators succeeded in an isolated temporary preview, producing 98 HTML pages: start 1, customers 9, products/deployment 12, bricks/streams/data 59, competition 11, residuality 1.
 - Generated JavaScript syntax: 208 distinct inline scripts and the generated shared-data script passed `node --check`.
 - Static internal link and asset inspection identified a missing start icon. The source now reuses the existing repository public-space pictogram, and the start preview was regenerated. No custom company logo or new image API is involved.
 - Final inspection of all 98 preview pages found no missing internal static links or assets. The optional residuality schema also passed explicitly.

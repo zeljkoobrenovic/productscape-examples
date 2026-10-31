@@ -1,0 +1,1098 @@
+{
+  "metadata": {
+    "domainId": "ecommerce-returns-management-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams of the returns lifecycle: request, retain, ship, receive and resolve, gatekeep, learn, onboard and sync.",
+    "sources": [
+      "https://www.returnista.nl/en",
+      "https://www.returnista.nl/en/return-operations",
+      "https://www.returnista.nl/en/exchanges",
+      "https://www.returnista.nl/en/insights",
+      "https://platform.returnista.com"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Each step names the bricks it depends on; personas are documented in customers.json JTBD steps."
+  },
+  "rootGroups": [
+    {
+      "name": "Shopper Return Journeys",
+      "description": "What shoppers experience.",
+      "streams": [
+        {
+          "id": "start-a-self-service-return",
+          "name": "Start a Self-service Return",
+          "type": "outcome-based-stream",
+          "description": "A shopper starts a return 24/7 on the merchant's branded portal and sees only the options the policy allows.",
+          "outcomes": [
+            "Higher self-service share",
+            "Structured return reasons",
+            "Fewer support contacts"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "rprt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpol",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mloc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpay",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecom",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "start-a-self-service-return-flow",
+              "title": "Shopper return request",
+              "description": "From order lookup to confirmed request.",
+              "steps": [
+                {
+                  "id": "look-up-order",
+                  "title": "Look up the order",
+                  "keyFacts": [
+                    "Order number and email identify the order.",
+                    "Portal runs on the merchant's domain and branding."
+                  ],
+                  "painPoints": [
+                    "Marketplace or guest orders may not match."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Branded Returns Portal",
+                      "description": "Shopper-facing self-service portal on the merchant's own branding and domain: order lookup by order number and email, it",
+                      "how": "Portal flow."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ecom",
+                      "name": "E-commerce Platform Connectors",
+                      "description": "Connectors for Shopify, Shopify Plus, Shopware, Magento, Lightspeed and WooCommerce (plus custom platforms on Enterprise",
+                      "how": "Order import."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mloc",
+                      "name": "Multi-country Returns and Localisation",
+                      "description": "Country-specific return addresses, carriers, languages and rules so one merchant account serves several EU markets (pric",
+                      "how": "Language and country."
+                    }
+                  ]
+                },
+                {
+                  "id": "choose-items-and-reasons",
+                  "title": "Choose items and reasons",
+                  "keyFacts": [
+                    "Merchant chooses visible reasons.",
+                    "Rules by product, region and segment hide ineligible items."
+                  ],
+                  "painPoints": [
+                    "Vague reasons reduce insight value."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rpol",
+                      "name": "Return Policy and Rules Engine",
+                      "description": "Return windows, eligible reasons, exceptions, fees and handling rules by product, region and shopper segment, evaluated ",
+                      "how": "Eligibility evaluation."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Branded Returns Portal",
+                      "description": "Shopper-facing self-service portal on the merchant's own branding and domain: order lookup by order number and email, it",
+                      "how": "Reason capture."
+                    }
+                  ]
+                },
+                {
+                  "id": "pay-fee-if-required",
+                  "title": "Pay a return fee if required",
+                  "keyFacts": [
+                    "Adjustable return fees.",
+                    "European payment methods."
+                  ],
+                  "painPoints": [
+                    "Fees can push shoppers to refund disputes."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rpay",
+                      "name": "Paid Returns and Return Fees",
+                      "description": "Adjustable return fees and a payment screen with popular European payment methods for paid returns; fees can be deducted",
+                      "how": "Fee checkout."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "retain-revenue-with-exchanges-and-store-credit",
+          "name": "Retain Revenue with Exchanges and Store Credit",
+          "type": "outcome-based-stream",
+          "description": "During the return the shopper is offered a size swap or store credit with a bonus instead of a refund.",
+          "outcomes": [
+            "Revenue retained from returns",
+            "Higher exchange conversion",
+            "Store credit redemption"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "exch",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "scrd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rprt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecom",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rres",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "retain-revenue-with-exchanges-and-store-credit-flow",
+              "title": "Exchange-first resolution",
+              "description": "Offer, confirm and fulfil an alternative to a refund.",
+              "steps": [
+                {
+                  "id": "offer-alternative",
+                  "title": "Offer an alternative",
+                  "keyFacts": [
+                    "Variants offered on real-time stock.",
+                    "Bonus up to EUR 10 or 15% per order (vendor)."
+                  ],
+                  "painPoints": [
+                    "Out-of-stock alternatives block exchanges."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "exch",
+                      "name": "Exchange Engine",
+                      "description": "Size-based and variant exchanges in the portal using real-time availability; exchanges confirmed instantly or after insp",
+                      "how": "Exchange picker and stock check."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "scrd",
+                      "name": "Store Credit and Bonus Credit",
+                      "description": "Issues store credit automatically when a return is processed, with an optional bonus (up to EUR 10 or 15% per order), sy",
+                      "how": "Credit and bonus offer."
+                    }
+                  ]
+                },
+                {
+                  "id": "confirm-exchange",
+                  "title": "Confirm instantly or after inspection",
+                  "keyFacts": [
+                    "Merchant chooses per category."
+                  ],
+                  "painPoints": [
+                    "Instant exchanges risk unreturned items."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "exch",
+                      "name": "Exchange Engine",
+                      "description": "Size-based and variant exchanges in the portal using real-time availability; exchanges confirmed instantly or after insp",
+                      "how": "Orchestrator decision."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rres",
+                      "name": "Refund and Resolution Orchestration",
+                      "description": "Decides and executes refunds, exchanges or store credit when a return is approved or inspected; writes refunds back to t",
+                      "how": "Release after inspection."
+                    }
+                  ]
+                },
+                {
+                  "id": "create-replacement-or-credit",
+                  "title": "Create replacement order or credit",
+                  "keyFacts": [
+                    "Written back to Shopify, Magento or via API."
+                  ],
+                  "painPoints": [
+                    "Platform API limits on order edits."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ecom",
+                      "name": "E-commerce Platform Connectors",
+                      "description": "Connectors for Shopify, Shopify Plus, Shopware, Magento, Lightspeed and WooCommerce (plus custom platforms on Enterprise",
+                      "how": "Write-back."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "scrd",
+                      "name": "Store Credit and Bonus Credit",
+                      "description": "Issues store credit automatically when a return is processed, with an optional bonus (up to EUR 10 or 15% per order), sy",
+                      "how": "Gift card sync."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "ship-and-track-a-return",
+          "name": "Ship and Track a Return",
+          "type": "outcome-based-stream",
+          "description": "The return gets a label from a configured carrier and is tracked until it reaches the warehouse.",
+          "outcomes": [
+            "Fewer lost parcels",
+            "Lower label cost",
+            "Visible status for shopper and merchant"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "rlbl",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "carr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rtrk",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "gate",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "ship-and-track-a-return-flow",
+              "title": "Label to delivery",
+              "description": "From label issue to delivered at the warehouse.",
+              "steps": [
+                {
+                  "id": "issue-label",
+                  "title": "Issue a label",
+                  "keyFacts": [
+                    "Label instant or after approval.",
+                    "Own carrier contracts on Professional."
+                  ],
+                  "painPoints": [
+                    "Carrier coverage differs by country."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rlbl",
+                      "name": "Return Labels and Carrier Selection",
+                      "description": "Issues return labels instantly or after approval, lets shoppers choose among configured carriers, and supports merchants",
+                      "how": "Label service."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "gate",
+                      "name": "Warranty, Claims and Approval Gate",
+                      "description": "Requires approval before labels are issued, collects answers and photos, and lets the team review damage and warranty cl",
+                      "how": "Approval gate."
+                    }
+                  ]
+                },
+                {
+                  "id": "hand-over-parcel",
+                  "title": "Hand over to carrier",
+                  "keyFacts": [
+                    "Shopper chooses among configured carriers."
+                  ],
+                  "painPoints": [
+                    "Drop-off distance affects effort."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "carr",
+                      "name": "Carrier Network Integration",
+                      "description": "Connectors to parcel carriers listed by Returnista (bpost, Brenger, BRT, Chronopost, DHL, DPD, GLS, Mondial Relay, Nieuw",
+                      "how": "Carrier gateway."
+                    }
+                  ]
+                },
+                {
+                  "id": "track-to-warehouse",
+                  "title": "Track to the warehouse",
+                  "keyFacts": [
+                    "Statuses picked up, en route, delivered."
+                  ],
+                  "painPoints": [
+                    "Missing scans cause support contacts."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "carr",
+                      "name": "Carrier Network Integration",
+                      "description": "Connectors to parcel carriers listed by Returnista (bpost, Brenger, BRT, Chronopost, DHL, DPD, GLS, Mondial Relay, Nieuw",
+                      "how": "Tracking poller."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rtrk",
+                      "name": "Return Tracking and Notifications",
+                      "description": "Visual tracking flow for shoppers and automatic emails about return shipments and refunds.",
+                      "how": "Tracking page and emails."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Parcel carriers",
+              "description": "PostNL, DHL, DPD, UPS, GLS, bpost and others."
+            }
+          ]
+        },
+        {
+          "id": "resolve-return-inquiries-and-notify-shoppers",
+          "name": "Resolve Return Inquiries and Notify Shoppers",
+          "type": "outcome-based-stream",
+          "description": "Shoppers are kept informed and service agents answer remaining questions with full return context.",
+          "outcomes": [
+            "Fewer contacts per return",
+            "Faster ticket handling"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "rtrk",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "cxin",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rprt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "resolve-return-inquiries-and-notify-shoppers-flow",
+              "title": "Inform and support",
+              "description": "Proactive notification and helpdesk context.",
+              "steps": [
+                {
+                  "id": "send-milestones",
+                  "title": "Send milestone notifications",
+                  "keyFacts": [
+                    "Automatic emails about shipments and refunds."
+                  ],
+                  "painPoints": [
+                    "Email deliverability."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rtrk",
+                      "name": "Return Tracking and Notifications",
+                      "description": "Visual tracking flow for shoppers and automatic emails about return shipments and refunds.",
+                      "how": "Notification dispatcher."
+                    }
+                  ]
+                },
+                {
+                  "id": "answer-with-context",
+                  "title": "Answer with context",
+                  "keyFacts": [
+                    "Gorgias, Trengo, CM.com, Engaige integrations."
+                  ],
+                  "painPoints": [
+                    "Agents switching tools."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cxin",
+                      "name": "Return Inquiry Handling",
+                      "description": "Return context in helpdesk tools (Gorgias, Trengo, CM.com, Engaige) and an optional service where Returnista handles ret",
+                      "how": "Helpdesk context."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Branded Returns Portal",
+                      "description": "Shopper-facing self-service portal on the merchant's own branding and domain: order lookup by order number and email, it",
+                      "how": "Return request data."
+                    }
+                  ]
+                },
+                {
+                  "id": "outsource-inquiries",
+                  "title": "Optionally outsource inquiries",
+                  "keyFacts": [
+                    "Returnista can handle return inquiries for the merchant."
+                  ],
+                  "painPoints": [
+                    "Brand voice consistency."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cxin",
+                      "name": "Return Inquiry Handling",
+                      "description": "Return context in helpdesk tools (Gorgias, Trengo, CM.com, Engaige) and an optional service where Returnista handles ret",
+                      "how": "Managed inquiry desk."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Merchant Operations",
+      "description": "How merchants process and control returns.",
+      "streams": [
+        {
+          "id": "receive-inspect-and-resolve-returns",
+          "name": "Receive, Inspect and Resolve Returns",
+          "type": "outcome-based-stream",
+          "description": "Returned items are received, inspected, restocked and resolved as refund, exchange or credit.",
+          "outcomes": [
+            "Faster dock-to-resolution",
+            "Fewer refunds for items not received",
+            "Faster restocking"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "insp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auto",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "erpw",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "isrt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "receive-inspect-and-resolve-returns-flow",
+              "title": "Receipt to resolution",
+              "description": "Warehouse or store receipt to money movement.",
+              "steps": [
+                {
+                  "id": "receive-parcel",
+                  "title": "Receive the parcel",
+                  "keyFacts": [
+                    "Announced returns are matched by scan.",
+                    "In-store returns registered at the counter."
+                  ],
+                  "painPoints": [
+                    "Unannounced parcels need manual search."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "insp",
+                      "name": "Return Receipt and Inspection",
+                      "description": "Receiving and grading of returned items, inspection-dependent resolutions and restock location assignment (inferred from",
+                      "how": "Receiving console."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "isrt",
+                      "name": "In-store Returns",
+                      "description": "Lets shoppers return online orders in a physical store, registered in the same return flow (listed in the pricing featur",
+                      "how": "In-store registration."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "erpw",
+                      "name": "ERP, WMS and Fulfilment Connectors",
+                      "description": "Native return sync with WMS and fulfilment partners (Picqer, Monta/Montapacking, Active Ants, Bleckmann, QLS, ModeXpress",
+                      "how": "WMS receipt sync."
+                    }
+                  ]
+                },
+                {
+                  "id": "inspect-and-restock",
+                  "title": "Inspect and assign restock location",
+                  "keyFacts": [
+                    "Automations assign restock locations."
+                  ],
+                  "painPoints": [
+                    "Grading criteria vary by staff."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "insp",
+                      "name": "Return Receipt and Inspection",
+                      "description": "Receiving and grading of returned items, inspection-dependent resolutions and restock location assignment (inferred from",
+                      "how": "Inspection service."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auto",
+                      "name": "Return Automation and AI Rule Agent",
+                      "description": "AI agent that helps build return rules and automate repetitive actions, plus automation runner for resolutions, order ta",
+                      "how": "Automation runner."
+                    }
+                  ]
+                },
+                {
+                  "id": "release-resolution",
+                  "title": "Release the resolution",
+                  "keyFacts": [
+                    "Refund, exchange or credit written back."
+                  ],
+                  "painPoints": [
+                    "Refund before inspection creates leakage."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rres",
+                      "name": "Refund and Resolution Orchestration",
+                      "description": "Decides and executes refunds, exchanges or store credit when a return is approved or inspected; writes refunds back to t",
+                      "how": "Resolution orchestration."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "gatekeep-warranty-and-damage-claims",
+          "name": "Gatekeep Warranty and Damage Claims",
+          "type": "outcome-based-stream",
+          "description": "High-risk returns, damage and warranty claims are reviewed with photos before labels, refunds or exchanges.",
+          "outcomes": [
+            "Fewer unjustified refunds",
+            "Consistent claim decisions"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "gate",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpol",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rlbl",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "gatekeep-warranty-and-damage-claims-flow",
+              "title": "Claim review",
+              "description": "Evidence-based approval.",
+              "steps": [
+                {
+                  "id": "collect-evidence",
+                  "title": "Collect questions and photos",
+                  "keyFacts": [
+                    "Shoppers answer questions and upload photos."
+                  ],
+                  "painPoints": [
+                    "Poor photos delay decisions."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "gate",
+                      "name": "Warranty, Claims and Approval Gate",
+                      "description": "Requires approval before labels are issued, collects answers and photos, and lets the team review damage and warranty cl",
+                      "how": "Claim intake."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpol",
+                      "name": "Return Policy and Rules Engine",
+                      "description": "Return windows, eligible reasons, exceptions, fees and handling rules by product, region and shopper segment, evaluated ",
+                      "how": "Which items need approval."
+                    }
+                  ]
+                },
+                {
+                  "id": "review-centrally",
+                  "title": "Review centrally",
+                  "keyFacts": [
+                    "Team reviews in one queue."
+                  ],
+                  "painPoints": [
+                    "Backlogs in peaks."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "gate",
+                      "name": "Warranty, Claims and Approval Gate",
+                      "description": "Requires approval before labels are issued, collects answers and photos, and lets the team review damage and warranty cl",
+                      "how": "Review queue."
+                    }
+                  ]
+                },
+                {
+                  "id": "release-label-or-reject",
+                  "title": "Release label or reject",
+                  "keyFacts": [
+                    "Label issued only after approval."
+                  ],
+                  "painPoints": [
+                    "Rejected shoppers contact support."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rlbl",
+                      "name": "Return Labels and Carrier Selection",
+                      "description": "Issues return labels instantly or after approval, lets shoppers choose among configured carriers, and supports merchants",
+                      "how": "Label release."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "reduce-return-rates-with-product-insights",
+          "name": "Reduce Return Rates with Product Insights",
+          "type": "outcome-based-stream",
+          "description": "Merchants find the SKUs, reasons and payment methods that drive returns and act on them.",
+          "outcomes": [
+            "Lower return rate",
+            "Margin recovered",
+            "Better buying decisions"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "pipe",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rins",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ridx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bnch",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bexp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecos",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "reduce-return-rates-with-product-insights-flow",
+              "title": "Insight to action",
+              "description": "From return data to assortment and policy changes.",
+              "steps": [
+                {
+                  "id": "collect-return-facts",
+                  "title": "Collect return facts",
+                  "keyFacts": [
+                    "Events loaded to analytics mart."
+                  ],
+                  "painPoints": [
+                    "Free-text reasons are hard to analyse."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pipe",
+                      "name": "Return Event and Analytics Pipeline",
+                      "description": "Publishes return lifecycle events and loads them into the analytics mart used by dashboards, automations, webhooks and b",
+                      "how": "Event pipeline."
+                    }
+                  ]
+                },
+                {
+                  "id": "rank-products",
+                  "title": "Rank products by impact",
+                  "keyFacts": [
+                    "Product Return Impact Index at SKU level.",
+                    "Category benchmarks."
+                  ],
+                  "painPoints": [
+                    "Small samples mislead."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ridx",
+                      "name": "Product Return Impact Index",
+                      "description": "Measures the revenue impact of returns per SKU, flags high-return SKUs and shows the reasons behind them.",
+                      "how": "Impact index."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rins",
+                      "name": "Return Insights Dashboard",
+                      "description": "Product- and revenue-level return rates, trends with historical comparison, exchange and store credit insights, payment ",
+                      "how": "Dashboard."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "bnch",
+                      "name": "Benchmarking and Category Insights",
+                      "description": "Anonymised aggregates across brands on the platform used for the annual benchmark report and category comparisons.",
+                      "how": "Benchmarks."
+                    }
+                  ]
+                },
+                {
+                  "id": "act-and-share",
+                  "title": "Act and share",
+                  "keyFacts": [
+                    "BI export on Enterprise.",
+                    "Size-and-fit tools receive fit reasons."
+                  ],
+                  "painPoints": [
+                    "Insights not reaching buyers."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bexp",
+                      "name": "BI Export and Data Feeds",
+                      "description": "Connects return data to merchants' BI tools (Enterprise pack).",
+                      "how": "BI export."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ecos",
+                      "name": "Ecosystem App Connectors",
+                      "description": "Connectors to marketing (Klaviyo), loyalty (Leat), size-and-fit (Faslet, Easysize), fraud prevention (Guzco) and stock p",
+                      "how": "Size and fit connectors."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Platform and Ecosystem",
+      "description": "Onboarding and integration.",
+      "streams": [
+        {
+          "id": "set-up-return-policy-and-onboard-a-merchant",
+          "name": "Set Up Return Policy and Onboard a Merchant",
+          "type": "outcome-based-stream",
+          "description": "A merchant connects its shop, carriers and warehouse, brands the portal and configures its return policy with onboarding support.",
+          "outcomes": [
+            "Live in days to weeks",
+            "Policy encoded as rules",
+            "Multi-country readiness"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "tnnt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecom",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpol",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auto",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mloc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rlbl",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "set-up-return-policy-and-onboard-a-merchant-flow",
+              "title": "Merchant onboarding",
+              "description": "From contract to live portal.",
+              "steps": [
+                {
+                  "id": "connect-shop",
+                  "title": "Connect the shop platform",
+                  "keyFacts": [
+                    "App install for Shopify and others.",
+                    "Onboarding takes days to weeks (vendor)."
+                  ],
+                  "painPoints": [
+                    "Custom platforms need Enterprise."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ecom",
+                      "name": "E-commerce Platform Connectors",
+                      "description": "Connectors for Shopify, Shopify Plus, Shopware, Magento, Lightspeed and WooCommerce (plus custom platforms on Enterprise",
+                      "how": "App installer."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tnnt",
+                      "name": "Merchant Account, Branding and Onboarding",
+                      "description": "Merchant accounts, storefronts, branding (colours, logo, font, domain), users, plan and onboarding by an onboarding spec",
+                      "how": "Account setup."
+                    }
+                  ]
+                },
+                {
+                  "id": "brand-and-configure",
+                  "title": "Brand the portal and configure rules",
+                  "keyFacts": [
+                    "Colours, logo, font and domain.",
+                    "AI agent drafts rules."
+                  ],
+                  "painPoints": [
+                    "Complex policies need iteration."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tnnt",
+                      "name": "Merchant Account, Branding and Onboarding",
+                      "description": "Merchant accounts, storefronts, branding (colours, logo, font, domain), users, plan and onboarding by an onboarding spec",
+                      "how": "Branding."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpol",
+                      "name": "Return Policy and Rules Engine",
+                      "description": "Return windows, eligible reasons, exceptions, fees and handling rules by product, region and shopper segment, evaluated ",
+                      "how": "Policy editor."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auto",
+                      "name": "Return Automation and AI Rule Agent",
+                      "description": "AI agent that helps build return rules and automate repetitive actions, plus automation runner for resolutions, order ta",
+                      "how": "Rule agent."
+                    }
+                  ]
+                },
+                {
+                  "id": "set-countries-and-carriers",
+                  "title": "Set countries and carriers",
+                  "keyFacts": [
+                    "Per-country carriers and addresses."
+                  ],
+                  "painPoints": [
+                    "Carrier contracts per country."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mloc",
+                      "name": "Multi-country Returns and Localisation",
+                      "description": "Country-specific return addresses, carriers, languages and rules so one merchant account serves several EU markets (pric",
+                      "how": "Country config."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rlbl",
+                      "name": "Return Labels and Carrier Selection",
+                      "description": "Issues return labels instantly or after approval, lets shoppers choose among configured carriers, and supports merchants",
+                      "how": "Carrier contracts."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "sync-returns-across-the-commerce-stack",
+          "name": "Sync Returns Across the Commerce Stack",
+          "type": "outcome-based-stream",
+          "description": "Return data flows to and from WMS, fulfilment partners, ERPs, apps and custom systems.",
+          "outcomes": [
+            "No manual reconciliation",
+            "Reliable partner integrations"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "erpw",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "oapi",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecos",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pipe",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ecom",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sync-returns-across-the-commerce-stack-flow",
+              "title": "Return data sync",
+              "description": "Event-driven sync with partners.",
+              "steps": [
+                {
+                  "id": "announce-return",
+                  "title": "Announce return to warehouse",
+                  "keyFacts": [
+                    "Native Picqer, Monta, Active Ants, Bleckmann connectors."
+                  ],
+                  "painPoints": [
+                    "Each WMS maps data differently."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "erpw",
+                      "name": "ERP, WMS and Fulfilment Connectors",
+                      "description": "Native return sync with WMS and fulfilment partners (Picqer, Monta/Montapacking, Active Ants, Bleckmann, QLS, ModeXpress",
+                      "how": "WMS sync."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pipe",
+                      "name": "Return Event and Analytics Pipeline",
+                      "description": "Publishes return lifecycle events and loads them into the analytics mart used by dashboards, automations, webhooks and b",
+                      "how": "Events."
+                    }
+                  ]
+                },
+                {
+                  "id": "sync-results-back",
+                  "title": "Sync results back",
+                  "keyFacts": [
+                    "Inspection results return to Returnista.",
+                    "Retries on failure."
+                  ],
+                  "painPoints": [
+                    "Silent failures discovered late."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "erpw",
+                      "name": "ERP, WMS and Fulfilment Connectors",
+                      "description": "Native return sync with WMS and fulfilment partners (Picqer, Monta/Montapacking, Active Ants, Bleckmann, QLS, ModeXpress",
+                      "how": "Retry queue."
+                    }
+                  ]
+                },
+                {
+                  "id": "notify-custom-systems",
+                  "title": "Notify custom systems",
+                  "keyFacts": [
+                    "REST API and webhooks."
+                  ],
+                  "painPoints": [
+                    "Webhook consumers must be idempotent."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "oapi",
+                      "name": "Open API and Webhooks",
+                      "description": "Public REST API and webhooks documented at platform.returnista.com for custom integrations and partners.",
+                      "how": "Webhooks."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ecos",
+                      "name": "Ecosystem App Connectors",
+                      "description": "Connectors to marketing (Klaviyo), loyalty (Leat), size-and-fit (Faslet, Easysize), fraud prevention (Guzco) and stock p",
+                      "how": "App connectors."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ecom",
+                      "name": "E-commerce Platform Connectors",
+                      "description": "Connectors for Shopify, Shopify Plus, Shopware, Magento, Lightspeed and WooCommerce (plus custom platforms on Enterprise",
+                      "how": "Shop status write-back."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    }
+  ]
+}

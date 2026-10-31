@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Warehouse Management & Fulfilment Platform</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+        :root {
+            --sidebar-width: 310px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+        }
+
+        .shell {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ---------- sidebar ---------- */
+
+        .sidebar {
+            flex: 0 0 var(--sidebar-width);
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            transition: margin-left 0.18s ease;
+        }
+
+        .shell.sidebar-hidden .sidebar {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 14px 10px;
+            border: 0;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 3px;
+            background: white;
+            flex: none;
+        }
+
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.25;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .sidebar-brand:hover span {
+            color: var(--accent-ink);
+        }
+
+        .sidebar-search {
+            padding: 2px 12px 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 34px;
+            padding: 0 54px 0 32px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            background: var(--surface);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            color: var(--muted);
+        }
+
+        .search-hint {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            font-size: 11px;
+            color: var(--muted);
+            border: 1px solid var(--line-strong);
+            border-radius: 4px;
+            padding: 1px 6px;
+            background: white;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            border: 0;
+            background: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+        }
+
+        .sidebar-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+            min-height: 18px;
+        }
+
+        .link-button {
+            border: 0;
+            background: none;
+            padding: 0 2px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .link-button:hover, .link-button:focus-visible {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .sidebar-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px 8px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nav-section {
+            margin-top: 6px;
+        }
+
+        .nav-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: 0;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 7px;
+        }
+
+        .nav-toggle:hover {
+            background: var(--surface-muted);
+        }
+
+        .nav-toggle:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .chevron {
+            flex: none;
+            width: 10px;
+            height: 10px;
+            color: var(--muted-strong);
+            transition: transform 0.12s ease;
+        }
+
+        [aria-expanded="true"] > .chevron {
+            transform: rotate(90deg);
+        }
+
+        .nav-category {
+            margin: 16px 6px 2px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-strong);
+        }
+
+        .nav-category:first-child {
+            margin-top: 10px;
+        }
+
+        .nav-item.nav-single {
+            margin-top: 6px;
+            padding: 7px 6px 7px 24px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .nav-item.nav-single img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-section-header {
+            padding: 7px 6px;
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        .nav-section-header img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex: none;
+        }
+
+
+        .nav-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .count {
+            flex: none;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--surface-muted);
+            border-radius: 999px;
+            padding: 1px 7px;
+        }
+
+        .nav-body[hidden] {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 34px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.3;
+        }
+
+
+        .nav-item img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            border-radius: 4px;
+            flex: none;
+            background: white;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-soft);
+            color: var(--accent-ink);
+        }
+
+        .nav-item.active {
+            background: var(--highlight-color);
+            color: var(--accent-ink);
+            font-weight: 500;
+        }
+
+        .nav-item.overview {
+            color: var(--muted);
+        }
+
+        .nav-item mark {
+            background: #fde68a;
+            color: inherit;
+            border-radius: 2px;
+        }
+
+        .nav-empty {
+            padding: 18px 10px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* ---------- main ---------- */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 12px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0 8px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: none;
+            color: var(--ink-soft);
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .icon-button:hover, .icon-button:focus-visible {
+            background: var(--surface-muted);
+            border-color: var(--line);
+            color: var(--accent-ink);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .topbar-title {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--muted);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar-title strong {
+            color: var(--ink);
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .view[hidden] {
+            display: none;
+        }
+
+        #frameView iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+
+        #homeView {
+            overflow-y: auto;
+            padding: 32px 36px 60px;
+        }
+
+        .home {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .hero-logo {
+            width: 132px;
+            height: 132px;
+            object-fit: contain;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 10px;
+            background: white;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 38px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .domain-description {
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            overflow-wrap: anywhere;
+        }
+
+        .domain-description.clamped #domain-description {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .domain-description a {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .app-tab-title {
+            margin: 0 0 12px;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .app-group {
+            margin-bottom: 26px;
+        }
+
+        .app-group-title {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            text-transform: capitalize;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 18px 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .app:hover, .app:focus-visible {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .app img {
+            width: 84px;
+            height: 84px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: grayscale(100%);
+            transition: filter 0.15s ease;
+        }
+
+        .app:hover img, .app:focus-visible img {
+            filter: none;
+        }
+
+        .app .name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #5009DC;
+        }
+
+        .app .source {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .app .description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+            margin-top: 6px;
+        }
+
+        .app-counts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .app-count {
+            font-size: 12px;
+            color: var(--accent-ink);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-line);
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+
+        .app-count strong {
+            font-weight: 700;
+        }
+
+        .backdrop {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                z-index: 20;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                max-width: 88vw;
+                box-shadow: var(--shadow-hover);
+                margin-left: 0;
+            }
+
+            .shell:not(.sidebar-open) .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width) - 20px);
+            }
+
+            .shell.sidebar-open .backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 10;
+                background: rgba(15, 23, 42, 0.3);
+            }
+
+            #homeView {
+                padding: 20px 16px 40px;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .hero-logo {
+                width: 84px;
+                height: 84px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .topbar .label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="shell" id="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Productscape navigation">
+        <button class="sidebar-brand" type="button" id="brand" title="Overview">
+            <img src="icons/logo.png" alt="">
+            <span>Warehouse Management & Fulfilment Platform</span>
+        </button>
+        <div class="sidebar-search" id="search_container">
+            <div class="search-box">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"/>
+                    <path d="M11 11l4 4"/>
+                </svg>
+                <input id="filter_all" type="search" placeholder="Search pages..." autocomplete="off"
+                       aria-label="Search pages" aria-controls="sidebarTree">
+                <span class="search-hint" id="searchHint" aria-hidden="true">/</span>
+                <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>&times;</button>
+            </div>
+            <div class="sidebar-tools">
+                <span id="summary_all" aria-live="polite"></span>
+                <span>
+                    <button class="link-button" type="button" id="expandAll">expand all</button>
+                    &middot;
+                    <button class="link-button" type="button" id="collapseAll">collapse all</button>
+                </span>
+            </div>
+        </div>
+        <nav class="sidebar-tree" id="sidebarTree"></nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button class="icon-button" type="button" id="sidebarToggle" aria-controls="sidebar"
+                    aria-label="Toggle navigation" title="Toggle navigation">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 4h12M2 8h12M2 12h12"/>
+                </svg>
+            </button>
+            <div class="topbar-title" id="topbarTitle"></div>
+            <button class="icon-button" type="button" id="homeButton" hidden title="Back to overview">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 8l6-5 6 5M4 7v6h8V7"/>
+                </svg>
+                <span class="label">Overview</span>
+            </button>
+            <a class="icon-button" id="openExternal" href="#" target="_blank" hidden title="Open page in a new tab">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M9 2h5v5M14 2L7 9M12 10v4H2V4h4"/>
+                </svg>
+                <span class="label">New tab</span>
+            </a>
+        </header>
+
+        <section class="view" id="homeView">
+            <div class="home">
+                <div class="hero">
+                    <img class="hero-logo" src="icons/logo.png" alt="">
+                    <div>
+                        <h1>Warehouse Management & Fulfilment Platform</h1>
+                        <div class="domain-description clamped" id="descriptionContainer">
+                            <span id="domain-description">Picqer, Katapull's cloud warehouse management system for online stores, wholesalers and fulfilment companies: multi-channel orders, inventory and locations, purchasing, batch picking, packing, shipping integrations, returns, rules, mobile app and a multi-client fulfilment portal.</span>
+                            <button id="domain-description-toggle" class="link-button" type="button"
+                                    aria-expanded="false" aria-controls="domain-description" hidden>more</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="appGroups"></div>
+            </div>
+        </section>
+
+        <section class="view" id="frameView" hidden>
+            <iframe id="pageFrame" title="Selected page"></iframe>
+        </section>
+    </div>
+</div>
+
+<script>
+    const apps = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.apps;
+    const config = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.config || {};
+    const sidebarSections = [{"id": "customers", "title": "Customers", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "groups": [{"name": "Online Stores with Their Own Warehouse", "items": [{"name": "Webshop Owner Running Their Own Warehouse", "link": "../customers/landing_pages/wsop.html", "icon": "../customers/icons/customer-wsop-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Founder or co-owner of a Dutch or Belgian online store that has outgrown packing from spreadsheets and the webshop back-office. Ships roughly 25 to a few hundre"}, {"name": "Warehouse Manager at a Scaling Brand or Wholesaler", "link": "../customers/landing_pages/whmg.html", "icon": "../customers/icons/customer-whmg-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Leads a team of pickers, packers and receivers at an established e-commerce brand, omnichannel retailer or wholesaler shipping hundreds to several thousand orde"}]}, {"name": "Fulfilment Companies and Their Clients", "items": [{"name": "Fulfilment (3PL) Company Owner or Operations Lead", "link": "../customers/landing_pages/fulf.html", "icon": "../customers/icons/customer-fulf-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Runs a fulfilment company that stores and ships for dozens of webshop clients from one warehouse, each with its own products, stock, carriers and requirements. "}, {"name": "Webshop Brand Outsourcing to a Picqer-Run Fulfilment Company", "link": "../customers/landing_pages/fcli.html", "icon": "../customers/icons/customer-fcli-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "A webshop or D2C brand that stores its goods at a fulfilment company running Picqer Fulfilment. It never pays Picqer directly but uses the fulfilment portal dai"}]}, {"name": "Warehouse Floor", "items": [{"name": "Order Picker and Packer", "link": "../customers/landing_pages/pick.html", "icon": "../customers/icons/customer-pick-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Picks, packs, receives and counts on the warehouse floor, often a student, part-timer or temporary worker during peak. Uses a handheld scanner (Picqer names the"}]}, {"name": "Ecosystem and Commerce Hub Partners", "items": [{"name": "Integration, Hardware and Commerce Hub Partner", "link": "../customers/landing_pages/ptnr.html", "icon": "../customers/icons/customer-ptnr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Software and hardware companies that connect to Picqer: webshop and marketplace platforms, shipping platforms and carriers (Picqer lists DeliveryMatch, Sendclou"}]}], "category": "Business"}, {"id": "competition", "title": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "groups": [{"name": "regional", "items": [{"name": "Monta (MontaWMS)", "link": "../competition/landing_pages/monta.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "E-commerce fulfilment provider that also sells its own WMS (MontaWMS) and shipping platform (MontaShip). Competes for webshops deciding between running their ow"}, {"name": "Davanti-WICS (Corax WMS)", "link": "../competition/landing_pages/davanti-wics.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Dutch WMS vendor with WICS for B2B/B2C logistics and Corax, a 100% cloud WMS on Microsoft Azure aimed at e-commerce and fulfilment parties; competes at the uppe"}]}, {"name": "challenger", "items": [{"name": "GoedGepickt", "link": "../competition/landing_pages/goedgepickt.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Dutch warehouse software for webshops and fulfilment companies with their own warehouse; the most direct like-for-like alternative to Picqer for small and mid-s"}]}, {"name": "global leader", "items": [{"name": "ShipHero", "link": "../competition/landing_pages/shiphero.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "E-commerce WMS founded in 2013 for brands and 3PLs, also running its own fulfilment network; a benchmark for 3PL-focused WMS features such as billing and pack-t"}, {"name": "Linnworks", "link": "../competition/landing_pages/linnworks.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Multichannel inventory and order management platform with warehouse and shipping functions; competes with Picqer for multichannel sellers wanting one hub for li"}]}], "category": "Business"}, {"id": "bricks", "title": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "groups": [{"name": "Order and Channel Intake", "items": [{"name": "Webshop and Marketplace Store Connectors", "link": "../product-bricks/landing_pages/chan.html", "icon": "../product-bricks/icons/chan.png", "fallback": "../product-bricks/icons/brick.png", "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trace back. Picqe"}, {"name": "Multi-Channel Order Management and Allocation", "link": "../product-bricks/landing_pages/ordm.html", "icon": "../product-bricks/icons/ordm.png", "fallback": "../product-bricks/icons/brick.png", "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and partial delive"}, {"name": "B2B Customer Portal", "link": "../product-bricks/landing_pages/b2bp.html", "icon": "../product-bricks/icons/b2bp.png", "fallback": "../product-bricks/icons/brick.png", "description": "A mini online store on live warehouse stock for wholesalers: business customers log in, see stock and their prices, place orders and follow history and status."}, {"name": "Picqer Public API and Webhooks", "link": "../product-bricks/landing_pages/papi.html", "icon": "../product-bricks/icons/papi.png", "fallback": "../product-bricks/icons/brick.png", "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custom shops, POS "}, {"name": "Katapull Commerce Hub Bridges", "link": "../product-bricks/landing_pages/ktpl.html", "icon": "../product-bricks/icons/ktpl.png", "fallback": "../product-bricks/icons/brick.png", "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista (native retu"}]}, {"name": "Inventory and Purchasing", "items": [{"name": "Product Catalogue and Barcodes", "link": "../product-bricks/landing_pages/prod.html", "icon": "../product-bricks/icons/prod.png", "fallback": "../product-bricks/icons/brick.png", "description": "Product master with images, supplier, weight, dimensions, barcodes (including GS1 with lot or expiry details) and stock settings; imported from stores or edited"}, {"name": "Inventory Ledger and Stock Sync", "link": "../product-bricks/landing_pages/invt.html", "icon": "../product-bricks/icons/invt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock changes to c"}, {"name": "Warehouses, Locations and Replenishment", "link": "../product-bricks/landing_pages/locn.html", "icon": "../product-bricks/icons/locn.png", "fallback": "../product-bricks/icons/brick.png", "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and replenishment of pic"}, {"name": "Cycle Counting", "link": "../product-bricks/landing_pages/cycl.html", "icon": "../product-bricks/icons/cycl.png", "fallback": "../product-bricks/icons/brick.png", "description": "Counting all year round in small rounds: count everything, a risk-based selection, or only locations where something happened; differences corrected on confirma"}, {"name": "Batch and Best-Before Traceability", "link": "../product-bricks/landing_pages/lotb.html", "icon": "../product-bricks/icons/lotb.png", "fallback": "../product-bricks/icons/brick.png", "description": "Records batch numbers and best-before dates at receipt and tracks them through stock, moves, picks, counts and returns; shows batches in the fulfilment portal ("}, {"name": "Purchase Advice and Purchase Orders", "link": "../product-bricks/landing_pages/purc.html", "icon": "../product-bricks/icons/purc.png", "fallback": "../product-bricks/icons/brick.png", "description": "Advice per supplier on what to buy based on stock, sales and waiting customers; converts advice to purchase orders e-mailed as PDF and Excel; tracks expected de"}, {"name": "Goods Receipt and Put-away", "link": "../product-bricks/landing_pages/rcvg.html", "icon": "../product-bricks/icons/rcvg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Receipt of purchase orders by scanning, into a location or a container, with several people on one receipt, product label printing and A/B hints for put-away; s"}]}, {"name": "Picking, Packing and Shipping", "items": [{"name": "Picklist and Batch Picking Engine", "link": "../product-bricks/landing_pages/pkls.html", "icon": "../product-bricks/icons/pkls.png", "fallback": "../product-bricks/icons/brick.png", "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed picklists, p"}, {"name": "Packing Station and Packaging Advice", "link": "../product-bricks/landing_pages/pack.html", "icon": "../product-bricks/icons/pack.png", "fallback": "../product-bricks/icons/brick.png", "description": "Packing table workflow with barcode verification, packaging advice based on dimensions or rules, and recording of the packaging used per shipment for cost pass-"}, {"name": "Shipping Provider Integrations and Labels", "link": "../product-bricks/landing_pages/ship.html", "icon": "../product-bricks/icons/ship.png", "fallback": "../product-bricks/icons/brick.png", "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, DeliveryMatch, Wuu"}, {"name": "Automatic Printing and Warehouse Hardware Connectivity", "link": "../product-bricks/landing_pages/prnt.html", "icon": "../product-bricks/icons/prnt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Sends labels and packing slips straight to printers without print dialogs and connects scanners, carton sealers and label applicators, conveyors and goods-to-pe"}, {"name": "Returns Processing", "link": "../product-bricks/landing_pages/retu.html", "icon": "../product-bricks/icons/retu.png", "fallback": "../product-bricks/icons/brick.png", "description": "Registers returns manually or pre-registered by return tools (Returnista, Returnless, ReturnGO), scans returned parcels, records inspection and restocks sellabl"}]}, {"name": "Automation, Mobile and Insight", "items": [{"name": "Rules Automation Engine", "link": "../product-bricks/landing_pages/rule.html", "icon": "../product-bricks/icons/rule.png", "fallback": "../product-bricks/icons/brick.png", "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or zone, add pac"}, {"name": "Picqer Mobile App", "link": "../product-bricks/landing_pages/mapp.html", "icon": "../product-bricks/icons/mapp.png", "fallback": "../product-bricks/icons/brick.png", "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, included in all pla"}, {"name": "Comments, Tasks and Notifications", "link": "../product-bricks/landing_pages/coll.html", "icon": "../product-bricks/icons/coll.png", "fallback": "../product-bricks/icons/brick.png", "description": "Comments with @mentions, reactions and up to five photos on picklists, orders and purchase orders, warehouse tasks, a \"For you\" inbox and e-mail notifications, "}, {"name": "Reports and Warehouse Analytics", "link": "../product-bricks/landing_pages/rprt.html", "icon": "../product-bricks/icons/rprt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Warehouse status at a glance and reports on team performance, stock levels, bestsellers and slow movers, also available to fulfilment clients."}]}, {"name": "Fulfilment Services", "items": [{"name": "Fulfilment Client Separation", "link": "../product-bricks/landing_pages/ften.html", "icon": "../product-bricks/icons/ften.png", "fallback": "../product-bricks/icons/brick.png", "description": "Keeps every fulfilment client's products, stock and orders separate inside one account, while the floor processes all clients through one workflow with client-s"}, {"name": "Fulfilment Client Portal", "link": "../product-bricks/landing_pages/fpor.html", "icon": "../product-bricks/icons/fpor.png", "fallback": "../product-bricks/icons/brick.png", "description": "Portal in the 3PL's branding where clients see stock and orders in real time, import products, push stock, create (concept) orders, cancel unpicked items, relea"}, {"name": "Fulfilment Client Invoicing", "link": "../product-bricks/landing_pages/finv.html", "icon": "../product-bricks/icons/finv.png", "fallback": "../product-bricks/icons/brick.png", "description": "Connects each client's rates to picklists, shipments, receipts, returns, packaging and storage to build invoice lines by category; announced by Picqer as in dev"}]}, {"name": "Platform Foundation", "items": [{"name": "Accounts, Users and Rights", "link": "../product-bricks/landing_pages/acct.html", "icon": "../product-bricks/icons/acct.png", "fallback": "../product-bricks/icons/brick.png", "description": "Multi-tenant accounts with unlimited users, per-user rights, copying users, a rights overview and logins for portal users."}, {"name": "Plans, Trials and Order-Volume Billing", "link": "../product-bricks/landing_pages/subs.html", "icon": "../product-bricks/icons/subs.png", "fallback": "../product-bricks/icons/brick.png", "description": "Self-service 14-day trial, plan selection (Team, Business, Premium, Premium+, Enterprise; Fulfilment, Plus, Next, Max), order counting against included volume a"}]}], "category": "Product Architecture"}, {"id": "streams", "title": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "groups": [{"name": "Run the Daily Warehouse", "items": [{"name": "Capture and Allocate Orders from Every Channel", "link": "../product-bricks/stream_pages/capture-and-allocate-orders-from-every-channel.html", "icon": "../product-bricks/icons/capture-and-allocate-orders-from-every-channel.png", "fallback": "../product-bricks/icons/stream.png", "description": "From an order in any webshop, marketplace, B2B portal, ERP or API call to an allocated, prioritised picklist in the right warehouse, with stock synced back to e"}, {"name": "Pick, Pack and Ship Orders Without Mistakes", "link": "../product-bricks/stream_pages/pick-pack-and-ship-orders-without-mistakes.html", "icon": "../product-bricks/icons/pick-pack-and-ship-orders-without-mistakes.png", "fallback": "../product-bricks/icons/stream.png", "description": "From picklist to a labelled, verified parcel and a customer who has track-and-trace: batch, singles and bulk picking on optimal routes, scan verification, packa"}, {"name": "Serve B2B Customers from Warehouse Stock", "link": "../product-bricks/stream_pages/serve-b2b-customers-from-warehouse-stock.html", "icon": "../product-bricks/icons/serve-b2b-customers-from-warehouse-stock.png", "fallback": "../product-bricks/icons/stream.png", "description": "Let business customers order from live warehouse stock with their own prices and ship their orders alongside consumer parcels; EDI retailer orders via Transus a"}, {"name": "Process Returns and Restock", "link": "../product-bricks/stream_pages/process-returns-and-restock.html", "icon": "../product-bricks/icons/process-returns-and-restock.png", "fallback": "../product-bricks/icons/stream.png", "description": "From a customer's return request to an inspected return and sellable stock back on the shelf, with the webshop informed."}]}, {"name": "Keep Stock Right", "items": [{"name": "Purchase and Receive Stock on Time", "link": "../product-bricks/stream_pages/purchase-and-receive-stock-on-time.html", "icon": "../product-bricks/icons/purchase-and-receive-stock-on-time.png", "fallback": "../product-bricks/icons/stream.png", "description": "From purchase advice to received, labelled stock in a pick location, releasing waiting backorders."}, {"name": "Keep Inventory Accurate and Traceable", "link": "../product-bricks/stream_pages/keep-inventory-accurate-and-traceable.html", "icon": "../product-bricks/icons/keep-inventory-accurate-and-traceable.png", "fallback": "../product-bricks/icons/stream.png", "description": "Keep system stock equal to the shelf and every batch traceable: real-time moves, replenishment, cycle counts and batch/best-before tracking."}]}, {"name": "Serve Fulfilment Clients", "items": [{"name": "Run Multi-Client Fulfilment with a Client Portal", "link": "../product-bricks/stream_pages/run-multi-client-fulfilment-with-a-client-portal.html", "icon": "../product-bricks/icons/run-multi-client-fulfilment-with-a-client-portal.png", "fallback": "../product-bricks/icons/stream.png", "description": "Run many webshop clients in one warehouse: separate data, shared floor workflow, client-specific rules and a branded portal where clients see and steer their st"}, {"name": "Invoice Fulfilment Clients from Warehouse Activity", "link": "../product-bricks/stream_pages/invoice-fulfilment-clients-from-warehouse-activity.html", "icon": "../product-bricks/icons/invoice-fulfilment-clients-from-warehouse-activity.png", "fallback": "../product-bricks/icons/stream.png", "description": "Turn recorded picks, shipments, receipts, returns, packaging and storage into invoice lines per client using each client's rates (in development at Picqer)."}]}, {"name": "Scale and Connect", "items": [{"name": "Automate and Mechanise the Warehouse", "link": "../product-bricks/stream_pages/automate-and-mechanise-the-warehouse.html", "icon": "../product-bricks/icons/automate-and-mechanise-the-warehouse.png", "fallback": "../product-bricks/icons/stream.png", "description": "Grow throughput step by step: rules instead of sticky notes, automatic printing, handheld scanners, then carton machines, conveyors and goods-to-person systems "}, {"name": "Onboard a Warehouse and Connect the Ecosystem", "link": "../product-bricks/stream_pages/onboard-a-warehouse-and-connect-the-ecosystem.html", "icon": "../product-bricks/icons/onboard-a-warehouse-and-connect-the-ecosystem.png", "fallback": "../product-bricks/icons/stream.png", "description": "From signup to a live warehouse within days and an ecosystem of partner and Katapull connections that keeps working."}]}], "category": "Product Architecture"}, {"id": "data", "title": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "groups": [{"name": "Orders, Customers and Shipments", "items": [{"name": "Sales Order", "link": "../product-bricks/data_pages/sales-order.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Order from a channel, API, portal or manual entry with lines, priority, pause reason and status."}, {"name": "Customer and Delivery Address", "link": "../product-bricks/data_pages/customer-and-address.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Name, address, e-mail and phone of the end customer or business customer."}, {"name": "Picklist and Batch", "link": "../product-bricks/data_pages/picklist-and-batch.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Picklists, batches, picks, pauses and splits."}, {"name": "Shipment Record", "link": "../product-bricks/data_pages/shipment-record.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Shipment, carrier, service and tracking code."}, {"name": "Shipping Label and Packing Slip", "link": "../product-bricks/data_pages/shipping-label-document.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Label and packing slip files."}, {"name": "Packaging Usage", "link": "../product-bricks/data_pages/packaging-usage.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Packaging type used per shipment."}, {"name": "Return Record", "link": "../product-bricks/data_pages/return-record.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Return with reason, items, inspection outcome and restock decision."}]}, {"name": "Products, Stock and Purchasing", "items": [{"name": "Product Master", "link": "../product-bricks/data_pages/product-master.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Product, barcodes, supplier, weight, dimensions, images and stock settings."}, {"name": "Stock Ledger", "link": "../product-bricks/data_pages/stock-ledger.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Every stock mutation with user, reason, location and resulting balances."}, {"name": "Warehouse and Location", "link": "../product-bricks/data_pages/location-and-warehouse.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Warehouses, pick and bulk locations, containers and A/B class."}, {"name": "Stock Count", "link": "../product-bricks/data_pages/stock-count.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Count rounds, counted quantities and corrections."}, {"name": "Batch and Best-Before Lot", "link": "../product-bricks/data_pages/batch-and-expiry-lot.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Batch numbers and best-before dates per stock, movement and shipment."}, {"name": "Supplier", "link": "../product-bricks/data_pages/supplier.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Supplier contact and purchasing settings."}, {"name": "Purchase Order", "link": "../product-bricks/data_pages/purchase-order.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Purchase orders, lines and expected dates."}, {"name": "Goods Receipt", "link": "../product-bricks/data_pages/goods-receipt.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Received quantities, put-away and receivers."}]}, {"name": "Fulfilment, Collaboration and Insight", "items": [{"name": "Fulfilment Client Account", "link": "../product-bricks/data_pages/fulfilment-client-account.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Client, settings, rights and portal branding."}, {"name": "Fulfilment Rate Card and Invoice Line", "link": "../product-bricks/data_pages/fulfilment-rate-card-and-invoice-line.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Client rates and generated invoice lines by category."}, {"name": "Comment and Task", "link": "../product-bricks/data_pages/comment-and-task.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Comments, mentions, reactions, photos and tasks."}, {"name": "Warehouse Activity Log", "link": "../product-bricks/data_pages/warehouse-activity-log.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Aggregated picks, packs, receipts, counts and moves per user, client and day."}]}, {"name": "Configuration and Access", "items": [{"name": "Integration Connection Config", "link": "../product-bricks/data_pages/integration-connection-config.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Store, carrier and hub credentials and mappings."}, {"name": "API Key and Webhook Subscription", "link": "../product-bricks/data_pages/api-key-and-webhook-subscription.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "API keys and webhook endpoints."}, {"name": "Automation Rule Set", "link": "../product-bricks/data_pages/automation-rule-set.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Rules with conditions and actions."}, {"name": "Hardware Device Registry", "link": "../product-bricks/data_pages/hardware-device-registry.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Printers, stations and devices."}, {"name": "User Account and Rights", "link": "../product-bricks/data_pages/user-account-and-rights.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Users, logins and rights."}, {"name": "Subscription and Order Usage", "link": "../product-bricks/data_pages/subscription-and-order-usage.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Plan, included orders, additional orders and payments."}]}], "category": "Product Architecture"}, {"id": "products", "title": "Products", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "groups": [{"name": "B2B SaaS - cloud warehouse management system", "items": [{"name": "Picqer for Online Stores", "link": "../product-deployments/landing_pages/picqer-wms.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "The core WMS for webshops and wholesalers with their own warehouse: multi-channel orders, inventory and locations, purchasing and receiving, batch picking, pack"}]}, {"name": "B2B SaaS - multi-client WMS for 3PLs", "items": [{"name": "Picqer Fulfilment", "link": "../product-deployments/landing_pages/picqer-fulfilment.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "WMS for fulfilment companies: client separation in one account, client-specific rules, packaging cost pass-through, batch traceability and (in development) clie"}]}, {"name": "Client portal included in Picqer Fulfilment", "items": [{"name": "Picqer Fulfilment Portal", "link": "../product-deployments/landing_pages/picqer-fulfilment-portal.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Branded portal where fulfilment clients see stock and orders in real time, act on orders, use purchase advice and pull reports."}]}, {"name": "Mobile app for iOS and Android, included in all plans", "items": [{"name": "Picqer App", "link": "../product-deployments/landing_pages/picqer-mobile-app.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Paperless picking, receiving, counting, moving, replenishment, tasks and comments on phones and handheld scanners."}]}, {"name": "Wholesale ordering portal", "items": [{"name": "Picqer B2B Customer Portal", "link": "../product-deployments/landing_pages/picqer-b2b-portal.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Mini online store on live stock for business customers with price lists and order history."}]}, {"name": "Developer platform and integration catalogue", "items": [{"name": "Picqer API and Integrations", "link": "../product-deployments/landing_pages/picqer-api-and-integrations.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Public REST API and webhooks plus about 50 listed store, shipping, returns, purchasing, customer service and ERP integrations, including Katapull sibling connec"}]}, {"name": "Integration support with hardware partners", "items": [{"name": "Picqer Hardware and Robotics Support", "link": "../product-deployments/landing_pages/picqer-hardware-and-robotics.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Support for printers, scanners, handhelds, carton machines, conveyors and goods-to-person systems through Dutch intralogistics partners."}]}], "category": "Product Architecture"}, {"id": "deployments", "title": "Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/deployment/deployment.png", "groups": [{"name": "Web Applications", "items": [{"name": "Picqer Web Application", "link": "../product-deployments/deployment/picqer-web-app.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "The main WMS for office and packing stations."}, {"name": "Fulfilment Client Portal", "link": "../product-deployments/deployment/fulfilment-portal.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Branded portal for fulfilment clients."}, {"name": "B2B Customer Portal", "link": "../product-deployments/deployment/b2b-portal.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Wholesale ordering portal."}]}, {"name": "Mobile", "items": [{"name": "Picqer App (iOS and Android)", "link": "../product-deployments/deployment/picqer-app.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Handheld and phone app."}]}, {"name": "API and Integrations", "items": [{"name": "Public REST API and Webhooks", "link": "../product-deployments/deployment/public-api.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Documented at picqer.com/api."}, {"name": "Store, Carrier and Hub Connectors", "link": "../product-deployments/deployment/connectors.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Picqer-built connectors and Katapull bridges."}]}, {"name": "Warehouse Edge", "items": [{"name": "Printing and Hardware Connectivity", "link": "../product-deployments/deployment/print-and-hardware.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Print delivery and mechanisation interfaces (local client is an assumption)."}]}], "category": "Product Architecture"}, {"id": "residuality", "title": "Stress Test", "link": "../residuality/index.html", "icon": "icons/residuality.png", "groups": [], "category": "More"}, {"id": "tutorial", "title": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "groups": [], "category": "More"}];
+    const DOMAIN_NAME = document.title;
+    const SIDEBAR_HIDDEN_KEY = 'productscape:start-sidebar-hidden';
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // App names in apps.json may carry <br> for the card layout; the sidebar needs plain text.
+    function plainText(value) {
+        return String(value || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function storageGet(key, fallback) {
+        try {
+            const value = window.localStorage.getItem(key);
+            return value === null ? fallback : JSON.parse(value);
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function storageSet(key, value) {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            // Storage can be unavailable (private windows, file:// in some browsers).
+        }
+    }
+
+    function isExternal(link) {
+        return /^[a-z][a-z0-9+.-]*:/i.test(link) || link.startsWith('//');
+    }
+
+    // Package launchers link to other domains' start pages, which carry their own
+    // sidebar; open those (and external sites) as full pages instead of inline.
+    function opensInline(link) {
+        return !isExternal(link) && !/(^|\/)start\/index\.html(#.*)?$/.test(link);
+    }
+
+    // ---------- build the navigation model ----------
+
+    // Two levels only: section -> pages. Source groups stay searchable and show
+    // in tooltips; each section's overview page presents the full grouping.
+    // Package launchers have no domain sections, so their app groups become sections.
+    const launcherSections = apps.flatMap(tab => (tab.apps || []).map((group, groupIndex) => ({
+        id: 'apps/' + tab.tab + '/' + groupIndex,
+        title: (apps.length > 1 ? tab.tab + ' · ' : '') + group.group,
+        groups: [{
+            name: group.group,
+            items: (group.apps || []).map(app => ({
+                name: plainText(app.name),
+                link: app.link,
+                icon: app.icon,
+                fallback: 'icons/logo.png',
+                description: plainText(app.description) + (app.source ? ' ' + app.source : ''),
+                newTab: config.openInNewTab !== false && app.openInNewTab !== false
+            }))
+        }]
+    })));
+
+    const sections = (sidebarSections.length ? sidebarSections : launcherSections).map(section => ({
+        ...section,
+        items: section.groups.flatMap(group => group.items.map(item => ({...item, groupName: group.name})))
+    })).filter(section => section.items.length || (section.link && !section.groups.length));
+    const allItems = [];
+    sections.forEach(section => {
+        section.items.forEach(item => {
+            item.section = section;
+            item.search = (item.name + ' ' + (item.description || '') + ' ' + item.groupName + ' ' + section.title).toLowerCase();
+            allItems.push(item);
+        });
+    });
+
+    // ---------- sidebar rendering ----------
+
+    const tree = document.getElementById('sidebarTree');
+    const filterInput = document.getElementById('filter_all');
+    // Sections start collapsed on every visit; only the open page's section is revealed.
+    const expanded = new Set();
+    const CHEVRON = '<svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5L7 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+    function highlight(text, query) {
+        if (!query) return escapeHtml(text);
+        const index = text.toLowerCase().indexOf(query);
+        if (index < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, index)) + '<mark>' + escapeHtml(text.slice(index, index + query.length)) +
+            '</mark>' + escapeHtml(text.slice(index + query.length));
+    }
+
+    function itemHtml(item, query, extraClass) {
+        const attrs = opensInline(item.link) ? '' : (item.newTab === false ? '' : ' target="_blank" rel="noopener"');
+        return '<a class="nav-item' + (extraClass || '') + '" href="' + escapeHtml(item.link) + '"' + attrs +
+            ' title="' + escapeHtml([item.groupName, item.description].filter(Boolean).join(' — ')) + '"' + '>' +
+            '<img src="' + escapeHtml(item.icon || item.fallback) + '" data-fallback="' + escapeHtml(item.fallback || '') + '" alt="" loading="lazy">' +
+            '<span class="nav-label">' + highlight(item.name, query) + '</span></a>';
+    }
+
+    function toggleHtml(className, id, label, count, isOpen, icon) {
+        return '<button class="nav-toggle ' + className + '" type="button" data-toggle="' + escapeHtml(id) +
+            '" aria-expanded="' + isOpen + '">' + CHEVRON +
+            (icon ? '<img src="' + escapeHtml(icon) + '" data-fallback="icons/logo.png" alt="">' : '') +
+            '<span class="nav-label">' + escapeHtml(label) + '</span><span class="count">' + count + '</span></button>';
+    }
+
+    // Category headings (Business, Product Architecture, More) above the first
+    // visible section of each category.
+    let lastCategory = '';
+
+    function categoryHtml(section) {
+        if (!section.category || section.category === lastCategory) return '';
+        lastCategory = section.category;
+        return '<div class="nav-category">' + escapeHtml(section.category) + '</div>';
+    }
+
+    function renderSidebar() {
+        lastCategory = '';
+        const query = filterInput.value.trim().toLowerCase();
+        let html = '';
+        let matches = 0;
+        sections.forEach(section => {
+            // A section without pages is a single link, e.g. Stress Test under More.
+            if (!section.items.length) {
+                if (query && !section.title.toLowerCase().includes(query)) return;
+                if (query) matches++;
+                html += categoryHtml(section) + itemHtml({name: section.title, link: section.link, icon: section.icon,
+                    fallback: 'icons/logo.png'}, query, ' nav-single');
+                return;
+            }
+            const items = section.items.filter(item => !query || item.search.includes(query));
+            if (!items.length) return;
+            matches += items.length;
+            html += categoryHtml(section);
+            // While searching every section with a match is open; the remembered
+            // state returns when the search is cleared.
+            const sectionOpen = !!query || expanded.has(section.id);
+            html += '<div class="nav-section">' +
+                toggleHtml('nav-section-header', section.id, section.title, items.length, sectionOpen, section.icon) +
+                '<div class="nav-body"' + (sectionOpen ? '' : ' hidden') + '>';
+            if (section.link && !query) {
+                html += itemHtml({name: 'Overview', link: section.link, icon: section.icon, fallback: 'icons/logo.png'}, '', ' overview');
+            }
+            items.forEach(item => html += itemHtml(item, query));
+            html += '</div></div>';
+        });
+        tree.innerHTML = html || '<div class="nav-empty">No pages match "' + escapeHtml(query) + '"</div>';
+        document.getElementById('summary_all').textContent = query
+            ? matches + ' match' + (matches === 1 ? '' : 'es')
+            : allItems.length + ' pages';
+        document.getElementById('searchClear').hidden = !query;
+        document.getElementById('searchHint').hidden = !!query;
+        markActive();
+    }
+
+    // The overview entries are built on the fly, so give them an index too.
+    const overviewItems = sections.filter(section => section.link).map(section => ({
+        name: section.title, link: section.link, section: section
+    }));
+
+    tree.addEventListener('click', event => {
+        const toggle = event.target.closest('[data-toggle]');
+        if (toggle) {
+            const id = toggle.dataset.toggle;
+            const open = toggle.getAttribute('aria-expanded') !== 'true';
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.nextElementSibling.hidden = !open;
+            if (!filterInput.value.trim()) {
+                open ? expanded.add(id) : expanded.delete(id);
+            }
+            // Opening a section also shows its overview page.
+            const section = sections.find(candidate => candidate.id === id);
+            if (open && section && section.link) followLink(event, section.link, true);
+            return;
+        }
+        const link = event.target.closest('a.nav-item');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // Arrow keys move through visible entries; Escape returns to the search box.
+    tree.addEventListener('keydown', event => {
+        const focusable = [...tree.querySelectorAll('.nav-toggle, .nav-item')].filter(el => el.offsetParent !== null);
+        const index = focusable.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            const next = focusable[index + (event.key === 'ArrowDown' ? 1 : -1)];
+            if (next) next.focus(); else if (event.key === 'ArrowUp') filterInput.focus();
+        } else if (event.key === 'Escape') {
+            filterInput.focus();
+        } else if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && document.activeElement.dataset.toggle) {
+            const isOpen = document.activeElement.getAttribute('aria-expanded') === 'true';
+            if (isOpen !== (event.key === 'ArrowRight')) document.activeElement.click();
+        }
+    });
+
+    function setAllExpanded(open) {
+        expanded.clear();
+        if (open) sections.forEach(section => expanded.add(section.id));
+        renderSidebar();
+    }
+
+    document.getElementById('expandAll').addEventListener('click', () => setAllExpanded(true));
+    document.getElementById('collapseAll').addEventListener('click', () => setAllExpanded(false));
+
+    filterInput.addEventListener('input', renderSidebar);
+    filterInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            filterInput.value = '';
+            renderSidebar();
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            const first = tree.querySelector('.nav-item');
+            if (first) first.focus();
+        } else if (event.key === 'Enter') {
+            const first = tree.querySelector('.nav-item:not(.overview)');
+            if (first) first.click();
+        }
+    });
+    document.getElementById('searchClear').addEventListener('click', () => {
+        filterInput.value = '';
+        renderSidebar();
+        filterInput.focus();
+    });
+    document.addEventListener('keydown', event => {
+        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+        if (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey) {
+            event.preventDefault();
+            showSidebar(true);
+            filterInput.focus();
+            filterInput.select();
+        }
+    });
+
+    if (config.enableSearch === false) {
+        document.getElementById('search_container').hidden = true;
+    }
+
+    // Broken or missing icons fall back to the section's generic icon.
+    document.addEventListener('error', event => {
+        const img = event.target;
+        if (img.tagName !== 'IMG' || !img.dataset.fallback) return;
+        const fallback = img.dataset.fallback;
+        img.removeAttribute('data-fallback');
+        img.src = fallback;
+    }, true);
+
+    // ---------- sidebar visibility ----------
+
+    const shell = document.getElementById('shell');
+    const isNarrow = () => window.matchMedia('(max-width: 900px)').matches;
+
+    function showSidebar(show) {
+        if (isNarrow()) {
+            shell.classList.toggle('sidebar-open', show);
+        } else {
+            shell.classList.toggle('sidebar-hidden', !show);
+            storageSet(SIDEBAR_HIDDEN_KEY, !show);
+        }
+    }
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        showSidebar(isNarrow() ? !shell.classList.contains('sidebar-open') : shell.classList.contains('sidebar-hidden'));
+    });
+    document.getElementById('backdrop').addEventListener('click', () => showSidebar(false));
+    if (storageGet(SIDEBAR_HIDDEN_KEY, false)) shell.classList.add('sidebar-hidden');
+
+    // ---------- routing: #page=<relative link> shows that page inline ----------
+
+    const homeView = document.getElementById('homeView');
+    const frameView = document.getElementById('frameView');
+    const frame = document.getElementById('pageFrame');
+    const openExternal = document.getElementById('openExternal');
+    const topbarTitle = document.getElementById('topbarTitle');
+    let currentPage = '';
+
+    function followLink(event, link, keepSidebar) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!opensInline(link)) return;
+        event.preventDefault();
+        location.hash = 'page=' + encodeURIComponent(link);
+        if (isNarrow() && !keepSidebar) showSidebar(false);
+    }
+
+    function pageFromHash() {
+        const match = location.hash.match(/^#page=(.+)$/);
+        if (!match) return '';
+        const link = decodeURIComponent(match[1]);
+        return opensInline(link) ? link : '';
+    }
+
+    function findItem(link) {
+        const base = link.split('#')[0];
+        return allItems.find(item => item.link === link) ||
+            overviewItems.find(item => item.link === link) ||
+            allItems.find(item => item.link.split('#')[0] === base) ||
+            overviewItems.find(item => item.link.split('#')[0] === base);
+    }
+
+    function setTitle(item, fallbackTitle) {
+        let html = '<button class="link-button" type="button" id="crumbHome">' + escapeHtml(DOMAIN_NAME) + '</button>';
+        if (item && item.section && item.section.title !== item.name) html += '<span>/</span><span>' + escapeHtml(item.section.title) + '</span>';
+        if (item || fallbackTitle) html += '<span>/</span><strong>' + escapeHtml(item ? item.name : fallbackTitle) + '</strong>';
+        topbarTitle.innerHTML = item || fallbackTitle ? html : '<strong>Overview</strong>';
+        const crumb = document.getElementById('crumbHome');
+        if (crumb) crumb.addEventListener('click', goHome);
+    }
+
+    function markActive() {
+        tree.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+        if (!currentPage) return;
+        const active = [...tree.querySelectorAll('.nav-item')].find(el => el.getAttribute('href') === currentPage);
+        if (active) active.classList.add('active');
+    }
+
+    function revealActive(item) {
+        if (!item || filterInput.value.trim()) return;
+        if (!expanded.has(item.section.id)) {
+            expanded.add(item.section.id);
+            renderSidebar();
+        }
+        const active = tree.querySelector('.nav-item.active');
+        if (active) active.scrollIntoView({block: 'nearest'});
+    }
+
+    function route() {
+        currentPage = pageFromHash();
+        const item = currentPage ? findItem(currentPage) : null;
+        homeView.hidden = !!currentPage;
+        frameView.hidden = !currentPage;
+        document.getElementById('homeButton').hidden = !currentPage;
+        openExternal.hidden = !currentPage;
+        if (currentPage) {
+            if (frame.getAttribute('src') !== currentPage) frame.setAttribute('src', currentPage);
+            openExternal.href = currentPage;
+            document.title = (item ? item.name : 'Page') + ' · ' + DOMAIN_NAME;
+        } else {
+            frame.removeAttribute('src');
+            document.title = DOMAIN_NAME;
+        }
+        setTitle(item);
+        markActive();
+        revealActive(item);
+    }
+
+    function goHome() {
+        if (location.hash) history.pushState(null, '', location.pathname + location.search);
+        route();
+    }
+
+    // Relative link from this page's folder to an absolute URL, or '' when it
+    // leaves the site (different origin).
+    function relativeLink(href) {
+        const from = new URL('.', location.href);
+        const to = new URL(href);
+        if (from.origin !== to.origin || from.protocol !== to.protocol) return '';
+        const fromParts = from.pathname.split('/').filter(Boolean);
+        const toParts = to.pathname.split('/');
+        const fileName = toParts.pop();
+        const toDirs = toParts.filter(Boolean);
+        let common = 0;
+        while (common < fromParts.length && common < toDirs.length && fromParts[common] === toDirs[common]) common++;
+        return '../'.repeat(fromParts.length - common) + toDirs.slice(common).concat(fileName).join('/') + to.hash;
+    }
+
+    // Keep the address bar, title and sidebar in step with navigation inside the
+    // frame. Browsers block this for file:// pages; the frame still works there.
+    frame.addEventListener('load', () => {
+        let location_;
+        try {
+            location_ = frame.contentWindow.location.href;
+        } catch (e) {
+            return;
+        }
+        if (!location_ || location_ === 'about:blank') return;
+        // Pages without the breadcrumbs import (the script-free tutorial) can't mark
+        // themselves as embedded; do it for them.
+        frame.contentDocument.documentElement.classList.add('embedded');
+        if (!frame.contentDocument.querySelector('style[data-embedded]')) {
+            const style = frame.contentDocument.createElement('style');
+            style.dataset.embedded = '';
+            style.textContent = 'html.embedded .site-nav, html.embedded #breadcrumbs { display: none !important; }';
+            frame.contentDocument.head.appendChild(style);
+        }
+        const link = relativeLink(location_);
+        if (!link) return;
+        if (link.split('#')[0] === 'index.html' || link.split('#')[0] === '../start/index.html') {
+            // A "Home" link inside the frame: show the overview instead of nesting the start page.
+            goHome();
+            return;
+        }
+        if (link !== currentPage) {
+            currentPage = link;
+            history.replaceState(null, '', '#page=' + encodeURIComponent(link));
+            openExternal.href = link;
+            const item = findItem(link);
+            let frameTitle = '';
+            try {
+                frameTitle = frame.contentDocument.title;
+            } catch (e) {
+                // ignore
+            }
+            setTitle(item, frameTitle);
+            document.title = (item ? item.name : frameTitle || 'Page') + ' · ' + DOMAIN_NAME;
+            markActive();
+            revealActive(item);
+        }
+    });
+
+    document.getElementById('brand').addEventListener('click', goHome);
+    document.getElementById('homeButton').addEventListener('click', goHome);
+    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
+
+    // ---------- overview (home) content ----------
+
+    // Cards show the page counts of the sidebar sections they lead to.
+    function appCountsHtml(app) {
+        const counts = sidebarSections
+            .filter(section => section.link === app.link && section.groups.length)
+            .map(section => '<span class="app-count"><strong>' +
+                section.groups.reduce((sum, group) => sum + group.items.length, 0) + '</strong> ' +
+                escapeHtml(section.title) + '</span>');
+        return counts.length ? '<div class="app-counts">' + counts.join('') + '</div>' : '';
+    }
+
+    function renderAppCard(app) {
+        const newTab = config.openInNewTab !== false && app.openInNewTab !== false;
+        const attrs = opensInline(app.link) || !newTab ? '' : ' target="_blank" rel="noopener"';
+        // App names are authored markup (they may contain <br>), as on the previous start page.
+        return '<a class="app" href="' + escapeHtml(app.link) + '"' + attrs + '>' +
+            '<img src="' + escapeHtml(app.icon) + '" data-fallback="icons/logo.png" alt="">' +
+            '<div class="name">' + app.name + '</div>' +
+            (app.source ? '<div class="source">source: ' + escapeHtml(app.source) + '</div>' : '') +
+            '<div class="description">' + escapeHtml(app.description) + '</div>' + appCountsHtml(app) + '</a>';
+    }
+
+    function renderApps() {
+        let html = '';
+        apps.forEach(tab => {
+            if (apps.length > 1) html += '<h2 class="app-tab-title">' + escapeHtml(tab.tab) + '</h2>';
+            (tab.apps || []).forEach(group => {
+                html += '<div class="app-group"><h3 class="app-group-title">' + escapeHtml(group.group) + '</h3>' +
+                    '<div class="app-grid">' + (group.apps || []).map(renderAppCard).join('') + '</div></div>';
+            });
+        });
+        document.getElementById('appGroups').innerHTML = html;
+    }
+
+    homeView.addEventListener('click', event => {
+        const link = event.target.closest('a.app');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // ---------- domain description: three lines with a "more" toggle ----------
+
+    const descriptionContainer = document.getElementById('descriptionContainer');
+    const descriptionText = document.getElementById('domain-description');
+    const descriptionToggle = document.getElementById('domain-description-toggle');
+
+    function updateDescriptionToggle() {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionContainer.classList.add('clamped');
+        const overflows = descriptionText.scrollHeight > descriptionText.clientHeight + 1;
+        descriptionContainer.classList.toggle('clamped', overflows && !isExpanded);
+        descriptionToggle.hidden = !overflows;
+        descriptionToggle.textContent = isExpanded ? 'less' : 'more';
+    }
+
+    descriptionToggle.addEventListener('click', () => {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionToggle.setAttribute('aria-expanded', String(!isExpanded));
+        updateDescriptionToggle();
+    });
+    window.addEventListener('resize', updateDescriptionToggle);
+
+    renderSidebar();
+    renderApps();
+    route();
+    updateDescriptionToggle();
+    if (document.fonts) document.fonts.ready.then(updateDescriptionToggle);
+</script>
+</body>
+</html>

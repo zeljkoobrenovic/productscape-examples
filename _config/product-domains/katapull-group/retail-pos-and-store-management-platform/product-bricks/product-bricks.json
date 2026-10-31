@@ -1,0 +1,3074 @@
+{
+  "metadata": {
+    "domainId": "retail-pos-and-store-management-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of the Vendit System: counter checkout and service, merchandise and inventory, omnichannel commerce through Katapull sibling connectors, and insight, finance and platform services.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Store Checkout and Customer Service",
+            "Merchandise and Inventory"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Omnichannel Commerce",
+            "Insight, Finance and Platform"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Store Checkout and Customer Service",
+      "description": "Everything that happens at the counter and in the service area of a specialty store.",
+      "subGroups": [
+        {
+          "name": "Checkout and Payment",
+          "description": "Till, tenders, receipts and in-store hardware.",
+          "bricks": [
+            {
+              "id": "posc",
+              "name": "POS Checkout and Sales Registration",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "The till itself: scanning or searching articles, building the basket, applying prices, promotions and loyalty discounts, taking trade-ins and registering every sale on name or anonymously. Vendit positions this as fast, branch-specific checkout software running on Windows store workstations.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-pos-checkout-screen",
+                      "name": "POS Checkout Screen",
+                      "type": "web-component",
+                      "description": "Touch-screen checkout client on the store workstation: scan, search, basket, discounts, trade-in and tender selection.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-sales-api",
+                            "type": "uses",
+                            "description": "Calls sales api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-sales-api",
+                      "name": "Sales Registration API",
+                      "type": "api",
+                      "description": "Registers baskets, returns and trade-ins and exposes sales to other bricks.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-basket-pricing",
+                            "type": "uses",
+                            "description": "Calls basket pricing."
+                          },
+                          {
+                            "moduleId": "module-sales-transaction-service",
+                            "type": "uses",
+                            "description": "Calls sales transaction service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-offline-sales-sync",
+                      "name": "Offline Sales Sync",
+                      "type": "daemon",
+                      "description": "Keeps a local sales buffer on the workstation and syncs to the central database when the connection returns (assumed capability, not confirmed by Vendit).",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-sales-transaction-service",
+                            "type": "uses",
+                            "description": "Calls sales transaction service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-basket-pricing",
+                      "name": "Basket Pricing Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Calls the price engine, loyalty and customer services to compute the final basket.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-engine",
+                            "targetBrickId": "prpr",
+                            "type": "uses",
+                            "description": "Uses Pricing, Promotions and Purchase Price Formulas."
+                          },
+                          {
+                            "moduleId": "module-loyalty-api",
+                            "targetBrickId": "loya",
+                            "type": "uses",
+                            "description": "Uses Loyalty, Value Cheques and Gift Cards."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-sales-transaction-service",
+                      "name": "Sales Transaction Service",
+                      "type": "stateful-service",
+                      "description": "System of record for receipts, sale lines, returns, trade-ins and sales staff attribution."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "prpr",
+                  "moduleId": "module-price-engine",
+                  "sourceModuleId": "module-basket-pricing",
+                  "type": "synchronous",
+                  "description": "Selling price and active promotions per article and branch."
+                },
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-sales-transaction-service",
+                  "type": "event",
+                  "description": "Every sale and return mutates the stock ledger in real time."
+                },
+                {
+                  "targetBrickId": "paym",
+                  "moduleId": "module-payment-terminal-api",
+                  "sourceModuleId": "module-pos-checkout-screen",
+                  "type": "synchronous",
+                  "description": "Starts card and other tender payments."
+                },
+                {
+                  "targetBrickId": "crmc",
+                  "moduleId": "module-customer-api",
+                  "sourceModuleId": "module-pos-checkout-screen",
+                  "type": "synchronous",
+                  "description": "Looks up or creates the customer for sale on name."
+                },
+                {
+                  "targetBrickId": "loya",
+                  "moduleId": "module-loyalty-api",
+                  "sourceModuleId": "module-basket-pricing",
+                  "type": "synchronous",
+                  "description": "Applies points, value cheques and vouchers."
+                },
+                {
+                  "targetBrickId": "hwdv",
+                  "moduleId": "module-device-profile-service",
+                  "sourceModuleId": "module-pos-checkout-screen",
+                  "type": "context",
+                  "description": "Drives scanner, receipt printer and cash drawer."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-transaction",
+                  "moduleIds": [
+                    "module-sales-transaction-service",
+                    "module-offline-sales-sync"
+                  ],
+                  "role": "own",
+                  "description": "System of record for every receipt."
+                },
+                {
+                  "assetId": "article-master",
+                  "moduleIds": [
+                    "module-basket-pricing"
+                  ],
+                  "role": "read",
+                  "description": "Article lookup by barcode and description."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "paym",
+              "name": "Payment Terminal and Tender Integration",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Connects the till to card terminals and alternative tenders (cash, gift cards, instalment payments) and records each tender. Vendit lists CCV, Worldline, Pay. and SprayPay among its payment partners.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-payment-terminal-api",
+                      "name": "Payment Terminal API",
+                      "type": "api",
+                      "description": "Start, cancel and confirm payments from the till.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tender-service",
+                            "type": "uses",
+                            "description": "Calls tender service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-tender-service",
+                      "name": "Tender Service",
+                      "type": "stateful-service",
+                      "description": "Records tenders, split payments and terminal results per receipt."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-psp-terminal-connector",
+                      "name": "Payment Terminal Connectors",
+                      "type": "integration",
+                      "description": "Connectors to card terminals and payment providers (CCV, Worldline, Pay.) and instalment payment (SprayPay)."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "posc",
+                  "moduleId": "module-sales-transaction-service",
+                  "sourceModuleId": "module-tender-service",
+                  "type": "context",
+                  "description": "Tender belongs to a receipt."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "payment-record",
+                  "moduleIds": [
+                    "module-tender-service"
+                  ],
+                  "role": "own",
+                  "description": "Tender lines and terminal results."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment terminal providers (CCV, Worldline, Pay.)",
+                  "type": "payment",
+                  "interface": "Terminal protocol / PSP API",
+                  "description": "Authorises card payments at the counter.",
+                  "sourceModuleId": "module-psp-terminal-connector"
+                },
+                {
+                  "system": "Instalment payment provider (SprayPay)",
+                  "type": "payment",
+                  "interface": "PSP API",
+                  "description": "Pay-later and instalment purchases for higher-value items.",
+                  "sourceModuleId": "module-psp-terminal-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rcpt",
+              "name": "Receipts, Cashbook and Day Closing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Prints or e-mails receipts, keeps the cash drawer and cashbook, and closes each register at the end of the day so turnover, tenders and cash differences reconcile before export to accounting.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-day-closing-screen",
+                      "name": "Day Closing Screen",
+                      "type": "web-component",
+                      "description": "Counts the drawer, shows tender totals and explains differences.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-cashbook-api",
+                            "type": "uses",
+                            "description": "Calls cashbook api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-cashbook-api",
+                      "name": "Cashbook API",
+                      "type": "api",
+                      "description": "Cashbook mutations, drawer openings and closing results.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-cashbook-service",
+                            "type": "uses",
+                            "description": "Calls cashbook service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-receipt-mailer",
+                      "name": "Receipt Mailer",
+                      "type": "message-consumer",
+                      "description": "Sends digital receipts and reprints on request."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-cashbook-service",
+                      "name": "Cashbook Service",
+                      "type": "stateful-service",
+                      "description": "Owns per-register cashbook and closing records."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "posc",
+                  "moduleId": "module-sales-api",
+                  "sourceModuleId": "module-cashbook-service",
+                  "type": "event",
+                  "description": "Consumes receipts for drawer totals."
+                },
+                {
+                  "targetBrickId": "paym",
+                  "moduleId": "module-tender-service",
+                  "sourceModuleId": "module-cashbook-service",
+                  "type": "context",
+                  "description": "Reconciles tenders with terminal totals."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "cashbook-and-day-closing",
+                  "moduleIds": [
+                    "module-cashbook-service"
+                  ],
+                  "role": "own",
+                  "description": "Register closings and cash differences."
+                },
+                {
+                  "assetId": "sales-transaction",
+                  "moduleIds": [
+                    "module-receipt-mailer"
+                  ],
+                  "role": "read",
+                  "description": "Receipt content."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "hwdv",
+              "name": "Store Hardware, Labels and Peripherals",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Configures and drives the hardware Vendit supplies with the system: screens, scanners, receipt and label printers, cash drawers and handhelds (Vendit names Datalogic, Epson and Zebra), plus shelf labels and customer cards as supplies.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-label-designer",
+                      "name": "Label and Shelf-card Designer",
+                      "type": "web-component",
+                      "description": "Designs price labels, shelf cards and customer card layouts.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-device-profile-service",
+                            "type": "uses",
+                            "description": "Calls device profile service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-device-profile-service",
+                      "name": "Device Profile Service",
+                      "type": "stateful-service",
+                      "description": "Per-workstation profile of attached printers, scanners and drawers."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-peripheral-drivers",
+                      "name": "Peripheral Drivers",
+                      "type": "integration",
+                      "description": "Drivers for Epson printers, Datalogic and Zebra scanners and label printers."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-label-designer",
+                  "type": "synchronous",
+                  "description": "Article and price data for labels."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "store-configuration",
+                  "moduleIds": [
+                    "module-device-profile-service"
+                  ],
+                  "role": "read-write",
+                  "description": "Workstation and device configuration."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Hardware vendors (Epson, Datalogic, Zebra)",
+                  "type": "device",
+                  "interface": "Device drivers",
+                  "description": "Printing and scanning at the counter.",
+                  "sourceModuleId": "module-peripheral-drivers"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Customers, Orders and Service",
+          "description": "Customer file, loyalty, orders, invoices and repairs.",
+          "bricks": [
+            {
+              "id": "crmc",
+              "name": "Customer Registry",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Complete customer file used for sale on name, sales history, repairs, invoices and loyalty; the basis for clienteling in specialty retail.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-customer-card",
+                      "name": "Customer Card",
+                      "type": "web-component",
+                      "description": "Customer details, purchase and repair history at the till and in the back office.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-customer-api",
+                            "type": "uses",
+                            "description": "Calls customer api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-customer-api",
+                      "name": "Customer API",
+                      "type": "api",
+                      "description": "Search, create and update customers.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-customer-service",
+                            "type": "uses",
+                            "description": "Calls customer service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-customer-service",
+                      "name": "Customer Service",
+                      "type": "stateful-service",
+                      "description": "Owns customer master data and consent flags."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-record",
+                  "moduleIds": [
+                    "module-customer-service"
+                  ],
+                  "role": "own",
+                  "description": "Customer master and consent."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Review and feedback tools (Klantenvertellen, Feeddex)",
+                  "type": "data-consumer",
+                  "interface": "Customer API",
+                  "description": "Invite customers for reviews after a purchase.",
+                  "moduleId": "module-customer-api"
+                }
+              ]
+            },
+            {
+              "id": "loya",
+              "name": "Loyalty, Value Cheques and Gift Cards",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Customer cards with a unique barcode, saving for discounts or gifts, printable value cheques, and own-brand gift cards through Givacard; part of the Enterprise package and the loyalty module.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-loyalty-admin",
+                      "name": "Loyalty Administration",
+                      "type": "web-component",
+                      "description": "Configures saving rules, value cheque layouts and gift card types.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-loyalty-api",
+                            "type": "uses",
+                            "description": "Calls loyalty api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-loyalty-api",
+                      "name": "Loyalty API",
+                      "type": "api",
+                      "description": "Earn, redeem and balance requests for till and webshop.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-points-and-voucher-service",
+                            "type": "uses",
+                            "description": "Calls points and voucher service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-points-and-voucher-service",
+                      "name": "Points and Voucher Service",
+                      "type": "stateful-service",
+                      "description": "Owns saving balances, issued cheques and redemptions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-giftcard-connector",
+                      "name": "Gift Card and Loyalty Connectors",
+                      "type": "integration",
+                      "description": "Connectors to Givacard gift cards and external loyalty programmes such as BViva."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "crmc",
+                  "moduleId": "module-customer-api",
+                  "sourceModuleId": "module-points-and-voucher-service",
+                  "type": "context",
+                  "description": "Balances belong to a customer."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "loyalty-account",
+                  "moduleIds": [
+                    "module-points-and-voucher-service"
+                  ],
+                  "role": "own",
+                  "description": "Saving balances, cheques and vouchers."
+                },
+                {
+                  "assetId": "customer-record",
+                  "moduleIds": [
+                    "module-loyalty-admin"
+                  ],
+                  "role": "read",
+                  "description": "Customer selection for campaigns."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Gift card provider (Givacard)",
+                  "type": "payment",
+                  "interface": "Gift card API",
+                  "description": "Issue and redeem own-brand gift cards.",
+                  "sourceModuleId": "module-giftcard-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "quot",
+              "name": "Quotes, Customer Orders and Reservations",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Quotes, customer orders, packing slips and reservations for items not on the shelf or sold B2B; part of Premium and Enterprise.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-order-desk",
+                      "name": "Order Desk",
+                      "type": "web-component",
+                      "description": "Create quotes and customer orders at the counter or in the back office.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-customer-order-api",
+                            "type": "uses",
+                            "description": "Calls customer order api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-customer-order-api",
+                      "name": "Customer Order API",
+                      "type": "api",
+                      "description": "Quote and order lifecycle for till, webshop and B2B.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-service",
+                            "type": "uses",
+                            "description": "Calls order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-order-status-notifier",
+                      "name": "Order Status Notifier",
+                      "type": "message-consumer",
+                      "description": "Informs customers when ordered goods arrive."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-order-service",
+                      "name": "Customer Order Service",
+                      "type": "stateful-service",
+                      "description": "Owns quotes, orders, reservations and packing slips."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-order-service",
+                  "type": "synchronous",
+                  "description": "Reserves stock for orders."
+                },
+                {
+                  "targetBrickId": "crmc",
+                  "moduleId": "module-customer-api",
+                  "sourceModuleId": "module-order-desk",
+                  "type": "synchronous",
+                  "description": "Order customer."
+                },
+                {
+                  "targetBrickId": "purc",
+                  "moduleId": "module-purchase-api",
+                  "sourceModuleId": "module-order-service",
+                  "type": "event",
+                  "description": "Creates supplier orders for items not in stock."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-order",
+                  "moduleIds": [
+                    "module-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Quotes, orders and reservations."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "bill",
+              "name": "Invoicing and Receivables",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Invoices for B2B and on-account sales, price lists per customer, credit notes and open-item follow-up; important for combination shops and wholesalers that also run on Vendit.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-screen",
+                      "name": "Invoice Screen",
+                      "type": "web-component",
+                      "description": "Create and review invoices and credit notes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-invoice-api",
+                            "type": "uses",
+                            "description": "Calls invoice api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-api",
+                      "name": "Invoice API",
+                      "type": "api",
+                      "description": "Invoice and open-item operations.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-receivables-service",
+                            "type": "uses",
+                            "description": "Calls receivables service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-mailer",
+                      "name": "Invoice Mailer",
+                      "type": "message-consumer",
+                      "description": "Sends invoices and payment reminders."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-receivables-service",
+                      "name": "Receivables Service",
+                      "type": "stateful-service",
+                      "description": "Owns invoices, credit notes and open items."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "quot",
+                  "moduleId": "module-customer-order-api",
+                  "sourceModuleId": "module-receivables-service",
+                  "type": "event",
+                  "description": "Invoices delivered orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "invoice-and-receivable",
+                  "moduleIds": [
+                    "module-receivables-service"
+                  ],
+                  "role": "own",
+                  "description": "Invoices and open items."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "repr",
+              "name": "Repair and Workshop Management",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Registers, schedules and tracks repair orders for bike workshops, jewellers and electronics stores, with status updates to customers and billing of parts and labour at pickup. Vendit highlights workshop functions for two-wheelers and repair registration for jewellers.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-workshop-board",
+                      "name": "Workshop Planning Board",
+                      "type": "web-component",
+                      "description": "Planning board of repair orders by day and mechanic.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-repair-order-api",
+                            "type": "uses",
+                            "description": "Calls repair order api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-repair-order-api",
+                      "name": "Repair Order API",
+                      "type": "api",
+                      "description": "Create and update repair orders from till or board.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-repair-order-service",
+                            "type": "uses",
+                            "description": "Calls repair order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-repair-status-notifier",
+                      "name": "Repair Status Notifier",
+                      "type": "message-consumer",
+                      "description": "Sends ready-for-pickup and approval messages."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-repair-order-service",
+                      "name": "Repair Order Service",
+                      "type": "stateful-service",
+                      "description": "Owns repair orders, labour, parts and status history."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "crmc",
+                  "moduleId": "module-customer-api",
+                  "sourceModuleId": "module-repair-order-service",
+                  "type": "context",
+                  "description": "Repair belongs to a customer."
+                },
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-repair-order-service",
+                  "type": "event",
+                  "description": "Consumes parts from stock."
+                },
+                {
+                  "targetBrickId": "posc",
+                  "moduleId": "module-sales-api",
+                  "sourceModuleId": "module-repair-order-service",
+                  "type": "event",
+                  "description": "Settles the repair at the till."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "repair-order",
+                  "moduleIds": [
+                    "module-repair-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Repair orders and status."
+                },
+                {
+                  "assetId": "serialised-item-register",
+                  "moduleIds": [
+                    "module-repair-order-service"
+                  ],
+                  "role": "read",
+                  "description": "Frame and serial numbers of the item in repair."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Merchandise and Inventory",
+      "description": "Assortment, prices, stock and purchasing for one store or many.",
+      "subGroups": [
+        {
+          "name": "Assortment and Pricing",
+          "description": "Article master, prices and central formula control.",
+          "bricks": [
+            {
+              "id": "artm",
+              "name": "Article and Assortment Master",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Articles, variants (size/colour), barcodes, brands, revenue groups and images; the master that feeds till, webshop and marketplaces.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-article-editor",
+                      "name": "Article Editor",
+                      "type": "web-component",
+                      "description": "Maintain articles, variants, images and webshop texts.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-article-api",
+                            "type": "uses",
+                            "description": "Calls article api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-article-api",
+                      "name": "Article API",
+                      "type": "api",
+                      "description": "Article queries and changes for all channels.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-article-service",
+                            "type": "uses",
+                            "description": "Calls article service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-article-import-worker",
+                      "name": "Article Import Worker",
+                      "type": "message-consumer",
+                      "description": "Applies supplier catalogue updates to the master.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-article-service",
+                            "type": "uses",
+                            "description": "Calls article service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-article-service",
+                      "name": "Article Service",
+                      "type": "stateful-service",
+                      "description": "Owns the article and assortment master."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "supi",
+                  "moduleId": "module-supplier-feed-api",
+                  "sourceModuleId": "module-article-import-worker",
+                  "type": "event",
+                  "description": "Supplier article files and updates."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "article-master",
+                  "moduleIds": [
+                    "module-article-service"
+                  ],
+                  "role": "own",
+                  "description": "Article and assortment master."
+                },
+                {
+                  "assetId": "supplier-catalogue",
+                  "moduleIds": [
+                    "module-article-import-worker"
+                  ],
+                  "role": "read",
+                  "description": "Supplier article data."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "prpr",
+              "name": "Pricing, Promotions and Purchase Price Formulas",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Selling prices, price lists, promotions and the purchase-price formula module that derives invoice and net prices from gross purchase prices including advertising contributions and payment discounts.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-price-and-promo-editor",
+                      "name": "Price and Promotion Editor",
+                      "type": "web-component",
+                      "description": "Set prices, price lists and promotions per branch or channel.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-api",
+                            "type": "uses",
+                            "description": "Calls price api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-price-api",
+                      "name": "Price API",
+                      "type": "api",
+                      "description": "Price and promotion maintenance.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-list-service",
+                            "type": "uses",
+                            "description": "Calls price list service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-price-engine",
+                      "name": "Price Engine",
+                      "type": "stateless-service",
+                      "description": "Computes selling price, promotion and margin per article, branch and customer.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-list-service",
+                            "type": "uses",
+                            "description": "Calls price list service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-price-list-service",
+                      "name": "Price List Service",
+                      "type": "stateful-service",
+                      "description": "Owns prices, price lists, promotions and purchase-price formulas."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-price-engine",
+                  "type": "synchronous",
+                  "description": "Article attributes for pricing."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "price-and-promotion",
+                  "moduleIds": [
+                    "module-price-list-service"
+                  ],
+                  "role": "own",
+                  "description": "Prices, promotions, purchase formulas."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "form",
+              "name": "Central Formula and Branch Management",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Head-office control for chains, franchise formulas and retail service organisations: central assortment, price and promotion publication to all branches, joint purchasing and distribution of goods across branches.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-hq-console",
+                      "name": "Head Office Console",
+                      "type": "web-component",
+                      "description": "Define formula assortment, prices and campaigns and publish to branches.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-branch-distribution-api",
+                            "type": "uses",
+                            "description": "Calls branch distribution api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-branch-distribution-api",
+                      "name": "Branch Distribution API",
+                      "type": "api",
+                      "description": "Publication and acknowledgement of formula changes per branch.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-branch-assortment-service",
+                            "type": "uses",
+                            "description": "Calls branch assortment service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-branch-publication-worker",
+                      "name": "Branch Publication Worker",
+                      "type": "message-consumer",
+                      "description": "Pushes formula changes to every branch in one run.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-branch-assortment-service",
+                            "type": "uses",
+                            "description": "Calls branch assortment service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-branch-assortment-service",
+                      "name": "Branch Assortment Service",
+                      "type": "stateful-service",
+                      "description": "Owns which articles, prices and campaigns apply to which branch."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "prpr",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-branch-publication-worker",
+                  "type": "synchronous",
+                  "description": "Writes central prices and promotions."
+                },
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-branch-publication-worker",
+                  "type": "synchronous",
+                  "description": "Writes central articles."
+                },
+                {
+                  "targetBrickId": "purc",
+                  "moduleId": "module-purchase-api",
+                  "sourceModuleId": "module-hq-console",
+                  "type": "synchronous",
+                  "description": "Joint purchasing and allocation."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "branch-formula-rules",
+                  "moduleIds": [
+                    "module-branch-assortment-service"
+                  ],
+                  "role": "own",
+                  "description": "Formula assortment and branch overrides."
+                },
+                {
+                  "assetId": "price-and-promotion",
+                  "moduleIds": [
+                    "module-branch-publication-worker"
+                  ],
+                  "role": "write",
+                  "description": "Central price publication."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Stock and Purchasing",
+          "description": "Stock ledger, counting, replenishment and supplier links.",
+          "bricks": [
+            {
+              "id": "stck",
+              "name": "Inventory Ledger and Multi-Location Stock",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike frame numbers are tracked, and availability is published to webshop and marketplaces.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-stock-overview",
+                      "name": "Stock Overview",
+                      "type": "web-component",
+                      "description": "Stock per article and location, transfers and write-offs.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-api",
+                            "type": "uses",
+                            "description": "Calls stock api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-stock-api",
+                      "name": "Stock API",
+                      "type": "api",
+                      "description": "Stock queries, mutations, reservations and transfers.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-ledger-service",
+                            "type": "uses",
+                            "description": "Calls stock ledger service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-stock-publication-worker",
+                      "name": "Stock Publication Worker",
+                      "type": "message-consumer",
+                      "description": "Publishes availability changes to online channels."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-stock-ledger-service",
+                      "name": "Stock Ledger Service",
+                      "type": "stateful-service",
+                      "description": "Owns stock positions, movements and serialised items."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "stock-position",
+                  "moduleIds": [
+                    "module-stock-ledger-service"
+                  ],
+                  "role": "own",
+                  "description": "Stock per article and location."
+                },
+                {
+                  "assetId": "stock-movement",
+                  "moduleIds": [
+                    "module-stock-ledger-service"
+                  ],
+                  "role": "own",
+                  "description": "Every mutation with reason."
+                },
+                {
+                  "assetId": "serialised-item-register",
+                  "moduleIds": [
+                    "module-stock-ledger-service"
+                  ],
+                  "role": "own",
+                  "description": "Frame, DPC and serial numbers."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "cntg",
+              "name": "Stocktaking and Mobile Scanning",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Wireless stocktaking and scanning of incoming goods and pick slips with handhelds instead of manual counting; standard in Enterprise.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-handheld-count-app",
+                      "name": "Handheld Count App",
+                      "type": "mobile-component",
+                      "description": "Scan articles for counts, receipts and pick slips.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-count-api",
+                            "type": "uses",
+                            "description": "Calls count api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-count-api",
+                      "name": "Count API",
+                      "type": "api",
+                      "description": "Count sessions and scanned lines.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-count-reconciliation-service",
+                            "type": "uses",
+                            "description": "Calls count reconciliation service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-count-reconciliation-service",
+                      "name": "Count Reconciliation Service",
+                      "type": "stateful-service",
+                      "description": "Compares counts with the ledger and books differences."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-count-reconciliation-service",
+                  "type": "synchronous",
+                  "description": "Books count differences."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "stock-movement",
+                  "moduleIds": [
+                    "module-count-reconciliation-service"
+                  ],
+                  "role": "write",
+                  "description": "Count corrections."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "purc",
+              "name": "Purchasing and Min/Max Replenishment",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Purchase orders, receiving and automatic replenishment proposals from minimum/maximum stock levels and the daily sales order list.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-order-proposal-screen",
+                      "name": "Order Proposal Screen",
+                      "type": "web-component",
+                      "description": "Review proposals, create and receive purchase orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-purchase-api",
+                            "type": "uses",
+                            "description": "Calls purchase api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-purchase-api",
+                      "name": "Purchase API",
+                      "type": "api",
+                      "description": "Purchase order lifecycle.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-purchase-order-service",
+                            "type": "uses",
+                            "description": "Calls purchase order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-replenishment-daemon",
+                      "name": "Replenishment Daemon",
+                      "type": "daemon",
+                      "description": "Runs min/max checks and builds the daily order proposal.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-purchase-order-service",
+                            "type": "uses",
+                            "description": "Calls purchase order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-purchase-order-service",
+                      "name": "Purchase Order Service",
+                      "type": "stateful-service",
+                      "description": "Owns purchase orders and receipts of goods."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-replenishment-daemon",
+                  "type": "synchronous",
+                  "description": "Reads stock and min/max."
+                },
+                {
+                  "targetBrickId": "supi",
+                  "moduleId": "module-supplier-link-service",
+                  "sourceModuleId": "module-purchase-order-service",
+                  "type": "event",
+                  "description": "Sends orders electronically."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "purchase-order",
+                  "moduleIds": [
+                    "module-purchase-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Purchase orders and receipts."
+                },
+                {
+                  "assetId": "stock-position",
+                  "moduleIds": [
+                    "module-replenishment-daemon"
+                  ],
+                  "role": "read",
+                  "description": "Current stock."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "supi",
+              "name": "Supplier Catalogue and Electronic Ordering",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Reads supplier article files, checks supplier stock, orders electronically and books deliveries in, including frame and DPC numbers in the bike trade; EDI order, despatch-advice and invoice exchange via Transus.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-supplier-feed-api",
+                      "name": "Supplier Feed API",
+                      "type": "api",
+                      "description": "Normalised supplier article and stock data.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-supplier-link-service",
+                            "type": "uses",
+                            "description": "Calls supplier link service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-catalogue-import-worker",
+                      "name": "Catalogue Import Worker",
+                      "type": "message-consumer",
+                      "description": "Imports and normalises supplier article files.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-supplier-link-service",
+                            "type": "uses",
+                            "description": "Calls supplier link service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-supplier-link-service",
+                      "name": "Supplier Link Service",
+                      "type": "stateful-service",
+                      "description": "Owns supplier connections, mappings and order transmissions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-supplier-connectors",
+                      "name": "Supplier and Article Data Connectors",
+                      "type": "integration",
+                      "description": "Connections to branch wholesalers and article data providers."
+                    },
+                    {
+                      "id": "module-transus-edi-connector",
+                      "name": "Transus EDI Connector",
+                      "type": "integration",
+                      "description": "Exchanges orders, despatch advices and invoices with trading partners through Transus."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "supplier-catalogue",
+                  "moduleIds": [
+                    "module-supplier-link-service"
+                  ],
+                  "role": "own",
+                  "description": "Supplier articles and stock."
+                },
+                {
+                  "assetId": "purchase-order",
+                  "moduleIds": [
+                    "module-transus-edi-connector"
+                  ],
+                  "role": "read",
+                  "description": "Outgoing orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Branch wholesalers and article data providers",
+                  "type": "data",
+                  "interface": "Supplier files / B2B APIs",
+                  "description": "Article data, supplier stock and electronic orders.",
+                  "sourceModuleId": "module-supplier-connectors"
+                },
+                {
+                  "system": "Transus EDI platform (Katapull sibling)",
+                  "type": "data",
+                  "interface": "EDI messages",
+                  "description": "Orders, despatch advices and invoices with trading partners.",
+                  "sourceModuleId": "module-transus-edi-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Omnichannel Commerce",
+      "description": "Selling online from the same stock: webshop, connected shops, marketplaces, shipping and returns.",
+      "subGroups": [
+        {
+          "name": "Online Storefront",
+          "description": "Own and connected webshops and the order hub.",
+          "bricks": [
+            {
+              "id": "wshp",
+              "name": "Vendit Webshop",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Responsive, SEO-friendly webshop fully linked to the Vendit System: articles, images, prices, promotions and stock come from Vendit; add-ons include B2B login, appointment booking, product conditions and print personalisation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-storefront",
+                      "name": "Storefront",
+                      "type": "web-component",
+                      "description": "Responsive shop pages, search, basket and checkout.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-storefront-bff",
+                            "type": "uses",
+                            "description": "Calls storefront bff."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-webshop-cms",
+                      "name": "Webshop Content Manager",
+                      "type": "web-component",
+                      "description": "Pages, blog, menus and campaign content.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-storefront-bff",
+                            "type": "uses",
+                            "description": "Calls storefront bff."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-storefront-bff",
+                      "name": "Storefront BFF",
+                      "type": "bff",
+                      "description": "Combines catalogue, stock, price and loyalty for the storefront.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-webshop-catalog-service",
+                            "type": "uses",
+                            "description": "Calls webshop catalog service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-webshop-catalog-service",
+                      "name": "Webshop Catalogue Service",
+                      "type": "stateful-service",
+                      "description": "Publishes the online catalogue from Vendit master data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-psp-online-connector",
+                      "name": "Online Payment Connector",
+                      "type": "integration",
+                      "description": "Online payment provider checkout."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-webshop-catalog-service",
+                  "type": "event",
+                  "description": "Article data."
+                },
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "synchronous",
+                  "description": "Live availability."
+                },
+                {
+                  "targetBrickId": "prpr",
+                  "moduleId": "module-price-engine",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "synchronous",
+                  "description": "Online prices and promotions."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-intake-api",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "synchronous",
+                  "description": "Hands over placed orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "article-master",
+                  "moduleIds": [
+                    "module-webshop-catalog-service"
+                  ],
+                  "role": "read",
+                  "description": "Online catalogue."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Online payment service providers",
+                  "type": "payment",
+                  "interface": "PSP checkout API",
+                  "description": "Online payments.",
+                  "sourceModuleId": "module-psp-online-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ordr",
+              "name": "Online Order Hub",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Single intake of orders from the Vendit webshop, connected webshops and marketplaces into Vendit, so stock, invoicing and shipping run from one place.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-order-intake-api",
+                      "name": "Order Intake API",
+                      "type": "api",
+                      "description": "Receives online orders from all channels.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-online-order-service",
+                            "type": "uses",
+                            "description": "Calls online order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-order-import-worker",
+                      "name": "Order Import Worker",
+                      "type": "message-consumer",
+                      "description": "Imports channel orders including customer and payment data.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-online-order-service",
+                            "type": "uses",
+                            "description": "Calls online order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-online-order-service",
+                      "name": "Online Order Service",
+                      "type": "stateful-service",
+                      "description": "Owns online orders and fulfilment status."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-online-order-service",
+                  "type": "synchronous",
+                  "description": "Reserves and books stock."
+                },
+                {
+                  "targetBrickId": "ship",
+                  "moduleId": "module-shipment-booking-worker",
+                  "sourceModuleId": "module-online-order-service",
+                  "type": "event",
+                  "description": "Requests shipment."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "online-order",
+                  "moduleIds": [
+                    "module-online-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Online orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "hbzc",
+              "name": "Connected Webshop Sync (Highbiza, WooCommerce)",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Keeps third-party webshops in sync with Vendit for retailers who want a custom shop: Highbiza (Katapull sibling) and WooCommerce are listed integrations.",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-webshop-sync-worker",
+                      "name": "Webshop Sync Worker",
+                      "type": "message-consumer",
+                      "description": "Pushes catalogue and stock, pulls orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-webshop-sync-connector",
+                            "type": "uses",
+                            "description": "Calls webshop sync connector."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-webshop-sync-connector",
+                      "name": "Webshop Platform Connectors",
+                      "type": "integration",
+                      "description": "Connectors to Highbiza and WooCommerce."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-publication-worker",
+                  "sourceModuleId": "module-webshop-sync-worker",
+                  "type": "event",
+                  "description": "Availability changes."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-intake-api",
+                  "sourceModuleId": "module-webshop-sync-worker",
+                  "type": "synchronous",
+                  "description": "Delivers webshop orders."
+                }
+              ],
+              "dataDependencies": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Highbiza platform (Katapull sibling)",
+                  "type": "channel",
+                  "interface": "Highbiza API",
+                  "description": "Custom webshops kept in sync with Vendit stock.",
+                  "sourceModuleId": "module-webshop-sync-connector"
+                },
+                {
+                  "system": "WooCommerce shops",
+                  "type": "channel",
+                  "interface": "WooCommerce REST API",
+                  "description": "Catalogue, stock and orders.",
+                  "sourceModuleId": "module-webshop-sync-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Marketplaces and Fulfilment",
+          "description": "Marketplace, shipping and returns connectors, mostly to Katapull siblings.",
+          "bricks": [
+            {
+              "id": "mrkt",
+              "name": "Marketplace Channel Connector",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Publishes articles with stock, lead time, prices and images to bol, Amazon, VidaXL, Beslist and others via EffectConnect (Katapull sibling) and imports orders with customer and payment data, also for retailers without an own webshop.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-marketplace-publish-screen",
+                      "name": "Marketplace Publish Screen",
+                      "type": "web-component",
+                      "description": "Choose articles and channels to list.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-offer-sync-worker",
+                            "type": "uses",
+                            "description": "Calls offer sync worker."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-offer-sync-worker",
+                      "name": "Offer Sync Worker",
+                      "type": "message-consumer",
+                      "description": "Synchronises offers and stock with the channel connector.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-effectconnect-connector",
+                            "type": "uses",
+                            "description": "Calls effectconnect connector."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-offer-service",
+                      "name": "Marketplace Offer Service",
+                      "type": "stateful-service",
+                      "description": "Owns which articles are listed where and their status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-effectconnect-connector",
+                      "name": "EffectConnect Connector",
+                      "type": "integration",
+                      "description": "Connector to the EffectConnect marketplace integration platform."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-publication-worker",
+                  "sourceModuleId": "module-offer-sync-worker",
+                  "type": "event",
+                  "description": "Availability changes."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-intake-api",
+                  "sourceModuleId": "module-effectconnect-connector",
+                  "type": "synchronous",
+                  "description": "Delivers marketplace orders."
+                },
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-offer-service",
+                  "type": "synchronous",
+                  "description": "Content and images."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "marketplace-offer",
+                  "moduleIds": [
+                    "module-offer-service"
+                  ],
+                  "role": "own",
+                  "description": "Listings per channel."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "EffectConnect (Katapull sibling)",
+                  "type": "channel",
+                  "interface": "EffectConnect API",
+                  "description": "Marketplace listings and orders for bol, Amazon, VidaXL, Beslist.",
+                  "sourceModuleId": "module-effectconnect-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ship",
+              "name": "Shipping and Label Connector",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Announces shipments and prints labels from Vendit with DeliveryMatch (Katapull sibling) and other shipping tools (Sendcloud and Transsmart are listed partners), with track-and-trace back on the order.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-shipment-screen",
+                      "name": "Shipment Screen",
+                      "type": "web-component",
+                      "description": "Book shipments and print labels.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-shipment-booking-worker",
+                            "type": "uses",
+                            "description": "Calls shipment booking worker."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-shipment-booking-worker",
+                      "name": "Shipment Booking Worker",
+                      "type": "message-consumer",
+                      "description": "Books shipments with the shipping platform.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-deliverymatch-connector",
+                            "type": "uses",
+                            "description": "Calls deliverymatch connector."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-shipment-service",
+                      "name": "Shipment Service",
+                      "type": "stateful-service",
+                      "description": "Owns shipments and tracking states."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-deliverymatch-connector",
+                      "name": "Shipping Platform Connectors",
+                      "type": "integration",
+                      "description": "DeliveryMatch, Sendcloud and Transsmart."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "shipment-and-return",
+                  "moduleIds": [
+                    "module-shipment-service"
+                  ],
+                  "role": "own",
+                  "description": "Shipments and tracking."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DeliveryMatch (Katapull sibling)",
+                  "type": "logistics",
+                  "interface": "DeliveryMatch API",
+                  "description": "Carrier selection, labels and track-and-trace.",
+                  "sourceModuleId": "module-deliverymatch-connector"
+                },
+                {
+                  "system": "Sendcloud / Transsmart",
+                  "type": "logistics",
+                  "interface": "Shipping API",
+                  "description": "Alternative shipping tools.",
+                  "sourceModuleId": "module-deliverymatch-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "retn",
+              "name": "Returns Connector",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Brings online returns registered in a returns portal back into Vendit stock and refunds; Returnista (Katapull sibling since 2026) is a listed Vendit partner. Depth of the integration is not documented publicly (assumption).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-return-intake-worker",
+                      "name": "Return Intake Worker",
+                      "type": "message-consumer",
+                      "description": "Imports announced and received returns.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-returnista-connector",
+                            "type": "uses",
+                            "description": "Calls returnista connector."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-returnista-connector",
+                      "name": "Returns Platform Connector",
+                      "type": "integration",
+                      "description": "Connector to Returnista returns management."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-return-intake-worker",
+                  "type": "synchronous",
+                  "description": "Books returned items back to stock."
+                },
+                {
+                  "targetBrickId": "ship",
+                  "moduleId": "module-shipment-service",
+                  "sourceModuleId": "module-return-intake-worker",
+                  "type": "context",
+                  "description": "Links return to the original shipment."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shipment-and-return",
+                  "moduleIds": [
+                    "module-return-intake-worker"
+                  ],
+                  "role": "write",
+                  "description": "Return records."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Returnista (Katapull sibling)",
+                  "type": "logistics",
+                  "interface": "Returnista API",
+                  "description": "Returns portal, carrier choice and return reasons.",
+                  "sourceModuleId": "module-returnista-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Insight, Finance and Platform",
+      "description": "Reporting, accounting, administration, integration and service.",
+      "subGroups": [
+        {
+          "name": "Insight and Finance",
+          "description": "Dashboards and accounting export.",
+          "bricks": [
+            {
+              "id": "rprt",
+              "name": "Reporting and Online Dashboard",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Online dashboard with turnover, margin, discount, transactions, average transaction value and items per transaction compared with prior periods, plus a report library (top/flop 100, turnover speed, stock valuation, negative margin) per branch.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-online-dashboard",
+                      "name": "Online Dashboard",
+                      "type": "web-component",
+                      "description": "KPIs on any device, compared with previous periods.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-reporting-api",
+                            "type": "uses",
+                            "description": "Calls reporting api."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-report-library",
+                      "name": "Report Library",
+                      "type": "web-component",
+                      "description": "Standard sales, margin and stock reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-reporting-api",
+                            "type": "uses",
+                            "description": "Calls reporting api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-reporting-api",
+                      "name": "Reporting API",
+                      "type": "api",
+                      "description": "Aggregated KPIs and report queries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-kpi-store",
+                            "type": "uses",
+                            "description": "Calls kpi store."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-kpi-aggregation-worker",
+                      "name": "KPI Aggregation Worker",
+                      "type": "message-consumer",
+                      "description": "Aggregates sales and stock events into KPIs.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-kpi-store",
+                            "type": "uses",
+                            "description": "Calls kpi store."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-kpi-store",
+                      "name": "KPI Store",
+                      "type": "stateful-service",
+                      "description": "Owns aggregated KPIs per day, branch, group and brand."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "posc",
+                  "moduleId": "module-sales-api",
+                  "sourceModuleId": "module-kpi-aggregation-worker",
+                  "type": "event",
+                  "description": "Sales events."
+                },
+                {
+                  "targetBrickId": "stck",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-kpi-aggregation-worker",
+                  "type": "event",
+                  "description": "Stock values."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-kpi-aggregate",
+                  "moduleIds": [
+                    "module-kpi-store"
+                  ],
+                  "role": "own",
+                  "description": "Aggregated KPIs."
+                },
+                {
+                  "assetId": "sales-transaction",
+                  "moduleIds": [
+                    "module-kpi-aggregation-worker"
+                  ],
+                  "role": "read",
+                  "description": "Source sales."
+                },
+                {
+                  "assetId": "stock-position",
+                  "moduleIds": [
+                    "module-kpi-aggregation-worker"
+                  ],
+                  "role": "read",
+                  "description": "Stock valuation."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "acct",
+              "name": "Accounting Export",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Prepares sales and cashbook mutations for one-click import into accounting packages (Vendit names Exact and AFAS).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-ledger-export-worker",
+                      "name": "Ledger Export Worker",
+                      "type": "message-consumer",
+                      "description": "Builds journal batches from closings and invoices.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-journal-mapping",
+                            "type": "uses",
+                            "description": "Calls journal mapping."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-journal-mapping",
+                      "name": "Journal Mapping",
+                      "type": "stateless-service",
+                      "description": "Maps revenue groups, VAT and tenders to ledger accounts."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-accounting-connectors",
+                      "name": "Accounting Connectors",
+                      "type": "integration",
+                      "description": "Exports to Exact, AFAS and other packages."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rcpt",
+                  "moduleId": "module-cashbook-api",
+                  "sourceModuleId": "module-ledger-export-worker",
+                  "type": "synchronous",
+                  "description": "Day closings."
+                },
+                {
+                  "targetBrickId": "bill",
+                  "moduleId": "module-invoice-api",
+                  "sourceModuleId": "module-ledger-export-worker",
+                  "type": "synchronous",
+                  "description": "Invoices."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "accounting-journal",
+                  "moduleIds": [
+                    "module-ledger-export-worker"
+                  ],
+                  "role": "own",
+                  "description": "Journal exports."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Accounting software (Exact, AFAS)",
+                  "type": "finance",
+                  "interface": "Export file / API",
+                  "description": "Book sales and cashbook.",
+                  "sourceModuleId": "module-accounting-connectors"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Platform and Service",
+          "description": "Tenants, partner gateway, onboarding and support.",
+          "bricks": [
+            {
+              "id": "tenu",
+              "name": "Tenant, Branch and User Administration",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Customer environments in the cloud, branches, workstations, users and roles; packages differ in user limits (Premium up to 15 users, Enterprise unlimited).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-admin-console",
+                      "name": "Administration Console",
+                      "type": "web-component",
+                      "description": "Manage branches, workstations, users and modules.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-identity-api",
+                            "type": "uses",
+                            "description": "Calls identity api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-identity-api",
+                      "name": "Identity and Configuration API",
+                      "type": "api",
+                      "description": "Authentication, roles and configuration lookups.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tenant-config-service",
+                            "type": "uses",
+                            "description": "Calls tenant config service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-tenant-config-service",
+                      "name": "Tenant Configuration Service",
+                      "type": "stateful-service",
+                      "description": "Owns tenant, branch, module licences and users."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "store-configuration",
+                  "moduleIds": [
+                    "module-tenant-config-service"
+                  ],
+                  "role": "own",
+                  "description": "Tenant and branch configuration."
+                },
+                {
+                  "assetId": "user-account",
+                  "moduleIds": [
+                    "module-tenant-config-service"
+                  ],
+                  "role": "own",
+                  "description": "Users and roles."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "intg",
+              "name": "Partner Integration Gateway",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Shared gateway and event backbone through which partner and Katapull sibling integrations (ERP, accounting, review tools, shipping, marketplaces, EDI) connect to the Vendit System.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-partner-api",
+                      "name": "Partner API",
+                      "type": "api",
+                      "description": "Authenticated API for partners and sibling platforms.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-connector-registry",
+                            "type": "uses",
+                            "description": "Calls connector registry."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-integration-event-bus",
+                      "name": "Integration Event Bus",
+                      "type": "message-queue",
+                      "description": "Publishes sales, stock and order events to connectors."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-connector-registry",
+                      "name": "Connector Registry",
+                      "type": "stateful-service",
+                      "description": "Which connectors a tenant has enabled and their credentials."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tenu",
+                  "moduleId": "module-identity-api",
+                  "sourceModuleId": "module-partner-api",
+                  "type": "synchronous",
+                  "description": "Authenticates partner calls."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "store-configuration",
+                  "moduleIds": [
+                    "module-connector-registry"
+                  ],
+                  "role": "read",
+                  "description": "Enabled modules."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Katapull sibling platforms (Logic4, EffectConnect, DeliveryMatch, Transus, Returnista, Highbiza)",
+                  "type": "partner",
+                  "interface": "Partner API",
+                  "description": "Exchange stock, orders and documents.",
+                  "moduleId": "module-partner-api"
+                },
+                {
+                  "system": "Third-party partners (accounting, review tools, apps)",
+                  "type": "partner",
+                  "interface": "Partner API",
+                  "description": "Read and write Vendit data.",
+                  "moduleId": "module-partner-api"
+                }
+              ]
+            },
+            {
+              "id": "onbd",
+              "name": "Onboarding, Data Migration and Training",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Turnkey implementation: articles, stock, customers and prices are prepared, data is migrated from the previous system, hardware is installed and staff are trained before go-live, all within one monthly fee.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-onboarding-tracker",
+                      "name": "Onboarding Tracker",
+                      "type": "web-component",
+                      "description": "Implementation checklist and go-live readiness.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-implementation-project-service",
+                            "type": "uses",
+                            "description": "Calls implementation project service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-data-migration-worker",
+                      "name": "Data Migration Worker",
+                      "type": "message-consumer",
+                      "description": "Imports articles, customers and stock from the previous system."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-implementation-project-service",
+                      "name": "Implementation Project Service",
+                      "type": "stateful-service",
+                      "description": "Owns implementation plans, tasks and training."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "artm",
+                  "moduleId": "module-article-api",
+                  "sourceModuleId": "module-data-migration-worker",
+                  "type": "synchronous",
+                  "description": "Loads articles."
+                },
+                {
+                  "targetBrickId": "crmc",
+                  "moduleId": "module-customer-api",
+                  "sourceModuleId": "module-data-migration-worker",
+                  "type": "synchronous",
+                  "description": "Loads customers."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "article-master",
+                  "moduleIds": [
+                    "module-data-migration-worker"
+                  ],
+                  "role": "write",
+                  "description": "Initial load."
+                },
+                {
+                  "assetId": "customer-record",
+                  "moduleIds": [
+                    "module-data-migration-worker"
+                  ],
+                  "role": "write",
+                  "description": "Initial load."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Previous POS and webshop systems",
+                  "type": "data",
+                  "interface": "Export files",
+                  "description": "Source data for migration.",
+                  "sourceModuleId": "module-data-migration-worker"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "supp",
+              "name": "Customer Success, Remote Support and Updates",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Dutch helpdesk Monday to Saturday, remote support via TeamViewer, online help and included updates.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing screens and clients.",
+                  "modules": [
+                    {
+                      "id": "module-support-portal",
+                      "name": "Support Portal",
+                      "type": "web-component",
+                      "description": "Online help and support form.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ticket-api",
+                            "type": "uses",
+                            "description": "Calls ticket api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and backoffice interfaces exposed to other bricks and partners.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-api",
+                      "name": "Ticket API",
+                      "type": "api",
+                      "description": "Create and follow support requests.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ticket-service",
+                            "type": "uses",
+                            "description": "Calls ticket service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, queues and scheduled daemons.",
+                  "modules": [
+                    {
+                      "id": "module-update-distribution-daemon",
+                      "name": "Update Distribution Daemon",
+                      "type": "daemon",
+                      "description": "Rolls out software updates to store workstations."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable business state.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-service",
+                      "name": "Ticket Service",
+                      "type": "stateful-service",
+                      "description": "Owns support tickets and their history."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems and partners.",
+                  "modules": [
+                    {
+                      "id": "module-remote-support-connector",
+                      "name": "Remote Support Connector",
+                      "type": "integration",
+                      "description": "Starts TeamViewer remote sessions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "support-ticket",
+                  "moduleIds": [
+                    "module-ticket-service"
+                  ],
+                  "role": "own",
+                  "description": "Support requests."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "TeamViewer",
+                  "type": "tooling",
+                  "interface": "Remote session",
+                  "description": "Remote support on store workstations.",
+                  "sourceModuleId": "module-remote-support-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How businesses exchange orders and invoices electronically (EDI)</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>* { box-sizing: border-box; }
+html { scroll-padding-top: 1.5rem; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-wrap: anywhere;
+}
+a { color: var(--accent-ink); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.page { max-width: 1160px; padding: 1.5rem 2.5rem 3rem; margin: auto; }
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    margin: 2px 0 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: Ubuntu, Optima, Segoe, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.site-nav a {
+    color: #6b7280;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+.site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+.domain-nav { display: flex; flex-wrap: wrap; gap: .75rem; color: var(--ink-soft); font-size: .85rem; }
+.domain-nav a { color: inherit; }
+.hero { padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--line-strong); }
+.eyebrow, .chapter-number {
+    color: var(--accent-ink); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+h1, h2, h3, h4 { line-height: 1.25; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); letter-spacing: -.035em; margin: .5rem 0 1rem; max-width: 22ch; }
+h2 { font-size: 1.9rem; letter-spacing: -.025em; margin: .35rem 0 1.4rem; }
+h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+h4 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.metadata { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; color: var(--ink-soft); font-size: .85rem; }
+.reader-context { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem 3rem; margin-top: 1.8rem; font-size: .95rem; }
+.reader-context p:last-child { margin-bottom: 0; }
+.label { color: var(--ink-soft); font-size: .78rem; font-weight: 700; margin: 0 0 .25rem; }
+.labeled { margin-top: .75rem; }
+.reading-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 3.5rem; align-items: start; padding-top: 2.75rem; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .3rem .5rem .5rem 0; }
+.reading-layout > aside { align-self: stretch; }
+.contents h2 { font-size: .8rem; letter-spacing: .03em; margin: 0 0 .75rem; }
+.contents ol { padding-left: 1.4rem; margin: 0; font-size: .82rem; line-height: 1.45; }
+.contents li { padding: .28rem 0 .28rem .2rem; color: var(--ink-soft); }
+.contents a { color: var(--ink-soft); text-decoration: none; display: inline-block; padding: .1rem 0; }
+.contents a:hover { color: var(--accent-ink); text-decoration: underline; }
+main { min-width: 0; max-width: 740px; }
+section { margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--line-strong); }
+section:last-child { margin-bottom: 0; }
+.chapter-number { margin: 0; }
+section ul { padding-left: 1.35rem; }
+section li { padding-left: .3rem; }
+.entry { padding: 1.4rem 0; border-top: 1px solid var(--line); }
+h2 + .entry { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+.entry > :last-child, .labeled > :last-child { margin-bottom: 0; }
+.tutorial-illustration { margin: 1.3rem 0 1.5rem; break-inside: avoid; }
+.illustration-link { display: block; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: white; }
+.illustration-link:hover { border-color: var(--accent); }
+.tutorial-illustration img { display: block; width: 100%; height: auto; border-radius: inherit; }
+.tutorial-illustration figcaption { margin-top: .6rem; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }
+.tutorial-illustration figcaption p { margin: 0 0 .35rem; }
+.image-hint { display: block; font-size: .75rem; }
+.example { background: var(--accent-soft); border-left: 3px solid var(--accent-line); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.3rem; margin: 1.3rem 0; }
+.example .labeled:first-child { margin-top: 0; }
+.example > :last-child { margin-bottom: 0; }
+.timeline { border-left: 2px solid var(--accent-line); padding: 0 0 0 1.5rem; list-style: none; }
+.timeline li { position: relative; padding: .3rem 0 1.5rem; }
+.timeline li::before { content: ""; position: absolute; width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); left: -1.92rem; top: .7rem; }
+.timeline li:last-child { padding-bottom: 0; }
+.source { font-size: .8rem; margin-top: .7rem; }
+.steps { padding-left: 1.5rem; }
+.steps > li { padding: .4rem 0 1rem .5rem; }
+.steps > li::marker { color: var(--accent-ink); font-weight: 700; }
+.notice { background: var(--surface-muted); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1.4rem; margin-bottom: 2rem; }
+.notice h2 { font-size: 1.4rem; }
+.notice p:last-child { margin-bottom: 0; }
+details { margin-top: 1rem; background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+summary { cursor: pointer; padding: .7rem 1rem; color: var(--accent-ink); font-size: .95rem; font-weight: 600; }
+summary:hover { background: var(--accent-soft); border-radius: inherit; }
+.answer { padding: .5rem 1rem 1rem; }
+.answer > :last-child { margin-bottom: 0; }
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { padding: 0 0 1rem; }
+.reading-list p { margin: .3rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+footer { text-align: right; padding-top: 2rem; font-size: .85rem; }
+.skip-link { position: fixed; top: -10rem; left: 1rem; background: var(--panel); padding: .6rem 1rem; z-index: 2; }
+.skip-link:focus { top: 1rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 850px) {
+    .page { padding: 1.25rem; }
+    .hero { padding: 2rem 0; }
+    .reader-context { grid-template-columns: 1fr; gap: .5rem; }
+    .reading-layout { display: block; padding-top: 1.5rem; }
+    .contents { position: static; max-height: none; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--line-strong); }
+    .contents ol { columns: 2; column-gap: 2rem; }
+    .contents li { break-inside: avoid; }
+    .contents a { padding: .25rem 0; }
+    h2 { font-size: 1.65rem; }
+}
+@media (max-width: 430px) {
+    .contents ol { columns: 1; }
+    body { font-size: 16px; }
+}
+@media print {
+    body { background: white; color: black; font-size: 11pt; }
+    .page { max-width: none; padding: 0; }
+    .site-nav, .domain-nav, .reading-layout > aside, footer, .skip-link { display: none; }
+    .hero { padding: 0 0 1rem; }
+    h1 { font-size: 28pt; }
+    .reading-layout { display: block; padding-top: 1rem; }
+    main { max-width: none; }
+    section { padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h2, h3, h4 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .example, details, .timeline li { break-inside: avoid; }
+    details::details-content { content-visibility: visible; }
+    details > :not(summary) { display: block !important; }
+    summary { display: none; }
+    .image-hint { display: none; }
+}
+</style>
+</head>
+<body id="top">
+    <a class="skip-link" href="#main">Skip to the tutorial</a>
+    <div class="page">
+        <nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html" class="active" aria-current="page">Domain Tutorial</a>
+</nav>
+
+        <header class="hero">
+            <p class="eyebrow">A beginner's guide</p>
+            <h1>How businesses exchange orders and invoices electronically (EDI)</h1>
+            <div class="metadata"><span>About 11 min to read</span><span>Updated <time datetime="2026-10-30">2026-10-30</time></span></div>
+            <div class="reader-context"><div class="labeled"><p class="label">Who this is for</p><p>A curious adult from a different field, with no assumed knowledge of supply chains or business software.</p></div><div class="labeled"><p class="label">What this guide covers</p><p>Covers electronic data interchange (EDI) and e-invoicing between suppliers, retailers and wholesalers, with examples from the Netherlands, Belgium and Germany. Leaves out consumer e-commerce checkout, payments and customs.</p></div></div>
+        </header>
+        <div class="reading-layout">
+            <aside><nav class="contents" aria-label="Tutorial contents"><h2>In this guide</h2><ol><li><a href="#learning-goals">What you will learn</a></li><li><a href="#introduction">Start with the everyday need</a></li><li><a href="#participants">The people involved</a></li><li><a href="#concepts">The key concepts</a></li><li><a href="#history">A little history</a></li><li><a href="#walkthrough">Follow one complete example</a></li><li><a href="#value">Value, money, and incentives</a></li><li><a href="#challenges">What makes this domain difficult</a></li><li><a href="#misconceptions">Common misunderstandings</a></li><li><a href="#takeaways">The ideas to take with you</a></li><li><a href="#knowledge-checks">Try it for yourself</a></li><li><a href="#next-questions">Questions to ask a practitioner</a></li><li><a href="#further-reading">Keep learning</a></li></ol></nav></aside>
+            <main id="main" tabindex="-1"><section id="learning-goals" aria-labelledby="heading-learning-goals"><p class="chapter-number">01</p><h2 id="heading-learning-goals">What you will learn</h2><ul><li><p>Explain why companies exchange business documents as structured data instead of e-mail and PDF.</p></li><li><p>Describe the order, despatch advice and invoice cycle between a supplier and a retailer.</p></li><li><p>Explain what an EDI service provider and its network do.</p></li><li><p>Name the main difficulties: partner-specific formats, data quality, compliance deadlines and trust.</p></li></ul></section><section id="introduction" aria-labelledby="heading-introduction"><p class="chapter-number">02</p><h2 id="heading-introduction">Start with the everyday need</h2><p>Electronic data interchange (EDI) is the automatic exchange of business documents, such as orders, delivery notes and invoices, between the computer systems of two companies, in an agreed machine-readable format. Nobody retypes anything: the order leaves the retailer&#x27;s system and lands in the supplier&#x27;s system.</p><p>A supermarket chain may receive deliveries from hundreds of suppliers every day. If every order and invoice were an e-mail with a PDF, people would spend their days copying numbers, and every typo would turn into a wrong delivery or a disputed invoice. Structured exchange makes the chain faster, cheaper and more reliable, and many retailers now require it.</p><aside class="example"><div class="labeled"><p class="label">A familiar comparison</p><p>Think of a universal travel adapter. Each country has its own socket; the adapter lets your charger work everywhere. An EDI provider is the adapter between a supplier&#x27;s system and each retailer&#x27;s system.</p></div><div class="labeled"><p class="label">Where the comparison stops</p><p>A plug adapter only fits shapes. EDI also has to agree on meaning: which product code, which delivery address, which price, and what to do when a delivery is short. That shared meaning, and checking it, is most of the work.</p></div></aside></section><section id="participants" aria-labelledby="heading-participants"><p class="chapter-number">03</p><h2 id="heading-participants">The people involved</h2><div class="entry"><h3>Supplier</h3><p>Makes or wholesales goods and delivers them to retailers.</p><div class="labeled"><p class="label">What matters to them</p><p>Getting every order right, deliveries accepted, and invoices paid without extra admin.</p></div></div><div class="entry"><h3>Retailer or buying organisation</h3><p>Orders from many suppliers and receives goods at distribution centres.</p><div class="labeled"><p class="label">What matters to them</p><p>Shelves stocked, deliveries announced in advance, invoices that match what arrived.</p></div></div><div class="entry"><h3>EDI service provider</h3><p>Runs the network that translates, checks and delivers messages between companies (Transus is one).</p><div class="labeled"><p class="label">What matters to them</p><p>Reliable delivery, fast onboarding of new partners and keeping customers for years.</p></div></div><div class="entry"><h3>ERP partner or IT team</h3><p>Connects the company&#x27;s business software (ERP) to the provider.</p><div class="labeled"><p class="label">What matters to them</p><p>Integrations that keep working without constant attention.</p></div></div><div class="entry"><h3>Tax authority or regulator</h3><p>Sets rules such as mandatory e-invoicing and security requirements.</p><div class="labeled"><p class="label">What matters to them</p><p>Correct, verifiable invoices and resilient supply chains.</p></div></div><div class="entry"><h3>Logistics provider</h3><p>Transports and receives goods on behalf of the retailer.</p><div class="labeled"><p class="label">What matters to them</p><p>Knowing what is on each pallet before it arrives.</p></div></div></section><section id="concepts" aria-labelledby="heading-concepts"><p class="chapter-number">04</p><h2 id="heading-concepts">The key concepts</h2><div class="entry"><h3>Message standard (EDIFACT, UBL)</h3><p>A published structure that says where each piece of information goes in an electronic document. EDIFACT is an older international standard widely used in retail; UBL is an XML-based standard common in e-invoicing.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-message-standard-edifact-ubl.jpg" target="_blank" rel="noopener noreferrer" aria-label="Message standard (EDIFACT, UBL) — open full image in a new tab"><img src="media/concept-message-standard-edifact-ubl.jpg" alt="Message standard (EDIFACT, UBL): An EDIFACT order message is called ORDERS; the invoice is INVOIC." loading="lazy" decoding="async"></a><figcaption><p>Without a shared structure, a receiving system cannot read the document automatically.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>An EDIFACT order message is called ORDERS; the invoice is INVOIC.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Without a shared structure, a receiving system cannot read the document automatically.</p></div></div><div class="entry"><h3>Implementation guideline</h3><p>One company&#x27;s specific rules within a standard: which optional fields it requires, which codes it uses.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-implementation-guideline.jpg" target="_blank" rel="noopener noreferrer" aria-label="Implementation guideline — open full image in a new tab"><img src="media/concept-implementation-guideline.jpg" alt="Implementation guideline: Two supermarkets both use EDIFACT orders, but one requires a delivery-window field and the other does not." loading="lazy" decoding="async"></a><figcaption><p>This is why &quot;we support EDIFACT&quot; is not enough; each partner must be mapped individually.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Two supermarkets both use EDIFACT orders, but one requires a delivery-window field and the other does not.</p></div><div class="labeled"><p class="label">Why it matters</p><p>This is why &quot;we support EDIFACT&quot; is not enough; each partner must be mapped individually.</p></div></div><div class="entry"><h3>Mapping</h3><p>The set of rules that converts a company&#x27;s own data format into the partner&#x27;s format and back.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-mapping.jpg" target="_blank" rel="noopener noreferrer" aria-label="Mapping — open full image in a new tab"><img src="media/concept-mapping.jpg" alt="Mapping: The supplier&#x27;s ERP exports a CSV file; the mapping turns it into the retailer&#x27;s EDIFACT invoice." loading="lazy" decoding="async"></a><figcaption><p>Mapping is the main cost of adding a partner; tools like AI-assisted mapping aim to shrink it.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>The supplier&#x27;s ERP exports a CSV file; the mapping turns it into the retailer&#x27;s EDIFACT invoice.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Mapping is the main cost of adding a partner; tools like AI-assisted mapping aim to shrink it.</p></div></div><div class="entry"><h3>Despatch advice (DESADV) and SSCC</h3><p>A despatch advice is an electronic message announcing what is in a delivery. An SSCC (serial shipping container code) is a unique GS1 number printed as a barcode on each pallet label.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-despatch-advice-desadv-and-sscc.jpg" target="_blank" rel="noopener noreferrer" aria-label="Despatch advice (DESADV) and SSCC — open full image in a new tab"><img src="media/concept-despatch-advice-desadv-and-sscc.jpg" alt="Despatch advice (DESADV) and SSCC: Before the truck arrives, the retailer&#x27;s DC receives a DESADV listing pallet SSCCs; at the dock it scans each label and knows the contents." loading="lazy" decoding="async"></a><figcaption><p>Unannounced or wrongly labelled pallets can be refused or slow down the warehouse.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Before the truck arrives, the retailer&#x27;s DC receives a DESADV listing pallet SSCCs; at the dock it scans each label and knows the contents.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Unannounced or wrongly labelled pallets can be refused or slow down the warehouse.</p></div></div><div class="entry"><h3>Validation</h3><p>Automatic checks that a message is complete and follows the rules before it is delivered.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-validation.jpg" target="_blank" rel="noopener noreferrer" aria-label="Validation — open full image in a new tab"><img src="media/concept-validation.jpg" alt="Validation: An invoice missing the buyer&#x27;s identification number is blocked and the sender gets an alert." loading="lazy" decoding="async"></a><figcaption><p>Catching errors early is cheaper than a rejected invoice weeks later.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>An invoice missing the buyer&#x27;s identification number is blocked and the sender gets an alert.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Catching errors early is cheaper than a rejected invoice weeks later.</p></div></div><div class="entry"><h3>E-invoicing and Peppol</h3><p>An e-invoice is a structured invoice a system can read, not a PDF. Peppol is a European network for delivering such documents between registered participants.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-e-invoicing-and-peppol.jpg" target="_blank" rel="noopener noreferrer" aria-label="E-invoicing and Peppol — open full image in a new tab"><img src="media/concept-e-invoicing-and-peppol.jpg" alt="E-invoicing and Peppol: From 2027 many German companies must send invoices as XRechnung or ZUGFeRD files or via Peppol." loading="lazy" decoding="async"></a><figcaption><p>Governments are making structured invoices mandatory, which drives many companies to EDI providers.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>From 2027 many German companies must send invoices as XRechnung or ZUGFeRD files or via Peppol.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Governments are making structured invoices mandatory, which drives many companies to EDI providers.</p></div></div><div class="entry"><h3>EDI network</h3><p>A provider&#x27;s set of already-connected companies. If your customer is already on the network, connecting is mostly configuration.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-edi-network.jpg" target="_blank" rel="noopener noreferrer" aria-label="EDI network — open full image in a new tab"><img src="media/concept-edi-network.jpg" alt="EDI network: Transus states more than 100,000 trading partners are reachable through its network." loading="lazy" decoding="async"></a><figcaption><p>Networks create value for everyone on them; this is why providers compete on reach.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Transus states more than 100,000 trading partners are reachable through its network.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Networks create value for everyone on them; this is why providers compete on reach.</p></div></div></section><section id="history" aria-labelledby="heading-history"><p class="chapter-number">05</p><h2 id="heading-history">A little history</h2><p>A few turning points that explain current practice, mainly from a European perspective.</p><ol class="timeline"><li><h3>1970s-1980s</h3><p>Large companies began exchanging documents electronically using industry-specific formats, which led to international standardisation, including the UN/EDIFACT standard.</p><div class="labeled"><p class="label">What this helps explain</p><p>Common standards made it possible to connect many partners instead of building bespoke links for each.</p></div></li><li><h3>1990s-2000s</h3><p>Value-added networks and EDI service providers offered connections as a service, and web EDI portals let small suppliers without IT staff take part.</p><div class="labeled"><p class="label">What this helps explain</p><p>EDI spread from large corporations to small suppliers, often because retailers required it.</p></div></li><li><h3>2010s</h3><p>Retailers increasingly made EDI, despatch advice and SSCC labels mandatory for suppliers; cloud platforms replaced in-house converters.</p><div class="labeled"><p class="label">What this helps explain</p><p>EDI became a condition for doing business with major chains, not an optional efficiency.</p></div></li><li><h3>2020s</h3><p>Governments began mandating structured e-invoicing between businesses (for example Germany from 2025 for receiving and 2027-2028 for sending), and security laws such as NIS2 raised expectations of suppliers.</p><div class="labeled"><p class="label">What this helps explain</p><p>Compliance deadlines now drive adoption alongside retailer demands.</p></div><p class="source"><a href="https://www.transus.com/en/about-us/news/e-invoicing-germany-mandatory-from-2027/" rel="noreferrer">Source for 2020s</a></p></li></ol></section><section id="walkthrough" aria-labelledby="heading-walkthrough"><p class="chapter-number">06</p><h2 id="heading-walkthrough">Follow one complete example</h2><h3>A pallet of frozen fish from order to payment (fictional example)</h3><p>Marieke runs the order desk at a fictional seafood producer that supplies a supermarket chain. Her company uses an EDI provider; the supermarket uses its own ordering system. Names and numbers are illustrative.</p><ol class="steps"><li><h4>The supermarket orders</h4><p>At night the supermarket&#x27;s system creates an order for 40 boxes of frozen cod and sends it as an EDIFACT ORDERS message to the provider.</p><div class="labeled"><p class="label">Why this step matters</p><p>Nobody at the supermarket types or e-mails anything.</p></div></li><li><h4>The provider translates and checks</h4><p>The provider converts the order into the format Marieke&#x27;s ERP understands and checks that article codes and delivery location are present.</p><div class="labeled"><p class="label">Why this step matters</p><p>Marieke&#x27;s system never needs to know the supermarket&#x27;s specific format.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If an article code is unknown, the message is blocked and Marieke gets an alert explaining the problem.</p></div></aside></li><li><h4>Marieke confirms</h4><p>Her ERP shows the order; she confirms 36 boxes because stock is short, and an order response goes back automatically.</p><div class="labeled"><p class="label">Why this step matters</p><p>The supermarket learns about the shortfall before the truck arrives, not at the dock.</p></div></li><li><h4>Pallets are labelled and announced</h4><p>The warehouse packs two pallets, prints SSCC labels, and a despatch advice listing both pallets and their best-before dates is sent.</p><div class="labeled"><p class="label">Why this step matters</p><p>The distribution centre can plan the receipt and scan the pallets quickly.</p></div></li><li><h4>The invoice follows</h4><p>After delivery the ERP creates an invoice for 36 boxes; the provider converts it into the supermarket&#x27;s invoice format and delivers it.</p><div class="labeled"><p class="label">Why this step matters</p><p>Because the invoice matches the order response and despatch advice, it can be approved automatically.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If the price in the invoice differs from the supermarket&#x27;s price list, the invoice may be rejected and paid late.</p></div></aside></li></ol><div class="labeled"><p class="label">The outcome</p><p>The fish arrives announced, the invoice matches, and payment follows on time. Marieke spent minutes on an exception instead of hours retyping documents.</p></div></section><section id="value" aria-labelledby="heading-value"><p class="chapter-number">07</p><h2 id="heading-value">Value, money, and incentives</h2><div class="entry"><h3>Who benefits</h3><p>Suppliers save manual work and avoid fines; retailers get predictable deliveries and invoices that match automatically.</p><div class="labeled"><p class="label">For example</p><p>A supplier with 30 retail customers would otherwise follow 30 different invoice rules by hand.</p></div></div><div class="entry"><h3>Who pays</h3><p>Usually the supplier pays the provider a subscription; some providers, including Transus, use a fixed monthly price with unlimited messages and partners.</p><div class="labeled"><p class="label">For example</p><p>Transus lists plans from EUR 79 per month for web EDI to a Premium plan on request.</p></div></div><div class="entry"><h3>Why retailers push</h3><p>The retailer gets most of the efficiency but the supplier bears most of the setup, so retailers use listing conditions to drive adoption.</p><div class="labeled"><p class="label">For example</p><p>A DIY chain requires EDI and SSCC labels from every supplier.</p></div></div></section><section id="challenges" aria-labelledby="heading-challenges"><p class="chapter-number">08</p><h2 id="heading-challenges">What makes this domain difficult</h2><div class="entry"><h3>Every partner is a little different</h3><p>Standards allow options, so each retailer has its own guideline that also changes over time.</p><div class="labeled"><p class="label">The competing needs</p><p>Flexibility for large retailers versus mapping work for every supplier.</p></div><div class="labeled"><p class="label">In practice</p><p>Two chains use the same EDIFACT order but require different fields.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Providers maintain libraries of retailer requirements and increasingly use AI to propose mappings; specialists still review unusual cases.</p></div></div><div class="entry"><h3>Data quality at the source</h3><p>A perfectly delivered message with a wrong price or product code still causes a dispute.</p><div class="labeled"><p class="label">The competing needs</p><p>Strict validation blocks errors but can also block urgent orders.</p></div><div class="labeled"><p class="label">In practice</p><p>An invoice is rejected because the price list was updated after the order.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Validation with clear alerts and monitoring; it cannot fix bad master data in the ERP.</p></div></div><div class="entry"><h3>Compliance deadlines</h3><p>E-invoicing rules differ per country and arrive on fixed dates.</p><div class="labeled"><p class="label">The competing needs</p><p>Building per-country solutions versus one flexible platform.</p></div><div class="labeled"><p class="label">In practice</p><p>German send obligations from 2027 and 2028.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Providers add new formats as configuration and partner with specialists for networks like Peppol.</p></div></div><div class="entry"><h3>Trust and continuity</h3><p>If the provider fails, orders stop across thousands of relationships.</p><div class="labeled"><p class="label">The competing needs</p><p>Outsourcing reduces in-house effort but concentrates risk.</p></div><div class="labeled"><p class="label">In practice</p><p>Customers under NIS2 audit their EDI provider&#x27;s security.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Certified security management, encrypted transport, backup data centres and incident procedures.</p></div></div></section><section id="misconceptions" aria-labelledby="heading-misconceptions"><p class="chapter-number">09</p><h2 id="heading-misconceptions">Common misunderstandings</h2><div class="entry"><h3>EDI is just sending files by e-mail.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>EDI is structured data that systems process automatically, with agreed formats, validation and delivery confirmation.</p></div></div><div class="entry"><h3>You need a large IT department to do EDI.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Small suppliers can use web portals or let a provider and an ERP partner handle the integration.</p></div></div><div class="entry"><h3>A PDF invoice is an e-invoice.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Under the new mandates an e-invoice must be a structured file such as XRechnung or a Peppol document.</p></div></div></section><section id="takeaways" aria-labelledby="heading-takeaways"><p class="chapter-number">10</p><h2 id="heading-takeaways">The ideas to take with you</h2><ul><li><p>EDI replaces retyping with structured data that systems exchange directly.</p></li><li><p>The hard part is shared meaning: each partner&#x27;s rules, mapping and data quality.</p></li><li><p>Providers create value through their network, their library of partner requirements and their exception handling.</p></li><li><p>Retailer demands and government e-invoicing mandates are the main reasons companies start.</p></li></ul></section><section id="knowledge-checks" aria-labelledby="heading-knowledge-checks"><p class="chapter-number">11</p><h2 id="heading-knowledge-checks">Try it for yourself</h2><p>Pause and think through each situation, then open the answer.</p><div class="entry"><h3>1. Why can&#x27;t a supplier simply say &quot;we support EDIFACT&quot; and be connected to every retailer?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 1</span></summary><div class="answer"><p>Because each retailer uses its own implementation guideline within the standard.</p><div class="labeled"><p class="label">The reasoning</p><p>The standard allows options; each partner needs a mapping that matches its specific required fields and codes.</p></div></div></details></div><div class="entry"><h3>2. In the walkthrough, why did the invoice get approved automatically?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 2</span></summary><div class="answer"><p>It matched the order response and despatch advice.</p><div class="labeled"><p class="label">The reasoning</p><p>The supermarket could compare the invoiced 36 boxes with what was confirmed and announced.</p></div></div></details></div><div class="entry"><h3>3. Why would a retailer care whether its supplier&#x27;s EDI provider is secure?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 3</span></summary><div class="answer"><p>Because a failure or breach at the provider can stop or corrupt its supply chain.</p><div class="labeled"><p class="label">The reasoning</p><p>Under NIS2 essential entities must manage supply-chain risk, including their suppliers&#x27; providers.</p></div></div></details></div></section><section id="next-questions" aria-labelledby="heading-next-questions"><p class="chapter-number">12</p><h2 id="heading-next-questions">Questions to ask a practitioner</h2><ul><li><p>Which of your retailers already require EDI, and which documents?</p></li><li><p>What happens today when an order contains an unknown product code?</p></li><li><p>How many days does it take to connect a new trading partner?</p></li><li><p>Which countries you invoice will require e-invoices in the next three years?</p></li></ul></section><section id="further-reading" aria-labelledby="heading-further-reading"><p class="chapter-number">13</p><h2 id="heading-further-reading">Keep learning</h2><ul class="reading-list"><li><a href="https://www.transus.com/en/edi/what-is-edi/" rel="noreferrer">What is EDI? (Transus)</a><p>A short provider explanation of EDI documents and flow.</p></li><li><a href="https://www.transus.com/en/about-us/news/e-invoicing-germany-mandatory-from-2027/" rel="noreferrer">E-invoicing mandatory in Germany from 2027</a><p>Concrete dates and formats of the German mandate.</p></li><li><a href="https://www.gs1.org/standards/id-keys/sscc" rel="noreferrer">GS1 SSCC standard</a><p>How pallet identification works.</p></li></ul></section></main>
+        </div>
+        <footer><a href="#top">Back to the beginning</a></footer>
+    </div>
+</body>
+</html>

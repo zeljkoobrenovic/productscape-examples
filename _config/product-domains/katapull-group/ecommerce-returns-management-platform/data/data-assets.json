@@ -1,0 +1,670 @@
+{
+  "metadata": {
+    "domainId": "ecommerce-returns-management-platform",
+    "title": "E-commerce Returns Management Platform Data Assets",
+    "description": "Merchant configuration, return lifecycle records, money movements and analytics data, governed under GDPR with EU residency (assumed).",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Operational Return Data",
+      "description": "Configuration and transactional records of the return lifecycle.",
+      "subGroups": [
+        {
+          "name": "Merchant and Configuration",
+          "description": "Merchant setup, rules and connections.",
+          "assets": [
+            {
+              "id": "merchant-account-config",
+              "name": "Merchant Account and Branding Configuration",
+              "kind": "master-data",
+              "description": "Merchant, storefronts, plan, branding, countries and users.",
+              "businessMeaning": "Defines how each merchant's portal looks and behaves.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "merchant-user"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant admins and Returnista staff",
+              "systemOfRecordBrickId": "tnnt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Contract duration plus legal retention",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "return-policy-ruleset",
+              "name": "Return Policy Ruleset",
+              "kind": "configuration",
+              "description": "Versioned rules: windows, reasons, fees, exceptions, approval and automations.",
+              "businessMeaning": "The merchant's return policy as executable rules.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant admins",
+              "systemOfRecordBrickId": "rpol",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Versions kept for contract duration",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "integration-connection",
+              "name": "Integration Connections and Credentials",
+              "kind": "configuration",
+              "description": "Tokens, API keys and settings for shop platforms, carriers, WMS, ERP and apps.",
+              "businessMeaning": "Lets Returnista act on the merchant's systems.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Integration services only",
+              "systemOfRecordBrickId": "tnnt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "secrets-vault",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "returns-db",
+                  "role": "metadata"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Revoked and deleted on disconnect",
+                "residency": "eu",
+                "sharingPolicy": "Never shared"
+              }
+            },
+            {
+              "id": "carrier-contract",
+              "name": "Carrier Contracts",
+              "kind": "configuration",
+              "description": "Merchant's own carrier accounts or Returnista default contracts per country.",
+              "businessMeaning": "Determines label cost and carrier options.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Label service",
+              "systemOfRecordBrickId": "rlbl",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "secrets-vault",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Contract duration",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the carrier only"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Orders and Returns",
+          "description": "Operational records of the return lifecycle.",
+          "assets": [
+            {
+              "id": "order-snapshot",
+              "name": "Order Snapshot",
+              "kind": "transactional",
+              "description": "Order lines, prices, payment method and dates imported from the shop platform.",
+              "businessMeaning": "Basis for eligibility and refunds.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Return services",
+              "systemOfRecordBrickId": "ecom",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained while returns are possible plus analytics period",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "product-catalog-and-stock",
+              "name": "Product Catalog and Stock Snapshot",
+              "kind": "reference-data",
+              "description": "Products, variants, sizes and live availability.",
+              "businessMeaning": "Enables exchanges and SKU analysis.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Return services",
+              "systemOfRecordBrickId": "ecom",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "cache"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Refreshed continuously",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "shopper-contact",
+              "name": "Shopper Contact",
+              "kind": "master-data",
+              "description": "Shopper name, email and address from orders.",
+              "businessMeaning": "Needed to verify, ship and notify.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Return services and support",
+              "systemOfRecordBrickId": "ecom",
+              "derivedFromAssetIds": [
+                "order-snapshot"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shopper lookup",
+                  "description": "Order-based lookup."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted or anonymised per merchant retention",
+                "residency": "eu",
+                "sharingPolicy": "Shared with carriers for labels only"
+              }
+            },
+            {
+              "id": "return-request",
+              "name": "Return Request",
+              "kind": "transactional",
+              "description": "Requested items, reasons, chosen resolution, approval and lifecycle state.",
+              "businessMeaning": "The core return record.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Merchant, partners and Returnista",
+              "systemOfRecordBrickId": "rprt",
+              "derivedFromAssetIds": [
+                "order-snapshot"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "returns api",
+                  "description": "REST API and webhooks."
+                }
+              ],
+              "governance": {
+                "retention": "Retained for analytics; personal fields anonymised per policy",
+                "residency": "eu",
+                "sharingPolicy": "Shared with merchant's WMS/ERP partners"
+              }
+            },
+            {
+              "id": "return-evidence-media",
+              "name": "Return Evidence and Photos",
+              "kind": "unstructured",
+              "description": "Photos and answers uploaded for claims.",
+              "businessMeaning": "Evidence for warranty and damage decisions.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Claim reviewers",
+              "systemOfRecordBrickId": "gate",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "media-object-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Deleted after claim period",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "return-shipment",
+              "name": "Return Shipment and Label",
+              "kind": "transactional",
+              "description": "Carrier, label, tracking code and scan events.",
+              "businessMeaning": "Tracks the parcel back.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Return services and support",
+              "systemOfRecordBrickId": "rlbl",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained with return request",
+                "residency": "eu",
+                "sharingPolicy": "Shared with carrier"
+              }
+            },
+            {
+              "id": "inspection-result",
+              "name": "Inspection Result",
+              "kind": "transactional",
+              "description": "Receipt, grade, condition and restock location.",
+              "businessMeaning": "Decides refund and restock.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Operations and partners",
+              "systemOfRecordBrickId": "insp",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained with return request",
+                "residency": "eu",
+                "sharingPolicy": "Shared with merchant and WMS partner"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Money and Retention",
+          "description": "Refunds, exchanges and credit.",
+          "assets": [
+            {
+              "id": "exchange-order",
+              "name": "Exchange Order",
+              "kind": "transactional",
+              "description": "Replacement variant, stock check, instant or inspected flag and outbound order reference.",
+              "businessMeaning": "Revenue kept through exchanges.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Return services",
+              "systemOfRecordBrickId": "exch",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained with return request",
+                "residency": "eu",
+                "sharingPolicy": "Written to shop platform"
+              }
+            },
+            {
+              "id": "store-credit-ledger",
+              "name": "Store Credit Ledger",
+              "kind": "ledger",
+              "description": "Issued credit, bonus, gift card codes and redemption status.",
+              "businessMeaning": "Revenue retained as credit.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Return services and finance",
+              "systemOfRecordBrickId": "scrd",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained per financial record rules",
+                "residency": "eu",
+                "sharingPolicy": "Synced to shop platform"
+              }
+            },
+            {
+              "id": "refund-and-payment-transaction",
+              "name": "Refund and Return Fee Transaction",
+              "kind": "ledger",
+              "description": "Refunds released and return fees paid.",
+              "businessMeaning": "Money movement of returns.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Finance and return services",
+              "systemOfRecordBrickId": "rres",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "returns-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Retained per financial record rules",
+                "residency": "eu",
+                "sharingPolicy": "Shared with PSP and shop platform"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytical Return Data",
+      "description": "Events, analytics and benchmarks derived from returns.",
+      "subGroups": [
+        {
+          "name": "Analytics",
+          "description": "Events and analytical data.",
+          "assets": [
+            {
+              "id": "return-event-stream",
+              "name": "Return Event Stream",
+              "kind": "event-stream",
+              "description": "Lifecycle events: requested, approved, shipped, received, resolved.",
+              "businessMeaning": "Feeds automations, webhooks and analytics.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Internal consumers and webhooks",
+              "systemOfRecordBrickId": "pipe",
+              "derivedFromAssetIds": [
+                "return-request"
+              ],
+              "stores": [
+                {
+                  "storeId": "event-bus",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Short-lived on the bus",
+                "residency": "eu",
+                "sharingPolicy": "Delivered to subscribed partner webhooks"
+              }
+            },
+            {
+              "id": "return-analytics-mart",
+              "name": "Return Analytics Mart",
+              "kind": "analytical",
+              "description": "Return facts by SKU, reason, payment method, shopper segment and time.",
+              "businessMeaning": "Return rates, impact index and insights.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymised",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant analysts",
+              "systemOfRecordBrickId": "pipe",
+              "derivedFromAssetIds": [
+                "return-event-stream",
+                "order-snapshot",
+                "product-catalog-and-stock"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Multi-year history for comparisons",
+                "residency": "eu",
+                "sharingPolicy": "Exportable to the merchant's BI"
+              }
+            },
+            {
+              "id": "return-benchmark-aggregate",
+              "name": "Return Benchmark Aggregate",
+              "kind": "analytical",
+              "description": "Anonymised cross-brand aggregates by category and country.",
+              "businessMeaning": "Category benchmarks such as the 2026 report.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Returnista and published reports",
+              "systemOfRecordBrickId": "bnch",
+              "derivedFromAssetIds": [
+                "return-analytics-mart"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "derived"
+                }
+              ],
+              "interfaces": [],
+              "governance": {
+                "retention": "Annual snapshots",
+                "residency": "eu",
+                "sharingPolicy": "Published only as anonymised aggregates"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "returns-db",
+      "name": "Returns DB",
+      "kind": "operational-database",
+      "description": "Merchants, rules, returns, shipments, exchanges, credit and refunds.",
+      "technology": "relational-database (assumed)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "media-object-store",
+      "name": "Media Object Store",
+      "kind": "object-store",
+      "description": "Claim photos.",
+      "technology": "object storage (assumed)",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "event-bus",
+      "name": "Event Bus",
+      "kind": "message-broker",
+      "description": "Return lifecycle events.",
+      "technology": "message broker (assumed)",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "analytics-warehouse",
+      "name": "Analytics Warehouse",
+      "kind": "analytics-warehouse",
+      "description": "Return facts and benchmark aggregates.",
+      "technology": "columnar warehouse (assumed)",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "secrets-vault",
+      "name": "Secrets Vault",
+      "kind": "secret-store",
+      "description": "Integration and carrier credentials.",
+      "technology": "secrets manager (assumed)",
+      "status": "active",
+      "classification": "restricted"
+    }
+  ]
+}

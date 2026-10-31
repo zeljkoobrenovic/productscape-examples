@@ -1,0 +1,365 @@
+{
+  "schemaVersion": "1.0",
+  "domainId": "warehouse-management-and-fulfilment-platform",
+  "status": "ready",
+  "updated": "2026-10-30",
+  "title": "How a webshop warehouse runs: warehouse management software explained",
+  "audience": "A curious adult coming from a different field, with no assumed knowledge of logistics or e-commerce.",
+  "scope": "Covers the software that runs the inside of an online store's or fulfilment company's warehouse: knowing what stock is where, buying and receiving goods, picking and packing orders, handing parcels to carriers, handling returns, and serving fulfilment clients. Uses Picqer, a Dutch warehouse system owned by Katapull since October 2026, as the running example.",
+  "learningGoals": [
+    "Explain what a warehouse management system (WMS) does that a webshop back-office does not.",
+    "Describe the path of an order from the webshop to a labelled parcel.",
+    "Explain why stock accuracy and walking distance dominate warehouse performance.",
+    "Describe how a fulfilment company uses one system for many client brands.",
+    "Name the main trade-offs when a warehouse grows from a few people to robots."
+  ],
+  "introduction": {
+    "whatItIs": "A warehouse management system is software that knows every product, every shelf location and every order in a warehouse, and tells people (or machines) what to do next: which goods to buy, where to put deliveries, which orders to pick, in which order to walk, which box to use and which label to print.",
+    "whyItMatters": "For an online store, the warehouse is where promises are kept or broken. A wrong item, a late parcel or an item sold that is not on the shelf costs money and customers. Above a few dozen orders a day, memory and spreadsheets stop working.",
+    "familiarComparison": "Think of a sat-nav for a supermarket shopping trip that also knows exactly what is on every shelf: it gives you the list, the shortest route, checks each item as you put it in the basket and prints the receipt.",
+    "whereComparisonBreaks": "In a warehouse many people shop for hundreds of different customers at once, shelves are refilled while they walk, and the system must also tell the online shop how much is left so it does not sell what is no longer there."
+  },
+  "participants": [
+    {
+      "name": "Webshop owner",
+      "role": "Runs the online store and often its warehouse.",
+      "caresAbout": "Shipping on time, correct stock and not needing more staff."
+    },
+    {
+      "name": "Warehouse manager",
+      "role": "Plans the team, hardware and daily priorities.",
+      "caresAbout": "Cut-offs, throughput and errors at peak."
+    },
+    {
+      "name": "Picker and packer",
+      "role": "Walks, picks, scans and packs.",
+      "caresAbout": "Clear instructions, little walking and no blame for mistakes."
+    },
+    {
+      "name": "Fulfilment company (3PL)",
+      "role": "Stores and ships goods for many webshops.",
+      "caresAbout": "Serving many clients in one workflow and billing every service."
+    },
+    {
+      "name": "Fulfilment client",
+      "role": "A brand that outsources its warehouse.",
+      "caresAbout": "Seeing its stock and orders without calling."
+    },
+    {
+      "name": "Partners",
+      "role": "Webshop platforms, carriers, returns tools, hardware suppliers.",
+      "caresAbout": "Stable connections and shared customers."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Location",
+      "meaning": "A named place in the warehouse where stock is kept, such as a shelf position or a pallet place.",
+      "example": "Product X is on location A-03-2 (pick) and on a pallet at B-10 (bulk).",
+      "whyItMatters": "Without locations, staff search; with them, the system can plan routes.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-location.jpg",
+          "title": "Location",
+          "alt": "Location: Product X is on location A-03-2 (pick) and on a pallet at B-10 (bulk).",
+          "caption": "Without locations, staff search; with them, the system can plan routes."
+        }
+      ]
+    },
+    {
+      "term": "Free stock",
+      "meaning": "Stock that is physically present and not yet reserved for an order.",
+      "example": "10 on the shelf, 3 reserved for open orders: 7 free to sell.",
+      "whyItMatters": "Webshops should sell free stock, not physical stock, to avoid overselling.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-free-stock.jpg",
+          "title": "Free stock",
+          "alt": "Free stock: 10 on the shelf, 3 reserved for open orders: 7 free to sell.",
+          "caption": "Webshops should sell free stock, not physical stock, to avoid overselling."
+        }
+      ]
+    },
+    {
+      "term": "Picklist and batch",
+      "meaning": "The list of items to collect for one order; a batch combines several picklists in one walk.",
+      "example": "Twelve orders collected in one optimal round with a trolley.",
+      "whyItMatters": "Pickers walk most of their day, so combining orders saves time.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-picklist-and-batch.jpg",
+          "title": "Picklist and batch",
+          "alt": "Picklist and batch: Twelve orders collected in one optimal round with a trolley.",
+          "caption": "Pickers walk most of their day, so combining orders saves time."
+        }
+      ]
+    },
+    {
+      "term": "Singles",
+      "meaning": "Orders with only one order line.",
+      "example": "Picqer says 60-70% of an average webshop's orders are singles (vendor claim).",
+      "whyItMatters": "They can be picked in bulk and labelled at scan.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-singles.jpg",
+          "title": "Singles",
+          "alt": "Singles: Picqer says 60-70% of an average webshop's orders are singles (vendor claim).",
+          "caption": "They can be picked in bulk and labelled at scan."
+        }
+      ]
+    },
+    {
+      "term": "Scan verification",
+      "meaning": "Confirming each item by scanning its barcode.",
+      "example": "The scanner beeps if the wrong colour is picked.",
+      "whyItMatters": "It prevents most picking errors, especially by new staff.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-scan-verification.jpg",
+          "title": "Scan verification",
+          "alt": "Scan verification: The scanner beeps if the wrong colour is picked.",
+          "caption": "It prevents most picking errors, especially by new staff."
+        }
+      ]
+    },
+    {
+      "term": "Cycle counting",
+      "meaning": "Counting a few locations at a time all year instead of one big annual count.",
+      "example": "Ten minutes of counting in a quiet hour each day.",
+      "whyItMatters": "Errors are found before they cause oversold orders.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-cycle-counting.jpg",
+          "title": "Cycle counting",
+          "alt": "Cycle counting: Ten minutes of counting in a quiet hour each day.",
+          "caption": "Errors are found before they cause oversold orders."
+        }
+      ]
+    },
+    {
+      "term": "Batch number and best-before date",
+      "meaning": "Identifiers of a production lot and its expiry.",
+      "example": "A supplements lot with expiry March 2027.",
+      "whyItMatters": "Needed to ship oldest first and to recall a lot.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-batch-number-and-best-before-date.jpg",
+          "title": "Batch number and best-before date",
+          "alt": "Batch number and best-before date: A supplements lot with expiry March 2027.",
+          "caption": "Needed to ship oldest first and to recall a lot."
+        }
+      ]
+    },
+    {
+      "term": "Fulfilment (3PL)",
+      "meaning": "A company that stores and ships goods on behalf of other businesses.",
+      "example": "A 3PL ships for 50 webshops from one building.",
+      "whyItMatters": "Its software must separate clients yet run one efficient floor.",
+      "media": [
+        {
+          "id": "concept-illustration",
+          "type": "image",
+          "src": "media/concept-fulfilment-3pl.jpg",
+          "title": "Fulfilment (3PL)",
+          "alt": "Fulfilment (3PL): A 3PL ships for 50 webshops from one building.",
+          "caption": "Its software must separate clients yet run one efficient floor."
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "period": "Before about 2010",
+      "change": "Small webshops packed from memory and spreadsheets; WMS software was built for large logistics companies and needed consultants.",
+      "whyItMatters": "Most webshops had no affordable WMS."
+    },
+    {
+      "period": "2010s",
+      "change": "Cloud WMS for webshops appeared, priced per order and connected to webshop platforms in minutes; Picqer started in November 2012.",
+      "whyItMatters": "Small warehouses could professionalise without IT projects."
+    },
+    {
+      "period": "Late 2010s to 2020s",
+      "change": "Mobile handheld apps, rules automation and multi-client fulfilment versions became standard; 3PLs offered client portals.",
+      "whyItMatters": "Paperless, guided work and outsourcing grew."
+    },
+    {
+      "period": "2020s",
+      "change": "Robots and goods-to-person systems reached mid-size warehouses, and software groups such as Katapull began combining ERP, shipping, returns and WMS.",
+      "whyItMatters": "The WMS becomes one part of a connected commerce chain."
+    }
+  ],
+  "historyNote": "This is a selective, mostly Dutch view; other markets developed differently.",
+  "walkthrough": {
+    "title": "One order for a phone case and a charger (illustrative example)",
+    "setup": "Fictional characters: Lisa runs a Dutch phone-accessories webshop with a small warehouse on Picqer; Tom, a student, works there on Saturdays; Mark orders on a Friday evening.",
+    "steps": [
+      {
+        "title": "The order arrives",
+        "whatHappens": "Mark's order is imported from the webshop. Picqer reserves one case and one charger, so the webshop shows one less of each.",
+        "whyItMatters": "Free stock is updated immediately, preventing overselling.",
+        "watchOut": "If the stock sync is delayed, two customers can buy the last item."
+      },
+      {
+        "title": "Rules set priority",
+        "whatHappens": "Mark chose next-day delivery, so a rule marks the picklist urgent and chooses the carrier service.",
+        "whyItMatters": "Decisions are made by rules instead of sticky notes."
+      },
+      {
+        "title": "Tom picks a batch",
+        "whatHappens": "On the handheld, Tom starts a batch of eight orders, including Mark's, and follows the route. He scans each item.",
+        "whyItMatters": "One walk serves eight customers and scans catch mistakes.",
+        "watchOut": "If the charger location is empty, Tom pauses that picklist with a reason so others can solve it."
+      },
+      {
+        "title": "Packing and label",
+        "whatHappens": "At the packing table Picqer advises an envelope; after the last scan the label prints automatically and the webshop receives the tracking code.",
+        "whyItMatters": "No typing and no wrong boxes."
+      },
+      {
+        "title": "A return comes back",
+        "whatHappens": "Mark returns the case via a returns portal; it is pre-registered in Picqer, scanned on arrival, inspected and put back in stock.",
+        "whyItMatters": "Sellable goods are back on sale quickly."
+      }
+    ],
+    "outcome": "Mark gets his parcel the next day, Lisa's stock is right without counting, and Tom never needed to know the products."
+  },
+  "valueAndIncentives": [
+    {
+      "title": "Webshops save labour and mistakes",
+      "explanation": "Guided, scanned work lets fewer and less-experienced people ship more orders correctly. Picqer charges a monthly plan with included orders plus a fee per extra order.",
+      "example": "A customer quote says one employee can do the work of four or five (testimonial, not a measurement)."
+    },
+    {
+      "title": "3PLs serve more clients per building",
+      "explanation": "Client separation, portals and recorded packaging let a fulfilment company grow its client list and bill accurately.",
+      "example": "A 3PL handles 50 clients with 12 employees (VASCO-fulfilment case)."
+    },
+    {
+      "title": "Partners gain shared customers",
+      "explanation": "Platforms, carriers and tools integrate with the WMS because their customers ask for it.",
+      "example": "Returns tools pre-register returns in the warehouse system."
+    },
+    {
+      "title": "Katapull completes its chain",
+      "explanation": "The owner group can offer ERP, warehouse, shipping, returns and EDI as connectable parts.",
+      "example": "Logic4 customers can step up to Picqer when they need more warehouse functionality."
+    }
+  ],
+  "challenges": [
+    {
+      "title": "Keeping stock true",
+      "whyHard": "Goods are misplaced, damaged or moved without booking.",
+      "tradeOff": "More counting costs time; less counting costs oversold orders.",
+      "example": "A product is booked on a shelf but was moved to another.",
+      "commonApproach": "Real-time booking on handhelds and small risk-based cycle counts."
+    },
+    {
+      "title": "Peak season",
+      "whyHard": "Volume multiplies while experienced staff do not.",
+      "tradeOff": "Hiring temps adds capacity but risks errors.",
+      "example": "A Black Friday backlog at carrier pickup time.",
+      "commonApproach": "Guided, scanned work and batching."
+    },
+    {
+      "title": "Simplicity versus power",
+      "whyHard": "Larger warehouses need more options, which can make software harder.",
+      "tradeOff": "Every setting helps someone and confuses someone else.",
+      "example": "Rules that only a few experts understand.",
+      "commonApproach": "Sensible defaults with optional rules."
+    },
+    {
+      "title": "Many integrations",
+      "whyHard": "Each shop, carrier and tool has its own API that changes.",
+      "tradeOff": "Building every connection yourself is costly; relying on partners risks quality.",
+      "example": "A carrier changes its label API before peak.",
+      "commonApproach": "Own the main connectors and offer an open API for partners."
+    }
+  ],
+  "misconceptions": [
+    {
+      "belief": "A webshop back-office already manages the warehouse.",
+      "reality": "Webshops usually track only sellable stock, not locations, reservations, routes or receipts."
+    },
+    {
+      "belief": "Robots are needed to be efficient.",
+      "reality": "Most gains come first from locations, batching and scanning; robots come later at higher volumes."
+    },
+    {
+      "belief": "Outsourcing to a 3PL means losing visibility.",
+      "reality": "Client portals can show stock and orders in real time."
+    }
+  ],
+  "takeaways": [
+    "A WMS knows every product, location and order and directs the work.",
+    "Free stock, scanning and batching are the foundations of fast, correct shipping.",
+    "Fulfilment companies need the same system plus client separation, portals and billing.",
+    "Warehouses grow from packing tables to handhelds to mechanisation, ideally on one system.",
+    "Integrations with shops, carriers and returns tools are as important as the warehouse features."
+  ],
+  "knowledgeChecks": [
+    {
+      "question": "Why should a webshop sell free stock rather than physical stock?",
+      "answer": "Because part of the physical stock is already reserved for open orders.",
+      "explanation": "Selling physical stock would promise the same item twice."
+    },
+    {
+      "question": "What is the benefit of batch picking?",
+      "answer": "One walk collects items for several orders.",
+      "explanation": "Walking is the largest part of picking time."
+    },
+    {
+      "question": "Why does a fulfilment company need client separation?",
+      "answer": "Each client owns its own stock and data.",
+      "explanation": "Mixing them causes wrong shipments and data leaks."
+    },
+    {
+      "question": "When are batch numbers needed?",
+      "answer": "For products like food, supplements or cosmetics.",
+      "explanation": "They enable first-expiry-first-out and recalls."
+    }
+  ],
+  "nextQuestions": [
+    "What share of your orders is scan-verified?",
+    "How long does a new picker need before working alone?",
+    "How often do you count each location per year?",
+    "Which integrations would stop your warehouse if they failed?",
+    "At what volume would mechanisation pay off for you?"
+  ],
+  "furtherReading": [
+    {
+      "title": "Picqer picking and shipping",
+      "url": "https://picqer.com/en/features/picking-shipping",
+      "whyRead": "Concrete description of batch, singles and scan-based picking."
+    },
+    {
+      "title": "Picqer inventory management",
+      "url": "https://picqer.com/en/features/inventory-management",
+      "whyRead": "Explains physical, reserved and free stock and cycle counting."
+    },
+    {
+      "title": "Picqer Fulfilment",
+      "url": "https://picqer.com/en/fulfilment",
+      "whyRead": "How a 3PL runs many clients in one system."
+    },
+    {
+      "title": "Hardware and robots",
+      "url": "https://picqer.com/en/hardware-robots",
+      "whyRead": "The step-by-step path to mechanisation."
+    }
+  ]
+}

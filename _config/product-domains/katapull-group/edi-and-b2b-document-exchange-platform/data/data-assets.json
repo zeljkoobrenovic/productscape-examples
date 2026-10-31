@@ -1,0 +1,908 @@
+{
+  "metadata": {
+    "domainId": "edi-and-b2b-document-exchange-platform",
+    "title": "EDI and B2B Document Exchange Data Assets",
+    "description": "Catalog of network, configuration, business-document, status, archive and account data in the Transus platform, hosted in EU data centres (Frankfurt, DR Amsterdam) under an ISO 27001 ISMS.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Network and Configuration Data",
+      "description": "Who can trade with whom, and how.",
+      "subGroups": [
+        {
+          "name": "Partners and Requirements",
+          "description": "The network graph and partner specifications.",
+          "assets": [
+            {
+              "id": "trading-partner-profile",
+              "name": "Trading Partner Profile",
+              "kind": "master-data",
+              "description": "An organisation on the Transus network: names, GLNs, VAT and Peppol identifiers, supported document types and connection status.",
+              "businessMeaning": "The network itself; the reason a new customer can often connect within a day.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Searchable capability data public; contact data internal",
+              "systemOfRecordBrickId": "tpdr",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "trading partner profile api",
+                  "description": "Access to trading partner profile through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while the partner is reachable; archived after deactivation",
+                "residency": "eu",
+                "sharingPolicy": "Capability data is shown in the public partner search"
+              }
+            },
+            {
+              "id": "partner-message-specification",
+              "name": "Partner Message Specification",
+              "kind": "reference-data",
+              "description": "Versioned message implementation guideline per partner and document type (segments, code lists, mandatory fields, SSCC and invoice rules).",
+              "businessMeaning": "Captured retailer know-how; much of what customers pay Transus for.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Transus EDI specialists",
+              "systemOfRecordBrickId": "rprf",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "partner message specification api",
+                  "description": "Access to partner message specification through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "All versions kept for traceability of past messages",
+                "residency": "eu",
+                "sharingPolicy": "Not shared outside Transus except with the partner concerned"
+              }
+            },
+            {
+              "id": "partner-connection",
+              "name": "Partner Connection",
+              "kind": "configuration",
+              "description": "A configured relationship between a customer and a trading partner: documents, direction, route, mapping version and lifecycle state.",
+              "businessMeaning": "Each connection is a unit of value delivered and a unit of churn risk.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Customer and Transus support",
+              "systemOfRecordBrickId": "ponb",
+              "derivedFromAssetIds": [
+                "trading-partner-profile"
+              ],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "partner connection api",
+                  "description": "Access to partner connection through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for the life of the contract plus statutory period",
+                "residency": "eu",
+                "sharingPolicy": "Visible to both connected parties"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mappings and Integration",
+          "description": "How in-house formats are transformed and systems are connected.",
+          "assets": [
+            {
+              "id": "mapping-definition",
+              "name": "Mapping Definition",
+              "kind": "configuration",
+              "description": "Transformation rules from a customer in-house format to a partner standard and back, including AI-proposed mappings awaiting approval.",
+              "businessMeaning": "Encodes both the customer system and the partner requirement; the asset Traci AI aims to generate.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Transus EDI specialists and certified partners",
+              "systemOfRecordBrickId": "tran",
+              "derivedFromAssetIds": [
+                "partner-message-specification"
+              ],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "mapping definition api",
+                  "description": "Access to mapping definition through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Versions kept while messages using them are retained",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "erp-integration-config",
+              "name": "ERP Integration Configuration",
+              "kind": "configuration",
+              "description": "Endpoints, file drops, credentials references and connector settings for a customer ERP, WMS or Katapull sibling system.",
+              "businessMeaning": "Determines whether documents flow without manual steps.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Customer IT, certified partner, Transus support",
+              "systemOfRecordBrickId": "erpi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "erp integration config api",
+                  "description": "Access to erp integration configuration through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted at contract end",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the customer's certified partner only"
+              }
+            },
+            {
+              "id": "transport-credential",
+              "name": "Transport Credential",
+              "kind": "secret",
+              "description": "AS2 certificates, SFTP keys and API secrets used for partner sessions.",
+              "businessMeaning": "Compromise would let an attacker inject or read orders and invoices.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "iso-27001"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Security operations only",
+              "systemOfRecordBrickId": "secu",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "secrets-vault",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "transport credential api",
+                  "description": "Access to transport credential through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Rotated per policy; revoked at connection end",
+                "residency": "eu",
+                "sharingPolicy": "Never shared"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Business Document Data",
+      "description": "The documents of the order-to-cash and replenishment cycle.",
+      "subGroups": [
+        {
+          "name": "Exchanged Messages",
+          "description": "What actually flows over the network.",
+          "assets": [
+            {
+              "id": "edi-interchange",
+              "name": "EDI Interchange",
+              "kind": "event-payload",
+              "description": "Raw interchange as received or sent (EDIFACT, UBL, XML, CSV), with envelope metadata.",
+              "businessMeaning": "Proof of what was exchanged with whom and when.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "contact persons in documents"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Customer, its trading partner and Transus support",
+              "systemOfRecordBrickId": "cnct",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "message-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "edi interchange api",
+                  "description": "Access to edi interchange through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Retained per contract; typically months online then removed",
+                "residency": "eu",
+                "sharingPolicy": "Visible to the two parties of the exchange"
+              }
+            },
+            {
+              "id": "purchase-order-document",
+              "name": "Purchase Order Document",
+              "kind": "business-document",
+              "description": "Orders, order changes and order responses (ORDERS, ORDCHG, ORDRSP) in canonical and partner form.",
+              "businessMeaning": "The start of every delivery and invoice.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Customer and partner",
+              "systemOfRecordBrickId": "ordr",
+              "derivedFromAssetIds": [
+                "edi-interchange"
+              ],
+              "stores": [
+                {
+                  "storeId": "message-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "purchase order document api",
+                  "description": "Access to purchase order document through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Retained with the interchange",
+                "residency": "eu",
+                "sharingPolicy": "Visible to the two parties"
+              }
+            },
+            {
+              "id": "despatch-advice-document",
+              "name": "Despatch Advice Document",
+              "kind": "business-document",
+              "description": "DESADV with packing hierarchy, SSCCs, batches and best-before dates.",
+              "businessMeaning": "Lets retailer DCs and logistics providers plan receipt.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Customer, retailer and logistics provider",
+              "systemOfRecordBrickId": "desp",
+              "derivedFromAssetIds": [
+                "purchase-order-document"
+              ],
+              "stores": [
+                {
+                  "storeId": "message-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "despatch advice document api",
+                  "description": "Access to despatch advice document through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Retained with the interchange",
+                "residency": "eu",
+                "sharingPolicy": "Shared with retailer and its logistics provider"
+              }
+            },
+            {
+              "id": "sscc-label-record",
+              "name": "SSCC Label Record",
+              "kind": "business-document",
+              "description": "Allocated serial shipping container codes and the label content printed for each pallet.",
+              "businessMeaning": "Hornbach and other retailers reject deliveries without valid SSCC labels.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "gs1-standard"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Customer",
+              "systemOfRecordBrickId": "desp",
+              "derivedFromAssetIds": [
+                "despatch-advice-document"
+              ],
+              "stores": [
+                {
+                  "storeId": "network-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sscc label record api",
+                  "description": "Access to sscc label record through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Kept to prevent SSCC reuse (GS1 rule)",
+                "residency": "eu",
+                "sharingPolicy": "Encoded on physical labels"
+              }
+            },
+            {
+              "id": "invoice-document",
+              "name": "Invoice Document",
+              "kind": "business-document",
+              "description": "Invoices and credit notes as EDIFACT INVOIC, UBL/Peppol BIS, XRechnung or ZUGFeRD.",
+              "businessMeaning": "Gets the supplier paid and satisfies e-invoicing law.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "sole-trader invoice parties"
+              ],
+              "legalTags": [
+                "gdpr",
+                "vat-invoicing-rules",
+                "en-16931"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Customer finance and its partner",
+              "systemOfRecordBrickId": "einv",
+              "derivedFromAssetIds": [
+                "despatch-advice-document"
+              ],
+              "stores": [
+                {
+                  "storeId": "message-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "invoice document api",
+                  "description": "Access to invoice document through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Retained per contract; archived copy follows tax retention",
+                "residency": "eu",
+                "sharingPolicy": "Visible to the two parties and Peppol access points"
+              }
+            },
+            {
+              "id": "inventory-and-forecast-report",
+              "name": "Inventory and Forecast Report",
+              "kind": "business-document",
+              "description": "Retailer stock levels, sales and forecasts used for vendor managed inventory.",
+              "businessMeaning": "Commercially sensitive retailer data that the supplier may only use for replenishment.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Supplier VMI users",
+              "systemOfRecordBrickId": "vmi",
+              "derivedFromAssetIds": [
+                "edi-interchange"
+              ],
+              "stores": [
+                {
+                  "storeId": "message-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "inventory and forecast report api",
+                  "description": "Access to inventory and forecast report through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Rolling window needed for replenishment",
+                "residency": "eu",
+                "sharingPolicy": "Only the retailer and the supplier concerned"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status, Exceptions and Archive",
+          "description": "What happened to each message.",
+          "assets": [
+            {
+              "id": "message-status-event",
+              "name": "Message Status Event",
+              "kind": "event",
+              "description": "Lifecycle event per message: received, translated, validated, delivered, acknowledged, failed.",
+              "businessMeaning": "The basis of real-time insight shared with trading partners.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Customer and partner",
+              "systemOfRecordBrickId": "rout",
+              "derivedFromAssetIds": [
+                "edi-interchange"
+              ],
+              "stores": [
+                {
+                  "storeId": "status-ledger",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "message status event api",
+                  "description": "Access to message status event through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Kept as long as the message",
+                "residency": "eu",
+                "sharingPolicy": "Visible to both parties"
+              }
+            },
+            {
+              "id": "message-exception",
+              "name": "Message Exception",
+              "kind": "case",
+              "description": "A blocked, failed or late message with a plain-language reason, owner and resolution.",
+              "businessMeaning": "Where customer trust is won or lost.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Customer and Transus support",
+              "systemOfRecordBrickId": "mntr",
+              "derivedFromAssetIds": [
+                "message-status-event"
+              ],
+              "stores": [
+                {
+                  "storeId": "status-ledger",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "message exception api",
+                  "description": "Access to message exception through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "24 months for trend analysis",
+                "residency": "eu",
+                "sharingPolicy": "Customer and support only"
+              }
+            },
+            {
+              "id": "document-archive-record",
+              "name": "Document Archive Record",
+              "kind": "archive",
+              "description": "Immutable archived copy of an invoice or document with retention metadata.",
+              "businessMeaning": "Audit evidence for tax authorities.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "sole-trader invoice parties"
+              ],
+              "legalTags": [
+                "gdpr",
+                "tax-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Customer finance",
+              "systemOfRecordBrickId": "arch",
+              "derivedFromAssetIds": [
+                "invoice-document"
+              ],
+              "stores": [
+                {
+                  "storeId": "archive-vault",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "document archive record api",
+                  "description": "Access to document archive record through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory tax retention (e.g. 7 years in the Netherlands)",
+                "residency": "eu",
+                "sharingPolicy": "Customer and auditors on request"
+              }
+            },
+            {
+              "id": "message-volume-metric",
+              "name": "Message Volume Metric",
+              "kind": "metric",
+              "description": "Aggregated volumes, error rates and lead times per customer, partner and document type.",
+              "businessMeaning": "Shows value delivered under a flat fee and partner performance.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Customer and Transus",
+              "systemOfRecordBrickId": "rept",
+              "derivedFromAssetIds": [
+                "message-status-event"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "message volume metric api",
+                  "description": "Access to message volume metric through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Aggregates kept indefinitely",
+                "residency": "eu",
+                "sharingPolicy": "Customer sees own metrics only"
+              }
+            },
+            {
+              "id": "ai-mapping-training-sample",
+              "name": "AI Mapping Training Sample",
+              "kind": "dataset",
+              "description": "Document samples and specialist feedback used to improve Traci AI recognition.",
+              "businessMeaning": "Fuels the move from manual mapping to AI-assisted onboarding.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "contact persons in documents"
+              ],
+              "legalTags": [
+                "gdpr",
+                "eu-ai-act"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Transus AI team",
+              "systemOfRecordBrickId": "trai",
+              "derivedFromAssetIds": [
+                "edi-interchange",
+                "mapping-definition"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "ai mapping training sample api",
+                  "description": "Access to ai mapping training sample through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Pseudonymised; retained per AI data policy (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer and Platform Data",
+      "description": "Accounts, access, support and security.",
+      "subGroups": [
+        {
+          "name": "Accounts and Service",
+          "description": "Commercial relationship and support.",
+          "assets": [
+            {
+              "id": "customer-subscription",
+              "name": "Customer Subscription",
+              "kind": "master-data",
+              "description": "Customer account, plan (Basic, Plus, Premium), term and entitlements.",
+              "businessMeaning": "Drives flat-fee revenue and feature access.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer contacts"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Sales, finance, support",
+              "systemOfRecordBrickId": "tnnt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "customer subscription api",
+                  "description": "Access to customer subscription through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Contract life plus statutory period",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "user-account",
+              "name": "User Account",
+              "kind": "master-data",
+              "description": "Users of customers, partners and trading partners with roles and credentials.",
+              "businessMeaning": "Controls who can see whose documents.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "users"
+              ],
+              "legalTags": [
+                "gdpr",
+                "iso-27001"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Identity service",
+              "systemOfRecordBrickId": "iden",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "user account api",
+                  "description": "Access to user account through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "Removed after deactivation plus log retention",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "support-ticket",
+              "name": "Support Ticket",
+              "kind": "case",
+              "description": "Customer or partner request with linked messages, connections and resolution.",
+              "businessMeaning": "Records the expert service customers cite as a reason to stay.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "users"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Support",
+              "systemOfRecordBrickId": "supp",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "support ticket api",
+                  "description": "Access to support ticket through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "36 months (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "security-audit-log",
+              "name": "Security Audit Log",
+              "kind": "log",
+              "description": "Access and configuration changes for ISO 27001 and customer NIS2 assurance.",
+              "businessMeaning": "Evidence in incidents and supplier audits.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "users"
+              ],
+              "legalTags": [
+                "iso-27001",
+                "gdpr"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Security officer",
+              "systemOfRecordBrickId": "secu",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "secrets-vault",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "security audit log api",
+                  "description": "Access to security audit log through the owning brick."
+                }
+              ],
+              "governance": {
+                "retention": "At least 12 months (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Excerpts shared with customers in incident handling"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "network-db",
+      "name": "Network and Configuration DB",
+      "kind": "operational-database",
+      "description": "Partners, profiles, connections, mappings and rules.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "message-store",
+      "name": "Message Store",
+      "kind": "object-storage",
+      "description": "Raw and translated interchanges and business documents.",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "status-ledger",
+      "name": "Message Status Ledger Store",
+      "kind": "event-store",
+      "description": "Append-only message lifecycle events and exceptions.",
+      "technology": "event-log",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "archive-vault",
+      "name": "Document Archive Vault",
+      "kind": "archive",
+      "description": "Retention-managed immutable archive of invoices and documents.",
+      "technology": "object-storage-worm",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "account-db",
+      "name": "Account and Identity DB",
+      "kind": "operational-database",
+      "description": "Tenants, subscriptions, users, tickets.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "secrets-vault",
+      "name": "Secrets Vault",
+      "kind": "secrets-store",
+      "description": "Certificates, keys and API secrets.",
+      "technology": "hardware-backed-vault",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "analytics-warehouse",
+      "name": "Analytics Warehouse",
+      "kind": "analytics-warehouse",
+      "description": "Aggregated message metrics and AI training samples.",
+      "technology": "columnar-warehouse",
+      "status": "active",
+      "classification": "internal"
+    }
+  ]
+}

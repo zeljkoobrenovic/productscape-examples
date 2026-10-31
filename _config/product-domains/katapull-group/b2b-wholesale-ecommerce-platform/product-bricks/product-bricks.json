@@ -1,0 +1,2513 @@
+{
+  "metadata": {
+    "domainId": "b2b-wholesale-ecommerce-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of Highbiza's B2B/B2C webshop platform (Django, Django Oscar, Wagtail): storefront and content, wholesale commerce, integrations with ERP and Katapull sibling brands, and the managed platform service. Bricks are inferred from public product pages; internal architecture is not published."
+  },
+  "rootGroups": [
+    {
+      "name": "Storefront and Content",
+      "description": "What buyers see and what marketing teams manage.",
+      "subGroups": [
+        {
+          "name": "Storefront and Content Management",
+          "description": "Rendering, CMS and SEO.",
+          "bricks": [
+            {
+              "id": "stor",
+              "name": "Storefront Experience and Theming",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Renders the responsive, SEO-friendly storefront from Highbiza's standard templates plus customer-specific visual custom work. Highbiza states page-speed scores of 90 or higher, also on mobile (highbiza.nl/kwaliteit).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-storefront-pages",
+                      "name": "Storefront Pages",
+                      "type": "web-component",
+                      "description": "Home, category, product, cart and account templates; mobile-first, minimal JavaScript.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-storefront-bff",
+                            "type": "uses",
+                            "description": "Loads page data."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-theme-and-layout",
+                      "name": "Theme and Layout Kit",
+                      "type": "web-component",
+                      "description": "Brand styling and visual custom layouts layered on the standard templates."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-storefront-bff",
+                      "name": "Storefront Backend-for-Frontend",
+                      "type": "bff",
+                      "description": "Assembles catalogue, price, content and stock data for each page request.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-catalog-api",
+                            "type": "uses",
+                            "description": "Product data.",
+                            "targetBrickId": "catg"
+                          },
+                          {
+                            "moduleId": "module-content-api",
+                            "type": "uses",
+                            "description": "Page content.",
+                            "targetBrickId": "cmsx"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-page-render-cache",
+                      "name": "Page and Fragment Cache",
+                      "type": "service",
+                      "description": "Caches rendered pages and fragments to keep pages fast under peak traffic."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "catg",
+                  "moduleId": "module-catalog-api",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "uses",
+                  "description": "Product and category data for pages."
+                },
+                {
+                  "targetBrickId": "cmsx",
+                  "moduleId": "module-content-api",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "uses",
+                  "description": "Editorial content and blocks."
+                },
+                {
+                  "targetBrickId": "prce",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "uses",
+                  "description": "Customer-specific prices for logged-in buyers."
+                },
+                {
+                  "targetBrickId": "mltt",
+                  "moduleId": "module-shop-context-resolver",
+                  "sourceModuleId": "module-storefront-bff",
+                  "type": "context",
+                  "description": "Resolves shop, language and currency for each request."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shop-configuration",
+                  "moduleIds": [
+                    "module-storefront-bff"
+                  ],
+                  "role": "read",
+                  "description": "Reads active building blocks and theme settings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Buyer browsers and mobile devices",
+                  "type": "channel-consumer",
+                  "interface": "HTTPS storefront",
+                  "description": "Trade buyers and consumers use the shop.",
+                  "moduleId": "module-storefront-pages"
+                },
+                {
+                  "system": "Search engine crawlers",
+                  "type": "channel-consumer",
+                  "interface": "HTML pages and sitemaps",
+                  "description": "Index pages for organic search.",
+                  "moduleId": "module-storefront-pages"
+                }
+              ]
+            },
+            {
+              "id": "cmsx",
+              "name": "Content Management and Page Builder",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Wagtail-based CMS in which merchant teams build pages from blocks, manage media and set SEO fields per page, in the same back office as products and promotions (highbiza.nl/technologie).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-cms-editor",
+                      "name": "CMS Page Editor",
+                      "type": "web-component",
+                      "description": "Drag-and-drop block editor with page tree, preview and publishing.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-content-api",
+                            "type": "uses",
+                            "description": "Saves pages."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-content-api",
+                      "name": "Content API",
+                      "type": "api",
+                      "description": "Pages, snippets, menus and site settings for the storefront."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-content-store",
+                      "name": "Content Store",
+                      "type": "stateful-service",
+                      "description": "Versioned pages, revisions and workflow state."
+                    },
+                    {
+                      "id": "module-media-library",
+                      "name": "Media Library",
+                      "type": "stateful-service",
+                      "description": "Images and documents with renditions in the right sizes."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "iamx",
+                  "moduleId": "module-auth-api",
+                  "sourceModuleId": "module-cms-editor",
+                  "type": "uses",
+                  "description": "Editor login and roles."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "web-content",
+                  "moduleIds": [
+                    "module-content-api",
+                    "module-content-store",
+                    "module-media-library"
+                  ],
+                  "role": "own",
+                  "description": "System of record for pages, media and site settings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Object storage for media",
+                  "type": "infrastructure",
+                  "interface": "Storage API",
+                  "description": "Stores image and document files.",
+                  "sourceModuleId": "module-media-library"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "seox",
+              "name": "SEO and Search Engine Visibility",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "SEO-friendly page structure, per-page metadata, sitemaps and a Google Shopping feed so shops are found in search engines; Katapull positions Highbiza on 'online performance and digital growth' including SEO/SEA.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-seo-settings-panel",
+                      "name": "SEO Settings Panel",
+                      "type": "web-component",
+                      "description": "Titles, descriptions, canonical URLs and redirects per page and product.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-seo-metadata-service",
+                            "type": "uses",
+                            "description": "Validates metadata."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-sitemap-and-feed-generator",
+                      "name": "Sitemap and Feed Generator",
+                      "type": "daemon",
+                      "description": "Regenerates XML sitemaps and product feeds on a schedule.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-google-merchant-connector",
+                            "type": "uses",
+                            "description": "Pushes the shopping feed."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-seo-metadata-service",
+                      "name": "SEO Metadata Service",
+                      "type": "stateless-service",
+                      "description": "Derives structured data and default metadata from products and pages."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-google-merchant-connector",
+                      "name": "Google Shopping Connector",
+                      "type": "integration",
+                      "description": "Publishes product data to Google Merchant Center (listed integration 'Google Shopping')."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "catg",
+                  "moduleId": "module-catalog-api",
+                  "sourceModuleId": "module-seo-metadata-service",
+                  "type": "uses",
+                  "description": "Product attributes for structured data."
+                },
+                {
+                  "targetBrickId": "cmsx",
+                  "moduleId": "module-content-api",
+                  "sourceModuleId": "module-seo-metadata-service",
+                  "type": "uses",
+                  "description": "Page metadata."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "web-content",
+                  "moduleIds": [
+                    "module-seo-metadata-service"
+                  ],
+                  "role": "read",
+                  "description": "Reads page metadata."
+                },
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-sitemap-and-feed-generator"
+                  ],
+                  "role": "read",
+                  "description": "Builds feeds from the catalogue."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Google Merchant Center / Google Shopping",
+                  "type": "channel",
+                  "interface": "Product feed",
+                  "description": "Shopping listings.",
+                  "sourceModuleId": "module-google-merchant-connector"
+                },
+                {
+                  "system": "Google Search",
+                  "type": "channel",
+                  "interface": "Sitemaps and structured data",
+                  "description": "Organic visibility.",
+                  "sourceModuleId": "module-sitemap-and-feed-generator"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Product Discovery",
+          "description": "Catalogue and search.",
+          "bricks": [
+            {
+              "id": "catg",
+              "name": "Product Catalogue and Specifications",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Products, variants, categories, technical specifications, datasheets and multilingual texts, built on Django Oscar. Designed for large wholesale catalogues ('1,000 or 100,000 products') with package limits from 2,500 to unlimited products.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-catalog-admin",
+                      "name": "Catalogue Back Office",
+                      "type": "web-component",
+                      "description": "Product, variant, category and attribute editing in the dashboard.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-catalog-api",
+                            "type": "uses",
+                            "description": "Reads and writes products."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-catalog-api",
+                      "name": "Catalogue API",
+                      "type": "api",
+                      "description": "Products, variants, attributes and documents for storefront and other bricks."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-product-import-consumer",
+                      "name": "Product Import Consumer",
+                      "type": "message-consumer",
+                      "description": "Applies product updates arriving from ERP or PIM connectors.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-product-store",
+                            "type": "uses",
+                            "description": "Writes updates."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-product-store",
+                      "name": "Product Store",
+                      "type": "stateful-service",
+                      "description": "Products, variants, specifications and attachments."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-catalog-api",
+                    "module-product-store",
+                    "module-product-import-consumer"
+                  ],
+                  "role": "own",
+                  "description": "System of record in the shop for products; master often in the ERP."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "srch",
+              "name": "Search, Filters and Suggestions",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Elasticsearch-based product search with specification filters and suggestions; packages differ in number of filters (3, 6, 10, unlimited) and search tier ('Elastic search basic' vs 'Ultimate').",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-search-and-filter-ui",
+                      "name": "Search and Filter UI",
+                      "type": "web-component",
+                      "description": "Search box with suggestions and faceted filters on category pages.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-search-api",
+                            "type": "uses",
+                            "description": "Queries."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-search-api",
+                      "name": "Search API",
+                      "type": "api",
+                      "description": "Query, facet and suggestion endpoints respecting customer assortments."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-index-updater",
+                      "name": "Index Updater",
+                      "type": "message-consumer",
+                      "description": "Re-indexes products when catalogue, stock or assortment changes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-search-index",
+                            "type": "uses",
+                            "description": "Writes documents."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-search-index",
+                      "name": "Search Index",
+                      "type": "stateful-service",
+                      "description": "Elasticsearch indices per shop and language."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "catg",
+                  "moduleId": "module-catalog-api",
+                  "sourceModuleId": "module-index-updater",
+                  "type": "uses",
+                  "description": "Reads product documents to index."
+                },
+                {
+                  "targetBrickId": "prce",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-search-api",
+                  "type": "context",
+                  "description": "Filters results to the buyer's assortment."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-index-updater"
+                  ],
+                  "role": "read",
+                  "description": "Indexes products."
+                },
+                {
+                  "assetId": "customer-price-agreement",
+                  "moduleIds": [
+                    "module-search-api"
+                  ],
+                  "role": "read",
+                  "description": "Applies assortment restrictions."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "B2B and B2C Commerce",
+      "description": "Ordering, pricing and after-sales for trade buyers and consumers.",
+      "subGroups": [
+        {
+          "name": "Trade Accounts and Pricing",
+          "description": "Wholesale-specific capabilities in the B2B module.",
+          "bricks": [
+            {
+              "id": "acct",
+              "name": "B2B Customer Accounts and Self-Service Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Company accounts with multiple buyer logins, customer groups, addresses, order history and invoices in a customer portal - a building block Highbiza names explicitly ('klantportaal').",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-customer-portal",
+                      "name": "Customer Portal",
+                      "type": "web-component",
+                      "description": "Company profile, users, addresses, order and invoice history.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-account-api",
+                            "type": "uses",
+                            "description": "Account data."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-account-api",
+                      "name": "Account API",
+                      "type": "api",
+                      "description": "Company accounts, buyer contacts and customer-group membership."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-account-store",
+                      "name": "Account Store",
+                      "type": "stateful-service",
+                      "description": "Company accounts, contacts and their groups."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "iamx",
+                  "moduleId": "module-auth-api",
+                  "sourceModuleId": "module-customer-portal",
+                  "type": "uses",
+                  "description": "Buyer authentication."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-customer-portal",
+                  "type": "uses",
+                  "description": "Order history."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "business-customer-account",
+                  "moduleIds": [
+                    "module-account-api",
+                    "module-account-store"
+                  ],
+                  "role": "own",
+                  "description": "System of record in the shop for company accounts."
+                },
+                {
+                  "assetId": "buyer-contact",
+                  "moduleIds": [
+                    "module-account-store"
+                  ],
+                  "role": "own",
+                  "description": "Buyer persons and their contact data."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "prce",
+              "name": "Customer-Specific Pricing and Assortments",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Net price lists, tiered (staffel) discounts, contract prices and customer-specific assortments, plus special rules such as gold-price-based pricing for jewellers. Included in the B2B module (standard in Prestige).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-pricing-admin",
+                      "name": "Pricing Back Office",
+                      "type": "web-component",
+                      "description": "Price lists, staffels and assortment rules per customer group.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-api",
+                            "type": "uses",
+                            "description": "Manages rules."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-price-api",
+                      "name": "Price API",
+                      "type": "api",
+                      "description": "Returns the buyer's price, staffel and availability of an item in their assortment."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-price-calculation",
+                      "name": "Price Calculation",
+                      "type": "stateless-service",
+                      "description": "Combines list price, agreement, staffel and promotion into a net price.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-agreement-store",
+                            "type": "uses",
+                            "description": "Reads agreements."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-price-agreement-store",
+                      "name": "Price Agreement Store",
+                      "type": "stateful-service",
+                      "description": "Customer and group price agreements and assortments."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-api",
+                  "sourceModuleId": "module-price-calculation",
+                  "type": "context",
+                  "description": "Customer group of the buyer."
+                },
+                {
+                  "targetBrickId": "loyl",
+                  "moduleId": "module-promotion-api",
+                  "sourceModuleId": "module-price-calculation",
+                  "type": "uses",
+                  "description": "Applies active promotions."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-price-agreement",
+                  "moduleIds": [
+                    "module-price-api",
+                    "module-price-agreement-store"
+                  ],
+                  "role": "own",
+                  "description": "Shop copy of price agreements, usually mastered in the ERP."
+                },
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-price-calculation"
+                  ],
+                  "role": "read",
+                  "description": "List prices."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "quot",
+              "name": "Quotes and Quick Reorder",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Quote requests, quote-to-order conversion, order repeat and quick order by article number - wholesale functions Highbiza lists for groothandel and technische groothandel.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-quote-request-ui",
+                      "name": "Quote Request UI",
+                      "type": "web-component",
+                      "description": "Request a quote from the cart; review and accept received quotes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-quote-api",
+                            "type": "uses",
+                            "description": "Quote lifecycle."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-quick-order-pad",
+                      "name": "Quick Order and Reorder",
+                      "type": "web-component",
+                      "description": "Order by article number, from history or saved lists.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-quote-api",
+                            "type": "uses",
+                            "description": "Reorder lists."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-quote-api",
+                      "name": "Quote and Reorder API",
+                      "type": "api",
+                      "description": "Quote requests, offers, saved lists and reorder actions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-quote-store",
+                      "name": "Quote Store",
+                      "type": "stateful-service",
+                      "description": "Quotes, their status and saved lists."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "prce",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-quote-api",
+                  "type": "uses",
+                  "description": "Prices quote lines."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-quote-api",
+                  "type": "uses",
+                  "description": "Creates orders from accepted quotes and history."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "quote",
+                  "moduleIds": [
+                    "module-quote-api",
+                    "module-quote-store"
+                  ],
+                  "role": "own",
+                  "description": "Quotes and saved lists."
+                },
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-quote-api"
+                  ],
+                  "role": "read",
+                  "description": "Order history for reorder."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Checkout, Orders and After-Sales",
+          "description": "From basket to delivery and returns.",
+          "bricks": [
+            {
+              "id": "cart",
+              "name": "Cart and Checkout",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Basket, addresses, shipping choice, payment and order placement for B2B and B2C flows in one platform; packages range from 'basic checkout' to fully customised flows.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-cart-and-checkout-ui",
+                      "name": "Cart and Checkout UI",
+                      "type": "web-component",
+                      "description": "Basket, address, delivery, payment and confirmation steps.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-checkout-api",
+                            "type": "uses",
+                            "description": "Checkout calls."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-checkout-api",
+                      "name": "Checkout API",
+                      "type": "api",
+                      "description": "Basket and checkout session endpoints."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-checkout-orchestrator",
+                      "name": "Checkout Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Coordinates pricing, shipping options, payment and order creation."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "prce",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-checkout-orchestrator",
+                  "type": "uses",
+                  "description": "Final prices."
+                },
+                {
+                  "targetBrickId": "shpo",
+                  "moduleId": "module-shipping-options-api",
+                  "sourceModuleId": "module-checkout-orchestrator",
+                  "type": "uses",
+                  "description": "Delivery options."
+                },
+                {
+                  "targetBrickId": "paym",
+                  "moduleId": "module-payment-api",
+                  "sourceModuleId": "module-checkout-orchestrator",
+                  "type": "uses",
+                  "description": "Payment start."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-checkout-orchestrator",
+                  "type": "uses",
+                  "description": "Creates the order."
+                },
+                {
+                  "targetBrickId": "loyl",
+                  "moduleId": "module-promotion-api",
+                  "sourceModuleId": "module-checkout-orchestrator",
+                  "type": "uses",
+                  "description": "Redeems points and promotions."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shopping-cart",
+                  "moduleIds": [
+                    "module-checkout-api",
+                    "module-checkout-orchestrator"
+                  ],
+                  "role": "own",
+                  "description": "Active baskets and checkout sessions."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ordr",
+              "name": "Order Management",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Order records, statuses and the back-office order overview; publishes order events for ERP export, marketplaces, shipping and analytics. Package limits run from 100 orders per month (Launch) to unlimited (Enterprise).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-order-backoffice",
+                      "name": "Order Back Office",
+                      "type": "web-component",
+                      "description": "Order list, details, status changes and notes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-api",
+                            "type": "uses",
+                            "description": "Order data."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-order-api",
+                      "name": "Order API",
+                      "type": "api",
+                      "description": "Create, read and update orders."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-order-events",
+                      "name": "Order Event Queue",
+                      "type": "message-queue",
+                      "description": "Publishes order-created and status-changed events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-order-store",
+                      "name": "Order Store",
+                      "type": "stateful-service",
+                      "description": "Orders, lines and status history."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-order-api",
+                    "module-order-store",
+                    "module-order-events"
+                  ],
+                  "role": "own",
+                  "description": "System of record for web orders until accepted by the ERP."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "paym",
+              "name": "Payments",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Payment methods through the providers on Highbiza's integration list: Mollie, MultiSafepay, Pay., Worldpay, PayPal, CardGate and Rabo OmniKassa; plus payment on account for B2B buyers.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-payment-api",
+                      "name": "Payment API",
+                      "type": "api",
+                      "description": "Starts payments, returns status and handles refunds."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-payment-webhook-consumer",
+                      "name": "Payment Webhook Consumer",
+                      "type": "message-consumer",
+                      "description": "Processes provider status callbacks and updates orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-api",
+                            "type": "uses",
+                            "description": "Marks orders paid.",
+                            "targetBrickId": "ordr"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-psp-connectors",
+                      "name": "Payment Provider Connectors",
+                      "type": "integration",
+                      "description": "Adapters per payment provider."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-payment-webhook-consumer",
+                  "type": "uses",
+                  "description": "Updates payment status on orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "payment-transaction",
+                  "moduleIds": [
+                    "module-payment-api",
+                    "module-payment-webhook-consumer"
+                  ],
+                  "role": "own",
+                  "description": "Payment attempts, statuses and refunds (no card data stored)."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment service providers (Mollie, MultiSafepay, Pay., Worldpay, PayPal, CardGate, Rabo OmniKassa)",
+                  "type": "payment",
+                  "interface": "PSP APIs and webhooks",
+                  "description": "Process iDEAL, card and wallet payments.",
+                  "sourceModuleId": "module-psp-connectors"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "shpo",
+              "name": "Shipping Options and Carrier Labels",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Delivery options in checkout and label/track-and-trace through carriers and shipping platforms on the integration list: DeliveryMatch (Katapull sibling), Sendcloud, MyParcel, PostNL, Trunkrs and Royal Mail.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-shipping-options-api",
+                      "name": "Shipping Options API",
+                      "type": "api",
+                      "description": "Delivery methods, costs and moments for a basket."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-shipping-rule-engine",
+                      "name": "Shipping Rule Engine",
+                      "type": "stateless-service",
+                      "description": "Applies cost rules, free-shipping thresholds and carrier availability.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-carrier-connectors",
+                            "type": "uses",
+                            "description": "Live options."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-carrier-connectors",
+                      "name": "Carrier and Shipping-Platform Connectors",
+                      "type": "integration",
+                      "description": "Adapters to DeliveryMatch dynamic checkout, Sendcloud, MyParcel, PostNL, Trunkrs, Royal Mail."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-events",
+                  "sourceModuleId": "module-carrier-connectors",
+                  "type": "consumes",
+                  "description": "Creates shipments from paid orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shipment",
+                  "moduleIds": [
+                    "module-carrier-connectors",
+                    "module-shipping-options-api"
+                  ],
+                  "role": "own",
+                  "description": "Shipments, labels and tracking codes."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DeliveryMatch (Katapull)",
+                  "type": "logistics",
+                  "interface": "Dynamic checkout and shipping API",
+                  "description": "Real-time delivery options across 180+ carriers per DeliveryMatch.",
+                  "sourceModuleId": "module-carrier-connectors"
+                },
+                {
+                  "system": "Sendcloud, MyParcel, PostNL, Trunkrs, Royal Mail",
+                  "type": "logistics",
+                  "interface": "Carrier APIs",
+                  "description": "Labels and tracking.",
+                  "sourceModuleId": "module-carrier-connectors"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "loyl",
+              "name": "Promotions and Loyalty Points",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Promotions, discount rules and the loyalty points system Highbiza introduced in 2026: customers earn points per order, merchants set earn and burn ratios in the CMS.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-promotion-admin",
+                      "name": "Promotion and Loyalty Admin",
+                      "type": "web-component",
+                      "description": "Configure promotions, points per euro and point value.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-promotion-api",
+                            "type": "uses",
+                            "description": "Saves rules."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-promotion-api",
+                      "name": "Promotion API",
+                      "type": "api",
+                      "description": "Evaluates promotions and point redemption for a basket."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-promotion-rules",
+                      "name": "Promotion Rules",
+                      "type": "service",
+                      "description": "Active promotions and their conditions."
+                    },
+                    {
+                      "id": "module-loyalty-ledger",
+                      "name": "Loyalty Points Ledger",
+                      "type": "stateful-service",
+                      "description": "Points earned, redeemed and expired per customer."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-events",
+                  "sourceModuleId": "module-loyalty-ledger",
+                  "type": "consumes",
+                  "description": "Awards points on completed orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "loyalty-points-ledger",
+                  "moduleIds": [
+                    "module-loyalty-ledger",
+                    "module-promotion-api"
+                  ],
+                  "role": "own",
+                  "description": "Points balances and transactions."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "wdrw",
+              "name": "Withdrawal and Return Requests",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Return Form Page in the CMS through which consumers exercise their 14-day withdrawal right with order number, products and reason; sends confirmation emails (Highbiza news, July 2026). A connector to Returnista is an assumption, not a listed integration.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-withdrawal-form",
+                      "name": "Withdrawal Form Page",
+                      "type": "web-component",
+                      "description": "Configurable form with return reasons, linked from the footer.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-withdrawal-api",
+                            "type": "uses",
+                            "description": "Submits requests."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-withdrawal-api",
+                      "name": "Withdrawal API",
+                      "type": "api",
+                      "description": "Registers withdrawal and return requests against orders."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-withdrawal-register",
+                      "name": "Withdrawal Register",
+                      "type": "stateful-service",
+                      "description": "Requests, reasons and status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-returns-platform-connector",
+                      "name": "Returns Platform Connector",
+                      "type": "integration",
+                      "description": "Planned hand-off to a returns platform such as Returnista (assumption)."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-withdrawal-api",
+                  "type": "uses",
+                  "description": "Validates order number and lines."
+                },
+                {
+                  "targetBrickId": "paym",
+                  "moduleId": "module-payment-api",
+                  "sourceModuleId": "module-withdrawal-register",
+                  "type": "uses",
+                  "description": "Triggers refunds."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "withdrawal-request",
+                  "moduleIds": [
+                    "module-withdrawal-api",
+                    "module-withdrawal-register"
+                  ],
+                  "role": "own",
+                  "description": "Withdrawal and return requests."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Returnista (Katapull) - assumed future connector",
+                  "type": "logistics",
+                  "interface": "Returns API",
+                  "description": "Branded returns portal and return labels.",
+                  "sourceModuleId": "module-returns-platform-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Integrations and Insight",
+      "description": "Connections to ERP, marketplaces and stock, and reporting.",
+      "subGroups": [
+        {
+          "name": "Back-Office and Channel Integration",
+          "description": "ERP, Katapull siblings and marketplaces.",
+          "bricks": [
+            {
+              "id": "erpi",
+              "name": "ERP and Back-Office Integration",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Standard connectors to ERP and business systems on Highbiza's integration list - Exact Online, Microsoft Dynamics 365 Business Central, Logic4 and Vendit (Katapull siblings), Gripp, Prima and MediaMagic - for products, stock, customer prices and orders.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-integration-api",
+                      "name": "Integration API",
+                      "type": "api",
+                      "description": "Inbound endpoint for ERP pushes and connector configuration."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-erp-sync-worker",
+                      "name": "ERP Sync Worker",
+                      "type": "daemon",
+                      "description": "Scheduled pulls of products, prices, customers and stock.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-erp-connectors",
+                            "type": "uses",
+                            "description": "Calls ERP APIs."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-order-export-consumer",
+                      "name": "Order Export Consumer",
+                      "type": "message-consumer",
+                      "description": "Sends new web and marketplace orders to the ERP.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-erp-connectors",
+                            "type": "uses",
+                            "description": "Posts orders."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-erp-connectors",
+                      "name": "ERP Connectors",
+                      "type": "integration",
+                      "description": "Adapters per ERP with field mapping."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-events",
+                  "sourceModuleId": "module-order-export-consumer",
+                  "type": "consumes",
+                  "description": "Order events to export."
+                },
+                {
+                  "targetBrickId": "catg",
+                  "moduleId": "module-catalog-api",
+                  "sourceModuleId": "module-erp-sync-worker",
+                  "type": "uses",
+                  "description": "Writes product updates."
+                },
+                {
+                  "targetBrickId": "prce",
+                  "moduleId": "module-price-api",
+                  "sourceModuleId": "module-erp-sync-worker",
+                  "type": "uses",
+                  "description": "Writes price agreements."
+                },
+                {
+                  "targetBrickId": "invs",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-erp-sync-worker",
+                  "type": "uses",
+                  "description": "Writes stock levels."
+                },
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-api",
+                  "sourceModuleId": "module-erp-sync-worker",
+                  "type": "uses",
+                  "description": "Writes customer accounts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "integration-mapping",
+                  "moduleIds": [
+                    "module-integration-api",
+                    "module-erp-connectors"
+                  ],
+                  "role": "own",
+                  "description": "Connector settings and field mappings."
+                },
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-erp-sync-worker"
+                  ],
+                  "role": "write",
+                  "description": "Updates products from the ERP."
+                },
+                {
+                  "assetId": "customer-price-agreement",
+                  "moduleIds": [
+                    "module-erp-sync-worker"
+                  ],
+                  "role": "write",
+                  "description": "Updates price agreements."
+                },
+                {
+                  "assetId": "stock-availability",
+                  "moduleIds": [
+                    "module-erp-sync-worker"
+                  ],
+                  "role": "write",
+                  "description": "Updates stock."
+                },
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-order-export-consumer"
+                  ],
+                  "role": "read",
+                  "description": "Exports orders."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "ERP systems (Exact Online, Business Central, Gripp, Prima, MediaMagic)",
+                  "type": "erp",
+                  "interface": "ERP REST/OData APIs",
+                  "description": "Master data and order intake.",
+                  "sourceModuleId": "module-erp-connectors"
+                },
+                {
+                  "system": "Logic4 and Vendit (Katapull)",
+                  "type": "erp",
+                  "interface": "Logic4 / Vendit APIs",
+                  "description": "Group sibling ERP and POS back offices.",
+                  "sourceModuleId": "module-erp-connectors"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "ERP systems pushing changes",
+                  "type": "data-provider",
+                  "interface": "Integration API",
+                  "description": "ERPs that push updates instead of being polled.",
+                  "moduleId": "module-integration-api"
+                }
+              ]
+            },
+            {
+              "id": "mkti",
+              "name": "Marketplace and Product Feed Integration",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Extends the shop's catalogue to marketplaces: eBay directly and bol, Amazon and others through EffectConnect (Katapull sibling, listed as 'Marketplace (integrators)'), with marketplace orders flowing back.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-channel-settings",
+                      "name": "Channel Settings",
+                      "type": "backoffice-interface",
+                      "description": "Choose which products and prices go to which channel."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-feed-export-worker",
+                      "name": "Feed Export Worker",
+                      "type": "daemon",
+                      "description": "Exports offers and stock to channels on a schedule.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-marketplace-connectors",
+                            "type": "uses",
+                            "description": "Sends offers."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-marketplace-connectors",
+                      "name": "Marketplace Connectors",
+                      "type": "integration",
+                      "description": "EffectConnect and eBay connectors for offers and orders."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "catg",
+                  "moduleId": "module-catalog-api",
+                  "sourceModuleId": "module-feed-export-worker",
+                  "type": "uses",
+                  "description": "Product data for offers."
+                },
+                {
+                  "targetBrickId": "invs",
+                  "moduleId": "module-stock-api",
+                  "sourceModuleId": "module-feed-export-worker",
+                  "type": "uses",
+                  "description": "Stock for offers."
+                },
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-marketplace-connectors",
+                  "type": "uses",
+                  "description": "Imports marketplace orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "product-catalog",
+                  "moduleIds": [
+                    "module-feed-export-worker"
+                  ],
+                  "role": "read",
+                  "description": "Offers."
+                },
+                {
+                  "assetId": "stock-availability",
+                  "moduleIds": [
+                    "module-feed-export-worker"
+                  ],
+                  "role": "read",
+                  "description": "Offer stock."
+                },
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-marketplace-connectors"
+                  ],
+                  "role": "write",
+                  "description": "Marketplace orders."
+                },
+                {
+                  "assetId": "integration-mapping",
+                  "moduleIds": [
+                    "module-channel-settings"
+                  ],
+                  "role": "read-write",
+                  "description": "Channel mappings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "EffectConnect (Katapull)",
+                  "type": "channel",
+                  "interface": "EffectConnect API",
+                  "description": "Marketplace integration for bol, Amazon, eBay and others.",
+                  "sourceModuleId": "module-marketplace-connectors"
+                },
+                {
+                  "system": "eBay",
+                  "type": "channel",
+                  "interface": "eBay API",
+                  "description": "Direct marketplace listing.",
+                  "sourceModuleId": "module-marketplace-connectors"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "invs",
+              "name": "Stock Availability and Delivery Promise",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Real-time stock information on product and checkout pages - a feature Highbiza highlights for technical wholesalers - fed by ERP, POS or WMS.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-stock-api",
+                      "name": "Stock API",
+                      "type": "api",
+                      "description": "Stock and expected delivery per product and location."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-stock-update-consumer",
+                      "name": "Stock Update Consumer",
+                      "type": "message-consumer",
+                      "description": "Applies stock changes and triggers re-indexing.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-store",
+                            "type": "uses",
+                            "description": "Writes stock."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-stock-store",
+                      "name": "Stock Store",
+                      "type": "stateful-service",
+                      "description": "Current stock per product and location."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "stock-availability",
+                  "moduleIds": [
+                    "module-stock-api",
+                    "module-stock-store",
+                    "module-stock-update-consumer"
+                  ],
+                  "role": "own",
+                  "description": "Shop copy of stock, mastered in ERP or WMS."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Commerce Insight",
+          "description": "Reporting.",
+          "bricks": [
+            {
+              "id": "anly",
+              "name": "Commerce Analytics and Reporting",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Sales, conversion, search and adoption reporting for merchants, combining shop events with web analytics tags.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-sales-dashboard",
+                      "name": "Sales Dashboard",
+                      "type": "web-component",
+                      "description": "Orders, revenue, online share, search terms and conversion.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-reporting-store",
+                            "type": "uses",
+                            "description": "Reads metrics."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-event-collector",
+                      "name": "Event Collector",
+                      "type": "message-consumer",
+                      "description": "Collects order and storefront events.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-reporting-store",
+                            "type": "uses",
+                            "description": "Writes aggregates."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-reporting-store",
+                      "name": "Reporting Store",
+                      "type": "stateful-service",
+                      "description": "Aggregated metrics per shop."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-analytics-tag-connector",
+                      "name": "Analytics Tag Connector",
+                      "type": "integration",
+                      "description": "Tag manager and web analytics integration."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-order-events",
+                  "sourceModuleId": "module-event-collector",
+                  "type": "consumes",
+                  "description": "Order events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "commerce-analytics",
+                  "moduleIds": [
+                    "module-reporting-store",
+                    "module-event-collector"
+                  ],
+                  "role": "own",
+                  "description": "Aggregated commerce metrics."
+                },
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-event-collector"
+                  ],
+                  "role": "read",
+                  "description": "Order facts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Web analytics and tag management (e.g. Google Analytics / Tag Manager)",
+                  "type": "analytics",
+                  "interface": "Tag scripts and reporting APIs",
+                  "description": "Traffic and campaign data.",
+                  "sourceModuleId": "module-analytics-tag-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform and Managed Service",
+      "description": "The shared Django/Oscar/Wagtail platform and how Highbiza runs it for every customer.",
+      "subGroups": [
+        {
+          "name": "Platform Foundation",
+          "description": "Building blocks, tenancy and access.",
+          "bricks": [
+            {
+              "id": "blck",
+              "name": "Building-Block Library and Shop Configuration",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Highbiza's library of more than 100 reusable building blocks (FAQ, customer portal, staffel prices, stock, filters ...) and the package entitlements (Launch, Core, Prestige, Enterprise) that decide which blocks, limits and users a shop gets. A fix in one block benefits every shop using it.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-shop-config-api",
+                      "name": "Shop Configuration Console",
+                      "type": "backoffice-interface",
+                      "description": "Highbiza staff enable blocks, limits and packages per shop."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-block-registry",
+                      "name": "Building-Block Registry",
+                      "type": "stateful-service",
+                      "description": "Catalogue of blocks, versions and which shops use them."
+                    },
+                    {
+                      "id": "module-package-entitlements",
+                      "name": "Package Entitlements",
+                      "type": "service",
+                      "description": "Product, order, filter and user limits per package."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "shop-configuration",
+                  "moduleIds": [
+                    "module-shop-config-api",
+                    "module-block-registry",
+                    "module-package-entitlements"
+                  ],
+                  "role": "own",
+                  "description": "Blocks, packages and limits per shop."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "mltt",
+              "name": "Multi-Shop, Multi-Language and Multi-Currency",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Runs several shops or brands (multi-shop from Core) and languages from one back office - as Kroon-Oil runs Kroon-Oil, VatOil and Putoline on one technical base.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-site-routing",
+                      "name": "Site Routing",
+                      "type": "api",
+                      "description": "Maps domains to shops, languages and currencies."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-shop-context-resolver",
+                      "name": "Shop Context Resolver",
+                      "type": "stateless-service",
+                      "description": "Resolves shop, language, currency and customer context per request.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-translation-store",
+                            "type": "uses",
+                            "description": "Translations."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-translation-store",
+                      "name": "Translation Store",
+                      "type": "stateful-service",
+                      "description": "Translated texts and labels per language."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "shop-configuration",
+                  "moduleIds": [
+                    "module-site-routing"
+                  ],
+                  "role": "read",
+                  "description": "Shop and domain settings."
+                },
+                {
+                  "assetId": "web-content",
+                  "moduleIds": [
+                    "module-translation-store"
+                  ],
+                  "role": "read-write",
+                  "description": "Language variants of content."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "iamx",
+              "name": "Identity and Access Management",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Logins and roles for merchant back-office users (3 to 15 users depending on package) and for B2B buyers and consumers.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-login-and-roles-ui",
+                      "name": "Login and Roles UI",
+                      "type": "web-component",
+                      "description": "Sign-in, password reset and role assignment.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-auth-api",
+                            "type": "uses",
+                            "description": "Authenticates."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-auth-api",
+                      "name": "Authentication API",
+                      "type": "api",
+                      "description": "Sessions and permission checks."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-user-directory",
+                      "name": "User Directory",
+                      "type": "stateful-service",
+                      "description": "Back-office users, buyer logins and roles."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "blck",
+                  "moduleId": "module-package-entitlements",
+                  "sourceModuleId": "module-user-directory",
+                  "type": "context",
+                  "description": "Enforces user limits per package."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "backoffice-user",
+                  "moduleIds": [
+                    "module-user-directory",
+                    "module-auth-api"
+                  ],
+                  "role": "own",
+                  "description": "Merchant staff accounts."
+                },
+                {
+                  "assetId": "buyer-contact",
+                  "moduleIds": [
+                    "module-auth-api"
+                  ],
+                  "role": "read",
+                  "description": "Buyer logins."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Delivery and Operations",
+          "description": "Testing, release, hosting and support.",
+          "bricks": [
+            {
+              "id": "tenv",
+              "name": "Test Environments and Release Management",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Every customer gets a shielded test environment on a temporary URL that remains after go-live; custom work is accepted there first and released after four-eyes review (highbiza.nl/zo-werken-wij).",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-environment-console",
+                      "name": "Environment Console",
+                      "type": "backoffice-interface",
+                      "description": "Create, refresh and promote test environments."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-deployment-pipeline",
+                      "name": "Deployment Pipeline",
+                      "type": "daemon",
+                      "description": "Builds, reviews and promotes releases from test to production.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-environment-registry",
+                            "type": "uses",
+                            "description": "Records releases."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-environment-registry",
+                      "name": "Environment Registry",
+                      "type": "stateful-service",
+                      "description": "Environments, versions and release history per shop."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "qaut",
+                  "moduleId": "module-test-results-store",
+                  "sourceModuleId": "module-deployment-pipeline",
+                  "type": "uses",
+                  "description": "Gate on test results."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "release-and-test-record",
+                  "moduleIds": [
+                    "module-environment-registry",
+                    "module-deployment-pipeline"
+                  ],
+                  "role": "write",
+                  "description": "Release history."
+                },
+                {
+                  "assetId": "shop-configuration",
+                  "moduleIds": [
+                    "module-environment-console"
+                  ],
+                  "role": "read",
+                  "description": "Shop setup to clone."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "qaut",
+              "name": "Automated Quality Assurance",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Nightly automated tests with Jenkins on functionality, a screenshot test comparing appearance with the previous day, and a security test against reported vulnerabilities in used software versions (highbiza.nl/veiligheid).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-nightly-test-runner",
+                      "name": "Nightly Test Runner",
+                      "type": "daemon",
+                      "description": "Runs functional test scripts every 24 hours on desktop, tablet and mobile.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-test-results-store",
+                            "type": "uses",
+                            "description": "Stores results."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-screenshot-comparator",
+                      "name": "Screenshot Comparator",
+                      "type": "message-consumer",
+                      "description": "Compares page screenshots with the previous day.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-test-results-store",
+                            "type": "uses",
+                            "description": "Stores diffs."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-test-results-store",
+                      "name": "Test Results Store",
+                      "type": "stateful-service",
+                      "description": "Test runs, failures and visual diffs."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-vulnerability-feed-connector",
+                      "name": "Vulnerability Feed Connector",
+                      "type": "integration",
+                      "description": "Checks used package versions against vulnerability advisories."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "release-and-test-record",
+                  "moduleIds": [
+                    "module-test-results-store"
+                  ],
+                  "role": "own",
+                  "description": "Test runs and outcomes."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Jenkins CI",
+                  "type": "tooling",
+                  "interface": "Jenkins jobs",
+                  "description": "Test automation server named by Highbiza.",
+                  "sourceModuleId": "module-nightly-test-runner"
+                },
+                {
+                  "system": "Vulnerability advisories (Django, Python packages)",
+                  "type": "security",
+                  "interface": "Advisory feeds",
+                  "description": "Security test input.",
+                  "sourceModuleId": "module-vulnerability-feed-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "host",
+              "name": "Hosting, Backup and Security Operations",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Automated system management (OS and site updates), daily backups and ISO 27001-certified operations; Enterprise adds dedicated hosting.",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous jobs, schedules and event consumers.",
+                  "modules": [
+                    {
+                      "id": "module-backup-scheduler",
+                      "name": "Backup Scheduler",
+                      "type": "daemon",
+                      "description": "Daily backups of all shop data with restore points."
+                    },
+                    {
+                      "id": "module-patch-automation",
+                      "name": "Patch Automation",
+                      "type": "daemon",
+                      "description": "Automated OS and framework updates."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-hosting-inventory",
+                      "name": "Hosting Inventory",
+                      "type": "service",
+                      "description": "Servers, shops and their hosting tier (shared or dedicated)."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Connectors to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-infrastructure-connector",
+                      "name": "Infrastructure Provider Connector",
+                      "type": "integration",
+                      "description": "Provisioning and monitoring at the hosting provider."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "platform-backup",
+                  "moduleIds": [
+                    "module-backup-scheduler"
+                  ],
+                  "role": "own",
+                  "description": "Daily backups."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Hosting infrastructure provider (not disclosed)",
+                  "type": "infrastructure",
+                  "interface": "Provisioning and monitoring APIs",
+                  "description": "Servers for shared and dedicated hosting.",
+                  "sourceModuleId": "module-infrastructure-connector"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "supp",
+              "name": "Customer Support and Change Requests",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Support form with handling within one working day, a CMS manual, and a fixed contact person in Prestige and Enterprise; change requests become building blocks or quoted custom work.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Screens used by buyers, merchant staff or Highbiza operators.",
+                  "modules": [
+                    {
+                      "id": "module-support-form",
+                      "name": "Support Form and Manual",
+                      "type": "web-component",
+                      "description": "Request form and Wagtail manual for merchants.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ticket-api",
+                            "type": "uses",
+                            "description": "Creates tickets."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces exposed to other bricks and channels.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-api",
+                      "name": "Ticket Desk",
+                      "type": "backoffice-interface",
+                      "description": "Support staff triage and track requests."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Services that own durable state.",
+                  "modules": [
+                    {
+                      "id": "module-ticket-store",
+                      "name": "Ticket Store",
+                      "type": "stateful-service",
+                      "description": "Requests, status and SLA timers."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "support-request",
+                  "moduleIds": [
+                    "module-ticket-api",
+                    "module-ticket-store"
+                  ],
+                  "role": "own",
+                  "description": "Support and change requests."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "CRM and meeting scheduling (HubSpot meetings is embedded on highbiza.nl)",
+                  "type": "crm",
+                  "interface": "CRM API",
+                  "description": "Demo requests and customer contacts.",
+                  "sourceModuleId": "module-ticket-api"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

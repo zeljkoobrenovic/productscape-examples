@@ -1,0 +1,1192 @@
+{
+  "metadata": {
+    "domainId": "shipping-and-carrier-management-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams of the shipping lifecycle: promise at checkout -> book and label -> ship freight -> route across locations -> inform and resolve -> return -> control cost, plus onboarding of systems, carriers and clients.",
+    "sources": [
+      "https://www.deliverymatch.eu/platform/",
+      "https://www.deliverymatch.eu/platform/transportmanagement/",
+      "https://www.deliverymatch.eu/platform/dynamische-verzendopties/",
+      "https://www.deliverymatch.eu/integraties/",
+      "https://katapull.nl/deliverymatch/"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Each step names the bricks it depends on; personas are documented in customers.json JTBD steps."
+  },
+  "rootGroups": [
+    {
+      "name": "Deliver the Promise",
+      "description": "From checkout to the doorstep.",
+      "subGroups": [
+        {
+          "name": "Promise and Execute",
+          "streams": [
+            {
+              "id": "offer-reliable-delivery-options-at-checkout",
+              "name": "Offer Reliable Delivery Options at Checkout",
+              "type": "outcome-based-stream",
+              "description": "From basket to a delivery promise the shopper chooses and the operation can keep: stock-aware options, pickup points, prices and CO2 shown live in the checkout, booked automatically after payment.",
+              "outcomes": [
+                "Higher checkout conversion",
+                "Fewer broken delivery promises",
+                "Lower cost through steering shoppers to efficient options"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "dcko",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "stkc",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pudo",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "csel",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rate",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "co2c",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "offer-reliable-flow",
+                  "title": "Basket to promise",
+                  "description": "A shopper enters an address and sees only feasible options.",
+                  "steps": [
+                    {
+                      "id": "check-stock-and-promise",
+                      "title": "Check stock and earliest complete delivery",
+                      "keyFacts": [
+                        "Stock per location and replenishment dates are checked",
+                        "Orders are classed as available now, complete later or unknown"
+                      ],
+                      "painPoints": [
+                        "Stock feeds lag behind the store or warehouse"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "stkc",
+                          "name": "Stock-Aware Delivery Promise",
+                          "description": "Checks whether all ordered items are in stock, where, and when missing items are expected, then classifies the order (fully available, complete within...",
+                          "how": "Calculates the earliest kept promise."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Shipping Rules Engine",
+                          "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instea...",
+                          "how": "Applies split-delivery policy."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "compose-options",
+                      "title": "Compose delivery and pickup options",
+                      "keyFacts": [
+                        "Options include delivery day, evening delivery and pickup points",
+                        "Price, date and CO2 are shown per option"
+                      ],
+                      "painPoints": [
+                        "Too many options confuse shoppers"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "dcko",
+                          "name": "Dynamic Checkout and Delivery Options",
+                          "description": "Shows the shopper, during checkout, only the delivery and pickup options that can really be fulfilled, with price, delivery date and CO2 impact, calcu...",
+                          "how": "Composes and renders options."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pudo",
+                          "name": "Pickup Point and Locker Finder",
+                          "description": "Searches parcel shops, lockers and pick-up-in-store locations across carriers and networks (DeliveryMatch lists e.g. PostNL, bpost, Mondial Relay, Rel...",
+                          "how": "Finds nearby pickup points."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "csel",
+                          "name": "Carrier and Service Selection",
+                          "description": "Chooses the best carrier and service for each shipment from the eligible options on price, service level, transit time, capacity, SLA and CO2 - automa...",
+                          "how": "Filters eligible services."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rate",
+                          "name": "Rate Cards and Transport Cost Calculation",
+                          "description": "Holds purchase rates per carrier contract and sales rates per customer or client, including surcharges, and calculates the expected transport cost and...",
+                          "how": "Prices options."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "co2c",
+                          "name": "CO2 Calculation and Reporting",
+                          "description": "Estimates the CO2 emissions of each delivery option and shipment per carrier and service, shows them in checkout and reports, and lets selection weigh...",
+                          "how": "Adds CO2."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "lock-chosen-option",
+                      "title": "Lock the chosen option for booking",
+                      "keyFacts": [
+                        "The chosen option is stored with the order",
+                        "Booking happens automatically after the order"
+                      ],
+                      "painPoints": [
+                        "Option expires if payment is slow"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "dcko",
+                          "name": "Dynamic Checkout and Delivery Options",
+                          "description": "Shows the shopper, during checkout, only the delivery and pickup options that can really be fulfilled, with price, delivery date and CO2 impact, calcu...",
+                          "how": "Stores the quote with the order."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Webshop checkout",
+                  "description": "Hosts the widget or calls the options API."
+                }
+              ]
+            },
+            {
+              "id": "automate-shipment-booking-and-labels",
+              "name": "Automate Shipment Booking and Labels",
+              "type": "outcome-based-stream",
+              "description": "From an order in a webshop, marketplace, ERP or WMS to a pre-announced shipment with label, documents and track-and-trace - automatically, by one scan, or with one click - across 200+ carriers.",
+              "outcomes": [
+                "Less manual work per order",
+                "Fewer label and address errors",
+                "Shipments leave before carrier cut-off"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordi",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "erpw",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "addr",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "csel",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "book",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "docs",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prnt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "cnet",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "automate-shipment-flow",
+                  "title": "Order to label",
+                  "description": "Orders flow in, rules decide, the carrier is pre-announced and labels print.",
+                  "steps": [
+                    {
+                      "id": "import-order",
+                      "title": "Import the order to ship",
+                      "keyFacts": [
+                        "Orders come from 40+ webshop systems, marketplaces and 75+ ERP/WMS/planning systems",
+                        "Addresses are checked before booking"
+                      ],
+                      "painPoints": [
+                        "Orders arrive incomplete (no weight or dimensions)"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ordi",
+                          "name": "Webshop and Marketplace Order Connectors",
+                          "description": "Imports orders to ship from 40+ webshop systems (DeliveryMatch names Magento, WooCommerce, Shopify, Lightspeed, Shopware and PrestaShop) and from mark...",
+                          "how": "Imports channel orders."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "erpw",
+                          "name": "ERP and WMS Connectors",
+                          "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Busin...",
+                          "how": "Receives ERP/WMS releases."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "addr",
+                          "name": "Address Validation",
+                          "description": "Checks postcode and house number and recognises incorrect addresses before booking, so labels are not printed for undeliverable parcels.",
+                          "how": "Validates the address."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "decide-carrier",
+                      "title": "Decide carrier and service",
+                      "keyFacts": [
+                        "Rules use weight, destination, cost, channel and client",
+                        "Automatic selection balances price, service and lead time"
+                      ],
+                      "painPoints": [
+                        "Rules drift from carrier contracts"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Shipping Rules Engine",
+                          "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instea...",
+                          "how": "Evaluates rules."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "csel",
+                          "name": "Carrier and Service Selection",
+                          "description": "Chooses the best carrier and service for each shipment from the eligible options on price, service level, transit time, capacity, SLA and CO2 - automa...",
+                          "how": "Selects the service."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "book-and-print",
+                      "title": "Pre-announce and print by scan or batch",
+                      "keyFacts": [
+                        "One scan books, prints label and documents and sends track-and-trace",
+                        "Batches handle end-of-day peaks"
+                      ],
+                      "painPoints": [
+                        "Carrier API outages at peak"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "book",
+                          "name": "Carrier Booking and Label Generation",
+                          "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for pa...",
+                          "how": "Books the shipment."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "cnet",
+                          "name": "Carrier Connector Network",
+                          "description": "The network of 200+ carrier and broker integrations (DeliveryMatch's own figure; the Katapull page says 180+) for parcels, pallets and freight - e.g. ...",
+                          "how": "Calls the carrier."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "docs",
+                          "name": "Transport and Customs Documents",
+                          "description": "Generates every document a shipment needs in line with the chosen service: shipping and return labels, packing slips, customs documents (commercial in...",
+                          "how": "Generates documents."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "prnt",
+                          "name": "Scan-to-Ship and Print Management",
+                          "description": "One scan pre-announces the shipment, prints the right label and documents on the right printer and sends track-and-trace, without keyboard or mouse; p...",
+                          "how": "Prints at the right station."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Carriers",
+                  "description": "Accept pre-announcements and return labels."
+                }
+              ]
+            },
+            {
+              "id": "ship-b2b-pallets-and-international-freight",
+              "name": "Ship B2B Pallets and International Freight",
+              "type": "outcome-based-stream",
+              "description": "Manufacturers, wholesalers and brokers ship pallets, groupage and international consignments with the right freight carrier, CMR, customs and ADR documents and customer-specific delivery agreements.",
+              "outcomes": [
+                "Correct documents on first submission",
+                "Customer delivery agreements met",
+                "Freight booked without carrier portals"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "erpw",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "csel",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rate",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "book",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "docs",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "cnet",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "ship-b2b-flow",
+                  "title": "Consignment to freight booking",
+                  "description": "A B2B order becomes a pallet or freight booking with all documents.",
+                  "steps": [
+                    {
+                      "id": "capture-consignment",
+                      "title": "Capture consignment and compliance data",
+                      "keyFacts": [
+                        "Article master data provides HS codes, values and ADR classes",
+                        "EDI orders from retailers can arrive via Transus"
+                      ],
+                      "painPoints": [
+                        "Missing customs values block export"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "erpw",
+                          "name": "ERP and WMS Connectors",
+                          "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Busin...",
+                          "how": "Brings product master data."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Prebuilt bridges to sibling Katapull products - Logic4 (ERP), Vendit (retail/POS), EffectConnect (marketplaces), Highbiza (custom webshops), Transus (...",
+                          "how": "Receives EDI orders via the Transus bridge."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "apply-agreements",
+                      "title": "Apply customer delivery agreements",
+                      "keyFacts": [
+                        "Delivery windows, carriers and services per customer are rules",
+                        "Purchase and sales rate are calculated"
+                      ],
+                      "painPoints": [
+                        "Agreements live in people's heads"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Shipping Rules Engine",
+                          "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instea...",
+                          "how": "Encodes customer agreements."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "csel",
+                          "name": "Carrier and Service Selection",
+                          "description": "Chooses the best carrier and service for each shipment from the eligible options on price, service level, transit time, capacity, SLA and CO2 - automa...",
+                          "how": "Selects freight carrier."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rate",
+                          "name": "Rate Cards and Transport Cost Calculation",
+                          "description": "Holds purchase rates per carrier contract and sales rates per customer or client, including surcharges, and calculates the expected transport cost and...",
+                          "how": "Calculates freight cost."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "book-freight",
+                      "title": "Book freight with documents",
+                      "keyFacts": [
+                        "CMR, commercial invoice and ADR documents are generated",
+                        "Pallet and parcel shipments use the same flow"
+                      ],
+                      "painPoints": [
+                        "Freight carriers have weaker APIs than parcel carriers"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "book",
+                          "name": "Carrier Booking and Label Generation",
+                          "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for pa...",
+                          "how": "Books freight."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "cnet",
+                          "name": "Carrier Connector Network",
+                          "description": "The network of 200+ carrier and broker integrations (DeliveryMatch's own figure; the Katapull page says 180+) for parcels, pallets and freight - e.g. ...",
+                          "how": "Uses freight adapters."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "docs",
+                          "name": "Transport and Customs Documents",
+                          "description": "Generates every document a shipment needs in line with the chosen service: shipping and return labels, packing slips, customs documents (commercial in...",
+                          "how": "Generates CMR, customs and ADR documents."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Freight carriers and forwarders",
+                  "description": "Execute pallet and freight transport."
+                }
+              ]
+            },
+            {
+              "id": "orchestrate-multi-warehouse-and-external-fulfilment",
+              "name": "Orchestrate Multi-Warehouse and External Fulfilment",
+              "type": "outcome-based-stream",
+              "description": "Ship each order from the best location - own warehouse, store, 3PL, supplier or dropshipper - with the external party booking through the same platform and status flowing back.",
+              "outcomes": [
+                "Fewer split shipments and empty kilometres",
+                "External stock sold without manual forwarding",
+                "One view of all shipments regardless of ship-from"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rout",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "stkc",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "csel",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "erpw",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "book",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "trck",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "orchestrate-multi-flow",
+                  "title": "Order to ship-from",
+                  "description": "The platform chooses where an order ships from and hands it over.",
+                  "steps": [
+                    {
+                      "id": "choose-location",
+                      "title": "Choose ship-from location",
+                      "keyFacts": [
+                        "Stock, distance, cost and split policy decide",
+                        "Stores can act as ship-from locations"
+                      ],
+                      "painPoints": [
+                        "Store stock accuracy is low"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rout",
+                          "name": "Multi-Warehouse Routing and External Fulfilment",
+                          "description": "Decides from which warehouse, store or supplier an order ships based on stock and delivery preferences, and forwards orders with pick, packaging and a...",
+                          "how": "Selects source."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "stkc",
+                          "name": "Stock-Aware Delivery Promise",
+                          "description": "Checks whether all ordered items are in stock, where, and when missing items are expected, then classifies the order (fully available, complete within...",
+                          "how": "Provides stock."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "forward-order",
+                      "title": "Forward to fulfilment partner",
+                      "keyFacts": [
+                        "Pick, packaging and address data are sent",
+                        "The partner books labels through DeliveryMatch"
+                      ],
+                      "painPoints": [
+                        "Partner portals differ"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rout",
+                          "name": "Multi-Warehouse Routing and External Fulfilment",
+                          "description": "Decides from which warehouse, store or supplier an order ships based on stock and delivery preferences, and forwards orders with pick, packaging and a...",
+                          "how": "Forwards the order."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "book",
+                          "name": "Carrier Booking and Label Generation",
+                          "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for pa...",
+                          "how": "Books for the partner."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "collect-status",
+                      "title": "Collect status back",
+                      "keyFacts": [
+                        "Tracking is returned to the merchant's systems and the recipient"
+                      ],
+                      "painPoints": [
+                        "Late status from partners"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "trck",
+                          "name": "Tracking Event Hub",
+                          "description": "Collects carrier status events by webhook or polling, normalises them into one status model and publishes them to notifications, exception management,...",
+                          "how": "Collects tracking."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "erpw",
+                          "name": "ERP and WMS Connectors",
+                          "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Busin...",
+                          "how": "Writes status back."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Fulfilment partners and dropshippers",
+                  "description": "Pick and ship external stock."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "After the Label",
+          "streams": [
+            {
+              "id": "keep-recipients-informed-and-resolve-exceptions",
+              "name": "Keep Recipients Informed and Resolve Exceptions",
+              "type": "outcome-based-stream",
+              "description": "After the label: normalised tracking, branded e-mail, SMS and WhatsApp updates per channel, early detection of delays and failed deliveries, and carrier performance evidence - so recipients do not need to ask 'where is my order'.",
+              "outcomes": [
+                "Fewer WISMO contacts",
+                "Faster action on delayed shipments",
+                "Brand stays visible to the doorstep"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "trck",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ntfy",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "excp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "dash",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ordi",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "keep-recipients-flow",
+                  "title": "Label to doorstep",
+                  "description": "Tracking events drive communication and exception handling.",
+                  "steps": [
+                    {
+                      "id": "collect-events",
+                      "title": "Collect and normalise carrier events",
+                      "keyFacts": [
+                        "Events arrive by webhook or polling",
+                        "One status model across carriers"
+                      ],
+                      "painPoints": [
+                        "Carriers use inconsistent status codes"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "trck",
+                          "name": "Tracking Event Hub",
+                          "description": "Collects carrier status events by webhook or polling, normalises them into one status model and publishes them to notifications, exception management,...",
+                          "how": "Normalises events."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "notify-recipient",
+                      "title": "Notify the recipient in the merchant's brand",
+                      "keyFacts": [
+                        "E-mail, SMS and WhatsApp per channel and brand",
+                        "Tracking page links back to the shop"
+                      ],
+                      "painPoints": [
+                        "Third-party carrier mails confuse recipients"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ntfy",
+                          "name": "Branded Track & Trace Communication",
+                          "description": "Sends delivery communication in the merchant's own style - e-mail, SMS and WhatsApp - and hosts a branded tracking page, configurable per sales channe...",
+                          "how": "Sends branded updates."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ordi",
+                          "name": "Webshop and Marketplace Order Connectors",
+                          "description": "Imports orders to ship from 40+ webshop systems (DeliveryMatch names Magento, WooCommerce, Shopify, Lightspeed, Shopware and PrestaShop) and from mark...",
+                          "how": "Writes tracking back to the channel."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "act-on-exception",
+                      "title": "Act on exceptions and learn",
+                      "keyFacts": [
+                        "Delays and failed deliveries are flagged early",
+                        "Scorecards show on-time performance per carrier"
+                      ],
+                      "painPoints": [
+                        "Exceptions found only when customers call"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "excp",
+                          "name": "Exception Management and Carrier Performance",
+                          "description": "Detects delayed, stuck, failed or returned-to-sender shipments from tracking events, alerts the team before the customer asks ('where is my order'), a...",
+                          "how": "Flags and scores."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "dash",
+                          "name": "Logistics Dashboard and KPI Reporting",
+                          "description": "The DeliveryMatch dashboard to configure, execute and monitor shipping: real-time shipment overview, KPI reports on cost, lead time and carrier perfor...",
+                          "how": "Reports performance."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "E-mail, SMS and WhatsApp providers",
+                  "description": "Deliver messages."
+                }
+              ]
+            },
+            {
+              "id": "handle-returns-end-to-end",
+              "name": "Handle Returns End to End",
+              "type": "outcome-based-stream",
+              "description": "A consumer registers a return in a branded portal, chooses a pre-set return method, gets a label and tracking, and the merchant sees reasons and costs - with Returnista handling advanced returns where the merchant uses it.",
+              "outcomes": [
+                "Lower cost per return",
+                "Faster refunds and repeat purchases",
+                "Insight into return reasons"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "retn",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pudo",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "book",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "docs",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "trck",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "handle-returns-flow",
+                  "title": "Return request to warehouse",
+                  "description": "From registration to the item back in stock.",
+                  "steps": [
+                    {
+                      "id": "register-return",
+                      "title": "Register the return",
+                      "keyFacts": [
+                        "Portal shows the original order",
+                        "Reason codes are managed by the merchant"
+                      ],
+                      "painPoints": [
+                        "Free-text reasons are unusable"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "retn",
+                          "name": "Returns Portal and Return Shipping",
+                          "description": "Consumer returns portal showing the original order, return reason codes the merchant manages, return methods set by the merchant (parcel point, locker...",
+                          "how": "Registers the return."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "choose-method",
+                      "title": "Choose return method and cost",
+                      "keyFacts": [
+                        "Parcel point, locker or pickup as set by the merchant",
+                        "Return cost by order value, category or threshold"
+                      ],
+                      "painPoints": [
+                        "Free returns erode margin"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "retn",
+                          "name": "Returns Portal and Return Shipping",
+                          "description": "Consumer returns portal showing the original order, return reason codes the merchant manages, return methods set by the merchant (parcel point, locker...",
+                          "how": "Applies policy."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pudo",
+                          "name": "Pickup Point and Locker Finder",
+                          "description": "Searches parcel shops, lockers and pick-up-in-store locations across carriers and networks (DeliveryMatch lists e.g. PostNL, bpost, Mondial Relay, Rel...",
+                          "how": "Finds drop-off points."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "ship-and-track-return",
+                      "title": "Ship and track the return",
+                      "keyFacts": [
+                        "Return label generated and booked",
+                        "Return tracked to the warehouse; Returnista can take over handling"
+                      ],
+                      "painPoints": [
+                        "Unannounced returns at the warehouse"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "book",
+                          "name": "Carrier Booking and Label Generation",
+                          "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for pa...",
+                          "how": "Books the return."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "docs",
+                          "name": "Transport and Customs Documents",
+                          "description": "Generates every document a shipment needs in line with the chosen service: shipping and return labels, packing slips, customs documents (commercial in...",
+                          "how": "Creates the return label."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "trck",
+                          "name": "Tracking Event Hub",
+                          "description": "Collects carrier status events by webhook or polling, normalises them into one status model and publishes them to notifications, exception management,...",
+                          "how": "Tracks the return."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Prebuilt bridges to sibling Katapull products - Logic4 (ERP), Vendit (retail/POS), EffectConnect (marketplaces), Highbiza (custom webshops), Transus (...",
+                          "how": "Hands over to Returnista."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Return carriers and drop-off networks",
+                  "description": "Carry returns."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Control and Grow",
+      "description": "Cost control and onboarding.",
+      "subGroups": [
+        {
+          "name": "Control and Onboarding",
+          "streams": [
+            {
+              "id": "control-transport-costs-and-carrier-invoices",
+              "name": "Control Transport Costs and Carrier Invoices",
+              "type": "outcome-based-stream",
+              "description": "Know the expected cost and selling price of each shipment, audit carrier invoices against it automatically, re-invoice clients with margin, and report cost, performance and CO2 per customer, channel and carrier.",
+              "outcomes": [
+                "Overcharges recovered",
+                "Margin per client visible",
+                "Cost and CO2 reported per shipment"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rate",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "fiac",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "dash",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "co2c",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "control-transport-flow",
+                  "title": "Booking to audited invoice",
+                  "description": "Expected cost is compared to invoiced cost.",
+                  "steps": [
+                    {
+                      "id": "calculate-expected-cost",
+                      "title": "Calculate expected purchase and sales cost",
+                      "keyFacts": [
+                        "Purchase and sales rates per contract and client",
+                        "Surcharges updated centrally"
+                      ],
+                      "painPoints": [
+                        "Rate cards maintained in spreadsheets"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rate",
+                          "name": "Rate Cards and Transport Cost Calculation",
+                          "description": "Holds purchase rates per carrier contract and sales rates per customer or client, including surcharges, and calculates the expected transport cost and...",
+                          "how": "Calculates and stores cost."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "tnnt",
+                          "name": "Tenants, Clients and Access",
+                          "description": "Accounts, users, roles and multi-client structures - a 3PL's clients or a broker's customers as sub-accounts with their own carriers, rates and brandi...",
+                          "how": "Separates clients and their price lists."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "audit-invoice",
+                      "title": "Audit the carrier invoice",
+                      "keyFacts": [
+                        "Invoiced cost per shipment compared with booked cost",
+                        "Discrepancies and surcharges flagged for dispute"
+                      ],
+                      "painPoints": [
+                        "Invoices arrive in carrier-specific formats"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "fiac",
+                          "name": "Carrier Invoice Control",
+                          "description": "Freight audit module: reads carrier invoices and automatically compares the invoiced cost of each shipment with the cost calculated at booking, flags ...",
+                          "how": "Parses, matches and disputes."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "report-cost-and-co2",
+                      "title": "Report cost, performance and CO2",
+                      "keyFacts": [
+                        "KPI reports per client, channel and carrier",
+                        "CO2 per shipment"
+                      ],
+                      "painPoints": [
+                        "Emission factors differ by method"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "dash",
+                          "name": "Logistics Dashboard and KPI Reporting",
+                          "description": "The DeliveryMatch dashboard to configure, execute and monitor shipping: real-time shipment overview, KPI reports on cost, lead time and carrier perfor...",
+                          "how": "Reports KPIs."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "co2c",
+                          "name": "CO2 Calculation and Reporting",
+                          "description": "Estimates the CO2 emissions of each delivery option and shipment per carrier and service, shows them in checkout and reports, and lets selection weigh...",
+                          "how": "Provides emissions."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Carrier invoicing",
+                  "description": "Provides invoices."
+                }
+              ]
+            },
+            {
+              "id": "onboard-integrations-carriers-and-clients",
+              "name": "Onboard Integrations, Carriers and Clients",
+              "type": "outcome-based-stream",
+              "description": "Getting live and growing: connecting channels and business systems, Katapull sibling products and partner software, adding carriers and carrier accounts, and setting up new 3PL clients - DeliveryMatch states WMS integrations can be implemented within two months with a fixed project manager.",
+              "outcomes": [
+                "Short time to go-live",
+                "New clients and carriers added without IT projects",
+                "Partners offer shipping without building carrier links"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "papi",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ordi",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "erpw",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "cnet",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ntfy",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "onboard-integrations-flow",
+                  "title": "Contract to live",
+                  "description": "An implementation from first connection to first shipment.",
+                  "steps": [
+                    {
+                      "id": "connect-systems",
+                      "title": "Connect systems and partners",
+                      "keyFacts": [
+                        "Standard connectors for webshops, ERP, WMS and marketplaces",
+                        "Partners integrate once with the API"
+                      ],
+                      "painPoints": [
+                        "Custom fields per customer"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ordi",
+                          "name": "Webshop and Marketplace Order Connectors",
+                          "description": "Imports orders to ship from 40+ webshop systems (DeliveryMatch names Magento, WooCommerce, Shopify, Lightspeed, Shopware and PrestaShop) and from mark...",
+                          "how": "Connects channels."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "erpw",
+                          "name": "ERP and WMS Connectors",
+                          "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Busin...",
+                          "how": "Connects ERP/WMS."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "papi",
+                          "name": "DeliveryMatch API and Partner Integration Kit",
+                          "description": "Public REST API, webhooks and partner programme through which software providers (WMS, ERP, OMS, webshop platforms) embed DeliveryMatch carriers, rule...",
+                          "how": "Partner API."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Prebuilt bridges to sibling Katapull products - Logic4 (ERP), Vendit (retail/POS), EffectConnect (marketplaces), Highbiza (custom webshops), Transus (...",
+                          "how": "Katapull bridges."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "set-up-carriers-and-clients",
+                      "title": "Set up carriers, accounts and clients",
+                      "keyFacts": [
+                        "Carrier accounts per tenant or client",
+                        "New carriers configured in the onboarding console"
+                      ],
+                      "painPoints": [
+                        "Carrier test approvals take time"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "cnet",
+                          "name": "Carrier Connector Network",
+                          "description": "The network of 200+ carrier and broker integrations (DeliveryMatch's own figure; the Katapull page says 180+) for parcels, pallets and freight - e.g. ...",
+                          "how": "Adds carriers and accounts."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "tnnt",
+                          "name": "Tenants, Clients and Access",
+                          "description": "Accounts, users, roles and multi-client structures - a 3PL's clients or a broker's customers as sub-accounts with their own carriers, rates and brandi...",
+                          "how": "Creates clients and roles."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "configure-and-go-live",
+                      "title": "Configure rules and branding, then go live",
+                      "keyFacts": [
+                        "Rules simulated on historical orders",
+                        "Branded templates per channel"
+                      ],
+                      "painPoints": [
+                        "Go-live during peak season"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Shipping Rules Engine",
+                          "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instea...",
+                          "how": "Configures rules."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ntfy",
+                          "name": "Branded Track & Trace Communication",
+                          "description": "Sends delivery communication in the merchant's own style - e-mail, SMS and WhatsApp - and hosts a branded tracking page, configurable per sales channe...",
+                          "how": "Sets up branding."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Implementation partners and software providers",
+                  "description": "Build and support integrations."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

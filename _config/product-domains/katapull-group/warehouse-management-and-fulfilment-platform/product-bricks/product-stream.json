@@ -1,0 +1,1602 @@
+{
+  "metadata": {
+    "domainId": "warehouse-management-and-fulfilment-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams of an e-commerce warehouse on Picqer: capture orders -> pick, pack and ship -> returns; purchase and receive -> keep inventory true; multi-client fulfilment and invoicing; automation and hardware; onboarding and ecosystem.",
+    "sources": [
+      "https://picqer.com/en",
+      "https://picqer.com/en/features/picking-shipping",
+      "https://picqer.com/en/features/inventory-management",
+      "https://picqer.com/en/fulfilment",
+      "https://picqer.com/en/hardware-robots",
+      "https://picqer.com/en/integrations"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Each step names the bricks it depends on; personas are documented in customers.json JTBD steps."
+  },
+  "rootGroups": [
+    {
+      "name": "Run the Daily Warehouse",
+      "description": "Order-to-parcel and back.",
+      "subGroups": [
+        {
+          "name": "Outbound",
+          "streams": [
+            {
+              "id": "capture-and-allocate-orders-from-every-channel",
+              "name": "Capture and Allocate Orders from Every Channel",
+              "type": "outcome-based-stream",
+              "description": "From an order in any webshop, marketplace, B2B portal, ERP or API call to an allocated, prioritised picklist in the right warehouse, with stock synced back to every channel.",
+              "outcomes": [
+                "No missed or duplicated orders",
+                "No overselling across channels",
+                "Urgent orders reach the floor first"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "chan",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "papi",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ordm",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "capture-flow",
+                  "title": "Order to picklist",
+                  "description": "Orders are imported, checked against stock and turned into picklists.",
+                  "steps": [
+                    {
+                      "id": "import-orders",
+                      "title": "Import orders from all channels",
+                      "keyFacts": [
+                        "Store connectors install in minutes",
+                        "Orders can also come via API or manual entry"
+                      ],
+                      "painPoints": [
+                        "Channel APIs throttle at peak"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "chan",
+                          "name": "Webshop and Marketplace Store Connectors",
+                          "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...",
+                          "how": "Imports orders and products."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "papi",
+                          "name": "Picqer Public API and Webhooks",
+                          "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custo...",
+                          "how": "Accepts API orders."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...",
+                          "how": "Receives orders from Logic4 (assumed)."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "allocate-stock",
+                      "title": "Allocate stock and handle backorders",
+                      "keyFacts": [
+                        "Stock is reserved per order",
+                        "Partial deliveries are possible"
+                      ],
+                      "painPoints": [
+                        "Backorders released in the wrong sequence anger customers"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ordm",
+                          "name": "Multi-Channel Order Management and Allocation",
+                          "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and p...",
+                          "how": "Allocates and tracks backorders."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Provides free and reserved stock."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "prioritise",
+                      "title": "Prioritise and route",
+                      "keyFacts": [
+                        "Rules mark urgent or snooze",
+                        "Picklists go to the right warehouse"
+                      ],
+                      "painPoints": [
+                        "Manual priority notes get lost"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Rules Automation Engine",
+                          "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or ...",
+                          "how": "Applies rules."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pkls",
+                          "name": "Picklist and Batch Picking Engine",
+                          "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...",
+                          "how": "Creates picklists."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "sync-stock",
+                      "title": "Sync stock back to channels",
+                      "keyFacts": [
+                        "Free stock pushed on every change"
+                      ],
+                      "painPoints": [
+                        "Sync delays cause overselling"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Publishes stock events."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "chan",
+                          "name": "Webshop and Marketplace Store Connectors",
+                          "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...",
+                          "how": "Pushes stock to channels."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Webshop platforms and bol",
+                  "description": "Order sources and stock targets."
+                }
+              ]
+            },
+            {
+              "id": "pick-pack-and-ship-orders-without-mistakes",
+              "name": "Pick, Pack and Ship Orders Without Mistakes",
+              "type": "outcome-based-stream",
+              "description": "From picklist to a labelled, verified parcel and a customer who has track-and-trace: batch, singles and bulk picking on optimal routes, scan verification, packaging advice and automatic labels.",
+              "outcomes": [
+                "More orders per labour hour",
+                "Fewer wrong items",
+                "Same-day shipping before cut-off"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pkls",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "mapp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "locn",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prod",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pack",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ship",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prnt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "chan",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "pick-flow",
+                  "title": "Picklist to parcel",
+                  "description": "The core outbound flow on the floor.",
+                  "steps": [
+                    {
+                      "id": "build-batch",
+                      "title": "Build a batch on the route",
+                      "keyFacts": [
+                        "Batches of e.g. 12 orders on one route",
+                        "Singles picking for single-line orders",
+                        "Urgent picklists join the next batch"
+                      ],
+                      "painPoints": [
+                        "Pre-printed batches go stale"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "pkls",
+                          "name": "Picklist and Batch Picking Engine",
+                          "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...",
+                          "how": "Builds batches and routes."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "Creates batches on the handheld."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "locn",
+                          "name": "Warehouses, Locations and Replenishment",
+                          "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and repleni...",
+                          "how": "Supplies location sequence."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "pick-and-scan",
+                      "title": "Pick and confirm by scan",
+                      "keyFacts": [
+                        "Barcode verification per product",
+                        "Paused picklists with a reason"
+                      ],
+                      "painPoints": [
+                        "Empty pick locations"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "Guides picking."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "prod",
+                          "name": "Product Catalogue and Barcodes",
+                          "description": "Product master with images, supplier, weight, dimensions, barcodes (including GS1 with lot or expiry details) and stock settings; imported from sto...",
+                          "how": "Recognises barcodes."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Books picked stock."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "pack",
+                      "title": "Pack in the advised packaging",
+                      "keyFacts": [
+                        "Packaging advice from dimensions or rules",
+                        "Packaging used is recorded"
+                      ],
+                      "painPoints": [
+                        "Wrong box sizes waste material"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "pack",
+                          "name": "Packing Station and Packaging Advice",
+                          "description": "Packing table workflow with barcode verification, packaging advice based on dimensions or rules, and recording of the packaging used per shipment f...",
+                          "how": "Packing station and advice."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "label-and-ship",
+                      "title": "Print label and notify",
+                      "keyFacts": [
+                        "Label prints automatically",
+                        "Channel and customer receive tracking"
+                      ],
+                      "painPoints": [
+                        "Carrier API outages at cut-off"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ship",
+                          "name": "Shipping Provider Integrations and Labels",
+                          "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, Deliv...",
+                          "how": "Creates the shipment."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "prnt",
+                          "name": "Automatic Printing and Warehouse Hardware Connectivity",
+                          "description": "Sends labels and packing slips straight to printers without print dialogs and connects scanners, carton sealers and label applicators, conveyors an...",
+                          "how": "Prints label."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "chan",
+                          "name": "Webshop and Marketplace Store Connectors",
+                          "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...",
+                          "how": "Writes back tracking."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...",
+                          "how": "Hands to DeliveryMatch where used."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Carriers and shipping platforms",
+                  "description": "Labels and tracking."
+                }
+              ]
+            },
+            {
+              "id": "serve-b2b-customers-from-warehouse-stock",
+              "name": "Serve B2B Customers from Warehouse Stock",
+              "type": "outcome-based-stream",
+              "description": "Let business customers order from live warehouse stock with their own prices and ship their orders alongside consumer parcels; EDI retailer orders via Transus are an assumed extension.",
+              "outcomes": [
+                "B2B orders without phone or e-mail",
+                "No double-promised stock"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "b2bp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ordm",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ship",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "b2b-flow",
+                  "title": "Portal order to delivery",
+                  "description": "B2B ordering.",
+                  "steps": [
+                    {
+                      "id": "order",
+                      "title": "Order in the B2B portal",
+                      "keyFacts": [
+                        "Live stock and price lists",
+                        "Order history"
+                      ],
+                      "painPoints": [
+                        "Price lists out of date"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "b2bp",
+                          "name": "B2B Customer Portal",
+                          "description": "A mini online store on live warehouse stock for wholesalers: business customers log in, see stock and their prices, place orders and follow history...",
+                          "how": "B2B portal."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Live stock."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "fulfil",
+                      "title": "Allocate and ship",
+                      "keyFacts": [
+                        "Partial deliveries and backorders"
+                      ],
+                      "painPoints": [
+                        "Large orders block pickers"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ordm",
+                          "name": "Multi-Channel Order Management and Allocation",
+                          "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and p...",
+                          "how": "Allocation."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pkls",
+                          "name": "Picklist and Batch Picking Engine",
+                          "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...",
+                          "how": "Picklists."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ship",
+                          "name": "Shipping Provider Integrations and Labels",
+                          "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, Deliv...",
+                          "how": "Shipment."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "edi",
+                      "title": "Exchange EDI with retailers (assumed)",
+                      "keyFacts": [
+                        "Transus lists Picqer as partner"
+                      ],
+                      "painPoints": [
+                        "Retailer compliance labels"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...",
+                          "how": "Transus bridge (assumed)."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reverse",
+          "streams": [
+            {
+              "id": "process-returns-and-restock",
+              "name": "Process Returns and Restock",
+              "type": "outcome-based-stream",
+              "description": "From a customer's return request to an inspected return and sellable stock back on the shelf, with the webshop informed.",
+              "outcomes": [
+                "Faster refunds",
+                "Returned stock sellable again within a day"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "retu",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "mapp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "locn",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "return-flow",
+                  "title": "Return to restock",
+                  "description": "Return processing in the warehouse.",
+                  "steps": [
+                    {
+                      "id": "pre-register",
+                      "title": "Pre-register the return",
+                      "keyFacts": [
+                        "Returnista pre-registers returns in Picqer",
+                        "Manual registration also possible"
+                      ],
+                      "painPoints": [
+                        "Unannounced parcels"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "retu",
+                          "name": "Returns Processing",
+                          "description": "Registers returns manually or pre-registered by return tools (Returnista, Returnless, ReturnGO), scans returned parcels, records inspection and res...",
+                          "how": "Receives pre-registrations."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...",
+                          "how": "Returnista bridge."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "receive-inspect",
+                      "title": "Scan and inspect",
+                      "keyFacts": [
+                        "Scan the return label barcode",
+                        "Record condition"
+                      ],
+                      "painPoints": [
+                        "Inspection backlog after peak"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "retu",
+                          "name": "Returns Processing",
+                          "description": "Registers returns manually or pre-registered by return tools (Returnista, Returnless, ReturnGO), scans returned parcels, records inspection and res...",
+                          "how": "Records inspection."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "Scans on the floor."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "restock",
+                      "title": "Restock sellable items",
+                      "keyFacts": [
+                        "Stock updated automatically"
+                      ],
+                      "painPoints": [
+                        "Restocked to wrong location"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Books returned stock."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "locn",
+                          "name": "Warehouses, Locations and Replenishment",
+                          "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and repleni...",
+                          "how": "Suggests location."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Returnista and other return platforms",
+                  "description": "Return portals."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Keep Stock Right",
+      "description": "Inbound and inventory control.",
+      "subGroups": [
+        {
+          "name": "Inbound and Inventory",
+          "streams": [
+            {
+              "id": "purchase-and-receive-stock-on-time",
+              "name": "Purchase and Receive Stock on Time",
+              "type": "outcome-based-stream",
+              "description": "From purchase advice to received, labelled stock in a pick location, releasing waiting backorders.",
+              "outcomes": [
+                "Fewer stockouts",
+                "Less capital tied in stock",
+                "Faster receipt-to-sellable time"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "purc",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rcvg",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "mapp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "lotb",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "locn",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ordm",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "purchase-flow",
+                  "title": "Advice to available stock",
+                  "description": "Inbound flow.",
+                  "steps": [
+                    {
+                      "id": "advise",
+                      "title": "Get purchase advice per supplier",
+                      "keyFacts": [
+                        "Based on stock, sales and waiting customers",
+                        "Partners add forecasting"
+                      ],
+                      "painPoints": [
+                        "Advice ignored when trust is low"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "purc",
+                          "name": "Purchase Advice and Purchase Orders",
+                          "description": "Advice per supplier on what to buy based on stock, sales and waiting customers; converts advice to purchase orders e-mailed as PDF and Excel; track...",
+                          "how": "Calculates advice."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Supplies stock data."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "order",
+                      "title": "Send purchase order",
+                      "keyFacts": [
+                        "PO mailed as PDF and Excel"
+                      ],
+                      "painPoints": [
+                        "Supplier confirmations not captured"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "purc",
+                          "name": "Purchase Advice and Purchase Orders",
+                          "description": "Advice per supplier on what to buy based on stock, sales and waiting customers; converts advice to purchase orders e-mailed as PDF and Excel; track...",
+                          "how": "Creates and mails POs."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "receive",
+                      "title": "Receive by scanning",
+                      "keyFacts": [
+                        "Several receivers on one receipt",
+                        "Receive into a container"
+                      ],
+                      "painPoints": [
+                        "Mismatched deliveries"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rcvg",
+                          "name": "Goods Receipt and Put-away",
+                          "description": "Receipt of purchase orders by scanning, into a location or a container, with several people on one receipt, product label printing and A/B hints fo...",
+                          "how": "Registers receipts."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "Receives on the handheld."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "lotb",
+                          "name": "Batch and Best-Before Traceability",
+                          "description": "Records batch numbers and best-before dates at receipt and tracks them through stock, moves, picks, counts and returns; shows batches in the fulfil...",
+                          "how": "Captures batch and expiry."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "put-away",
+                      "title": "Put away and release backorders",
+                      "keyFacts": [
+                        "A/B hints for put-away",
+                        "Backorders released in sequence"
+                      ],
+                      "painPoints": [
+                        "Stock waiting on the dock"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "locn",
+                          "name": "Warehouses, Locations and Replenishment",
+                          "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and repleni...",
+                          "how": "Put-away location."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ordm",
+                          "name": "Multi-Channel Order Management and Allocation",
+                          "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and p...",
+                          "how": "Releases backorders."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "keep-inventory-accurate-and-traceable",
+              "name": "Keep Inventory Accurate and Traceable",
+              "type": "outcome-based-stream",
+              "description": "Keep system stock equal to the shelf and every batch traceable: real-time moves, replenishment, cycle counts and batch/best-before tracking.",
+              "outcomes": [
+                "Inventory record accuracy",
+                "Fast recalls",
+                "No expired goods shipped"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "locn",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "mapp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "cycl",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "lotb",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prod",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "inventory-flow",
+                  "title": "Keep stock true",
+                  "description": "Continuous inventory control.",
+                  "steps": [
+                    {
+                      "id": "move",
+                      "title": "Book moves and replenishment in real time",
+                      "keyFacts": [
+                        "Moves booked as they happen",
+                        "Replenish from bulk"
+                      ],
+                      "painPoints": [
+                        "Paper moves create gaps"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "locn",
+                          "name": "Warehouses, Locations and Replenishment",
+                          "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and repleni...",
+                          "how": "Plans replenishment."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "Books moves."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Records mutations."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "count",
+                      "title": "Count in small rounds",
+                      "keyFacts": [
+                        "Risk-based selection",
+                        "Differences corrected on confirmation"
+                      ],
+                      "painPoints": [
+                        "Counts skipped at peak"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "cycl",
+                          "name": "Cycle Counting",
+                          "description": "Counting all year round in small rounds: count everything, a risk-based selection, or only locations where something happened; differences correcte...",
+                          "how": "Plans and records counts."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "trace",
+                      "title": "Trace batches and expiry",
+                      "keyFacts": [
+                        "Batches tracked through every movement",
+                        "Shown in fulfilment portal"
+                      ],
+                      "painPoints": [
+                        "Missing batch data at receipt"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "lotb",
+                          "name": "Batch and Best-Before Traceability",
+                          "description": "Records batch numbers and best-before dates at receipt and tracks them through stock, moves, picks, counts and returns; shows batches in the fulfil...",
+                          "how": "Tracks lots."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "prod",
+                          "name": "Product Catalogue and Barcodes",
+                          "description": "Product master with images, supplier, weight, dimensions, barcodes (including GS1 with lot or expiry details) and stock settings; imported from sto...",
+                          "how": "Parses GS1 lot data."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "report",
+                      "title": "Review stock health",
+                      "keyFacts": [
+                        "Slow movers and bestsellers"
+                      ],
+                      "painPoints": [
+                        "Reports not acted on"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rprt",
+                          "name": "Reports and Warehouse Analytics",
+                          "description": "Warehouse status at a glance and reports on team performance, stock levels, bestsellers and slow movers, also available to fulfilment clients.",
+                          "how": "Stock reports."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Serve Fulfilment Clients",
+      "description": "The 3PL business on Picqer.",
+      "subGroups": [
+        {
+          "name": "Fulfilment",
+          "streams": [
+            {
+              "id": "run-multi-client-fulfilment-with-a-client-portal",
+              "name": "Run Multi-Client Fulfilment with a Client Portal",
+              "type": "outcome-based-stream",
+              "description": "Run many webshop clients in one warehouse: separate data, shared floor workflow, client-specific rules and a branded portal where clients see and steer their stock and orders.",
+              "outcomes": [
+                "Fast client onboarding",
+                "Fewer client contacts",
+                "No cross-client errors"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ften",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "chan",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ship",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "fpor",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "acct",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "coll",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "fulfilment-flow",
+                  "title": "Client onboarding to self-service",
+                  "description": "The 3PL operating model.",
+                  "steps": [
+                    {
+                      "id": "create-client",
+                      "title": "Create a client and connect its shop",
+                      "keyFacts": [
+                        "Every client separated",
+                        "Clients choose their own carrier"
+                      ],
+                      "painPoints": [
+                        "Custom integrations per client"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "ften",
+                          "name": "Fulfilment Client Separation",
+                          "description": "Keeps every fulfilment client's products, stock and orders separate inside one account, while the floor processes all clients through one workflow ...",
+                          "how": "Client separation."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "chan",
+                          "name": "Webshop and Marketplace Store Connectors",
+                          "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...",
+                          "how": "Connects client shops."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ship",
+                          "name": "Shipping Provider Integrations and Labels",
+                          "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, Deliv...",
+                          "how": "Client carriers."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "shared-workflow",
+                      "title": "Process all clients in one workflow",
+                      "keyFacts": [
+                        "Client-specific rules"
+                      ],
+                      "painPoints": [
+                        "Mixing client stock"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "pkls",
+                          "name": "Picklist and Batch Picking Engine",
+                          "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...",
+                          "how": "Shared batches."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Rules Automation Engine",
+                          "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or ...",
+                          "how": "Client rules."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "portal",
+                      "title": "Give clients a portal",
+                      "keyFacts": [
+                        "Stock and orders in real time",
+                        "Rights per client",
+                        "Concept orders and partial deliveries"
+                      ],
+                      "painPoints": [
+                        "Clients unaware of portal"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "fpor",
+                          "name": "Fulfilment Client Portal",
+                          "description": "Portal in the 3PL's branding where clients see stock and orders in real time, import products, push stock, create (concept) orders, cancel unpicked...",
+                          "how": "Client portal."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "acct",
+                          "name": "Accounts, Users and Rights",
+                          "description": "Multi-tenant accounts with unlimited users, per-user rights, copying users, a rights overview and logins for portal users.",
+                          "how": "Portal users."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "communicate",
+                      "title": "Communicate in context",
+                      "keyFacts": [
+                        "Comments with photos and mentions"
+                      ],
+                      "painPoints": [
+                        "E-mail threads outside the system"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "coll",
+                          "name": "Comments, Tasks and Notifications",
+                          "description": "Comments with @mentions, reactions and up to five photos on picklists, orders and purchase orders, warehouse tasks, a \"For you\" inbox and e-mail no...",
+                          "how": "Comments and notifications."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "invoice-fulfilment-clients-from-warehouse-activity",
+              "name": "Invoice Fulfilment Clients from Warehouse Activity",
+              "type": "outcome-based-stream",
+              "description": "Turn recorded picks, shipments, receipts, returns, packaging and storage into invoice lines per client using each client's rates (in development at Picqer).",
+              "outcomes": [
+                "Invoicing in hours not days",
+                "No missed billable activity"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pack",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "retu",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "finv",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ften",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "billing-flow",
+                  "title": "Activity to invoice",
+                  "description": "Monthly billing run.",
+                  "steps": [
+                    {
+                      "id": "capture",
+                      "title": "Capture billable activity",
+                      "keyFacts": [
+                        "Packaging per shipment is recorded",
+                        "Activity aggregated per client"
+                      ],
+                      "painPoints": [
+                        "Storage not measured"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "pack",
+                          "name": "Packing Station and Packaging Advice",
+                          "description": "Packing table workflow with barcode verification, packaging advice based on dimensions or rules, and recording of the packaging used per shipment f...",
+                          "how": "Packaging usage."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rprt",
+                          "name": "Reports and Warehouse Analytics",
+                          "description": "Warehouse status at a glance and reports on team performance, stock levels, bestsellers and slow movers, also available to fulfilment clients.",
+                          "how": "Activity totals."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "retu",
+                          "name": "Returns Processing",
+                          "description": "Registers returns manually or pre-registered by return tools (Returnista, Returnless, ReturnGO), scans returned parcels, records inspection and res...",
+                          "how": "Returns handled."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "rate",
+                      "title": "Apply client rates",
+                      "keyFacts": [
+                        "Rates per category"
+                      ],
+                      "painPoints": [
+                        "Rate cards in spreadsheets"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "finv",
+                          "name": "Fulfilment Client Invoicing",
+                          "description": "Connects each client's rates to picklists, shipments, receipts, returns, packaging and storage to build invoice lines by category; announced by Pic...",
+                          "how": "Rate cards and lines."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ften",
+                          "name": "Fulfilment Client Separation",
+                          "description": "Keeps every fulfilment client's products, stock and orders separate inside one account, while the floor processes all clients through one workflow ...",
+                          "how": "Client list."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "export",
+                      "title": "Export to accounting",
+                      "keyFacts": [
+                        "Lines by category"
+                      ],
+                      "painPoints": [
+                        "Manual re-keying"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "finv",
+                          "name": "Fulfilment Client Invoicing",
+                          "description": "Connects each client's rates to picklists, shipments, receipts, returns, packaging and storage to build invoice lines by category; announced by Pic...",
+                          "how": "Exports lines (assumed)."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Accounting software",
+                  "description": "Receives invoices (assumed)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scale and Connect",
+      "description": "Growing the operation and its ecosystem.",
+      "subGroups": [
+        {
+          "name": "Scale and Ecosystem",
+          "streams": [
+            {
+              "id": "automate-and-mechanise-the-warehouse",
+              "name": "Automate and Mechanise the Warehouse",
+              "type": "outcome-based-stream",
+              "description": "Grow throughput step by step: rules instead of sticky notes, automatic printing, handheld scanners, then carton machines, conveyors and goods-to-person systems on the same WMS.",
+              "outcomes": [
+                "Higher throughput per hour",
+                "Fewer manual decisions",
+                "Hardware added without a new WMS"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rule",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prnt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pack",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "mapp",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "automation-flow",
+                  "title": "Packing table to robots",
+                  "description": "Picqer's three hardware steps.",
+                  "steps": [
+                    {
+                      "id": "rules",
+                      "title": "Automate decisions with rules",
+                      "keyFacts": [
+                        "Rules per product, weight, destination"
+                      ],
+                      "painPoints": [
+                        "Rule sprawl"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "rule",
+                          "name": "Rules Automation Engine",
+                          "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or ...",
+                          "how": "Evaluates rules."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "packing-hardware",
+                      "title": "Connect packing-table hardware",
+                      "keyFacts": [
+                        "Printers and scanners connected in minutes"
+                      ],
+                      "painPoints": [
+                        "Driver issues"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "prnt",
+                          "name": "Automatic Printing and Warehouse Hardware Connectivity",
+                          "description": "Sends labels and packing slips straight to printers without print dialogs and connects scanners, carton sealers and label applicators, conveyors an...",
+                          "how": "Printing."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pack",
+                          "name": "Packing Station and Packaging Advice",
+                          "description": "Packing table workflow with barcode verification, packaging advice based on dimensions or rules, and recording of the packaging used per shipment f...",
+                          "how": "Packing station."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "handhelds",
+                      "title": "Go mobile with handhelds",
+                      "keyFacts": [
+                        "Zebra or Honeywell devices"
+                      ],
+                      "painPoints": [
+                        "Wi-Fi dead spots"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "mapp",
+                          "name": "Picqer Mobile App",
+                          "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, includ...",
+                          "how": "App on handhelds."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "mechanise",
+                      "title": "Add mechanisation and robots",
+                      "keyFacts": [
+                        "Conveyors, carton sealers, Kardex, AutoStore via partners"
+                      ],
+                      "painPoints": [
+                        "Integration projects with integrators"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "prnt",
+                          "name": "Automatic Printing and Warehouse Hardware Connectivity",
+                          "description": "Sends labels and packing slips straight to printers without print dialogs and connects scanners, carton sealers and label applicators, conveyors an...",
+                          "how": "Mechanisation adapters."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "pkls",
+                          "name": "Picklist and Batch Picking Engine",
+                          "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...",
+                          "how": "Pick events to machines."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "rprt",
+                          "name": "Reports and Warehouse Analytics",
+                          "description": "Warehouse status at a glance and reports on team performance, stock levels, bestsellers and slow movers, also available to fulfilment clients.",
+                          "how": "Measures throughput."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "externalSystemsThisStreamDependsOn": [
+                {
+                  "system": "Intralogistics partners",
+                  "description": "Hardware and integration."
+                }
+              ]
+            },
+            {
+              "id": "onboard-a-warehouse-and-connect-the-ecosystem",
+              "name": "Onboard a Warehouse and Connect the Ecosystem",
+              "type": "outcome-based-stream",
+              "description": "From signup to a live warehouse within days and an ecosystem of partner and Katapull connections that keeps working.",
+              "outcomes": [
+                "Time to first shipped order",
+                "Integration health",
+                "Partner reach"
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "subs",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "acct",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "chan",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ship",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "prod",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "invt",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "locn",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "papi",
+                  "type": "composition"
+                },
+                {
+                  "targetBrickId": "ktpl",
+                  "type": "composition"
+                }
+              ],
+              "flows": [
+                {
+                  "id": "onboarding-flow",
+                  "title": "Trial to live",
+                  "description": "Self-service onboarding.",
+                  "steps": [
+                    {
+                      "id": "signup",
+                      "title": "Start a trial or demo",
+                      "keyFacts": [
+                        "14-day trial created in seconds",
+                        "30-minute demo"
+                      ],
+                      "painPoints": [
+                        "Trials without connected stores"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "subs",
+                          "name": "Plans, Trials and Order-Volume Billing",
+                          "description": "Self-service 14-day trial, plan selection (Team, Business, Premium, Premium+, Enterprise; Fulfilment, Plus, Next, Max), order counting against incl...",
+                          "how": "Trial and plans."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "acct",
+                          "name": "Accounts, Users and Rights",
+                          "description": "Multi-tenant accounts with unlimited users, per-user rights, copying users, a rights overview and logins for portal users.",
+                          "how": "First users."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "connect",
+                      "title": "Connect stores and carriers",
+                      "keyFacts": [
+                        "Integrations install in minutes"
+                      ],
+                      "painPoints": [
+                        "Credentials and mappings"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "chan",
+                          "name": "Webshop and Marketplace Store Connectors",
+                          "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...",
+                          "how": "Store connections."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ship",
+                          "name": "Shipping Provider Integrations and Labels",
+                          "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, Deliv...",
+                          "how": "Carrier connections."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "import",
+                      "title": "Import products and stock",
+                      "keyFacts": [
+                        "Excel import",
+                        "Initial count"
+                      ],
+                      "painPoints": [
+                        "Missing barcodes"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "prod",
+                          "name": "Product Catalogue and Barcodes",
+                          "description": "Product master with images, supplier, weight, dimensions, barcodes (including GS1 with lot or expiry details) and stock settings; imported from sto...",
+                          "how": "Product import."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "invt",
+                          "name": "Inventory Ledger and Stock Sync",
+                          "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...",
+                          "how": "Initial stock."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "locn",
+                          "name": "Warehouses, Locations and Replenishment",
+                          "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and repleni...",
+                          "how": "Locations."
+                        }
+                      ]
+                    },
+                    {
+                      "id": "extend",
+                      "title": "Extend with partners and the hub",
+                      "keyFacts": [
+                        "Public API and webhooks",
+                        "DeliveryMatch and Returnista connections"
+                      ],
+                      "painPoints": [
+                        "Breaking API changes"
+                      ],
+                      "dependencies": [
+                        {
+                          "type": "brick",
+                          "id": "papi",
+                          "name": "Picqer Public API and Webhooks",
+                          "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custo...",
+                          "how": "API and webhooks."
+                        },
+                        {
+                          "type": "brick",
+                          "id": "ktpl",
+                          "name": "Katapull Commerce Hub Bridges",
+                          "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...",
+                          "how": "Hub bridges."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1537 @@
+{
+  "metadata": {
+    "domainId": "retail-pos-and-store-management-platform",
+    "title": "Product Streams",
+    "description": "Outcome-based streams of a specialty retailer on Vendit: sell at the counter, keep stock right, connect suppliers, sell online and on marketplaces, ship and return, repair, order and invoice, loyalty, steering, multi-store formulas and going live.",
+    "sources": [
+      "https://www.vendit.nl/",
+      "https://www.vendit.nl/kassasysteem/",
+      "https://www.vendit.nl/functionaliteiten/",
+      "https://www.vendit.nl/modules/marketplaces-module/",
+      "https://www.vendit.nl/automatiseringsoplossingen/franchiseorganisaties/"
+    ],
+    "flowModelVersion": "1.0",
+    "flowModelNote": "Each step names the bricks it depends on; personas are documented in customers.json JTBD steps."
+  },
+  "rootGroups": [
+    {
+      "name": "Store Operations",
+      "description": "What happens at the counter and in the workshop.",
+      "streams": [
+        {
+          "id": "sell-at-the-counter",
+          "name": "Sell and Check Out at the Counter",
+          "type": "outcome-based-stream",
+          "description": "From a customer at the counter to a paid, registered sale that updates stock, loyalty and turnover in real time, closed and reconciled at the end of the day.",
+          "outcomes": [
+            "Shorter checkout time",
+            "Fewer pricing and cash errors",
+            "Every sale reflected in stock immediately"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "posc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "paym",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rcpt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "hwdv",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "prpr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "crmc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "loya",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sell-at-the-counter-flow",
+              "title": "Sell and Check Out at the Counter",
+              "description": "From a customer at the counter to a paid, registered sale that updates stock, loyalty and turnover in real time, closed and reconciled at the end of the day.",
+              "steps": [
+                {
+                  "id": "scan-and-build-basket",
+                  "title": "Scan articles and build the basket",
+                  "keyFacts": [
+                    "Barcode scanning or search on description",
+                    "Branch prices and promotions applied automatically"
+                  ],
+                  "painPoints": [
+                    "Unknown barcodes from new supplier deliveries",
+                    "Manual price overrides erode margin"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "posc",
+                      "name": "POS Checkout and Sales Registration",
+                      "description": "The till itself: scanning or searching articles, building the basket, applying prices, promotions and loyalty discounts, taking trade-ins and registering every ",
+                      "how": "Captures the basket."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "prpr",
+                      "name": "Pricing, Promotions and Purchase Price Formulas",
+                      "description": "Selling prices, price lists, promotions and the purchase-price formula module that derives invoice and net prices from gross purchase prices including advertisi",
+                      "how": "Applies price and promotion."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "hwdv",
+                      "name": "Store Hardware, Labels and Peripherals",
+                      "description": "Configures and drives the hardware Vendit supplies with the system: screens, scanners, receipt and label printers, cash drawers and handhelds (Vendit names Data",
+                      "how": "Drives the scanner."
+                    }
+                  ]
+                },
+                {
+                  "id": "identify-customer",
+                  "title": "Identify the customer and apply loyalty",
+                  "keyFacts": [
+                    "Sale on name feeds history and repairs",
+                    "Customer card barcode adds saving points"
+                  ],
+                  "painPoints": [
+                    "Customers decline to share data at the counter"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "crmc",
+                      "name": "Customer Registry",
+                      "description": "Complete customer file used for sale on name, sales history, repairs, invoices and loyalty; the basis for clienteling in specialty retail.",
+                      "how": "Finds or creates the customer."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "loya",
+                      "name": "Loyalty, Value Cheques and Gift Cards",
+                      "description": "Customer cards with a unique barcode, saving for discounts or gifts, printable value cheques, and own-brand gift cards through Givacard; part of the Enterprise ",
+                      "how": "Earns or redeems points and cheques."
+                    }
+                  ]
+                },
+                {
+                  "id": "take-payment",
+                  "title": "Take payment and hand over the receipt",
+                  "keyFacts": [
+                    "Card terminal integrated with the till",
+                    "Split tenders and gift cards supported"
+                  ],
+                  "painPoints": [
+                    "Terminal outage blocks card payments"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "paym",
+                      "name": "Payment Terminal and Tender Integration",
+                      "description": "Connects the till to card terminals and alternative tenders (cash, gift cards, instalment payments) and records each tender. Vendit lists CCV, Worldline, Pay. a",
+                      "how": "Runs the terminal payment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rcpt",
+                      "name": "Receipts, Cashbook and Day Closing",
+                      "description": "Prints or e-mails receipts, keeps the cash drawer and cashbook, and closes each register at the end of the day so turnover, tenders and cash differences reconci",
+                      "how": "Prints or e-mails the receipt."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Books the stock mutation."
+                    }
+                  ]
+                },
+                {
+                  "id": "close-the-day",
+                  "title": "Close the register",
+                  "keyFacts": [
+                    "Cash count compared with tender totals",
+                    "Closing feeds accounting export"
+                  ],
+                  "painPoints": [
+                    "Cash differences found days later"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rcpt",
+                      "name": "Receipts, Cashbook and Day Closing",
+                      "description": "Prints or e-mails receipts, keeps the cash drawer and cashbook, and closes each register at the end of the day so turnover, tenders and cash differences reconci",
+                      "how": "Reconciles the drawer."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Payment terminal providers",
+              "type": "external",
+              "description": "Payment terminal providers is needed to complete this stream."
+            }
+          ]
+        },
+        {
+          "id": "handle-repairs-and-workshop-orders",
+          "name": "Handle Repairs and Workshop Orders",
+          "type": "outcome-based-stream",
+          "description": "Repair intake at the counter, planning in the workshop, parts from stock, customer updates and payment at pickup, for bike, jewellery and electronics specialists.",
+          "outcomes": [
+            "On-time repairs",
+            "All parts and labour billed",
+            "Customers informed without phone calls"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "repr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "crmc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "posc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "handle-repairs-and-workshop-orders-flow",
+              "title": "Handle Repairs and Workshop Orders",
+              "description": "Repair intake at the counter, planning in the workshop, parts from stock, customer updates and payment at pickup, for bike, jewellery and electronics specialists.",
+              "steps": [
+                {
+                  "id": "take-in-repair",
+                  "title": "Take in the repair",
+                  "keyFacts": [
+                    "Customer, item and serial or frame number registered"
+                  ],
+                  "painPoints": [
+                    "Paper repair tickets get lost"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "repr",
+                      "name": "Repair and Workshop Management",
+                      "description": "Registers, schedules and tracks repair orders for bike workshops, jewellers and electronics stores, with status updates to customers and billing of parts and la",
+                      "how": "Creates the repair order."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "crmc",
+                      "name": "Customer Registry",
+                      "description": "Complete customer file used for sale on name, sales history, repairs, invoices and loyalty; the basis for clienteling in specialty retail.",
+                      "how": "Links the customer."
+                    }
+                  ]
+                },
+                {
+                  "id": "plan-and-execute",
+                  "title": "Plan and execute the work",
+                  "keyFacts": [
+                    "Planning board by day and mechanic",
+                    "Parts consumed from stock"
+                  ],
+                  "painPoints": [
+                    "Workshop overbooked in spring season"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "repr",
+                      "name": "Repair and Workshop Management",
+                      "description": "Registers, schedules and tracks repair orders for bike workshops, jewellers and electronics stores, with status updates to customers and billing of parts and la",
+                      "how": "Plans the work."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Consumes parts."
+                    }
+                  ]
+                },
+                {
+                  "id": "notify-and-settle",
+                  "title": "Notify the customer and settle at pickup",
+                  "keyFacts": [
+                    "Status message when ready"
+                  ],
+                  "painPoints": [
+                    "Labour not billed when added verbally"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "repr",
+                      "name": "Repair and Workshop Management",
+                      "description": "Registers, schedules and tracks repair orders for bike workshops, jewellers and electronics stores, with status updates to customers and billing of parts and la",
+                      "how": "Sends status."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "posc",
+                      "name": "POS Checkout and Sales Registration",
+                      "description": "The till itself: scanning or searching articles, building the basket, applying prices, promotions and loyalty discounts, taking trade-ins and registering every ",
+                      "how": "Settles at the till."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "quote-order-and-invoice-customers",
+          "name": "Quote, Order and Invoice Customers",
+          "type": "outcome-based-stream",
+          "description": "Quotes, customer orders, reservations and invoices for items not on the shelf, for B2B buyers and for combination shops that also wholesale.",
+          "outcomes": [
+            "Higher conversion of special orders",
+            "Faster invoicing",
+            "Fewer open receivables"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "quot",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "bill",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "purc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "crmc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "quote-order-and-invoice-customers-flow",
+              "title": "Quote, Order and Invoice Customers",
+              "description": "Quotes, customer orders, reservations and invoices for items not on the shelf, for B2B buyers and for combination shops that also wholesale.",
+              "steps": [
+                {
+                  "id": "make-quote",
+                  "title": "Make a quote",
+                  "keyFacts": [
+                    "Quote from the till or back office",
+                    "Customer price lists in Enterprise"
+                  ],
+                  "painPoints": [
+                    "Quotes not followed up"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "quot",
+                      "name": "Quotes, Customer Orders and Reservations",
+                      "description": "Quotes, customer orders, packing slips and reservations for items not on the shelf or sold B2B; part of Premium and Enterprise.",
+                      "how": "Creates the quote."
+                    }
+                  ]
+                },
+                {
+                  "id": "convert-to-order",
+                  "title": "Convert to order and reserve or order stock",
+                  "keyFacts": [
+                    "Supplier order created for missing items"
+                  ],
+                  "painPoints": [
+                    "Customer not told when goods arrive"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "quot",
+                      "name": "Quotes, Customer Orders and Reservations",
+                      "description": "Quotes, customer orders, packing slips and reservations for items not on the shelf or sold B2B; part of Premium and Enterprise.",
+                      "how": "Manages the order."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "purc",
+                      "name": "Purchasing and Min/Max Replenishment",
+                      "description": "Purchase orders, receiving and automatic replenishment proposals from minimum/maximum stock levels and the daily sales order list.",
+                      "how": "Orders from the supplier."
+                    }
+                  ]
+                },
+                {
+                  "id": "invoice-and-collect",
+                  "title": "Invoice and collect",
+                  "keyFacts": [
+                    "Invoices and reminders e-mailed",
+                    "Open items tracked"
+                  ],
+                  "painPoints": [
+                    "Receivables tracked in a spreadsheet"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "bill",
+                      "name": "Invoicing and Receivables",
+                      "description": "Invoices for B2B and on-account sales, price lists per customer, credit notes and open-item follow-up; important for combination shops and wholesalers that also",
+                      "how": "Invoices and tracks open items."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Merchandise and Supply",
+      "description": "Stock, purchasing and supplier connections.",
+      "streams": [
+        {
+          "id": "keep-stock-accurate-and-replenished",
+          "name": "Keep Stock Accurate and Replenished",
+          "type": "outcome-based-stream",
+          "description": "Real-time stock across store, warehouse and online channels, counted with scanners and replenished from min/max proposals so the store never sells \"no\" while the item is somewhere.",
+          "outcomes": [
+            "Fewer lost sales from stock-outs",
+            "Lower stock value tied up",
+            "Less manual counting"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "cntg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "purc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "form",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "keep-stock-accurate-and-replenished-flow",
+              "title": "Keep Stock Accurate and Replenished",
+              "description": "Real-time stock across store, warehouse and online channels, counted with scanners and replenished from min/max proposals so the store never sells \"no\" while the item is somewhere.",
+              "steps": [
+                {
+                  "id": "see-stock-everywhere",
+                  "title": "See stock in every location",
+                  "keyFacts": [
+                    "Stock per branch and central warehouse",
+                    "Reservations and online orders included"
+                  ],
+                  "painPoints": [
+                    "Webshop and shop stock diverge when systems are separate"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Holds the ledger."
+                    }
+                  ]
+                },
+                {
+                  "id": "count-with-scanners",
+                  "title": "Count and receive with scanners",
+                  "keyFacts": [
+                    "Wireless stocktaking standard in Enterprise",
+                    "Pick slips scanned instead of ticked"
+                  ],
+                  "painPoints": [
+                    "Annual count closes the shop for a day"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "cntg",
+                      "name": "Stocktaking and Mobile Scanning",
+                      "description": "Wireless stocktaking and scanning of incoming goods and pick slips with handhelds instead of manual counting; standard in Enterprise.",
+                      "how": "Captures counts and receipts."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Books differences."
+                    }
+                  ]
+                },
+                {
+                  "id": "replenish-on-min-max",
+                  "title": "Replenish on min/max",
+                  "keyFacts": [
+                    "Daily order proposal from sales",
+                    "Transfers between branches"
+                  ],
+                  "painPoints": [
+                    "Min/max levels never maintained after setup"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "purc",
+                      "name": "Purchasing and Min/Max Replenishment",
+                      "description": "Purchase orders, receiving and automatic replenishment proposals from minimum/maximum stock levels and the daily sales order list.",
+                      "how": "Builds the proposal."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "form",
+                      "name": "Central Formula and Branch Management",
+                      "description": "Head-office control for chains, franchise formulas and retail service organisations: central assortment, price and promotion publication to all branches, joint ",
+                      "how": "Allocates central stock to branches."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        },
+        {
+          "id": "connect-suppliers-and-order-electronically",
+          "name": "Connect Suppliers and Order Electronically",
+          "type": "outcome-based-stream",
+          "description": "Supplier article files flow into the assortment, orders go out electronically, deliveries are booked in with serial numbers, and EDI documents are exchanged via Transus.",
+          "outcomes": [
+            "Current article data without typing",
+            "Faster, error-free ordering",
+            "Correct purchase prices and margins"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "supi",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "artm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "purc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "prpr",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "connect-suppliers-and-order-electronically-flow",
+              "title": "Connect Suppliers and Order Electronically",
+              "description": "Supplier article files flow into the assortment, orders go out electronically, deliveries are booked in with serial numbers, and EDI documents are exchanged via Transus.",
+              "steps": [
+                {
+                  "id": "import-supplier-articles",
+                  "title": "Import supplier articles",
+                  "keyFacts": [
+                    "Article files read automatically",
+                    "Bike trade suppliers connected nationally"
+                  ],
+                  "painPoints": [
+                    "Suppliers deliver inconsistent data quality"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "supi",
+                      "name": "Supplier Catalogue and Electronic Ordering",
+                      "description": "Reads supplier article files, checks supplier stock, orders electronically and books deliveries in, including frame and DPC numbers in the bike trade; EDI order",
+                      "how": "Imports and normalises feeds."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "artm",
+                      "name": "Article and Assortment Master",
+                      "description": "Articles, variants (size/colour), barcodes, brands, revenue groups and images; the master that feeds till, webshop and marketplaces.",
+                      "how": "Updates the master."
+                    }
+                  ]
+                },
+                {
+                  "id": "calculate-purchase-prices",
+                  "title": "Calculate net purchase prices",
+                  "keyFacts": [
+                    "Purchase-price formulas include advertising contribution and payment discount"
+                  ],
+                  "painPoints": [
+                    "Hidden supplier conditions distort margin"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "prpr",
+                      "name": "Pricing, Promotions and Purchase Price Formulas",
+                      "description": "Selling prices, price lists, promotions and the purchase-price formula module that derives invoice and net prices from gross purchase prices including advertisi",
+                      "how": "Applies purchase-price formulas."
+                    }
+                  ]
+                },
+                {
+                  "id": "order-and-book-in",
+                  "title": "Order electronically and book deliveries",
+                  "keyFacts": [
+                    "Check supplier stock before ordering",
+                    "Frame and DPC numbers booked on receipt"
+                  ],
+                  "painPoints": [
+                    "Partial deliveries and back orders"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "purc",
+                      "name": "Purchasing and Min/Max Replenishment",
+                      "description": "Purchase orders, receiving and automatic replenishment proposals from minimum/maximum stock levels and the daily sales order list.",
+                      "how": "Creates purchase orders."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "supi",
+                      "name": "Supplier Catalogue and Electronic Ordering",
+                      "description": "Reads supplier article files, checks supplier stock, orders electronically and books deliveries in, including frame and DPC numbers in the bike trade; EDI order",
+                      "how": "Transmits orders and EDI documents."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Branch wholesalers",
+              "type": "external",
+              "description": "Branch wholesalers is needed to complete this stream."
+            },
+            {
+              "system": "Transus EDI platform",
+              "type": "external",
+              "description": "Transus EDI platform is needed to complete this stream."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Omnichannel Selling",
+      "description": "Webshop, marketplaces, shipping and returns from one stock.",
+      "streams": [
+        {
+          "id": "sell-online-from-one-stock",
+          "name": "Sell Online from One Stock",
+          "type": "outcome-based-stream",
+          "description": "The Vendit webshop or a connected Highbiza/WooCommerce shop shows the same articles, prices and stock as the store, and online orders land in Vendit for fulfilment.",
+          "outcomes": [
+            "Online revenue without double administration",
+            "No overselling",
+            "Shop visits driven by online search"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "wshp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "hbzc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ordr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "artm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "prpr",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sell-online-from-one-stock-flow",
+              "title": "Sell Online from One Stock",
+              "description": "The Vendit webshop or a connected Highbiza/WooCommerce shop shows the same articles, prices and stock as the store, and online orders land in Vendit for fulfilment.",
+              "steps": [
+                {
+                  "id": "publish-catalogue",
+                  "title": "Publish the catalogue online",
+                  "keyFacts": [
+                    "Articles, images, prices from Vendit",
+                    "SEO-friendly responsive shop"
+                  ],
+                  "painPoints": [
+                    "Product content written twice"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "wshp",
+                      "name": "Vendit Webshop",
+                      "description": "Responsive, SEO-friendly webshop fully linked to the Vendit System: articles, images, prices, promotions and stock come from Vendit; add-ons include B2B login, ",
+                      "how": "Renders the storefront."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "artm",
+                      "name": "Article and Assortment Master",
+                      "description": "Articles, variants (size/colour), barcodes, brands, revenue groups and images; the master that feeds till, webshop and marketplaces.",
+                      "how": "Supplies content."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "hbzc",
+                      "name": "Connected Webshop Sync (Highbiza, WooCommerce)",
+                      "description": "Keeps third-party webshops in sync with Vendit for retailers who want a custom shop: Highbiza (Katapull sibling) and WooCommerce are listed integrations.",
+                      "how": "Syncs connected shops."
+                    }
+                  ]
+                },
+                {
+                  "id": "take-online-order",
+                  "title": "Take and pay the online order",
+                  "keyFacts": [
+                    "Live stock check at checkout",
+                    "Discount codes and shipping methods configurable"
+                  ],
+                  "painPoints": [
+                    "Payment failures and abandoned baskets"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "wshp",
+                      "name": "Vendit Webshop",
+                      "description": "Responsive, SEO-friendly webshop fully linked to the Vendit System: articles, images, prices, promotions and stock come from Vendit; add-ons include B2B login, ",
+                      "how": "Checkout and payment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Confirms availability."
+                    }
+                  ]
+                },
+                {
+                  "id": "fulfil-from-store-stock",
+                  "title": "Fulfil from store stock",
+                  "keyFacts": [
+                    "Order appears in Vendit next to store sales"
+                  ],
+                  "painPoints": [
+                    "Store staff pick online orders between customers"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ordr",
+                      "name": "Online Order Hub",
+                      "description": "Single intake of orders from the Vendit webshop, connected webshops and marketplaces into Vendit, so stock, invoicing and shipping run from one place.",
+                      "how": "Imports and tracks the order."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Online payment service providers",
+              "type": "external",
+              "description": "Online payment service providers is needed to complete this stream."
+            },
+            {
+              "system": "Highbiza platform",
+              "type": "external",
+              "description": "Highbiza platform is needed to complete this stream."
+            }
+          ]
+        },
+        {
+          "id": "sell-on-marketplaces",
+          "name": "Sell on Marketplaces",
+          "type": "outcome-based-stream",
+          "description": "Articles are listed on bol, Amazon, VidaXL, Beslist and others via EffectConnect, with stock and prices kept in sync and orders flowing back into Vendit, even without an own webshop.",
+          "outcomes": [
+            "Extra reach without extra admin",
+            "No overselling across channels",
+            "Orders processed in one system"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "mrkt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ordr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "artm",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sell-on-marketplaces-flow",
+              "title": "Sell on Marketplaces",
+              "description": "Articles are listed on bol, Amazon, VidaXL, Beslist and others via EffectConnect, with stock and prices kept in sync and orders flowing back into Vendit, even without an own webshop.",
+              "steps": [
+                {
+                  "id": "choose-listings",
+                  "title": "Choose what to list where",
+                  "keyFacts": [
+                    "Scales per marketplace and per 5,000 articles",
+                    "Content and images from Premium or Enterprise"
+                  ],
+                  "painPoints": [
+                    "Marketplace content requirements differ per channel"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mrkt",
+                      "name": "Marketplace Channel Connector",
+                      "description": "Publishes articles with stock, lead time, prices and images to bol, Amazon, VidaXL, Beslist and others via EffectConnect (Katapull sibling) and imports orders w",
+                      "how": "Selects and publishes offers."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "artm",
+                      "name": "Article and Assortment Master",
+                      "description": "Articles, variants (size/colour), barcodes, brands, revenue groups and images; the master that feeds till, webshop and marketplaces.",
+                      "how": "Supplies content."
+                    }
+                  ]
+                },
+                {
+                  "id": "sync-stock-and-price",
+                  "title": "Keep stock and price in sync",
+                  "keyFacts": [
+                    "Stock, lead time, price and content synchronised automatically"
+                  ],
+                  "painPoints": [
+                    "Sync delay causes cancellations and seller-rating penalties"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Publishes availability."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "mrkt",
+                      "name": "Marketplace Channel Connector",
+                      "description": "Publishes articles with stock, lead time, prices and images to bol, Amazon, VidaXL, Beslist and others via EffectConnect (Katapull sibling) and imports orders w",
+                      "how": "Pushes to EffectConnect."
+                    }
+                  ]
+                },
+                {
+                  "id": "import-marketplace-orders",
+                  "title": "Import marketplace orders",
+                  "keyFacts": [
+                    "Orders with customer and payment data imported automatically"
+                  ],
+                  "painPoints": [
+                    "Marketplace returns policies differ"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ordr",
+                      "name": "Online Order Hub",
+                      "description": "Single intake of orders from the Vendit webshop, connected webshops and marketplaces into Vendit, so stock, invoicing and shipping run from one place.",
+                      "how": "Receives orders."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "EffectConnect",
+              "type": "external",
+              "description": "EffectConnect is needed to complete this stream."
+            },
+            {
+              "system": "Marketplaces",
+              "type": "external",
+              "description": "Marketplaces is needed to complete this stream."
+            }
+          ]
+        },
+        {
+          "id": "ship-and-handle-returns",
+          "name": "Ship Orders and Handle Returns",
+          "type": "outcome-based-stream",
+          "description": "Shipments are announced and labelled from Vendit via DeliveryMatch and returns come back into stock and refunds, linking store, webshop and marketplace fulfilment.",
+          "outcomes": [
+            "Faster dispatch",
+            "Accurate tracking for customers",
+            "Returns back on sale quickly"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "ship",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "retn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ordr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "ship-and-handle-returns-flow",
+              "title": "Ship Orders and Handle Returns",
+              "description": "Shipments are announced and labelled from Vendit via DeliveryMatch and returns come back into stock and refunds, linking store, webshop and marketplace fulfilment.",
+              "steps": [
+                {
+                  "id": "book-shipment",
+                  "title": "Book shipment and print label",
+                  "keyFacts": [
+                    "Labels printed from Vendit",
+                    "Track-and-trace stored on the order"
+                  ],
+                  "painPoints": [
+                    "Carrier choice done by habit, not cost"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ship",
+                      "name": "Shipping and Label Connector",
+                      "description": "Announces shipments and prints labels from Vendit with DeliveryMatch (Katapull sibling) and other shipping tools (Sendcloud and Transsmart are listed partners),",
+                      "how": "Books via DeliveryMatch."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ordr",
+                      "name": "Online Order Hub",
+                      "description": "Single intake of orders from the Vendit webshop, connected webshops and marketplaces into Vendit, so stock, invoicing and shipping run from one place.",
+                      "how": "Supplies order details."
+                    }
+                  ]
+                },
+                {
+                  "id": "register-return",
+                  "title": "Register a return",
+                  "keyFacts": [
+                    "Returns portal with carrier choice (Returnista)"
+                  ],
+                  "painPoints": [
+                    "Returns announced by e-mail are lost"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "retn",
+                      "name": "Returns Connector",
+                      "description": "Brings online returns registered in a returns portal back into Vendit stock and refunds; Returnista (Katapull sibling since 2026) is a listed Vendit partner. De",
+                      "how": "Imports the return."
+                    }
+                  ]
+                },
+                {
+                  "id": "restock-and-refund",
+                  "title": "Restock and refund",
+                  "keyFacts": [
+                    "Returned item back in sellable stock"
+                  ],
+                  "painPoints": [
+                    "Damaged returns booked as sellable"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "stck",
+                      "name": "Inventory Ledger and Multi-Location Stock",
+                      "description": "Real-time stock per branch and central warehouse: every sale, return, reservation, transfer and write-off mutates the ledger, serialised items such as bike fram",
+                      "how": "Books the item back."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "retn",
+                      "name": "Returns Connector",
+                      "description": "Brings online returns registered in a returns portal back into Vendit stock and refunds; Returnista (Katapull sibling since 2026) is a listed Vendit partner. De",
+                      "how": "Triggers refund handling."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "DeliveryMatch",
+              "type": "external",
+              "description": "DeliveryMatch is needed to complete this stream."
+            },
+            {
+              "system": "Returnista",
+              "type": "external",
+              "description": "Returnista is needed to complete this stream."
+            },
+            {
+              "system": "Carriers",
+              "type": "external",
+              "description": "Carriers is needed to complete this stream."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer Relationship",
+      "description": "Loyalty and repeat business.",
+      "streams": [
+        {
+          "id": "grow-customer-loyalty",
+          "name": "Grow Customer Loyalty",
+          "type": "outcome-based-stream",
+          "description": "Customer cards, saving, value cheques and own gift cards that bring regulars back and record sales on name.",
+          "outcomes": [
+            "More repeat visits",
+            "Higher share of sales on name",
+            "Gift cards bring new customers"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "loya",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "crmc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "posc",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "grow-customer-loyalty-flow",
+              "title": "Grow Customer Loyalty",
+              "description": "Customer cards, saving, value cheques and own gift cards that bring regulars back and record sales on name.",
+              "steps": [
+                {
+                  "id": "enrol-customer",
+                  "title": "Enrol the customer",
+                  "keyFacts": [
+                    "Physical or digital card with unique barcode"
+                  ],
+                  "painPoints": [
+                    "Enrolment slows the queue"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "crmc",
+                      "name": "Customer Registry",
+                      "description": "Complete customer file used for sale on name, sales history, repairs, invoices and loyalty; the basis for clienteling in specialty retail.",
+                      "how": "Registers the customer."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "loya",
+                      "name": "Loyalty, Value Cheques and Gift Cards",
+                      "description": "Customer cards with a unique barcode, saving for discounts or gifts, printable value cheques, and own-brand gift cards through Givacard; part of the Enterprise ",
+                      "how": "Issues the card."
+                    }
+                  ]
+                },
+                {
+                  "id": "earn-and-redeem",
+                  "title": "Earn and redeem",
+                  "keyFacts": [
+                    "Value cheques printed or mailed with barcode",
+                    "Gift cards via Givacard"
+                  ],
+                  "painPoints": [
+                    "Unclear liability of open balances"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "loya",
+                      "name": "Loyalty, Value Cheques and Gift Cards",
+                      "description": "Customer cards with a unique barcode, saving for discounts or gifts, printable value cheques, and own-brand gift cards through Givacard; part of the Enterprise ",
+                      "how": "Maintains balances."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "posc",
+                      "name": "POS Checkout and Sales Registration",
+                      "description": "The till itself: scanning or searching articles, building the basket, applying prices, promotions and loyalty discounts, taking trade-ins and registering every ",
+                      "how": "Applies redemptions at the till."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Givacard",
+              "type": "external",
+              "description": "Givacard is needed to complete this stream."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Steering and Finance",
+      "description": "Reporting, accounting and multi-store control.",
+      "streams": [
+        {
+          "id": "steer-the-business-with-reporting",
+          "name": "Steer the Business with Reporting",
+          "type": "outcome-based-stream",
+          "description": "Daily dashboard on turnover, margin, discount and transactions compared with previous periods, stock reports and a clean accounting export.",
+          "outcomes": [
+            "Decisions based on current numbers",
+            "Less time on bookkeeping",
+            "Early signals on margin and dead stock"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "rprt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rcpt",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "steer-the-business-with-reporting-flow",
+              "title": "Steer the Business with Reporting",
+              "description": "Daily dashboard on turnover, margin, discount and transactions compared with previous periods, stock reports and a clean accounting export.",
+              "steps": [
+                {
+                  "id": "check-dashboard",
+                  "title": "Check the dashboard",
+                  "keyFacts": [
+                    "Turnover, margin, average ticket vs previous period",
+                    "Available on any device"
+                  ],
+                  "painPoints": [
+                    "Numbers only checked at month end"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Reporting and Online Dashboard",
+                      "description": "Online dashboard with turnover, margin, discount, transactions, average transaction value and items per transaction compared with prior periods, plus a report l",
+                      "how": "Shows KPIs."
+                    }
+                  ]
+                },
+                {
+                  "id": "analyse-assortment",
+                  "title": "Analyse assortment and stock",
+                  "keyFacts": [
+                    "Top/flop 100, turnover speed, negative margin lists"
+                  ],
+                  "painPoints": [
+                    "Dead stock noticed too late"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Reporting and Online Dashboard",
+                      "description": "Online dashboard with turnover, margin, discount, transactions, average transaction value and items per transaction compared with prior periods, plus a report l",
+                      "how": "Runs reports."
+                    }
+                  ]
+                },
+                {
+                  "id": "export-to-accounting",
+                  "title": "Export to accounting",
+                  "keyFacts": [
+                    "One-click export to Exact, AFAS and others"
+                  ],
+                  "painPoints": [
+                    "Ledger mapping errors after new revenue groups"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Accounting Export",
+                      "description": "Prepares sales and cashbook mutations for one-click import into accounting packages (Vendit names Exact and AFAS).",
+                      "how": "Builds the journal."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rcpt",
+                      "name": "Receipts, Cashbook and Day Closing",
+                      "description": "Prints or e-mails receipts, keeps the cash drawer and cashbook, and closes each register at the end of the day so turnover, tenders and cash differences reconci",
+                      "how": "Supplies closings."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Accounting software",
+              "type": "external",
+              "description": "Accounting software is needed to complete this stream."
+            }
+          ]
+        },
+        {
+          "id": "run-a-multi-store-formula",
+          "name": "Run a Multi-Store Chain or Formula",
+          "type": "outcome-based-stream",
+          "description": "Head office sets assortment, prices and promotions centrally, publishes them to all branches or franchisees, buys jointly and compares performance per store.",
+          "outcomes": [
+            "Consistent formula execution",
+            "Less admin per branch",
+            "Better stock distribution"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "form",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "prpr",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "artm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "stck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rprt",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tenu",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "run-a-multi-store-formula-flow",
+              "title": "Run a Multi-Store Chain or Formula",
+              "description": "Head office sets assortment, prices and promotions centrally, publishes them to all branches or franchisees, buys jointly and compares performance per store.",
+              "steps": [
+                {
+                  "id": "define-formula",
+                  "title": "Define formula assortment and prices",
+                  "keyFacts": [
+                    "Assortment per branch",
+                    "Central margin control"
+                  ],
+                  "painPoints": [
+                    "Franchisees want local exceptions"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "form",
+                      "name": "Central Formula and Branch Management",
+                      "description": "Head-office control for chains, franchise formulas and retail service organisations: central assortment, price and promotion publication to all branches, joint ",
+                      "how": "Holds formula rules."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "artm",
+                      "name": "Article and Assortment Master",
+                      "description": "Articles, variants (size/colour), barcodes, brands, revenue groups and images; the master that feeds till, webshop and marketplaces.",
+                      "how": "Supplies articles."
+                    }
+                  ]
+                },
+                {
+                  "id": "publish-to-branches",
+                  "title": "Publish to all branches",
+                  "keyFacts": [
+                    "One-click publication of prices and promotions"
+                  ],
+                  "painPoints": [
+                    "Branches out of sync after failed publication"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "form",
+                      "name": "Central Formula and Branch Management",
+                      "description": "Head-office control for chains, franchise formulas and retail service organisations: central assortment, price and promotion publication to all branches, joint ",
+                      "how": "Publishes changes."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "prpr",
+                      "name": "Pricing, Promotions and Purchase Price Formulas",
+                      "description": "Selling prices, price lists, promotions and the purchase-price formula module that derives invoice and net prices from gross purchase prices including advertisi",
+                      "how": "Stores prices."
+                    }
+                  ]
+                },
+                {
+                  "id": "compare-branches",
+                  "title": "Compare branch performance",
+                  "keyFacts": [
+                    "Real-time insight for head office and branches"
+                  ],
+                  "painPoints": [
+                    "Franchisee data sharing must be agreed"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rprt",
+                      "name": "Reporting and Online Dashboard",
+                      "description": "Online dashboard with turnover, margin, discount, transactions, average transaction value and items per transaction compared with prior periods, plus a report l",
+                      "how": "Reports per branch."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tenu",
+                      "name": "Tenant, Branch and User Administration",
+                      "description": "Customer environments in the cloud, branches, workstations, users and roles; packages differ in user limits (Premium up to 15 users, Enterprise unlimited).",
+                      "how": "Defines branch structure and access."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": []
+        }
+      ]
+    },
+    {
+      "name": "Customer Lifecycle",
+      "description": "Adopting and staying on Vendit.",
+      "streams": [
+        {
+          "id": "go-live-on-vendit",
+          "name": "Go Live on Vendit",
+          "type": "outcome-based-stream",
+          "description": "Turnkey switch from an old system: data migration, hardware delivery and installation, configuration, training and ongoing support for one monthly fee.",
+          "outcomes": [
+            "Short, predictable go-live",
+            "Staff confident on day one",
+            "Issues resolved remotely"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "onbd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "hwdv",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tenu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "supp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "intg",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "go-live-on-vendit-flow",
+              "title": "Go Live on Vendit",
+              "description": "Turnkey switch from an old system: data migration, hardware delivery and installation, configuration, training and ongoing support for one monthly fee.",
+              "steps": [
+                {
+                  "id": "migrate-data",
+                  "title": "Migrate articles, stock and customers",
+                  "keyFacts": [
+                    "Vendit migrates data from the previous system"
+                  ],
+                  "painPoints": [
+                    "Poor data quality in the old system"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "onbd",
+                      "name": "Onboarding, Data Migration and Training",
+                      "description": "Turnkey implementation: articles, stock, customers and prices are prepared, data is migrated from the previous system, hardware is installed and staff are train",
+                      "how": "Runs the migration."
+                    }
+                  ]
+                },
+                {
+                  "id": "install-and-configure",
+                  "title": "Install hardware and configure branches",
+                  "keyFacts": [
+                    "Screen, scanner, printer, terminal and drawer delivered and connected",
+                    "Existing hardware reused where suitable"
+                  ],
+                  "painPoints": [
+                    "Store cannot close for installation"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "hwdv",
+                      "name": "Store Hardware, Labels and Peripherals",
+                      "description": "Configures and drives the hardware Vendit supplies with the system: screens, scanners, receipt and label printers, cash drawers and handhelds (Vendit names Data",
+                      "how": "Configures devices."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tenu",
+                      "name": "Tenant, Branch and User Administration",
+                      "description": "Customer environments in the cloud, branches, workstations, users and roles; packages differ in user limits (Premium up to 15 users, Enterprise unlimited).",
+                      "how": "Sets up branches and users."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "intg",
+                      "name": "Partner Integration Gateway",
+                      "description": "Shared gateway and event backbone through which partner and Katapull sibling integrations (ERP, accounting, review tools, shipping, marketplaces, EDI) connect t",
+                      "how": "Enables connectors."
+                    }
+                  ]
+                },
+                {
+                  "id": "train-and-support",
+                  "title": "Train staff and support after go-live",
+                  "keyFacts": [
+                    "Training before go-live",
+                    "Helpdesk Monday to Saturday, remote support"
+                  ],
+                  "painPoints": [
+                    "Saturday peak issues"
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "onbd",
+                      "name": "Onboarding, Data Migration and Training",
+                      "description": "Turnkey implementation: articles, stock, customers and prices are prepared, data is migrated from the previous system, hardware is installed and staff are train",
+                      "how": "Trains staff."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "supp",
+                      "name": "Customer Success, Remote Support and Updates",
+                      "description": "Dutch helpdesk Monday to Saturday, remote support via TeamViewer, online help and included updates.",
+                      "how": "Handles tickets and remote sessions."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "TeamViewer",
+              "type": "external",
+              "description": "TeamViewer is needed to complete this stream."
+            },
+            {
+              "system": "Previous POS systems",
+              "type": "external",
+              "description": "Previous POS systems is needed to complete this stream."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

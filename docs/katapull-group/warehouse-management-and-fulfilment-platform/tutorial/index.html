@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How a webshop warehouse runs: warehouse management software explained</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>* { box-sizing: border-box; }
+html { scroll-padding-top: 1.5rem; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-wrap: anywhere;
+}
+a { color: var(--accent-ink); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.page { max-width: 1160px; padding: 1.5rem 2.5rem 3rem; margin: auto; }
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    margin: 2px 0 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: Ubuntu, Optima, Segoe, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.site-nav a {
+    color: #6b7280;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+.site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+.domain-nav { display: flex; flex-wrap: wrap; gap: .75rem; color: var(--ink-soft); font-size: .85rem; }
+.domain-nav a { color: inherit; }
+.hero { padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--line-strong); }
+.eyebrow, .chapter-number {
+    color: var(--accent-ink); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+h1, h2, h3, h4 { line-height: 1.25; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); letter-spacing: -.035em; margin: .5rem 0 1rem; max-width: 22ch; }
+h2 { font-size: 1.9rem; letter-spacing: -.025em; margin: .35rem 0 1.4rem; }
+h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+h4 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.metadata { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; color: var(--ink-soft); font-size: .85rem; }
+.reader-context { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem 3rem; margin-top: 1.8rem; font-size: .95rem; }
+.reader-context p:last-child { margin-bottom: 0; }
+.label { color: var(--ink-soft); font-size: .78rem; font-weight: 700; margin: 0 0 .25rem; }
+.labeled { margin-top: .75rem; }
+.reading-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 3.5rem; align-items: start; padding-top: 2.75rem; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .3rem .5rem .5rem 0; }
+.reading-layout > aside { align-self: stretch; }
+.contents h2 { font-size: .8rem; letter-spacing: .03em; margin: 0 0 .75rem; }
+.contents ol { padding-left: 1.4rem; margin: 0; font-size: .82rem; line-height: 1.45; }
+.contents li { padding: .28rem 0 .28rem .2rem; color: var(--ink-soft); }
+.contents a { color: var(--ink-soft); text-decoration: none; display: inline-block; padding: .1rem 0; }
+.contents a:hover { color: var(--accent-ink); text-decoration: underline; }
+main { min-width: 0; max-width: 740px; }
+section { margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--line-strong); }
+section:last-child { margin-bottom: 0; }
+.chapter-number { margin: 0; }
+section ul { padding-left: 1.35rem; }
+section li { padding-left: .3rem; }
+.entry { padding: 1.4rem 0; border-top: 1px solid var(--line); }
+h2 + .entry { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+.entry > :last-child, .labeled > :last-child { margin-bottom: 0; }
+.tutorial-illustration { margin: 1.3rem 0 1.5rem; break-inside: avoid; }
+.illustration-link { display: block; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: white; }
+.illustration-link:hover { border-color: var(--accent); }
+.tutorial-illustration img { display: block; width: 100%; height: auto; border-radius: inherit; }
+.tutorial-illustration figcaption { margin-top: .6rem; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }
+.tutorial-illustration figcaption p { margin: 0 0 .35rem; }
+.image-hint { display: block; font-size: .75rem; }
+.example { background: var(--accent-soft); border-left: 3px solid var(--accent-line); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.3rem; margin: 1.3rem 0; }
+.example .labeled:first-child { margin-top: 0; }
+.example > :last-child { margin-bottom: 0; }
+.timeline { border-left: 2px solid var(--accent-line); padding: 0 0 0 1.5rem; list-style: none; }
+.timeline li { position: relative; padding: .3rem 0 1.5rem; }
+.timeline li::before { content: ""; position: absolute; width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); left: -1.92rem; top: .7rem; }
+.timeline li:last-child { padding-bottom: 0; }
+.source { font-size: .8rem; margin-top: .7rem; }
+.steps { padding-left: 1.5rem; }
+.steps > li { padding: .4rem 0 1rem .5rem; }
+.steps > li::marker { color: var(--accent-ink); font-weight: 700; }
+.notice { background: var(--surface-muted); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1.4rem; margin-bottom: 2rem; }
+.notice h2 { font-size: 1.4rem; }
+.notice p:last-child { margin-bottom: 0; }
+details { margin-top: 1rem; background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+summary { cursor: pointer; padding: .7rem 1rem; color: var(--accent-ink); font-size: .95rem; font-weight: 600; }
+summary:hover { background: var(--accent-soft); border-radius: inherit; }
+.answer { padding: .5rem 1rem 1rem; }
+.answer > :last-child { margin-bottom: 0; }
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { padding: 0 0 1rem; }
+.reading-list p { margin: .3rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+footer { text-align: right; padding-top: 2rem; font-size: .85rem; }
+.skip-link { position: fixed; top: -10rem; left: 1rem; background: var(--panel); padding: .6rem 1rem; z-index: 2; }
+.skip-link:focus { top: 1rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 850px) {
+    .page { padding: 1.25rem; }
+    .hero { padding: 2rem 0; }
+    .reader-context { grid-template-columns: 1fr; gap: .5rem; }
+    .reading-layout { display: block; padding-top: 1.5rem; }
+    .contents { position: static; max-height: none; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--line-strong); }
+    .contents ol { columns: 2; column-gap: 2rem; }
+    .contents li { break-inside: avoid; }
+    .contents a { padding: .25rem 0; }
+    h2 { font-size: 1.65rem; }
+}
+@media (max-width: 430px) {
+    .contents ol { columns: 1; }
+    body { font-size: 16px; }
+}
+@media print {
+    body { background: white; color: black; font-size: 11pt; }
+    .page { max-width: none; padding: 0; }
+    .site-nav, .domain-nav, .reading-layout > aside, footer, .skip-link { display: none; }
+    .hero { padding: 0 0 1rem; }
+    h1 { font-size: 28pt; }
+    .reading-layout { display: block; padding-top: 1rem; }
+    main { max-width: none; }
+    section { padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h2, h3, h4 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .example, details, .timeline li { break-inside: avoid; }
+    details::details-content { content-visibility: visible; }
+    details > :not(summary) { display: block !important; }
+    summary { display: none; }
+    .image-hint { display: none; }
+}
+</style>
+</head>
+<body id="top">
+    <a class="skip-link" href="#main">Skip to the tutorial</a>
+    <div class="page">
+        <nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html" class="active" aria-current="page">Domain Tutorial</a>
+</nav>
+
+        <header class="hero">
+            <p class="eyebrow">A beginner's guide</p>
+            <h1>How a webshop warehouse runs: warehouse management software explained</h1>
+            <div class="metadata"><span>About 10 min to read</span><span>Updated <time datetime="2026-10-30">2026-10-30</time></span></div>
+            <div class="reader-context"><div class="labeled"><p class="label">Who this is for</p><p>A curious adult coming from a different field, with no assumed knowledge of logistics or e-commerce.</p></div><div class="labeled"><p class="label">What this guide covers</p><p>Covers the software that runs the inside of an online store&#x27;s or fulfilment company&#x27;s warehouse: knowing what stock is where, buying and receiving goods, picking and packing orders, handing parcels to carriers, handling returns, and serving fulfilment clients. Uses Picqer, a Dutch warehouse system owned by Katapull since October 2026, as the running example.</p></div></div>
+        </header>
+        <div class="reading-layout">
+            <aside><nav class="contents" aria-label="Tutorial contents"><h2>In this guide</h2><ol><li><a href="#learning-goals">What you will learn</a></li><li><a href="#introduction">Start with the everyday need</a></li><li><a href="#participants">The people involved</a></li><li><a href="#concepts">The key concepts</a></li><li><a href="#history">A little history</a></li><li><a href="#walkthrough">Follow one complete example</a></li><li><a href="#value">Value, money, and incentives</a></li><li><a href="#challenges">What makes this domain difficult</a></li><li><a href="#misconceptions">Common misunderstandings</a></li><li><a href="#takeaways">The ideas to take with you</a></li><li><a href="#knowledge-checks">Try it for yourself</a></li><li><a href="#next-questions">Questions to ask a practitioner</a></li><li><a href="#further-reading">Keep learning</a></li></ol></nav></aside>
+            <main id="main" tabindex="-1"><section id="learning-goals" aria-labelledby="heading-learning-goals"><p class="chapter-number">01</p><h2 id="heading-learning-goals">What you will learn</h2><ul><li><p>Explain what a warehouse management system (WMS) does that a webshop back-office does not.</p></li><li><p>Describe the path of an order from the webshop to a labelled parcel.</p></li><li><p>Explain why stock accuracy and walking distance dominate warehouse performance.</p></li><li><p>Describe how a fulfilment company uses one system for many client brands.</p></li><li><p>Name the main trade-offs when a warehouse grows from a few people to robots.</p></li></ul></section><section id="introduction" aria-labelledby="heading-introduction"><p class="chapter-number">02</p><h2 id="heading-introduction">Start with the everyday need</h2><p>A warehouse management system is software that knows every product, every shelf location and every order in a warehouse, and tells people (or machines) what to do next: which goods to buy, where to put deliveries, which orders to pick, in which order to walk, which box to use and which label to print.</p><p>For an online store, the warehouse is where promises are kept or broken. A wrong item, a late parcel or an item sold that is not on the shelf costs money and customers. Above a few dozen orders a day, memory and spreadsheets stop working.</p><aside class="example"><div class="labeled"><p class="label">A familiar comparison</p><p>Think of a sat-nav for a supermarket shopping trip that also knows exactly what is on every shelf: it gives you the list, the shortest route, checks each item as you put it in the basket and prints the receipt.</p></div><div class="labeled"><p class="label">Where the comparison stops</p><p>In a warehouse many people shop for hundreds of different customers at once, shelves are refilled while they walk, and the system must also tell the online shop how much is left so it does not sell what is no longer there.</p></div></aside></section><section id="participants" aria-labelledby="heading-participants"><p class="chapter-number">03</p><h2 id="heading-participants">The people involved</h2><div class="entry"><h3>Webshop owner</h3><p>Runs the online store and often its warehouse.</p><div class="labeled"><p class="label">What matters to them</p><p>Shipping on time, correct stock and not needing more staff.</p></div></div><div class="entry"><h3>Warehouse manager</h3><p>Plans the team, hardware and daily priorities.</p><div class="labeled"><p class="label">What matters to them</p><p>Cut-offs, throughput and errors at peak.</p></div></div><div class="entry"><h3>Picker and packer</h3><p>Walks, picks, scans and packs.</p><div class="labeled"><p class="label">What matters to them</p><p>Clear instructions, little walking and no blame for mistakes.</p></div></div><div class="entry"><h3>Fulfilment company (3PL)</h3><p>Stores and ships goods for many webshops.</p><div class="labeled"><p class="label">What matters to them</p><p>Serving many clients in one workflow and billing every service.</p></div></div><div class="entry"><h3>Fulfilment client</h3><p>A brand that outsources its warehouse.</p><div class="labeled"><p class="label">What matters to them</p><p>Seeing its stock and orders without calling.</p></div></div><div class="entry"><h3>Partners</h3><p>Webshop platforms, carriers, returns tools, hardware suppliers.</p><div class="labeled"><p class="label">What matters to them</p><p>Stable connections and shared customers.</p></div></div></section><section id="concepts" aria-labelledby="heading-concepts"><p class="chapter-number">04</p><h2 id="heading-concepts">The key concepts</h2><div class="entry"><h3>Location</h3><p>A named place in the warehouse where stock is kept, such as a shelf position or a pallet place.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-location.jpg" target="_blank" rel="noopener noreferrer" aria-label="Location — open full image in a new tab"><img src="media/concept-location.jpg" alt="Location: Product X is on location A-03-2 (pick) and on a pallet at B-10 (bulk)." loading="lazy" decoding="async"></a><figcaption><p>Without locations, staff search; with them, the system can plan routes.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Product X is on location A-03-2 (pick) and on a pallet at B-10 (bulk).</p></div><div class="labeled"><p class="label">Why it matters</p><p>Without locations, staff search; with them, the system can plan routes.</p></div></div><div class="entry"><h3>Free stock</h3><p>Stock that is physically present and not yet reserved for an order.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-free-stock.jpg" target="_blank" rel="noopener noreferrer" aria-label="Free stock — open full image in a new tab"><img src="media/concept-free-stock.jpg" alt="Free stock: 10 on the shelf, 3 reserved for open orders: 7 free to sell." loading="lazy" decoding="async"></a><figcaption><p>Webshops should sell free stock, not physical stock, to avoid overselling.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>10 on the shelf, 3 reserved for open orders: 7 free to sell.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Webshops should sell free stock, not physical stock, to avoid overselling.</p></div></div><div class="entry"><h3>Picklist and batch</h3><p>The list of items to collect for one order; a batch combines several picklists in one walk.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-picklist-and-batch.jpg" target="_blank" rel="noopener noreferrer" aria-label="Picklist and batch — open full image in a new tab"><img src="media/concept-picklist-and-batch.jpg" alt="Picklist and batch: Twelve orders collected in one optimal round with a trolley." loading="lazy" decoding="async"></a><figcaption><p>Pickers walk most of their day, so combining orders saves time.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Twelve orders collected in one optimal round with a trolley.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Pickers walk most of their day, so combining orders saves time.</p></div></div><div class="entry"><h3>Singles</h3><p>Orders with only one order line.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-singles.jpg" target="_blank" rel="noopener noreferrer" aria-label="Singles — open full image in a new tab"><img src="media/concept-singles.jpg" alt="Singles: Picqer says 60-70% of an average webshop&#x27;s orders are singles (vendor claim)." loading="lazy" decoding="async"></a><figcaption><p>They can be picked in bulk and labelled at scan.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Picqer says 60-70% of an average webshop&#x27;s orders are singles (vendor claim).</p></div><div class="labeled"><p class="label">Why it matters</p><p>They can be picked in bulk and labelled at scan.</p></div></div><div class="entry"><h3>Scan verification</h3><p>Confirming each item by scanning its barcode.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-scan-verification.jpg" target="_blank" rel="noopener noreferrer" aria-label="Scan verification — open full image in a new tab"><img src="media/concept-scan-verification.jpg" alt="Scan verification: The scanner beeps if the wrong colour is picked." loading="lazy" decoding="async"></a><figcaption><p>It prevents most picking errors, especially by new staff.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>The scanner beeps if the wrong colour is picked.</p></div><div class="labeled"><p class="label">Why it matters</p><p>It prevents most picking errors, especially by new staff.</p></div></div><div class="entry"><h3>Cycle counting</h3><p>Counting a few locations at a time all year instead of one big annual count.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-cycle-counting.jpg" target="_blank" rel="noopener noreferrer" aria-label="Cycle counting — open full image in a new tab"><img src="media/concept-cycle-counting.jpg" alt="Cycle counting: Ten minutes of counting in a quiet hour each day." loading="lazy" decoding="async"></a><figcaption><p>Errors are found before they cause oversold orders.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Ten minutes of counting in a quiet hour each day.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Errors are found before they cause oversold orders.</p></div></div><div class="entry"><h3>Batch number and best-before date</h3><p>Identifiers of a production lot and its expiry.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-batch-number-and-best-before-date.jpg" target="_blank" rel="noopener noreferrer" aria-label="Batch number and best-before date — open full image in a new tab"><img src="media/concept-batch-number-and-best-before-date.jpg" alt="Batch number and best-before date: A supplements lot with expiry March 2027." loading="lazy" decoding="async"></a><figcaption><p>Needed to ship oldest first and to recall a lot.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A supplements lot with expiry March 2027.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Needed to ship oldest first and to recall a lot.</p></div></div><div class="entry"><h3>Fulfilment (3PL)</h3><p>A company that stores and ships goods on behalf of other businesses.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-fulfilment-3pl.jpg" target="_blank" rel="noopener noreferrer" aria-label="Fulfilment (3PL) — open full image in a new tab"><img src="media/concept-fulfilment-3pl.jpg" alt="Fulfilment (3PL): A 3PL ships for 50 webshops from one building." loading="lazy" decoding="async"></a><figcaption><p>Its software must separate clients yet run one efficient floor.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A 3PL ships for 50 webshops from one building.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Its software must separate clients yet run one efficient floor.</p></div></div></section><section id="history" aria-labelledby="heading-history"><p class="chapter-number">05</p><h2 id="heading-history">A little history</h2><p>This is a selective, mostly Dutch view; other markets developed differently.</p><ol class="timeline"><li><h3>Before about 2010</h3><p>Small webshops packed from memory and spreadsheets; WMS software was built for large logistics companies and needed consultants.</p><div class="labeled"><p class="label">What this helps explain</p><p>Most webshops had no affordable WMS.</p></div></li><li><h3>2010s</h3><p>Cloud WMS for webshops appeared, priced per order and connected to webshop platforms in minutes; Picqer started in November 2012.</p><div class="labeled"><p class="label">What this helps explain</p><p>Small warehouses could professionalise without IT projects.</p></div></li><li><h3>Late 2010s to 2020s</h3><p>Mobile handheld apps, rules automation and multi-client fulfilment versions became standard; 3PLs offered client portals.</p><div class="labeled"><p class="label">What this helps explain</p><p>Paperless, guided work and outsourcing grew.</p></div></li><li><h3>2020s</h3><p>Robots and goods-to-person systems reached mid-size warehouses, and software groups such as Katapull began combining ERP, shipping, returns and WMS.</p><div class="labeled"><p class="label">What this helps explain</p><p>The WMS becomes one part of a connected commerce chain.</p></div></li></ol></section><section id="walkthrough" aria-labelledby="heading-walkthrough"><p class="chapter-number">06</p><h2 id="heading-walkthrough">Follow one complete example</h2><h3>One order for a phone case and a charger (illustrative example)</h3><p>Fictional characters: Lisa runs a Dutch phone-accessories webshop with a small warehouse on Picqer; Tom, a student, works there on Saturdays; Mark orders on a Friday evening.</p><ol class="steps"><li><h4>The order arrives</h4><p>Mark&#x27;s order is imported from the webshop. Picqer reserves one case and one charger, so the webshop shows one less of each.</p><div class="labeled"><p class="label">Why this step matters</p><p>Free stock is updated immediately, preventing overselling.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If the stock sync is delayed, two customers can buy the last item.</p></div></aside></li><li><h4>Rules set priority</h4><p>Mark chose next-day delivery, so a rule marks the picklist urgent and chooses the carrier service.</p><div class="labeled"><p class="label">Why this step matters</p><p>Decisions are made by rules instead of sticky notes.</p></div></li><li><h4>Tom picks a batch</h4><p>On the handheld, Tom starts a batch of eight orders, including Mark&#x27;s, and follows the route. He scans each item.</p><div class="labeled"><p class="label">Why this step matters</p><p>One walk serves eight customers and scans catch mistakes.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If the charger location is empty, Tom pauses that picklist with a reason so others can solve it.</p></div></aside></li><li><h4>Packing and label</h4><p>At the packing table Picqer advises an envelope; after the last scan the label prints automatically and the webshop receives the tracking code.</p><div class="labeled"><p class="label">Why this step matters</p><p>No typing and no wrong boxes.</p></div></li><li><h4>A return comes back</h4><p>Mark returns the case via a returns portal; it is pre-registered in Picqer, scanned on arrival, inspected and put back in stock.</p><div class="labeled"><p class="label">Why this step matters</p><p>Sellable goods are back on sale quickly.</p></div></li></ol><div class="labeled"><p class="label">The outcome</p><p>Mark gets his parcel the next day, Lisa&#x27;s stock is right without counting, and Tom never needed to know the products.</p></div></section><section id="value" aria-labelledby="heading-value"><p class="chapter-number">07</p><h2 id="heading-value">Value, money, and incentives</h2><div class="entry"><h3>Webshops save labour and mistakes</h3><p>Guided, scanned work lets fewer and less-experienced people ship more orders correctly. Picqer charges a monthly plan with included orders plus a fee per extra order.</p><div class="labeled"><p class="label">For example</p><p>A customer quote says one employee can do the work of four or five (testimonial, not a measurement).</p></div></div><div class="entry"><h3>3PLs serve more clients per building</h3><p>Client separation, portals and recorded packaging let a fulfilment company grow its client list and bill accurately.</p><div class="labeled"><p class="label">For example</p><p>A 3PL handles 50 clients with 12 employees (VASCO-fulfilment case).</p></div></div><div class="entry"><h3>Partners gain shared customers</h3><p>Platforms, carriers and tools integrate with the WMS because their customers ask for it.</p><div class="labeled"><p class="label">For example</p><p>Returns tools pre-register returns in the warehouse system.</p></div></div><div class="entry"><h3>Katapull completes its chain</h3><p>The owner group can offer ERP, warehouse, shipping, returns and EDI as connectable parts.</p><div class="labeled"><p class="label">For example</p><p>Logic4 customers can step up to Picqer when they need more warehouse functionality.</p></div></div></section><section id="challenges" aria-labelledby="heading-challenges"><p class="chapter-number">08</p><h2 id="heading-challenges">What makes this domain difficult</h2><div class="entry"><h3>Keeping stock true</h3><p>Goods are misplaced, damaged or moved without booking.</p><div class="labeled"><p class="label">The competing needs</p><p>More counting costs time; less counting costs oversold orders.</p></div><div class="labeled"><p class="label">In practice</p><p>A product is booked on a shelf but was moved to another.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Real-time booking on handhelds and small risk-based cycle counts.</p></div></div><div class="entry"><h3>Peak season</h3><p>Volume multiplies while experienced staff do not.</p><div class="labeled"><p class="label">The competing needs</p><p>Hiring temps adds capacity but risks errors.</p></div><div class="labeled"><p class="label">In practice</p><p>A Black Friday backlog at carrier pickup time.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Guided, scanned work and batching.</p></div></div><div class="entry"><h3>Simplicity versus power</h3><p>Larger warehouses need more options, which can make software harder.</p><div class="labeled"><p class="label">The competing needs</p><p>Every setting helps someone and confuses someone else.</p></div><div class="labeled"><p class="label">In practice</p><p>Rules that only a few experts understand.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Sensible defaults with optional rules.</p></div></div><div class="entry"><h3>Many integrations</h3><p>Each shop, carrier and tool has its own API that changes.</p><div class="labeled"><p class="label">The competing needs</p><p>Building every connection yourself is costly; relying on partners risks quality.</p></div><div class="labeled"><p class="label">In practice</p><p>A carrier changes its label API before peak.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Own the main connectors and offer an open API for partners.</p></div></div></section><section id="misconceptions" aria-labelledby="heading-misconceptions"><p class="chapter-number">09</p><h2 id="heading-misconceptions">Common misunderstandings</h2><div class="entry"><h3>A webshop back-office already manages the warehouse.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Webshops usually track only sellable stock, not locations, reservations, routes or receipts.</p></div></div><div class="entry"><h3>Robots are needed to be efficient.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Most gains come first from locations, batching and scanning; robots come later at higher volumes.</p></div></div><div class="entry"><h3>Outsourcing to a 3PL means losing visibility.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Client portals can show stock and orders in real time.</p></div></div></section><section id="takeaways" aria-labelledby="heading-takeaways"><p class="chapter-number">10</p><h2 id="heading-takeaways">The ideas to take with you</h2><ul><li><p>A WMS knows every product, location and order and directs the work.</p></li><li><p>Free stock, scanning and batching are the foundations of fast, correct shipping.</p></li><li><p>Fulfilment companies need the same system plus client separation, portals and billing.</p></li><li><p>Warehouses grow from packing tables to handhelds to mechanisation, ideally on one system.</p></li><li><p>Integrations with shops, carriers and returns tools are as important as the warehouse features.</p></li></ul></section><section id="knowledge-checks" aria-labelledby="heading-knowledge-checks"><p class="chapter-number">11</p><h2 id="heading-knowledge-checks">Try it for yourself</h2><p>Pause and think through each situation, then open the answer.</p><div class="entry"><h3>1. Why should a webshop sell free stock rather than physical stock?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 1</span></summary><div class="answer"><p>Because part of the physical stock is already reserved for open orders.</p><div class="labeled"><p class="label">The reasoning</p><p>Selling physical stock would promise the same item twice.</p></div></div></details></div><div class="entry"><h3>2. What is the benefit of batch picking?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 2</span></summary><div class="answer"><p>One walk collects items for several orders.</p><div class="labeled"><p class="label">The reasoning</p><p>Walking is the largest part of picking time.</p></div></div></details></div><div class="entry"><h3>3. Why does a fulfilment company need client separation?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 3</span></summary><div class="answer"><p>Each client owns its own stock and data.</p><div class="labeled"><p class="label">The reasoning</p><p>Mixing them causes wrong shipments and data leaks.</p></div></div></details></div><div class="entry"><h3>4. When are batch numbers needed?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 4</span></summary><div class="answer"><p>For products like food, supplements or cosmetics.</p><div class="labeled"><p class="label">The reasoning</p><p>They enable first-expiry-first-out and recalls.</p></div></div></details></div></section><section id="next-questions" aria-labelledby="heading-next-questions"><p class="chapter-number">12</p><h2 id="heading-next-questions">Questions to ask a practitioner</h2><ul><li><p>What share of your orders is scan-verified?</p></li><li><p>How long does a new picker need before working alone?</p></li><li><p>How often do you count each location per year?</p></li><li><p>Which integrations would stop your warehouse if they failed?</p></li><li><p>At what volume would mechanisation pay off for you?</p></li></ul></section><section id="further-reading" aria-labelledby="heading-further-reading"><p class="chapter-number">13</p><h2 id="heading-further-reading">Keep learning</h2><ul class="reading-list"><li><a href="https://picqer.com/en/features/picking-shipping" rel="noreferrer">Picqer picking and shipping</a><p>Concrete description of batch, singles and scan-based picking.</p></li><li><a href="https://picqer.com/en/features/inventory-management" rel="noreferrer">Picqer inventory management</a><p>Explains physical, reserved and free stock and cycle counting.</p></li><li><a href="https://picqer.com/en/fulfilment" rel="noreferrer">Picqer Fulfilment</a><p>How a 3PL runs many clients in one system.</p></li><li><a href="https://picqer.com/en/hardware-robots" rel="noreferrer">Hardware and robots</a><p>The step-by-step path to mechanisation.</p></li></ul></section></main>
+        </div>
+        <footer><a href="#top">Back to the beginning</a></footer>
+    </div>
+</body>
+</html>

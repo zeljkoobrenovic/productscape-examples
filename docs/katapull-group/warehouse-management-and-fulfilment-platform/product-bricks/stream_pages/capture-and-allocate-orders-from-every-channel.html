@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Capture and Allocate Orders from Every Channel — Stream (Warehouse Management & Fulfilment Platform)</title>
+
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+
+    <style>
+
+        .links-group {
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .links-group-title {
+            font-size: 12px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .links-group-description {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .link-entry { margin-bottom: 16px; }
+        .link-entry:last-child { margin-bottom: 0; }
+
+        .link-entry-title {
+            color: #1d4ed8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-entry-title:hover { text-decoration: underline; }
+
+        .link-entry-copy {
+            color: #4b5563;
+            font-size: 13px;
+            margin: 4px 0 8px;
+            line-height: 1.45;
+        }
+
+        .link-embed {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            margin-top: 4px;
+        }
+
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page {
+            margin: 20px;
+        }
+
+        .nav-strip {
+            margin: 2px 20px 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .nav-link {
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        .nav-link.active {
+            border-bottom: 4px solid blue;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .header-meta {
+            font-size: 90%;
+            color: grey;
+        }
+
+        .header-title {
+            font-size: 50px;
+            line-height: 1.05;
+        }
+
+        .header-copy {
+            font-size: 16px;
+            color: grey;
+            margin-top: 6px;
+            max-width: 950px;
+        }
+
+        .activity-summary {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            background: #fff;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: blue;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            color: inherit;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #dbe2ea;
+            padding: 4px;
+            flex: 0 0 auto;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #315b7c;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .card-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .list li {
+            margin-bottom: 6px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            color: #374151;
+            font-size: 12px;
+        }
+
+        .pill img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 90%;
+        }
+
+        .dependency-diagram {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+            overflow-x: auto;
+        }
+
+        .flow-title {
+            font-size: 24px;
+            color: #315b7c;
+            margin-bottom: 6px;
+        }
+
+        .flow-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .flow-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .flow-step-card {
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fbfdff;
+        }
+
+        .flow-step-number {
+            font-size: 11px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-title {
+            font-size: 18px;
+            color: #315b7c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta-item {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }
+
+        .flow-step-meta-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
+        }
+
+        .flow-step-dependencies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .flow-matrix-wrap {
+            overflow-x: auto;
+        }
+
+        .flow-matrix {
+            width: 100%;
+            min-width: 1080px;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 90%;
+        }
+
+        .flow-matrix th,
+        .flow-matrix td {
+            border: 1px solid #dbe2ea;
+            vertical-align: top;
+            padding: 10px 12px;
+        }
+
+        .flow-matrix th {
+            background: #f8fafc;
+            text-align: left;
+        }
+
+        .flow-dependency-col {
+            min-width: 250px;
+            width: 250px;
+        }
+
+        .flow-dependency-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .flow-dependency-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            flex: 0 0 auto;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+
+        .flow-step-col {
+            min-width: 220px;
+        }
+
+        .flow-step-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .flow-dependency-name {
+            font-weight: bold;
+            color: #315b7c;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .flow-insight-row th {
+            background: #f1f5f9;
+            color: #315b7c;
+        }
+
+        .flow-insight-row td {
+            background: #f8fafc;
+        }
+
+        .flow-insight-list {
+            margin: 0;
+            padding-left: 16px;
+            line-height: 1.45;
+        }
+
+        .flow-insight-list li {
+            margin-bottom: 5px;
+        }
+
+        .flow-cell-empty {
+            background: #fbfdff;
+            color: #9ca3af;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .flow-cell-active {
+            background: #eef6ff;
+        }
+
+        .flow-cell-copy {
+            color: #374151;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .flow-cell-copy:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-cell-bricks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .flow-cell-brick {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+        }
+
+        .flow-cell-brick-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            flex: 0 0 auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+    <script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+</head>
+
+<body onload="initTab('home')" onhashchange="initTab()">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+
+<div id="breadcrumbs" style="margin-left: 20px"></div>
+
+<script src="../shared_data.js"></script>
+<script>
+    const config = {"domains": [{"id": "warehouse-management-and-fulfilment-platform", "name": "Warehouse Management & Fulfilment Platform", "description": "Picqer, Katapull's cloud warehouse management system for online stores, wholesalers and fulfilment companies: multi-channel orders, inventory and locations, purchasing, batch picking, packing, shipping integrations, returns, rules, mobile app and a multi-client fulfilment portal."}]};
+    const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
+    const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
+    const currentStream = {"id": "capture-and-allocate-orders-from-every-channel", "name": "Capture and Allocate Orders from Every Channel", "icon": "capture-and-allocate-orders-from-every-channel.png", "type": "outcome-based-stream", "description": "From an order in any webshop, marketplace, B2B portal, ERP or API call to an allocated, prioritised picklist in the right warehouse, with stock synced back to every channel.", "group": "Outbound", "rootGroup": "Run the Daily Warehouse", "flows": [{"id": "capture-flow", "title": "Order to picklist", "description": "Orders are imported, checked against stock and turned into picklists.", "steps": [{"id": "import-orders", "title": "Import orders from all channels", "keyFacts": ["Store connectors install in minutes", "Orders can also come via API or manual entry"], "painPoints": ["Channel APIs throttle at peak"], "dependencies": [{"type": "brick", "id": "chan", "name": "Webshop and Marketplace Store Connectors", "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...", "how": "Imports orders and products."}, {"type": "brick", "id": "papi", "name": "Picqer Public API and Webhooks", "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custo...", "how": "Accepts API orders."}, {"type": "brick", "id": "ktpl", "name": "Katapull Commerce Hub Bridges", "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista...", "how": "Receives orders from Logic4 (assumed)."}]}, {"id": "allocate-stock", "title": "Allocate stock and handle backorders", "keyFacts": ["Stock is reserved per order", "Partial deliveries are possible"], "painPoints": ["Backorders released in the wrong sequence anger customers"], "dependencies": [{"type": "brick", "id": "ordm", "name": "Multi-Channel Order Management and Allocation", "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and p...", "how": "Allocates and tracks backorders."}, {"type": "brick", "id": "invt", "name": "Inventory Ledger and Stock Sync", "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...", "how": "Provides free and reserved stock."}]}, {"id": "prioritise", "title": "Prioritise and route", "keyFacts": ["Rules mark urgent or snooze", "Picklists go to the right warehouse"], "painPoints": ["Manual priority notes get lost"], "dependencies": [{"type": "brick", "id": "rule", "name": "Rules Automation Engine", "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or ...", "how": "Applies rules."}, {"type": "brick", "id": "pkls", "name": "Picklist and Batch Picking Engine", "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed...", "how": "Creates picklists."}]}, {"id": "sync-stock", "title": "Sync stock back to channels", "keyFacts": ["Free stock pushed on every change"], "painPoints": ["Sync delays cause overselling"], "dependencies": [{"type": "brick", "id": "invt", "name": "Inventory Ledger and Stock Sync", "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock...", "how": "Publishes stock events."}, {"type": "brick", "id": "chan", "name": "Webshop and Marketplace Store Connectors", "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trac...", "how": "Pushes stock to channels."}]}]}], "outcomes": ["No missed or duplicated orders", "No overselling across channels", "Urgent orders reach the floor first"], "brickDependencies": [{"targetBrickId": "chan", "type": "composition"}, {"targetBrickId": "papi", "type": "composition"}, {"targetBrickId": "ktpl", "type": "composition"}, {"targetBrickId": "ordm", "type": "composition"}, {"targetBrickId": "invt", "type": "composition"}, {"targetBrickId": "rule", "type": "composition"}, {"targetBrickId": "pkls", "type": "composition"}], "externalSystemsThisStreamDependsOn": [{"system": "Webshop platforms and bol", "description": "Order sources and stock targets."}], "externalSystemsDependingOnThisStream": []};
+    const related_bricks = [{"id": "chan", "name": "Webshop and Marketplace Store Connectors", "type": "integration", "status": "sustaining", "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trace back. Picqer builds Magento 1/2, Shopify, WooCommerce, Lightspeed, Shopware 5/6, CCV Shop and bol Retailer itself; others (e.g. Craft Commerce) are partner-built.", "links": [], "layers": [{"layer": "ui", "description": "Self-service store setup.", "modules": [{"id": "module-store-setup-wizard", "name": "Store Setup Wizard", "type": "web-component", "description": "Connects a store in minutes, maps statuses and shipping methods, runs a first import.", "dependencies": {"modules": [{"moduleId": "module-store-connection-api", "type": "uses", "description": "Uses store connection api."}]}}]}, {"layer": "interfaces", "description": "Connection management.", "modules": [{"id": "module-store-connection-api", "name": "Store Connection API", "type": "api", "description": "Stores credentials and mappings per store and triggers imports.", "dependencies": {"modules": [{"moduleId": "module-store-connection-service", "type": "uses", "description": "Uses store connection service."}]}}]}, {"layer": "worker", "description": "Import and write-back jobs.", "modules": [{"id": "module-order-import-worker", "name": "Order Import Worker", "type": "daemon", "description": "Polls or receives orders from each connected store and marketplace.", "dependencies": {"modules": [{"moduleId": "module-store-adapters", "type": "uses", "description": "Uses store adapters."}, {"moduleId": "module-store-connection-service", "type": "uses", "description": "Uses store connection service."}]}}, {"id": "module-stock-push-consumer", "name": "Stock Push Consumer", "type": "message-consumer", "description": "Pushes free stock to every connected channel when stock changes.", "dependencies": {"modules": [{"moduleId": "module-store-adapters", "type": "uses", "description": "Uses store adapters."}]}}, {"id": "module-status-writeback-consumer", "name": "Status and Tracking Write-back", "type": "message-consumer", "description": "Marks orders shipped and writes the tracking code to the channel.", "dependencies": {"modules": [{"moduleId": "module-store-adapters", "type": "uses", "description": "Uses store adapters."}]}}]}, {"layer": "service", "description": "Connection state.", "modules": [{"id": "module-store-connection-service", "name": "Store Connection Service", "type": "stateful-service", "description": "Holds connection settings, sync cursors and health per store."}]}, {"layer": "integration", "description": "Platform adapters.", "modules": [{"id": "module-store-adapters", "name": "Store and Marketplace Adapters", "type": "integration", "description": "Adapters for Shopify, Magento, WooCommerce, Lightspeed, Shopware, CCV Shop and bol Retailer APIs."}]}], "dataDependencies": [{"assetId": "integration-connection-config", "moduleIds": ["module-store-connection-service", "module-store-setup-wizard"], "role": "own", "description": "Store credentials, mappings and sync cursors."}, {"assetId": "sales-order", "moduleIds": ["module-order-import-worker"], "role": "write", "description": "Creates orders from channels."}], "brickDependencies": [{"targetBrickId": "ordm", "moduleId": "module-order-service", "sourceModuleId": "module-order-import-worker", "type": "uses", "description": "Creates normalised orders."}, {"targetBrickId": "prod", "moduleId": "module-product-service", "sourceModuleId": "module-order-import-worker", "type": "uses", "description": "Imports and matches products."}, {"targetBrickId": "invt", "moduleId": "module-stock-event-stream", "sourceModuleId": "module-stock-push-consumer", "type": "uses", "description": "Listens to stock changes."}], "externalSystemsThisBrickDependsOn": [{"system": "Webshop platforms (Shopify, Magento, WooCommerce, Lightspeed, Shopware, CCV Shop)", "type": "channel", "interface": "Platform APIs and apps", "description": "Source of products and orders; target of stock and status.", "sourceModuleId": "module-store-adapters"}, {"system": "bol Retailer API", "type": "marketplace", "interface": "Marketplace seller API", "description": "Marketplace orders and shipment confirmation, including Shipping via bol.", "sourceModuleId": "module-store-adapters"}], "externalSystemsDependingOnThisBrick": [{"system": "Shopify merchants", "type": "channel-consumer", "interface": "Shopify app", "description": "Install Picqer from the Shopify app store (assumed listing).", "moduleId": "module-store-setup-wizard"}], "domain": "Order and Channel Intake", "group": "Channels and Orders"}, {"id": "papi", "name": "Picqer Public API and Webhooks", "type": "service", "status": "sustaining", "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custom shops, POS systems and reports.", "links": [], "layers": [{"layer": "interfaces", "description": "API surface.", "modules": [{"id": "module-public-rest-api", "name": "Public REST API", "type": "api", "description": "Versioned JSON endpoints for orders, products, stock, picklists, purchase orders, returns and more.", "dependencies": {"modules": [{"moduleId": "module-api-auth-and-rate-limit", "type": "uses", "description": "Uses api auth and rate limit."}]}}]}, {"layer": "worker", "description": "Event delivery.", "modules": [{"id": "module-webhook-dispatcher", "name": "Webhook Dispatcher", "type": "message-consumer", "description": "Delivers subscribed events with retries.", "dependencies": {"modules": [{"moduleId": "module-webhook-subscription-service", "type": "uses", "description": "Uses webhook subscription service."}]}}]}, {"layer": "stateless-service", "description": "Security.", "modules": [{"id": "module-api-auth-and-rate-limit", "name": "API Auth and Rate Limiting", "type": "stateless-service", "description": "Validates API keys and enforces limits per account."}]}, {"layer": "service", "description": "Subscriptions.", "modules": [{"id": "module-webhook-subscription-service", "name": "Webhook Subscription Service", "type": "stateful-service", "description": "Stores webhook endpoints and event types per account."}]}], "dataDependencies": [{"assetId": "api-key-and-webhook-subscription", "moduleIds": ["module-webhook-subscription-service", "module-api-auth-and-rate-limit"], "role": "own", "description": "API keys and webhook endpoints."}], "brickDependencies": [{"targetBrickId": "ordm", "moduleId": "module-order-api", "sourceModuleId": "module-public-rest-api", "type": "uses", "description": "Exposes orders."}, {"targetBrickId": "invt", "moduleId": "module-stock-event-stream", "sourceModuleId": "module-webhook-dispatcher", "type": "uses", "description": "Stock change events."}, {"targetBrickId": "pkls", "moduleId": "module-picklist-event-stream", "sourceModuleId": "module-webhook-dispatcher", "type": "uses", "description": "Picklist events."}, {"targetBrickId": "acct", "moduleId": "module-identity-service", "sourceModuleId": "module-api-auth-and-rate-limit", "type": "uses", "description": "Resolves account and rights."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Partner integrations (Optiply, Rewize, Trengo, Belco, xCore/Exact Online, Itsperfect, App4Sales, Order2Flow and others)", "type": "partner", "interface": "REST API and webhooks", "description": "Partner-built integrations listed on picqer.com.", "moduleId": "module-public-rest-api"}, {"system": "Custom shops, POS and reporting tools", "type": "customer-system", "interface": "REST API", "description": "Customer-built integrations.", "moduleId": "module-public-rest-api"}], "domain": "Order and Channel Intake", "group": "Open API and Commerce Hub"}, {"id": "ktpl", "name": "Katapull Commerce Hub Bridges", "type": "integration", "status": "invest", "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista (native returns integration); Transus and Vendit list Picqer as a partner. A Logic4 bridge is an inference from Katapull positioning Picqer as the WMS step-up for Logic4 customers.", "links": [], "layers": [{"layer": "ui", "description": "Activation.", "modules": [{"id": "module-hub-connection-ui", "name": "Hub Connection Settings", "type": "web-component", "description": "Activates sibling connections with shared credentials.", "dependencies": {"modules": [{"moduleId": "module-hub-bridge-service", "type": "uses", "description": "Uses hub bridge service."}]}}]}, {"layer": "service", "description": "Bridge state.", "modules": [{"id": "module-hub-bridge-service", "name": "Hub Bridge Service", "type": "service", "description": "Maps accounts and objects between Picqer and sibling products.", "dependencies": {"modules": [{"moduleId": "module-hub-adapters", "type": "uses", "description": "Uses hub adapters."}]}}]}, {"layer": "integration", "description": "Sibling adapters.", "modules": [{"id": "module-hub-adapters", "name": "Sibling Product Adapters", "type": "integration", "description": "Adapters for DeliveryMatch, Returnista, Logic4 (assumed), Transus (assumed) and Vendit (assumed)."}]}], "dataDependencies": [{"assetId": "integration-connection-config", "moduleIds": ["module-hub-bridge-service"], "role": "read-write", "description": "Sibling connection settings."}], "brickDependencies": [{"targetBrickId": "papi", "moduleId": "module-public-rest-api", "sourceModuleId": "module-hub-adapters", "type": "uses", "description": "Uses the public API like other partners."}, {"targetBrickId": "ship", "moduleId": "module-shipment-service", "sourceModuleId": "module-hub-bridge-service", "type": "uses", "description": "Hands shipments to DeliveryMatch."}, {"targetBrickId": "retu", "moduleId": "module-return-service", "sourceModuleId": "module-hub-bridge-service", "type": "uses", "description": "Receives Returnista pre-registrations."}], "externalSystemsThisBrickDependsOn": [{"system": "DeliveryMatch", "type": "sibling", "interface": "API", "description": "Carrier selection and labels for 200+ carriers.", "sourceModuleId": "module-hub-adapters"}, {"system": "Returnista", "type": "sibling", "interface": "API", "description": "Return portal; pre-registers returns in Picqer.", "sourceModuleId": "module-hub-adapters"}, {"system": "Logic4 ERP", "type": "sibling", "interface": "API (assumed)", "description": "Orders, products and stock for Logic4 customers.", "sourceModuleId": "module-hub-adapters"}, {"system": "Transus EDI", "type": "sibling", "interface": "EDI service (assumed)", "description": "Retailer orders and dispatch advice.", "sourceModuleId": "module-hub-adapters"}], "externalSystemsDependingOnThisBrick": [], "domain": "Order and Channel Intake", "group": "Open API and Commerce Hub"}, {"id": "ordm", "name": "Multi-Channel Order Management and Allocation", "type": "full-stack", "status": "sustaining", "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and partial deliveries, and lets staff pause orders with a reason.", "links": [], "layers": [{"layer": "ui", "description": "Order screens.", "modules": [{"id": "module-order-overview-ui", "name": "Order Overview", "type": "web-component", "description": "Lists orders by status, channel and priority; manual order entry.", "dependencies": {"modules": [{"moduleId": "module-order-api", "type": "uses", "description": "Uses order api."}]}}]}, {"layer": "interfaces", "description": "Order API.", "modules": [{"id": "module-order-api", "name": "Order API", "type": "api", "description": "Create, update, pause and cancel orders.", "dependencies": {"modules": [{"moduleId": "module-order-service", "type": "uses", "description": "Uses order service."}]}}]}, {"layer": "worker", "description": "Allocation.", "modules": [{"id": "module-allocation-worker", "name": "Allocation and Backorder Worker", "type": "message-consumer", "description": "Allocates stock when orders or receipts arrive and releases backorders in sequence.", "dependencies": {"modules": [{"moduleId": "module-order-service", "type": "uses", "description": "Uses order service."}]}}]}, {"layer": "service", "description": "Order state.", "modules": [{"id": "module-order-service", "name": "Order Service", "type": "stateful-service", "description": "Holds orders, lines, priorities, pause reasons and partial deliveries."}]}], "dataDependencies": [{"assetId": "sales-order", "moduleIds": ["module-order-service", "module-order-api"], "role": "own", "description": "System of record for orders in the warehouse."}, {"assetId": "customer-and-address", "moduleIds": ["module-order-service"], "role": "own", "description": "Customer and delivery address of each order."}], "brickDependencies": [{"targetBrickId": "invt", "moduleId": "module-stock-ledger-service", "sourceModuleId": "module-allocation-worker", "type": "uses", "description": "Reserves stock per order."}, {"targetBrickId": "pkls", "moduleId": "module-picklist-service", "sourceModuleId": "module-allocation-worker", "type": "uses", "description": "Creates picklists for allocated orders."}, {"targetBrickId": "rule", "moduleId": "module-rule-evaluator", "sourceModuleId": "module-order-service", "type": "uses", "description": "Evaluates rules on new orders."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Order and Channel Intake", "group": "Channels and Orders"}, {"id": "invt", "name": "Inventory Ledger and Stock Sync", "type": "service", "status": "sustaining", "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock changes to channels and partners in real time.", "links": [], "layers": [{"layer": "ui", "description": "Stock views.", "modules": [{"id": "module-stock-ui", "name": "Stock and History UI", "type": "web-component", "description": "Stock per location and full change history.", "dependencies": {"modules": [{"moduleId": "module-stock-query-api", "type": "uses", "description": "Uses stock query api."}]}}]}, {"layer": "interfaces", "description": "Stock API.", "modules": [{"id": "module-stock-query-api", "name": "Stock Query API", "type": "api", "description": "Physical, reserved and free stock queries.", "dependencies": {"modules": [{"moduleId": "module-stock-ledger-service", "type": "uses", "description": "Uses stock ledger service."}]}}, {"id": "module-stock-event-stream", "name": "Stock Event Stream", "type": "message-queue", "description": "Publishes stock change events."}]}, {"layer": "service", "description": "Ledger.", "modules": [{"id": "module-stock-ledger-service", "name": "Stock Ledger Service", "type": "stateful-service", "description": "Append-only stock mutations and balances.", "dependencies": {"modules": [{"moduleId": "module-stock-event-stream", "type": "uses", "description": "Uses stock event stream."}]}}]}], "dataDependencies": [{"assetId": "stock-ledger", "moduleIds": ["module-stock-ledger-service"], "role": "own", "description": "Every stock mutation with user and reason."}, {"assetId": "product-master", "moduleIds": ["module-stock-query-api"], "role": "read", "description": "Product references."}], "brickDependencies": [{"targetBrickId": "locn", "moduleId": "module-location-service", "sourceModuleId": "module-stock-ledger-service", "type": "uses", "description": "Stock is held per location."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Inventory and Purchasing", "group": "Stock and Locations"}, {"id": "rule", "name": "Rules Automation Engine", "type": "service", "status": "sustaining", "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or zone, add packaging or notes, per product, destination, weight or fulfilment client.", "links": [], "layers": [{"layer": "ui", "description": "Rule editor.", "modules": [{"id": "module-rule-editor-ui", "name": "Rule Editor", "type": "web-component", "description": "Conditions and actions.", "dependencies": {"modules": [{"moduleId": "module-rule-store", "type": "uses", "description": "Uses rule store."}]}}]}, {"layer": "stateless-service", "description": "Evaluation.", "modules": [{"id": "module-rule-evaluator", "name": "Rule Evaluator", "type": "stateless-service", "description": "Evaluates rules and returns actions.", "dependencies": {"modules": [{"moduleId": "module-rule-store", "type": "uses", "description": "Uses rule store."}]}}]}, {"layer": "service", "description": "Rules.", "modules": [{"id": "module-rule-store", "name": "Rule Store", "type": "stateful-service", "description": "Rules per account and client."}]}], "dataDependencies": [{"assetId": "automation-rule-set", "moduleIds": ["module-rule-store"], "role": "own", "description": "Rules per account."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Automation, Mobile and Insight", "group": "Work Automation and Collaboration"}, {"id": "pkls", "name": "Picklist and Batch Picking Engine", "type": "service", "status": "sustaining", "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed picklists, pausing with reasons and picklist splitting.", "links": [], "layers": [{"layer": "ui", "description": "Picking screens.", "modules": [{"id": "module-picking-ui", "name": "Picking UI", "type": "web-component", "description": "Picklists and batches in the browser.", "dependencies": {"modules": [{"moduleId": "module-picklist-service", "type": "uses", "description": "Uses picklist service."}]}}]}, {"layer": "interfaces", "description": "Events.", "modules": [{"id": "module-picklist-event-stream", "name": "Picklist Event Stream", "type": "message-queue", "description": "Picklist status events."}]}, {"layer": "stateless-service", "description": "Routing.", "modules": [{"id": "module-route-optimiser", "name": "Route Optimiser", "type": "stateless-service", "description": "Orders picks by location sequence."}, {"id": "module-batch-builder", "name": "Batch Builder", "type": "stateless-service", "description": "Builds batches, singles lists and bulk groups.", "dependencies": {"modules": [{"moduleId": "module-route-optimiser", "type": "uses", "description": "Uses route optimiser."}]}}]}, {"layer": "service", "description": "Picklists.", "modules": [{"id": "module-picklist-service", "name": "Picklist Service", "type": "stateful-service", "description": "Picklists, batches, pauses and splits.", "dependencies": {"modules": [{"moduleId": "module-batch-builder", "type": "uses", "description": "Uses batch builder."}, {"moduleId": "module-picklist-event-stream", "type": "uses", "description": "Uses picklist event stream."}]}}]}], "dataDependencies": [{"assetId": "picklist-and-batch", "moduleIds": ["module-picklist-service"], "role": "own", "description": "Picklists and batches."}], "brickDependencies": [{"targetBrickId": "locn", "moduleId": "module-location-service", "sourceModuleId": "module-route-optimiser", "type": "uses", "description": "Location sequence."}, {"targetBrickId": "invt", "moduleId": "module-stock-ledger-service", "sourceModuleId": "module-picklist-service", "type": "uses", "description": "Books picked stock."}, {"targetBrickId": "rule", "moduleId": "module-rule-evaluator", "sourceModuleId": "module-picklist-service", "type": "uses", "description": "Rules on picklists."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Picking, Packing and Shipping", "group": "Outbound Execution"}];
+    const linked_products = [{"id": "picqer-wms", "name": "Picqer for Online Stores", "icon": "product.png", "type": "B2B SaaS - cloud warehouse management system", "whyUsed": "Picqer for Online Stores uses webshop and marketplace store connectors."}, {"id": "picqer-fulfilment", "name": "Picqer Fulfilment", "icon": "product.png", "type": "B2B SaaS - multi-client WMS for 3PLs", "whyUsed": "Picqer Fulfilment uses webshop and marketplace store connectors."}, {"id": "picqer-api-and-integrations", "name": "Picqer API and Integrations", "icon": "product.png", "type": "Developer platform and integration catalogue", "whyUsed": "Picqer API and Integrations uses webshop and marketplace store connectors."}, {"id": "picqer-b2b-portal", "name": "Picqer B2B Customer Portal", "icon": "product.png", "type": "Wholesale ordering portal", "whyUsed": "Picqer B2B Customer Portal uses multi-channel order management and allocation."}, {"id": "picqer-fulfilment-portal", "name": "Picqer Fulfilment Portal", "icon": "product.png", "type": "Client portal included in Picqer Fulfilment", "whyUsed": "Picqer Fulfilment Portal uses inventory ledger and stock sync."}, {"id": "picqer-mobile-app", "name": "Picqer App", "icon": "product.png", "type": "Mobile app for iOS and Android, included in all plans", "whyUsed": "Picqer App uses picklist and batch picking engine."}];
+    const supported_jobs = [{"customerId": "wsop", "customerName": "Webshop Owner Running Their Own Warehouse", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-wsop-portrait.jpg", "productId": "picqer-wms", "productName": "Picqer for Online Stores", "productIcon": "product.png", "jobId": "wsop-control", "jobName": "Get the warehouse under control without hiring consultants", "jobWhatItIs": "Replace spreadsheets and memory with one system that knows every product, location and order, set up by the owner.", "jobOutcome": "Every order and stock movement is in one place, stock in the webshop is right, and the owner can step away from the packing table.", "supportRationale": "Self-service connectors and guided setup.", "usedInSteps": [{"step": "Connect webshops, marketplaces and carriers", "description": "Install the store and shipping integrations and import products and open orders.", "howItSupports": "Self-service connectors and guided setup.", "media": []}, {"step": "Connect webshops, marketplaces and carriers", "description": "Install the store and shipping integrations and import products and open orders.", "howItSupports": "Brings all channel orders into one overview.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-wms", "productName": "Picqer for Online Stores", "productIcon": "product.png", "jobId": "whmg-peak", "jobName": "Ship peak volumes on time with a team of mixed experience", "jobWhatItIs": "Keep every cut-off during peak season with permanent staff, students and temporary workers working side by side.", "jobOutcome": "Peak days end with an empty backlog, error rates stay at normal levels and new staff are productive within minutes.", "supportRationale": "Order overview, allocation and priorities.", "usedInSteps": [{"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Order overview, allocation and priorities.", "media": []}, {"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Rules for urgency and snoozing.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-wms", "productName": "Picqer for Online Stores", "productIcon": "product.png", "jobId": "whmg-b2b", "jobName": "Serve B2B resellers and webshop orders from one stock", "jobWhatItIs": "Let business customers order from live stock and ship their larger orders alongside consumer parcels.", "jobOutcome": "B2B customers order themselves, partial deliveries and backorders are handled automatically, and no stock is promised twice.", "supportRationale": "Backorder and partial delivery handling.", "usedInSteps": [{"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Backorder and partial delivery handling.", "media": []}, {"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Receipts release backorders.", "media": []}]}, {"customerId": "fcli", "customerName": "Webshop Brand Outsourcing to a Picqer-Run Fulfilment Company", "customerGroup": "Fulfilment Companies and Their Clients", "customerIcon": "customer-fcli-portrait.jpg", "productId": "picqer-fulfilment", "productName": "Picqer Fulfilment", "productIcon": "product.png", "jobId": "fcli-visibility", "jobName": "See and steer my stock and orders at the 3PL without calling them", "jobWhatItIs": "Follow and change orders and check stock at the fulfilment company from a portal.", "jobOutcome": "The brand answers its own customers immediately and fixes order issues before picking.", "supportRationale": "Portal order actions.", "usedInSteps": [{"step": "Change, cancel or split orders before picking", "description": "Cancel unpicked items, update addresses and allow partial deliveries.", "howItSupports": "Portal order actions.", "media": []}, {"step": "Change, cancel or split orders before picking", "description": "Cancel unpicked items, update addresses and allow partial deliveries.", "howItSupports": "Order changes before picking.", "media": []}]}, {"customerId": "ptnr", "customerName": "Integration, Hardware and Commerce Hub Partner", "customerGroup": "Ecosystem and Commerce Hub Partners", "customerIcon": "customer-ptnr-portrait.jpg", "productId": "picqer-api-and-integrations", "productName": "Picqer API and Integrations", "productIcon": "product.png", "jobId": "ptnr-hub", "jobName": "Offer joint warehouse-to-delivery flows across the Katapull Commerce Hub", "jobWhatItIs": "Make Picqer work out of the box with Logic4, DeliveryMatch, Returnista, Transus and other Katapull products for shared mid-market customers.", "jobOutcome": "Hub customers activate connections in minutes and buy several hub products.", "supportRationale": "Order and product intake from ERPs.", "usedInSteps": [{"step": "Connect commerce and ERP systems", "description": "Exchange orders, products and stock with Logic4 or other ERPs.", "howItSupports": "Order and product intake from ERPs.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-api-and-integrations", "productName": "Picqer API and Integrations", "productIcon": "product.png", "jobId": "whmg-peak", "jobName": "Ship peak volumes on time with a team of mixed experience", "jobWhatItIs": "Keep every cut-off during peak season with permanent staff, students and temporary workers working side by side.", "jobOutcome": "Peak days end with an empty backlog, error rates stay at normal levels and new staff are productive within minutes.", "supportRationale": "Order overview, allocation and priorities.", "usedInSteps": [{"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Order overview, allocation and priorities.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-api-and-integrations", "productName": "Picqer API and Integrations", "productIcon": "product.png", "jobId": "whmg-b2b", "jobName": "Serve B2B resellers and webshop orders from one stock", "jobWhatItIs": "Let business customers order from live stock and ship their larger orders alongside consumer parcels.", "jobOutcome": "B2B customers order themselves, partial deliveries and backorders are handled automatically, and no stock is promised twice.", "supportRationale": "Backorder and partial delivery handling.", "usedInSteps": [{"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Backorder and partial delivery handling.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-b2b-portal", "productName": "Picqer B2B Customer Portal", "productIcon": "product.png", "jobId": "whmg-peak", "jobName": "Ship peak volumes on time with a team of mixed experience", "jobWhatItIs": "Keep every cut-off during peak season with permanent staff, students and temporary workers working side by side.", "jobOutcome": "Peak days end with an empty backlog, error rates stay at normal levels and new staff are productive within minutes.", "supportRationale": "Order overview, allocation and priorities.", "usedInSteps": [{"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Order overview, allocation and priorities.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-b2b-portal", "productName": "Picqer B2B Customer Portal", "productIcon": "product.png", "jobId": "whmg-b2b", "jobName": "Serve B2B resellers and webshop orders from one stock", "jobWhatItIs": "Let business customers order from live stock and ship their larger orders alongside consumer parcels.", "jobOutcome": "B2B customers order themselves, partial deliveries and backorders are handled automatically, and no stock is promised twice.", "supportRationale": "Backorder and partial delivery handling.", "usedInSteps": [{"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Backorder and partial delivery handling.", "media": []}, {"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Receipts release backorders.", "media": []}]}, {"customerId": "wsop", "customerName": "Webshop Owner Running Their Own Warehouse", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-wsop-portrait.jpg", "productId": "picqer-b2b-portal", "productName": "Picqer B2B Customer Portal", "productIcon": "product.png", "jobId": "wsop-control", "jobName": "Get the warehouse under control without hiring consultants", "jobWhatItIs": "Replace spreadsheets and memory with one system that knows every product, location and order, set up by the owner.", "jobOutcome": "Every order and stock movement is in one place, stock in the webshop is right, and the owner can step away from the packing table.", "supportRationale": "Brings all channel orders into one overview.", "usedInSteps": [{"step": "Connect webshops, marketplaces and carriers", "description": "Install the store and shipping integrations and import products and open orders.", "howItSupports": "Brings all channel orders into one overview.", "media": []}]}, {"customerId": "fcli", "customerName": "Webshop Brand Outsourcing to a Picqer-Run Fulfilment Company", "customerGroup": "Fulfilment Companies and Their Clients", "customerIcon": "customer-fcli-portrait.jpg", "productId": "picqer-fulfilment-portal", "productName": "Picqer Fulfilment Portal", "productIcon": "product.png", "jobId": "fcli-visibility", "jobName": "See and steer my stock and orders at the 3PL without calling them", "jobWhatItIs": "Follow and change orders and check stock at the fulfilment company from a portal.", "jobOutcome": "The brand answers its own customers immediately and fixes order issues before picking.", "supportRationale": "Order changes before picking.", "usedInSteps": [{"step": "Change, cancel or split orders before picking", "description": "Cancel unpicked items, update addresses and allow partial deliveries.", "howItSupports": "Order changes before picking.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-mobile-app", "productName": "Picqer App", "productIcon": "product.png", "jobId": "whmg-peak", "jobName": "Ship peak volumes on time with a team of mixed experience", "jobWhatItIs": "Keep every cut-off during peak season with permanent staff, students and temporary workers working side by side.", "jobOutcome": "Peak days end with an empty backlog, error rates stay at normal levels and new staff are productive within minutes.", "supportRationale": "Order overview, allocation and priorities.", "usedInSteps": [{"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Order overview, allocation and priorities.", "media": []}, {"step": "Plan the day and prioritise urgent orders", "description": "See the backlog, mark same-day and express orders urgent and snooze future-dated ones.", "howItSupports": "Rules for urgency and snoozing.", "media": []}]}, {"customerId": "whmg", "customerName": "Warehouse Manager at a Scaling Brand or Wholesaler", "customerGroup": "Online Stores with Their Own Warehouse", "customerIcon": "customer-whmg-portrait.jpg", "productId": "picqer-mobile-app", "productName": "Picqer App", "productIcon": "product.png", "jobId": "whmg-b2b", "jobName": "Serve B2B resellers and webshop orders from one stock", "jobWhatItIs": "Let business customers order from live stock and ship their larger orders alongside consumer parcels.", "jobOutcome": "B2B customers order themselves, partial deliveries and backorders are handled automatically, and no stock is promised twice.", "supportRationale": "Backorder and partial delivery handling.", "usedInSteps": [{"step": "Handle backorders and partial deliveries", "description": "Ship what is in stock and release backorders when goods arrive.", "howItSupports": "Backorder and partial delivery handling.", "media": []}]}];
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {
+            htmlLabels: false
+        }
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function dedupe(items, keyFn) {
+        const seen = new Set();
+        const ordered = [];
+        items.forEach(item => {
+            const key = keyFn(item);
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            ordered.push(item);
+        });
+        return ordered;
+    }
+
+    function getFlows() {
+        return currentStream.flows || [];
+    }
+
+    function getFlowDependencies(flow) {
+        const dependencyIndex = new Map();
+        (flow.steps || []).forEach(step => {
+            (step.dependencies || []).forEach(dependency => {
+                if ((dependency.type || 'brick') !== 'brick') {
+                    return;
+                }
+                const key = [dependency.type || 'dependency', dependency.id || dependency.name || 'unknown'].join('::');
+                if (!dependencyIndex.has(key)) {
+                    dependencyIndex.set(key, dependency);
+                }
+            });
+        });
+        return Array.from(dependencyIndex.values());
+    }
+
+    function getStepDependency(step, dependency) {
+        return (step.dependencies || []).find(item => (item.type || '') === (dependency.type || '') && (item.id || '') === (dependency.id || '')) || null;
+    }
+
+    function getPrimaryActors() {
+        const streamJobs = currentStream.supportedCustomerJobs || [];
+        const allJobs = streamJobs.length ? streamJobs : supported_jobs;
+        return dedupe(allJobs.map(item => item.customerName || item.customerGroup || '').filter(Boolean), item => item);
+    }
+
+    function summarizeFlow(flow) {
+        const steps = flow.steps || [];
+        const firstStep = steps[0] || {};
+        const lastStep = steps[steps.length - 1] || {};
+        return {
+            actor: flow.primaryActor || firstStep.actor || '',
+            trigger: flow.trigger || firstStep.trigger || '',
+            result: flow.successSignal || flow.outcome || lastStep.successSignal || lastStep.output || ''
+        };
+    }
+
+    function renderStepMeta(label, value) {
+        if (!value) {
+            return '';
+        }
+        return '<div class="flow-step-meta-item"><div class="flow-step-meta-label">' + escapeHtml(label) + '</div><div class="flow-step-copy">' + escapeHtml(value) + '</div></div>';
+    }
+
+    function flowDependencyIconFile(dependency) {
+        const dependencyId = dependency.id || '';
+        const linkedBrick = related_bricks.find(brick => brick.id === dependencyId) || all_bricks.find(brick => brick.id === dependencyId) || {};
+        return dependency.icon || linkedBrick.icon || (dependencyId ? dependencyId + '.png' : 'brick.png');
+    }
+
+    function renderFlowDependencyIcon(dependency, className) {
+        return '<img class="' + escapeHtml(className) + '" src="../icons/' + escapeHtml(flowDependencyIconFile(dependency)) + '" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+    }
+
+    function renderStepDependencyPills(step) {
+        const dependencies = step.dependencies || [];
+        if (!dependencies.length) {
+            return '<div class="muted">No step-specific dependencies listed.</div>';
+        }
+
+        return '<div class="flow-step-dependencies">' + dependencies.map(dep => {
+            const label = dep.name || dep.id || 'Dependency';
+            const kind = 'Brick';
+            return '<span class="flow-cell-brick">' + renderFlowDependencyIcon(dep, 'flow-cell-brick-icon') + '<span>' + escapeHtml(kind + ': ' + label) + '</span></span>';
+        }).join('') + '</div>';
+    }
+
+    function simplifySupportCopy(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return '';
+        }
+        const simplified = text.replace(/^Supports .*? by helping users help /i, 'Facilitate ');
+        return simplified;
+    }
+</script>
+
+<div id="Header"></div>
+
+<div class="page">
+    <div class="tab" id="primary_tabs">
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
+    </div>
+
+    <div id="tab_content_home" class="tabcontent"></div>
+    <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_links" class="tabcontent"></div>
+
+
+</div>
+
+<script>
+    function streamMetaPath(stream) {
+        const parts = [];
+        if (stream.group) {
+            parts.push(stream.group);
+        }
+        if (stream.rootGroup && stream.rootGroup !== stream.group) {
+            parts.push(stream.rootGroup);
+        }
+        if (!parts.length) {
+            parts.push('Stream');
+        }
+        return parts.join(' / ');
+    }
+
+    let headerHtml = '<div class="nav-strip">';
+    allStreams.forEach(item => {
+        headerHtml += '<a class="nav-link" href="' + escapeHtml(item.id) + '.html">';
+        headerHtml += '<img src="../icons/' + escapeHtml(item.icon || 'stream.png') + '" class="' + (item.id === currentStream.id ? 'tab-image-selected' : 'tab-image') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+        headerHtml += '</a>';
+    });
+    headerHtml += '</div>';
+
+    headerHtml += '<div class="page">';
+    headerHtml += '<div class="header">';
+    headerHtml += '<img class="header-icon" src="../icons/' + escapeHtml(currentStream.icon || 'stream.png') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+    headerHtml += '<div>';
+    headerHtml += '<div class="header-meta">';
+    headerHtml += '<div class="page-type-badge">Stream</div>';
+    headerHtml += escapeHtml(streamMetaPath(currentStream)) + ' / <span style="color:blue;font-weight:bold;">' + escapeHtml((currentStream.id || '').toUpperCase()) + '</span></div>';
+    headerHtml += '<div class="header-title">' + escapeHtml(currentStream.name || currentStream.id) + '</div>';
+    headerHtml += '<div class="header-copy">' + escapeHtml(currentStream.description || '') + '</div>';
+    headerHtml += '</div></div></div>';
+    document.getElementById('Header').innerHTML = headerHtml;
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const primaryActors = getPrimaryActors();
+        let html = '';
+
+        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
+        if (!flows.length) {
+            html += '<div class="muted">No flows listed for this stream.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            flows.forEach(flow => {
+                const summary = summarizeFlow(flow);
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
+                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
+                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Outcomes</div>';
+        if (!(currentStream.outcomes || []).length) {
+            html += '<div class="muted">No outcomes listed for this stream.</div>';
+        } else {
+            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
+        if (!related_bricks.length) {
+            html += '<div class="muted">No linked product bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            related_bricks.forEach(brick => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../landing_pages/' + escapeHtml(brick.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml((brick.group || brick.domain || 'Product Brick')) + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../icons/' + escapeHtml(brick.id) + '.png" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+                html += '<div class="card-title">' + escapeHtml(brick.name || brick.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(brick.description || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Linked Products</div>';
+        if (!linked_products.length) {
+            html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            linked_products.forEach(product => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../product-deployments/landing_pages/' + escapeHtml(product.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml(product.type || 'Product') + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../../product-deployments/icons/' + escapeHtml(product.icon) + '" alt="" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+                html += '<div class="card-title">' + escapeHtml(product.name || product.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(product.whyUsed || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!supported_jobs.length) {
+            html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            supported_jobs.forEach(job => {
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.supportRationale) {
+                    html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
+                }
+                if ((job.usedInSteps || []).length) {
+                    html += '<ul class="list">' + job.usedInSteps.map(step => '<li>' + escapeHtml(step.step || step.description || '') + '</li>').join('') + '</ul>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function renderFlows() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        let html = '';
+
+        document.getElementById('tab_flows').innerHTML = 'Flow Narratives (' + flows.length + ')';
+
+        flows.forEach(flow => {
+            const dependenciesInFlow = getFlowDependencies(flow);
+            const summary = summarizeFlow(flow);
+            html += '<div class="group">';
+            html += '<div class="section-title">Flow</div>';
+            html += '<div class="flow-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+            html += '<div class="flow-description">' + escapeHtml(flow.description || '') + '</div>';
+            if (summary.actor || summary.trigger || summary.result) {
+                html += '<div class="card" style="margin-bottom:16px;">';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Primary actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '<div class="section-title">Dependency Traceability</div>';
+            html += '<div class="flow-matrix-wrap">';
+            html += '<table class="flow-matrix">';
+            html += '<thead>';
+            html += '<tr><th class="flow-dependency-col"></th>';
+            (flow.steps || []).forEach((step, index) => {
+                html += '<th class="flow-step-col"><div class="flow-step-label">Step ' + (index + 1) + '</div><div class="card-title">' + escapeHtml(step.title || step.id) + '</div></th>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right">Key Facts</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkblue">';
+                if ((step.keyFacts || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.keyFacts.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No key facts listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right; color: darkred">Pain Points</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkred">';
+                if ((step.painPoints || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.painPoints.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No pain points listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+            html += '</thead><tbody>';
+
+            dependenciesInFlow.forEach(dependency => {
+                const dependencyTypeLabel = 'Product Brick';
+                html += '<tr>';
+                html += '<td>';
+                html += '<div class="flow-dependency-header">';
+                html += renderFlowDependencyIcon(dependency, 'flow-dependency-icon');
+                html += '<div>';
+                html += '<a class="flow-dependency-name" href="../landing_pages/' + escapeHtml(dependency.id) + '.html">' + escapeHtml(dependency.name || dependency.id) + '</a>';
+                if (dependency.interface) {
+                    html += '<div class="muted">' + escapeHtml(dependency.interface) + '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+                html += '</td>';
+                (flow.steps || []).forEach(step => {
+                    const stepDependency = getStepDependency(step, dependency);
+                    if (!stepDependency) {
+                        html += '<td class="flow-cell-empty">-</td>';
+                        return;
+                    }
+                    html += '<td class="flow-cell-active">';
+                    html += '<div class="flow-cell-copy">' + escapeHtml(simplifySupportCopy(stepDependency.how || stepDependency.description || 'Supports this step.')) + '</div>';
+                    html += '</td>';
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        document.getElementById('tab_content_flows').innerHTML = html;
+    }
+
+    function renderLinks() {
+        // Grouped links from config: [{group, description, links: [{label, link,
+        // description, embedLink?, embedHeight?}]}]. embedLink renders an iframe
+        // (default height 400px) while the label still opens `link` directly.
+        const groups = currentStream.links || [];
+        let html = '<div class="page">';
+        let count = 0;
+        if (!groups.length) {
+            html += '<div class="muted">No links are configured for this stream.</div>';
+        }
+        groups.forEach(group => {
+            html += '<div class="links-group">';
+            html += '<div class="links-group-title">' + escapeHtml(group.group || 'Links') + '</div>';
+            if (group.description) {
+                html += '<div class="links-group-description">' + escapeHtml(group.description) + '</div>';
+            }
+            (group.links || []).forEach(link => {
+                count++;
+                html += '<div class="link-entry">';
+                html += '<a class="link-entry-title" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(link.link || '#') + '">'
+                    + escapeHtml(link.label || link.link || 'Reference') + ' &#8599;</a>';
+                if (link.description) {
+                    html += '<div class="link-entry-copy">' + escapeHtml(link.description) + '</div>';
+                }
+                if (link.embedLink) {
+                    const embedHeight = Number(link.embedHeight) || 400;
+                    html += '<iframe class="link-embed" loading="lazy" src="' + escapeHtml(link.embedLink)
+                        + '" style="height: ' + embedHeight + 'px" title="' + escapeHtml(link.label || 'Embedded link') + '"></iframe>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_links').innerHTML = html;
+        const linksTab = document.getElementById('tab_links');
+        if (linksTab) {
+            linksTab.textContent = 'Links (' + count + ')';
+        }
+    }
+
+    renderHome();
+    renderFlows();
+    renderLinks();
+</script>
+
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Warehouse Management & Fulfilment Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Streams Index"
+    },
+    {
+      "label": "Capture and Allocate Orders from Every Channel"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Customers (EDI and B2B Document Exchange Platform)</title>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            margin: 8px 28px 28px;
+            color: #202124;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .section-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .section-link {
+            display: inline-block;
+            padding: 8px 14px;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background-color: #f8fafc;
+            transition: 0.3s;
+        }
+
+        .section-link:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .section-link.active {
+            background-color: #202124;
+            border-color: #202124;
+            color: white;
+        }
+
+        .hero {
+            margin-bottom: 14px;
+        }
+
+        .hero-table {
+            border-collapse: collapse;
+            width: auto;
+        }
+
+        .hero-logo {
+            width: 108px;
+            height: 108px;
+            margin-right: 12px;
+        }
+
+        .hero-logo-cell {
+            border: none;
+            vertical-align: top;
+            padding-top: 12px;
+            padding-right: 12px;
+        }
+
+        .hero-copy-cell {
+            vertical-align: top;
+            border: none;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            margin-bottom: 4px;
+        }
+
+        .hero-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 14px;
+            max-width: 960px;
+            line-height: 1.4;
+        }
+
+        .kpi-badge {
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background-color: #f8fafc;
+            font-size: 12px;
+            color: #4b5563;
+            text-align: center;
+        }
+
+        .kpi-badge-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            border-radius: 4px;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            padding: 2px;
+        }
+
+        .customer-search-bar {
+            padding: 12px 12px 0 12px;
+        }
+
+        .customer-search {
+            width: 100%;
+            max-width: 520px;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .customer-search-summary {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+            min-height: 16px;
+        }
+
+        .customer-search-empty {
+            padding: 24px 12px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .customer-group {
+            display: inline-block;
+            vertical-align: top;
+            margin: 8px 18px 8px 0;
+        }
+
+        .customer-group-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+
+        .customer-card {
+            display: inline-block;
+            vertical-align: top;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin: 0 8px 8px 0;
+            padding: 12px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+            width: 216px;
+            text-align: left;
+        }
+
+        .customer-card-photo {
+            display: block;
+            width: 192px;
+            height: 192px;
+            object-fit: contain;
+            margin: 4px auto 10px;
+        }
+
+        .customer-card-name {
+            font-size: 16px;
+            line-height: 1.3;
+            font-weight: bold;
+            color: #1d4ed8;
+            text-align: center;
+            margin-bottom: 10px;
+            min-height: 2.6em;
+        }
+
+        .visual-overview-wrap {
+            margin: 12px;
+            overflow-x: auto;
+        }
+
+        .visual-overview-table {
+            width: 100%;
+            min-width: 720px;
+            table-layout: fixed;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .visual-overview-table th,
+        .visual-overview-table td {
+            padding: 14px;
+            border: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        .visual-overview-table thead th {
+            background: var(--surface);
+        }
+
+        .visual-overview-table thead th:first-child {
+            width: 20%;
+        }
+
+        .visual-overview-table tbody th a {
+            color: var(--accent-ink);
+        }
+
+        .visual-overview-customer-icon {
+            display: block;
+            width: 164px;
+            height: 164px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .visual-overview-table a:hover,
+        .visual-overview-table a:focus-visible {
+            text-decoration: underline;
+        }
+
+        .visual-overview-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .visual-overview-item {
+            flex: 0 1 168px;
+            min-width: 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .visual-overview-item-name {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .visual-overview-image-link {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .visual-overview-image {
+            display: block;
+            width: 100%;
+            height: 112px;
+            box-sizing: border-box;
+            object-fit: contain;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+        }
+
+        .visual-overview-image-link:hover .visual-overview-image,
+        .visual-overview-image-link:focus-visible .visual-overview-image {
+            border-color: var(--accent-ink);
+        }
+
+        .visual-overview-empty {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
+
+        .insight-card {
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 16px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+        }
+
+        .insight-title {
+            font-size: 25px;
+            color: #1d4ed8;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .insight-summary {
+            color: #4b5563;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .insight-tag {
+            display: inline-block;
+            margin: 0 6px 6px 0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #eef2f7;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .insight-customer-link {
+            margin: 0 0 8px 0;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .insight-source {
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .links-section {
+            padding: 16px;
+        }
+
+        .links-group {
+            margin-bottom: 28px;
+            border-left: 2px solid #d1d5db;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .links-group-label {
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: black;
+            margin-bottom: 4px;
+        }
+
+        .links-group-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+            max-width: 960px;
+            line-height: 1.4;
+        }
+
+        .links-grid {
+        }
+
+        .link-card {
+            display: block;
+            border: 1px solid #d1d5db;
+            border-left: 5px solid #d1d5db;
+            border-radius: 10px;
+            padding: 14px 16px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.05) 0 1px 3px;
+            transition: 0.2s;
+            margin: 3px;
+        }
+
+        .link-card:hover {
+            border-color: #9ca3af;
+            box-shadow: rgba(0, 0, 0, 0.1) 0 2px 6px;
+        }
+
+        .link-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #1d4ed8;
+            margin-bottom: 6px;
+        }
+
+        .link-url {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .link-relevance {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .link-tag {
+            display: inline-block;
+            margin: 8px 6px 0 0;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #eef2f7;
+            font-size: 11px;
+            color: #4b5563;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                margin: 12px;
+            }
+
+            .customer-group {
+                flex-direction: column;
+            }
+
+            .customer-card {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" target="_blank" href="https://fonts.googleapis.com/css?family=Ubuntu">
+
+    <script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+</head>
+<body onload="initTab('customers')" onhashchange="initTab()">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html" class="active" aria-current="page">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs"></div>
+<div class="hero">
+    <table class="hero-table">
+        <tr>
+            <td class="hero-logo-cell"><img class="hero-logo" src="icons/logo.png" alt="Customers"></td>
+            <td class="hero-copy-cell">
+                <div class="hero-title">Customers</div>
+                <div class="hero-subtitle">Product strategy is defined around customers, their jobs to be done, and the outcomes they care about. This page shows an overview of the customer landscape,
+                    linked signals, and shared insights.
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="tab">
+    <button class="tablinks active" id="tab_customers" onclick="openTab('customers')">Customers</button>
+    <button class="tablinks" id="tab_visual-overview" onclick="openTab('visual-overview')">Visual Overview</button>
+    <button class="tablinks" id="tab_relations" onclick="openTab('relations')">Relations</button>
+    <button class="tablinks" id="tab_insights" onclick="openTab('insights')">Insights</button>
+    <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
+</div>
+<div>
+    <div id="tab_content_customers" class="tabcontent">
+        <div class="customer-search-bar">
+            <input type="search" id="CustomerSearch" class="customer-search"
+                   placeholder="Search customers by name, group, or what they care about&hellip;"
+                   autocomplete="off" oninput="renderCustomers()">
+            <div id="CustomerSearchSummary" class="customer-search-summary"></div>
+        </div>
+        <div id="CustomerCards"></div>
+    </div>
+    <div id="tab_content_visual-overview" class="tabcontent"></div>
+    <div id="tab_content_relations" class="tabcontent"></div>
+    <div id="tab_content_insights" class="tabcontent"></div>
+    <div id="tab_content_links" class="tabcontent"></div>
+</div>
+
+<style>
+    .relations-section { padding: 8px 2px; font-family: Ubuntu, Optima, Segoe, sans-serif; }
+    .relations-intro { color: #4b5563; font-size: 90%; max-width: 860px; margin: 4px 0 10px 0; }
+    .relations-legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 4px 0; }
+    .relations-legend-item { display: flex; align-items: center; gap: 6px; font-size: 82%; color: #374151;
+        border: 1px solid #e5e7eb; border-radius: 999px; padding: 4px 12px; background: #fff; cursor: pointer; user-select: none; }
+    .relations-legend-item:hover { border-color: #9ca3af; }
+    .relations-legend-item.off { opacity: 0.45; background: #f3f4f6; text-decoration: line-through; }
+    .relations-legend-swatch { width: 22px; height: 4px; border-radius: 2px; display: inline-block; }
+    .relations-legend-hint { font-size: 76%; color: #9ca3af; align-self: center; }
+    .relations-media { margin: 8px 0 14px 0; }
+    .relations-media img { max-width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; display: block; }
+    .relations-diagram-wrap { overflow-x: auto; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; margin: 8px 0 16px 0; }
+    .relations-diagram-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+    .relation-edge { cursor: pointer; }
+    .relation-edge:hover { stroke-width: 5; }
+    .relation-node text { fill: #1f2937; font-size: 13px; font-weight: 600; }
+    .relation-node:hover circle { stroke: #1d4ed8; stroke-width: 3; }
+    .relations-table-wrap { overflow-x: auto; margin-top: 6px; }
+    .relations-table { border-collapse: collapse; width: 100%; background: #fff; font-size: 86%; }
+    .relations-table th { text-align: left; background: #f9fafb; color: #374151; border: 1px solid #e5e7eb;
+        padding: 8px 12px; white-space: nowrap; }
+    .relations-table td { border: 1px solid #e5e7eb; padding: 8px 12px; vertical-align: top; color: #4b5563; }
+    .relations-table td.relation-endpoint { white-space: nowrap; font-weight: 600; color: #111827; }
+    .relations-table td.relation-endpoint a { color: #111827; text-decoration: none; }
+    .relations-table td.relation-endpoint a:hover { color: #1d4ed8; }
+    .relations-table td.relation-name-cell { font-weight: 600; color: #1f2937; }
+    .relation-type-chip { display: inline-block; font-size: 86%; padding: 2px 10px; border-radius: 999px; color: #fff; white-space: nowrap; }
+    .relation-streams { font-size: 90%; color: #6b7280; }
+    .relations-empty-row { color: #9ca3af; font-style: italic; }
+</style>
+
+<script>
+    const customers = [{"group": "Suppliers to Retail", "customers": [{"id": "sord", "name": "Supplier Order Desk and Logistics Lead", "description": "Runs order intake and despatch at a food or non-food supplier (for example a seafood, bakery, meat or garden-products producer) delivering to supermarket chains, DIY retailers and online marketplaces such as Albert Heijn, Hornbach and bol.com. Typically a small team without EDI expertise, facing 10 to 50 retail customers who each order and require labels differently.", "careAbout": ["Every order in the ERP without retyping", "Deliveries accepted at the retailer dock", "Not having to learn each retailer's EDI rules", "Help in their own language when something blocks"], "winsThem": ["A new retailer connected within a day", "Errors explained in plain words", "SSCC labels the retailer accepts", "One fixed price however many orders"], "theirFear": ["Losing a retail listing for not being EDI-ready", "Rejected pallets and fines for missing DESADV or labels", "A silent failure that leaves orders unprocessed", "Being dependent on one IT person"], "jobsToBeDone": [{"id": "sord-orders", "name": "Process every retailer order without manual entry", "whatItIs": "Get orders from all retail customers into the ERP and confirmed quickly, whatever format each retailer uses.", "outcome": "All retailer orders are processed and confirmed the same day without retyping.", "steps": [{"step": "Connect each retailer that demands EDI", "description": "A new retailer or marketplace requires EDI as a listing condition.", "streamsNeeded": [{"id": "connect-a-new-trading-partner", "name": "Connect a New Trading Partner", "howItSupports": "Uses the existing network and retailer profiles to connect fast."}], "media": []}, {"step": "Receive and load orders", "description": "Orders arrive in the ERP or the portal in one structure.", "streamsNeeded": [{"id": "receive-and-confirm-retailer-orders", "name": "Receive and Confirm Retailer Orders", "howItSupports": "Translates and validates each retailer order."}], "media": []}, {"step": "Fix blocked orders quickly", "description": "A blocked order is explained and resolved before the delivery slot is missed.", "streamsNeeded": [{"id": "monitor-and-resolve-message-exceptions", "name": "Monitor and Resolve Message Exceptions", "howItSupports": "Alerts and plain-language errors."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-sord-sord-orders.png", "title": "Supplier Order Desk and Logistics Lead JTBD infographic: Process every retailer order without manual entry", "alt": "Enterprise infographic for the job \"Process every retailer order without manual entry\" for customer \"Supplier Order Desk and Logistics Lead\"."}]}, {"id": "sord-ship", "name": "Deliver to retailer distribution centres without rejections", "whatItIs": "Announce and label every delivery the way each retailer requires.", "outcome": "Every pallet is accepted at the dock and the retailer knows what is coming.", "steps": [{"step": "Pack and label pallets", "description": "Pallets get valid GS1 SSCC labels.", "streamsNeeded": [{"id": "ship-with-despatch-advice-and-sscc-labels", "name": "Ship with Despatch Advice and SSCC Labels", "howItSupports": "SSCC label service and packing screen."}], "media": []}, {"step": "Announce the delivery", "description": "DESADV arrives before the truck.", "streamsNeeded": [{"id": "ship-with-despatch-advice-and-sscc-labels", "name": "Ship with Despatch Advice and SSCC Labels", "howItSupports": "Builds and sends DESADV."}], "media": []}, {"step": "Replenish managed stock", "description": "For VMI retailers, replenish from forecasts instead of orders.", "streamsNeeded": [{"id": "replenish-retail-stock-with-vendor-managed-inventory", "name": "Replenish Retail Stock with Vendor Managed Inventory", "howItSupports": "Forecast-driven replenishment."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-sord-sord-ship.png", "title": "Supplier Order Desk and Logistics Lead JTBD infographic: Deliver to retailer distribution centres without rejections", "alt": "Enterprise infographic for the job \"Deliver to retailer distribution centres without rejections\" for customer \"Supplier Order Desk and Logistics Lead\"."}]}], "customerJourneyStories": [{"id": "journey-sord-retailer-mandate", "name": "From a retailer EDI ultimatum to orders that simply flow", "linkedJobIds": ["sord-orders", "sord-ship"], "summary": "A mid-sized producer adopts Transus after a DIY chain makes EDI and SSCC labels a condition for staying listed.", "stages": [{"stage": "Trigger", "narrative": "The retailer's supplier manager announces that orders, despatch advice and SSCC labels must go via EDI from next quarter; the order desk still retypes e-mailed orders.", "media": []}, {"stage": "Discovery", "narrative": "The retailer's supplier onboarding letter lists Transus among providers its suppliers already use; a peer supplier confirms they are connected the same way.", "media": []}, {"stage": "Evaluation", "narrative": "Compares Transus plans with a quote from a larger EDI provider: checks that the retailer is already on the Transus network, that EDI Plus includes SSCC labels, the fixed monthly price and whether support speaks Dutch or German.", "media": []}, {"stage": "Trial", "narrative": "Starts on EDI Plus with the one mandatory retailer; the first orders are processed in Transus Online, labels printed from the portal, and the first DESADV is validated before the go-live delivery.", "media": []}, {"stage": "Engagement", "narrative": "Adds four more retailers over the year, each connected from the network within days; the ERP link removes portal retyping and the order desk uses the exception console daily.", "media": []}, {"stage": "Retention", "narrative": "Stays because adding retailers costs nothing extra and fixes come fast; upgrades to Premium for the API connection when the ERP is replaced, with a parallel run and no downtime.", "media": []}], "media": [{"type": "image", "src": "media/journey-sord-sord-retailer-mandate.png", "title": "Supplier Order Desk and Logistics Lead customer journey: From a retailer EDI ultimatum to orders that simply flow", "alt": "Enterprise journey storyboard for \"From a retailer EDI ultimatum to orders that simply flow\" for customer \"Supplier Order Desk and Logistics Lead\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "sord-co", "name": "Retailer orders fulfilled right first time", "description": "Share of retailer orders processed, confirmed, shipped and announced without rework or rejection.", "unit": "%", "icon": "kpi-sord-sord-co.png"}, "branches": [{"id": "sord-co-b1", "name": "Order processing speed", "description": "How fast retailer orders reach the ERP and are confirmed.", "unit": "hours", "children": [{"id": "sord-co-b1-m1", "name": "Order-to-ERP latency", "description": "Time from retailer sending to order available in ERP.", "unit": "minutes", "children": [{"id": "sord-co-b1-m1-a", "name": "Orders keyed manually", "description": "Share of orders still typed from e-mail or PDF.", "unit": "%", "children": [], "icon": "kpi-sord-sord-co-b1-m1-a.png"}, {"id": "sord-co-b1-m1-b", "name": "Orders blocked at validation", "description": "Share of inbound orders blocked for data errors.", "unit": "%", "children": [], "icon": "kpi-sord-sord-co-b1-m1-b.png"}], "icon": "kpi-sord-sord-co-b1-m1.png"}, {"id": "sord-co-b1-m2", "name": "Order confirmation lead time", "description": "Time from order receipt to ORDRSP sent.", "unit": "hours", "children": [{"id": "sord-co-b1-m2-a", "name": "Confirmations sent within retailer window", "description": "Share of ORDRSP inside the agreed window.", "unit": "%", "children": [], "icon": "kpi-sord-sord-co-b1-m2-a.png"}, {"id": "sord-co-b1-m2-b", "name": "Order changes after confirmation", "description": "Changes forcing re-confirmation.", "unit": "count/week", "children": [], "icon": "kpi-sord-sord-co-b1-m2-b.png"}], "icon": "kpi-sord-sord-co-b1-m2.png"}], "icon": "kpi-sord-sord-co-b1.png"}, {"id": "sord-co-b2", "name": "Delivery compliance", "description": "Share of deliveries accepted without dispute.", "unit": "%", "children": [{"id": "sord-co-b2-m1", "name": "Despatch advice accuracy", "description": "Share of DESADV matching what is received.", "unit": "%", "children": [{"id": "sord-co-b2-m1-a", "name": "DESADV sent before arrival", "description": "Share of deliveries announced before the truck arrives.", "unit": "%", "children": [], "icon": "kpi-sord-sord-co-b2-m1-a.png"}, {"id": "sord-co-b2-m1-b", "name": "DESADV quantity mismatches", "description": "Share of DESADV lines differing from receipt.", "unit": "%", "children": [], "icon": "kpi-sord-sord-co-b2-m1-b.png"}], "icon": "kpi-sord-sord-co-b2-m1.png"}, {"id": "sord-co-b2-m2", "name": "Label compliance", "description": "Share of pallets with accepted SSCC labels.", "unit": "%", "children": [{"id": "sord-co-b2-m2-a", "name": "SSCC label rejections at DC", "description": "Pallets rejected for label issues.", "unit": "count/month", "children": [], "icon": "kpi-sord-sord-co-b2-m2-a.png"}, {"id": "sord-co-b2-m2-b", "name": "Duplicate SSCCs issued", "description": "SSCCs reused in breach of GS1 rules.", "unit": "count/month", "children": [], "icon": "kpi-sord-sord-co-b2-m2-b.png"}], "icon": "kpi-sord-sord-co-b2-m2.png"}], "icon": "kpi-sord-sord-co-b2.png"}]}, "businessOutcomes": {"top": {"id": "sord-bo", "name": "Order desk cost per order", "description": "Fully loaded order desk cost divided by retailer orders processed.", "unit": "EUR", "icon": "kpi-sord-sord-bo.png"}, "branches": [{"id": "sord-bo-b1", "name": "Manual handling time per order", "description": "Staff time spent per order.", "unit": "minutes", "children": [{"id": "sord-bo-b1-m1", "name": "Retyped order lines", "description": "Lines entered by hand.", "unit": "%", "children": [], "icon": "kpi-sord-sord-bo-b1-m1.png"}, {"id": "sord-bo-b1-m2", "name": "Clarification contacts per 100 orders", "description": "Phone and e-mail queries with retailers.", "unit": "count", "children": [], "icon": "kpi-sord-sord-bo-b1-m2.png"}], "icon": "kpi-sord-sord-bo-b1.png"}, {"id": "sord-bo-b2", "name": "Retailer penalties and chargebacks", "description": "Fines and deductions for non-compliance.", "unit": "EUR/month", "children": [{"id": "sord-bo-b2-m1", "name": "Rejected deliveries", "description": "Deliveries refused at the dock.", "unit": "count/month", "children": [], "icon": "kpi-sord-sord-bo-b2-m1.png"}, {"id": "sord-bo-b2-m2", "name": "Late or missing DESADV penalties", "description": "Penalties for despatch advice.", "unit": "count/month", "children": [], "icon": "kpi-sord-sord-bo-b2-m2.png"}], "icon": "kpi-sord-sord-bo-b2.png"}]}}, "productStrategy": {"vision": "A supplier's order desk never retypes a retailer order or worries about a retailer's format: Transus connects each new retailer within a day and catches problems before the dock does.", "timeHorizons": {"year1": {"focus": "Make Traci AI and the retailer library cut connection time for typical suppliers; tighten SSCC and DESADV checks before trucks leave.", "productTheme": "Connect any retailer in a day", "customerKPI": {"northStar": "Retailer orders fulfilled right first time", "supporting": ["Orders keyed manually", "DESADV sent before arrival"]}, "businessKPI": {"northStar": "Order desk cost per order", "revenueStreams": ["EDI Basic and Plus subscriptions"], "supporting": ["Order desk cost per order"]}, "milestones": ["Traci AI for common retailer formats", "Pre-dispatch DESADV completeness check"]}, "year3": {"focus": "Shift from message delivery to whole order-to-cash flow: detect missing confirmations, despatch advice and invoices as one process.", "productTheme": "One continuous order flow", "customerKPI": {"northStar": "Retailer orders fulfilled right first time", "supporting": ["Despatch advice accuracy", "Order confirmation lead time"]}, "businessKPI": {"northStar": "Order desk cost per order", "revenueStreams": ["EDI Plus and Premium subscriptions", "Commerce Hub bundles"], "supporting": ["Retailer penalties and chargebacks"]}, "milestones": ["Flow-level monitoring per order", "Bundles with Logic4 and Picqer for suppliers"]}, "year5": {"focus": "Retailer onboarding becomes self-service: AI agents handle format changes and partner requests with specialists supervising exceptions.", "productTheme": "Self-driving supplier connectivity", "customerKPI": {"northStar": "Retailer orders fulfilled right first time", "supporting": ["Label compliance", "Order processing speed"]}, "businessKPI": {"northStar": "Order desk cost per order", "revenueStreams": ["Platform subscription", "Usage-independent flat fee"], "supporting": ["Manual handling time per order"]}, "milestones": ["Self-service retailer onboarding", "Automatic adaptation to retailer guideline changes"]}}}, "icon": "customer-sord-portrait.jpg"}, {"id": "sfin", "name": "Supplier Finance and Accounts Receivable Manager", "description": "Responsible for invoicing and collections at a supplier or wholesaler trading with retailers and business customers in the Netherlands, Belgium and Germany. Faces retailer invoice rules, rejected invoices and new e-invoicing obligations, notably German send obligations from 2027 and 2028.", "careAbout": ["Invoices accepted on first submission", "Cash collected on time", "Compliance with e-invoicing laws in every country", "Audit-proof archive"], "winsThem": ["Invoices sent once from the ERP and delivered in every required format", "Clear deadlines and no change to own process", "Rejections flagged before the customer sees them"], "theirFear": ["Invoices silently rejected and paid months late", "Missing the German 2027 deadline", "Credit-note waves after pricing errors", "Fines in a tax audit"], "jobsToBeDone": [{"id": "sfin-invoice", "name": "Get every invoice accepted and paid on first submission", "whatItIs": "Send correct, compliant invoices to every retailer and business customer from the ERP.", "outcome": "Invoices are accepted first time and paid within terms in every country.", "steps": [{"step": "Send invoices in each customer's required format", "description": "EDIFACT INVOIC for retailers, e-invoices for others.", "streamsNeeded": [{"id": "invoice-electronically-and-meet-e-invoicing-mandates", "name": "Invoice Electronically and Meet E-Invoicing Mandates", "howItSupports": "Converts and sends from the ERP."}], "media": []}, {"step": "Catch rejections early", "description": "See rejected or blocked invoices immediately.", "streamsNeeded": [{"id": "monitor-and-resolve-message-exceptions", "name": "Monitor and Resolve Message Exceptions", "howItSupports": "Validation and alerts."}], "media": []}, {"step": "Match invoices to deliveries", "description": "Invoice quantities match DESADV and receipt.", "streamsNeeded": [{"id": "ship-with-despatch-advice-and-sscc-labels", "name": "Ship with Despatch Advice and SSCC Labels", "howItSupports": "Despatch data feeds invoicing."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-sfin-sfin-invoice.png", "title": "Supplier Finance and Accounts Receivable Manager JTBD infographic: Get every invoice accepted and paid on first submission", "alt": "Enterprise infographic for the job \"Get every invoice accepted and paid on first submission\" for customer \"Supplier Finance and Accounts Receivable Manager\"."}]}, {"id": "sfin-comply", "name": "Stay compliant with e-invoicing mandates across countries", "whatItIs": "Meet e-invoicing and archiving obligations without changing internal processes for each country.", "outcome": "No mandate deadline is missed and audits are answered from the archive.", "steps": [{"step": "Prepare for the German mandate", "description": "Be able to send XRechnung, ZUGFeRD or Peppol by 2027.", "streamsNeeded": [{"id": "invoice-electronically-and-meet-e-invoicing-mandates", "name": "Invoice Electronically and Meet E-Invoicing Mandates", "howItSupports": "EN 16931 formats via Tickstar."}], "media": []}, {"step": "Archive for audits", "description": "Retrieve any invoice years later.", "streamsNeeded": [{"id": "invoice-electronically-and-meet-e-invoicing-mandates", "name": "Invoice Electronically and Meet E-Invoicing Mandates", "howItSupports": "Invoice archive."}], "media": []}, {"step": "Get the subscription right", "description": "Choose a plan that covers e-invoicing and archive.", "streamsNeeded": [{"id": "subscribe-and-get-ready-to-trade-digitally", "name": "Subscribe and Get Ready to Trade Digitally", "howItSupports": "Plan entitlements."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-sfin-sfin-comply.png", "title": "Supplier Finance and Accounts Receivable Manager JTBD infographic: Stay compliant with e-invoicing mandates across countries", "alt": "Enterprise infographic for the job \"Stay compliant with e-invoicing mandates across countries\" for customer \"Supplier Finance and Accounts Receivable Manager\"."}]}], "customerJourneyStories": [{"id": "journey-sfin-german-mandate", "name": "Getting ready for German e-invoicing without a project", "linkedJobIds": ["sfin-comply", "sfin-invoice"], "summary": "A finance manager at a Dutch wholesaler with German customers extends an existing Transus EDI setup to e-invoicing.", "stages": [{"stage": "Trigger", "narrative": "German customers start asking for XRechnung or ZUGFeRD; the finance manager learns that from 2027 companies above EUR 800,000 turnover must send e-invoices.", "media": []}, {"stage": "Discovery", "narrative": "Reads the Transus news item on the German mandate and hears from the order desk that retail invoices already go via Transus.", "media": []}, {"stage": "Evaluation", "narrative": "Checks whether EN 16931 formats and Peppol are covered, how Tickstar handles transmission, whether anything changes in the ERP, and what Premium adds (archive).", "media": []}, {"stage": "Trial", "narrative": "Sends the first XRechnung invoices to two German customers via the existing ERP link; rejected test invoices are explained before go-live.", "media": []}, {"stage": "Engagement", "narrative": "All German invoices flow through Transus; the finance team monitors rejections in the portal weekly instead of chasing payments.", "media": []}, {"stage": "Retention", "narrative": "Stays because the same setup covers Belgium and further mandates as they come, and the archive answers auditor requests.", "media": []}], "media": [{"type": "image", "src": "media/journey-sfin-sfin-german-mandate.png", "title": "Supplier Finance and Accounts Receivable Manager customer journey: Getting ready for German e-invoicing without a project", "alt": "Enterprise journey storyboard for \"Getting ready for German e-invoicing without a project\" for customer \"Supplier Finance and Accounts Receivable Manager\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "sfin-co", "name": "Invoices accepted on first submission", "description": "Share of invoices accepted by the receiver without rejection or credit note.", "unit": "%", "icon": "kpi-sfin-sfin-co.png"}, "branches": [{"id": "sfin-co-b1", "name": "Invoice acceptance", "description": "Receiver-side acceptance of invoices.", "unit": "%", "children": [{"id": "sfin-co-b1-m1", "name": "Invoice rejection rate", "description": "Share of invoices rejected by receivers.", "unit": "%", "children": [{"id": "sfin-co-b1-m1-a", "name": "Rejections for format errors", "description": "Rejections caused by syntax or mandatory-field errors.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b1-m1-a.png"}, {"id": "sfin-co-b1-m1-b", "name": "Rejections for price or quantity mismatch", "description": "Rejections caused by commercial mismatches.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b1-m1-b.png"}], "icon": "kpi-sfin-sfin-co-b1-m1.png"}, {"id": "sfin-co-b1-m2", "name": "E-invoice mandate coverage", "description": "Share of mandated customers reached in a compliant format.", "unit": "%", "children": [{"id": "sfin-co-b1-m2-a", "name": "Customers reached via Peppol or EDI", "description": "Customers receiving structured invoices.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b1-m2-a.png"}, {"id": "sfin-co-b1-m2-b", "name": "German invoices in XRechnung or ZUGFeRD", "description": "Share of German B2B invoices in recognised formats.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b1-m2-b.png"}], "icon": "kpi-sfin-sfin-co-b1-m2.png"}], "icon": "kpi-sfin-sfin-co-b1.png"}, {"id": "sfin-co-b2", "name": "Cash speed", "description": "How fast invoices turn into cash.", "unit": "days", "children": [{"id": "sfin-co-b2-m1", "name": "Days sales outstanding", "description": "Average days from invoice to payment.", "unit": "days", "children": [{"id": "sfin-co-b2-m1-a", "name": "Days from despatch to invoice sent", "description": "Invoicing lag after shipment.", "unit": "days", "children": [], "icon": "kpi-sfin-sfin-co-b2-m1-a.png"}, {"id": "sfin-co-b2-m1-b", "name": "Disputed invoices", "description": "Share of invoices under dispute.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b2-m1-b.png"}], "icon": "kpi-sfin-sfin-co-b2-m1.png"}, {"id": "sfin-co-b2-m2", "name": "Credit notes issued", "description": "Credit notes as share of invoices.", "unit": "%", "children": [{"id": "sfin-co-b2-m2-a", "name": "Credit notes from pricing errors", "description": "Caused by price differences.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b2-m2-a.png"}, {"id": "sfin-co-b2-m2-b", "name": "Credit notes from short deliveries", "description": "Caused by delivery shortfalls.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-co-b2-m2-b.png"}], "icon": "kpi-sfin-sfin-co-b2-m2.png"}], "icon": "kpi-sfin-sfin-co-b2.png"}]}, "businessOutcomes": {"top": {"id": "sfin-bo", "name": "Cost per invoice", "description": "Fully loaded cost of producing, sending and collecting an invoice.", "unit": "EUR", "icon": "kpi-sfin-sfin-bo.png"}, "branches": [{"id": "sfin-bo-b1", "name": "Manual invoice effort", "description": "Staff time on invoicing exceptions.", "unit": "hours/month", "children": [{"id": "sfin-bo-b1-m1", "name": "PDF invoices still sent", "description": "Invoices not yet structured.", "unit": "%", "children": [], "icon": "kpi-sfin-sfin-bo-b1-m1.png"}, {"id": "sfin-bo-b1-m2", "name": "Invoices manually re-sent", "description": "Invoices re-sent after rejection.", "unit": "count/month", "children": [], "icon": "kpi-sfin-sfin-bo-b1-m2.png"}], "icon": "kpi-sfin-sfin-bo-b1.png"}, {"id": "sfin-bo-b2", "name": "Compliance exposure", "description": "Open compliance gaps.", "unit": "count", "children": [{"id": "sfin-bo-b2-m1", "name": "Countries with open mandate gap", "description": "Countries where obligations are not yet met.", "unit": "count", "children": [], "icon": "kpi-sfin-sfin-bo-b2-m1.png"}, {"id": "sfin-bo-b2-m2", "name": "Unanswered audit retrieval requests", "description": "Audit requests not met from the archive.", "unit": "count", "children": [], "icon": "kpi-sfin-sfin-bo-b2-m2.png"}], "icon": "kpi-sfin-sfin-bo-b2.png"}]}}, "productStrategy": {"vision": "Finance sends every invoice once from the ERP and Transus makes it compliant, delivered and archived for whichever retailer, business or country it goes to.", "timeHorizons": {"year1": {"focus": "Have every customer with German trade sending EN 16931 e-invoices well before January 2027.", "productTheme": "German mandate readiness", "customerKPI": {"northStar": "Invoices accepted on first submission", "supporting": ["German invoices in XRechnung or ZUGFeRD", "Rejections for format errors"]}, "businessKPI": {"northStar": "Cost per invoice", "revenueStreams": ["E-invoicing on EDI subscriptions", "Premium (archive)"], "supporting": ["Countries with open mandate gap"]}, "milestones": ["XRechnung/ZUGFeRD go-live for all German-trading customers", "Pre-send EN 16931 validation"]}, "year3": {"focus": "Extend to further European mandates and to invoice-to-order matching that prevents commercial rejections.", "productTheme": "Mandates as a service", "customerKPI": {"northStar": "Invoices accepted on first submission", "supporting": ["Invoice rejection rate", "Days sales outstanding"]}, "businessKPI": {"northStar": "Cost per invoice", "revenueStreams": ["E-invoicing subscriptions", "Archive"], "supporting": ["Credit notes issued"]}, "milestones": ["Belgian and further mandate packs", "Price and quantity pre-checks against order and DESADV"]}, "year5": {"focus": "Real-time digital reporting regimes (EU ViDA direction) handled within the same flow.", "productTheme": "Continuous transaction compliance", "customerKPI": {"northStar": "Invoices accepted on first submission", "supporting": ["E-invoice mandate coverage", "Cash speed"]}, "businessKPI": {"northStar": "Cost per invoice", "revenueStreams": ["Compliance subscriptions"], "supporting": ["Manual invoice effort"]}, "milestones": ["Digital reporting connectors", "Compliance status per country in one view"]}}}, "icon": "customer-sfin-portrait.jpg"}]}, {"group": "Retailers and Buying Organisations", "customers": [{"id": "rscm", "name": "Retail Supplier Onboarding and Supply Chain Manager", "description": "At a retailer, marketplace or wholesaler (bol.com, DIY, garden and grocery chains are cited by Transus) responsible for getting hundreds of suppliers to exchange orders, despatch advice and invoices digitally and for replenishment partnerships such as VMI.", "careAbout": ["Share of suppliers trading digitally", "Advance notice of every delivery", "Invoices that match orders and receipts", "Not supporting each supplier's IT personally"], "winsThem": ["Suppliers already on the network", "Suppliers without ERP can still comply via web EDI", "Visibility of each supplier connection status"], "theirFear": ["Small suppliers that never get connected", "Dock chaos from unannounced deliveries", "Accounts payable drowning in PDF invoices", "Supplier data quality issues blamed on the retailer"], "jobsToBeDone": [{"id": "rscm-onboard", "name": "Get every supplier trading digitally", "whatItIs": "Move the whole supplier base, including small ones, to EDI for orders, DESADV and invoices.", "outcome": "Nearly all purchase volume is exchanged digitally with consistent data.", "steps": [{"step": "Find out who is already connected", "description": "Check which suppliers are already on a network.", "streamsNeeded": [{"id": "connect-a-new-trading-partner", "name": "Connect a New Trading Partner", "howItSupports": "Directory and onboarding workflow."}], "media": []}, {"step": "Onboard the rest, including small suppliers", "description": "Suppliers without ERP use web EDI.", "streamsNeeded": [{"id": "subscribe-and-get-ready-to-trade-digitally", "name": "Subscribe and Get Ready to Trade Digitally", "howItSupports": "Basic plan and portal for small suppliers."}], "media": []}, {"step": "Monitor supplier compliance", "description": "See which suppliers send late or wrong messages.", "streamsNeeded": [{"id": "monitor-and-resolve-message-exceptions", "name": "Monitor and Resolve Message Exceptions", "howItSupports": "Monitoring and analytics."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-rscm-rscm-onboard.png", "title": "Retail Supplier Onboarding and Supply Chain Manager JTBD infographic: Get every supplier trading digitally", "alt": "Enterprise infographic for the job \"Get every supplier trading digitally\" for customer \"Retail Supplier Onboarding and Supply Chain Manager\"."}]}, {"id": "rscm-replenish", "name": "Keep shelves stocked with supplier-managed replenishment", "whatItIs": "Let trusted suppliers replenish from shared stock and forecast data.", "outcome": "Fresh and fast-moving items are available without emergency orders.", "steps": [{"step": "Share stock and forecasts", "description": "Send stock and forecast data to suppliers.", "streamsNeeded": [{"id": "replenish-retail-stock-with-vendor-managed-inventory", "name": "Replenish Retail Stock with Vendor Managed Inventory", "howItSupports": "VMI data exchange."}], "media": []}, {"step": "Receive announced deliveries", "description": "Each replenishment arrives announced by DESADV.", "streamsNeeded": [{"id": "ship-with-despatch-advice-and-sscc-labels", "name": "Ship with Despatch Advice and SSCC Labels", "howItSupports": "DESADV and SSCC."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-rscm-rscm-replenish.png", "title": "Retail Supplier Onboarding and Supply Chain Manager JTBD infographic: Keep shelves stocked with supplier-managed replenishment", "alt": "Enterprise infographic for the job \"Keep shelves stocked with supplier-managed replenishment\" for customer \"Retail Supplier Onboarding and Supply Chain Manager\"."}]}], "customerJourneyStories": [{"id": "journey-rscm-supplier-programme", "name": "Rolling out an EDI mandate to the whole supplier base", "linkedJobIds": ["rscm-onboard"], "summary": "A retailer's supply chain manager uses Transus as a recommended route for suppliers that cannot connect on their own.", "stages": [{"stage": "Trigger", "narrative": "Accounts payable and the DC complain about PDF invoices and unannounced deliveries; leadership sets a target to make EDI mandatory for all suppliers.", "media": []}, {"stage": "Discovery", "narrative": "Finds that many of its suppliers already exchange messages through Transus and that Transus offers web EDI for suppliers without ERP.", "media": []}, {"stage": "Evaluation", "narrative": "Reviews Transus' knowledge of its own message guideline, the ISO 27001 certificate and EU hosting, and the fact that partners can log in to see message status even if they are not customers.", "media": []}, {"stage": "Trial", "narrative": "Pilots with a group of small suppliers; Transus connects them on its network and reports status per supplier.", "media": []}, {"stage": "Engagement", "narrative": "Includes Transus in the supplier onboarding letter; supplier connections and DESADV coverage are reviewed monthly.", "media": []}, {"stage": "Retention", "narrative": "Keeps recommending Transus because supplier issues are resolved without the retailer's IT, and extends the cooperation to SSCC and VMI requirements.", "media": []}], "media": [{"type": "image", "src": "media/journey-rscm-rscm-supplier-programme.png", "title": "Retail Supplier Onboarding and Supply Chain Manager customer journey: Rolling out an EDI mandate to the whole supplier base", "alt": "Enterprise journey storyboard for \"Rolling out an EDI mandate to the whole supplier base\" for customer \"Retail Supplier Onboarding and Supply Chain Manager\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "rscm-co", "name": "Purchase volume exchanged via EDI", "description": "Share of purchase order volume where order, despatch and invoice are exchanged digitally.", "unit": "%", "icon": "kpi-rscm-rscm-co.png"}, "branches": [{"id": "rscm-co-b1", "name": "Supplier coverage", "description": "Suppliers trading digitally.", "unit": "%", "children": [{"id": "rscm-co-b1-m1", "name": "Suppliers trading via EDI", "description": "Share of active suppliers on EDI.", "unit": "%", "children": [{"id": "rscm-co-b1-m1-a", "name": "Suppliers live within 24 hours of request", "description": "Fast onboarding share.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b1-m1-a.png"}, {"id": "rscm-co-b1-m1-b", "name": "Suppliers on web EDI without ERP", "description": "Small suppliers using a portal.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b1-m1-b.png"}], "icon": "kpi-rscm-rscm-co-b1-m1.png"}, {"id": "rscm-co-b1-m2", "name": "Supplier onboarding lead time", "description": "Time from request to live.", "unit": "days", "children": [{"id": "rscm-co-b1-m2-a", "name": "Mapping effort per new supplier", "description": "Specialist effort per connection.", "unit": "hours", "children": [], "icon": "kpi-rscm-rscm-co-b1-m2-a.png"}, {"id": "rscm-co-b1-m2-b", "name": "Test cycles before go-live", "description": "Test rounds per supplier.", "unit": "count", "children": [], "icon": "kpi-rscm-rscm-co-b1-m2-b.png"}], "icon": "kpi-rscm-rscm-co-b1-m2.png"}], "icon": "kpi-rscm-rscm-co-b1.png"}, {"id": "rscm-co-b2", "name": "Inbound data quality", "description": "Supplier messages usable without correction.", "unit": "%", "children": [{"id": "rscm-co-b2-m1", "name": "Advance shipping notice coverage", "description": "Deliveries announced by DESADV.", "unit": "%", "children": [{"id": "rscm-co-b2-m1-a", "name": "Deliveries with DESADV before arrival", "description": "Announced on time.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b2-m1-a.png"}, {"id": "rscm-co-b2-m1-b", "name": "SSCC scan success at DC", "description": "Pallet labels scanned first time.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b2-m1-b.png"}], "icon": "kpi-rscm-rscm-co-b2-m1.png"}, {"id": "rscm-co-b2-m2", "name": "Invoice match rate", "description": "Invoices matching order and receipt automatically.", "unit": "%", "children": [{"id": "rscm-co-b2-m2-a", "name": "Invoices auto-matched to PO and receipt", "description": "Three-way match without touch.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b2-m2-a.png"}, {"id": "rscm-co-b2-m2-b", "name": "Invoices blocked for missing data", "description": "Invoices lacking mandatory data.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-co-b2-m2-b.png"}], "icon": "kpi-rscm-rscm-co-b2-m2.png"}], "icon": "kpi-rscm-rscm-co-b2.png"}]}, "businessOutcomes": {"top": {"id": "rscm-bo", "name": "Cost per purchase order processed", "description": "Procurement, receiving and payables cost per purchase order.", "unit": "EUR", "icon": "kpi-rscm-rscm-bo.png"}, "branches": [{"id": "rscm-bo-b1", "name": "Accounts payable effort", "description": "Manual invoice handling.", "unit": "hours/month", "children": [{"id": "rscm-bo-b1-m1", "name": "Invoices keyed manually", "description": "Invoices still typed.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-bo-b1-m1.png"}, {"id": "rscm-bo-b1-m2", "name": "Supplier queries per 1,000 invoices", "description": "Queries handled by payables.", "unit": "count", "children": [], "icon": "kpi-rscm-rscm-bo-b1-m2.png"}], "icon": "kpi-rscm-rscm-bo-b1.png"}, {"id": "rscm-bo-b2", "name": "Shelf availability", "description": "Availability of supplier-replenished items.", "unit": "%", "children": [{"id": "rscm-bo-b2-m1", "name": "Out-of-stock rate on VMI items", "description": "Stock-outs on supplier-managed items.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-bo-b2-m1.png"}, {"id": "rscm-bo-b2-m2", "name": "Forecasts shared with suppliers", "description": "Share of VMI suppliers receiving forecasts.", "unit": "%", "children": [], "icon": "kpi-rscm-rscm-bo-b2-m2.png"}], "icon": "kpi-rscm-rscm-bo-b2.png"}]}}, "productStrategy": {"vision": "Retailers reach near-total digital exchange with their supplier base because Transus connects even the smallest supplier and keeps data quality visible.", "timeHorizons": {"year1": {"focus": "Make supplier onboarding visible to retailers: status per supplier, onboarding lead times and DESADV coverage.", "productTheme": "Supplier programme visibility", "customerKPI": {"northStar": "Purchase volume exchanged via EDI", "supporting": ["Suppliers trading via EDI", "Deliveries with DESADV before arrival"]}, "businessKPI": {"northStar": "Cost per purchase order processed", "revenueStreams": ["Supplier subscriptions via retailer programmes"], "supporting": ["Supplier onboarding lead time"]}, "milestones": ["Retailer supplier-programme dashboard", "Traci AI for supplier formats"]}, "year3": {"focus": "Raise inbound data quality with pre-validation of supplier invoices and DESADV against the retailer's rules.", "productTheme": "Quality at the source", "customerKPI": {"northStar": "Purchase volume exchanged via EDI", "supporting": ["Invoice match rate", "Advance shipping notice coverage"]}, "businessKPI": {"northStar": "Cost per purchase order processed", "revenueStreams": ["Supplier subscriptions", "Retailer premium services"], "supporting": ["Accounts payable effort"]}, "milestones": ["Supplier quality scorecards", "Pre-validation feedback to suppliers"]}, "year5": {"focus": "Collaborative replenishment beyond fresh: shared stock and forecasts for more categories.", "productTheme": "Collaborative supply chain", "customerKPI": {"northStar": "Purchase volume exchanged via EDI", "supporting": ["Inbound data quality", "Supplier coverage"]}, "businessKPI": {"northStar": "Cost per purchase order processed", "revenueStreams": ["VMI and collaboration services"], "supporting": ["Shelf availability"]}, "milestones": ["VMI for non-fresh categories", "Forecast sharing at scale"]}}}, "icon": "customer-rscm-portrait.jpg"}]}, {"group": "IT and Integration", "customers": [{"id": "itmg", "name": "IT and ERP Manager at a Trading Company", "description": "Owns the ERP, WMS and integrations at a manufacturer, wholesaler or retailer with a small IT team. Does not want to build or run EDI in-house, plans ERP migrations, and must answer customer security questionnaires, increasingly under NIS2 (Dutch Cybersecurity Act).", "careAbout": ["Integrations that run without daily attention", "Not owning EDI know-how in-house", "Migrations without breaking partner flows", "Security and data-location assurance"], "winsThem": ["API-first integration with the existing ERP", "Certified partners who know their ERP", "ISO 27001 and a ready NIS2 information pack", "Parallel run when switching"], "theirFear": ["A failed EDI flow nobody notices for days", "Vendor lock-in to a proprietary mapping", "Failing a key customer's supplier audit", "Being the single point of knowledge"], "jobsToBeDone": [{"id": "itmg-integrate", "name": "Connect the ERP to all trading partners without building EDI in-house", "whatItIs": "Integrate once and let the provider handle partner formats, transport and changes.", "outcome": "All partner flows run automatically; IT only handles exceptions.", "steps": [{"step": "Pick the integration route", "description": "API, file drop or a certified partner connector.", "streamsNeeded": [{"id": "integrate-erp-and-commerce-hub-systems", "name": "Integrate ERP and Commerce Hub Systems", "howItSupports": "API and connectors."}], "media": []}, {"step": "Connect sibling commerce systems", "description": "Link Logic4, Vendit, Picqer or other Katapull systems.", "streamsNeeded": [{"id": "integrate-erp-and-commerce-hub-systems", "name": "Integrate ERP and Commerce Hub Systems", "howItSupports": "Commerce Hub connectors."}], "media": []}, {"step": "Keep flows healthy", "description": "Detect and fix failures fast.", "streamsNeeded": [{"id": "monitor-and-resolve-message-exceptions", "name": "Monitor and Resolve Message Exceptions", "howItSupports": "Monitoring and expert support."}], "media": []}, {"step": "Migrate ERP without downtime", "description": "Re-point partner flows during an ERP change.", "streamsNeeded": [{"id": "connect-a-new-trading-partner", "name": "Connect a New Trading Partner", "howItSupports": "Parallel run and testing."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-itmg-itmg-integrate.png", "title": "IT and ERP Manager at a Trading Company JTBD infographic: Connect the ERP to all trading partners without building EDI in-house", "alt": "Enterprise infographic for the job \"Connect the ERP to all trading partners without building EDI in-house\" for customer \"IT and ERP Manager at a Trading Company\"."}]}, {"id": "itmg-secure", "name": "Pass customers' supplier security assessments", "whatItIs": "Show that the EDI chain meets ISO 27001 and NIS2 expectations.", "outcome": "Security questionnaires are answered from a standard pack; no audit findings on integration.", "steps": [{"step": "Provide security evidence", "description": "ISO certificate, data location, incident response.", "streamsNeeded": [{"id": "subscribe-and-get-ready-to-trade-digitally", "name": "Subscribe and Get Ready to Trade Digitally", "howItSupports": "Security and assurance pack."}], "media": []}, {"step": "Control access", "description": "Least-privilege access for users and partners.", "streamsNeeded": [{"id": "subscribe-and-get-ready-to-trade-digitally", "name": "Subscribe and Get Ready to Trade Digitally", "howItSupports": "Identity and access."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-itmg-itmg-secure.png", "title": "IT and ERP Manager at a Trading Company JTBD infographic: Pass customers' supplier security assessments", "alt": "Enterprise infographic for the job \"Pass customers' supplier security assessments\" for customer \"IT and ERP Manager at a Trading Company\"."}]}], "customerJourneyStories": [{"id": "journey-itmg-erp-migration", "name": "Moving EDI to a provider during an ERP replacement", "linkedJobIds": ["itmg-integrate", "itmg-secure"], "summary": "An IT manager replacing an on-premise ERP moves partner flows from a self-run EDI converter to Transus.", "stages": [{"stage": "Trigger", "narrative": "The ERP replacement project shows that the old in-house EDI converter cannot be migrated and its only expert is leaving.", "media": []}, {"stage": "Discovery", "narrative": "The new ERP's implementation partner (for example a Business Central or AFAS partner) proposes Transus, for which it has a ready connector.", "media": []}, {"stage": "Evaluation", "narrative": "Evaluates API-first integration, the list of already-connected partners, ISO 27001:2022 certification, Frankfurt hosting with Amsterdam DR and the NIS2 FAQ; compares with a larger international EDI provider.", "media": []}, {"stage": "Trial", "narrative": "Runs the new ERP and Transus in parallel with the old converter for two retailers until messages match.", "media": []}, {"stage": "Engagement", "narrative": "All partners moved; IT watches the exception console and lets Transus support handle partner-side issues.", "media": []}, {"stage": "Retention", "narrative": "Renews because no in-house EDI knowledge is needed any more and the NIS2 pack shortens customer audits; considers Picqer and Logic4 links from the same group.", "media": []}], "media": [{"type": "image", "src": "media/journey-itmg-itmg-erp-migration.png", "title": "IT and ERP Manager at a Trading Company customer journey: Moving EDI to a provider during an ERP replacement", "alt": "Enterprise journey storyboard for \"Moving EDI to a provider during an ERP replacement\" for customer \"IT and ERP Manager at a Trading Company\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "itmg-co", "name": "Partner integrations running without IT intervention", "description": "Share of partner flows that ran a month without IT work.", "unit": "%", "icon": "kpi-itmg-itmg-co.png"}, "branches": [{"id": "itmg-co-b1", "name": "Integration reliability", "description": "Messages delivered correctly.", "unit": "%", "children": [{"id": "itmg-co-b1-m1", "name": "Message delivery success", "description": "Share of messages delivered and acknowledged.", "unit": "%", "children": [{"id": "itmg-co-b1-m1-a", "name": "Messages failed in transport", "description": "Transport-level failures.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b1-m1-a.png"}, {"id": "itmg-co-b1-m1-b", "name": "Messages failed validation", "description": "Blocked for data errors.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b1-m1-b.png"}], "icon": "kpi-itmg-itmg-co-b1-m1.png"}, {"id": "itmg-co-b1-m2", "name": "Incident resolution time", "description": "Time from failure to fix.", "unit": "hours", "children": [{"id": "itmg-co-b1-m2-a", "name": "Time to detect failed message", "description": "Detection delay.", "unit": "minutes", "children": [], "icon": "kpi-itmg-itmg-co-b1-m2-a.png"}, {"id": "itmg-co-b1-m2-b", "name": "Time to fix mapping issue", "description": "Fix time for mapping errors.", "unit": "hours", "children": [], "icon": "kpi-itmg-itmg-co-b1-m2-b.png"}], "icon": "kpi-itmg-itmg-co-b1-m2.png"}], "icon": "kpi-itmg-itmg-co-b1.png"}, {"id": "itmg-co-b2", "name": "Change agility", "description": "Speed of integration changes.", "unit": "days", "children": [{"id": "itmg-co-b2-m1", "name": "Time to connect a new partner", "description": "Request to live.", "unit": "days", "children": [{"id": "itmg-co-b2-m1-a", "name": "Partners pre-connected on network", "description": "Requested partners already on Transus.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b2-m1-a.png"}, {"id": "itmg-co-b2-m1-b", "name": "Connections needing custom mapping", "description": "Share needing specialist mapping.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b2-m1-b.png"}], "icon": "kpi-itmg-itmg-co-b2-m1.png"}, {"id": "itmg-co-b2-m2", "name": "EDI downtime during ERP migration", "description": "Partner flow interruption during migrations.", "unit": "days", "children": [{"id": "itmg-co-b2-m2-a", "name": "Partners migrated in parallel run", "description": "Connections switched with parallel testing.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b2-m2-a.png"}, {"id": "itmg-co-b2-m2-b", "name": "Connections re-tested after migration", "description": "Connections verified after cut-over.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-co-b2-m2-b.png"}], "icon": "kpi-itmg-itmg-co-b2-m2.png"}], "icon": "kpi-itmg-itmg-co-b2.png"}]}, "businessOutcomes": {"top": {"id": "itmg-bo", "name": "Total cost of B2B integration", "description": "Subscriptions, partner fees and internal effort for B2B integration.", "unit": "EUR/year", "icon": "kpi-itmg-itmg-bo.png"}, "branches": [{"id": "itmg-bo-b1", "name": "Internal EDI effort", "description": "Internal staff time on EDI.", "unit": "FTE", "children": [{"id": "itmg-bo-b1-m1", "name": "Hours spent on mapping changes", "description": "Internal mapping work.", "unit": "hours/month", "children": [], "icon": "kpi-itmg-itmg-bo-b1-m1.png"}, {"id": "itmg-bo-b1-m2", "name": "In-house EDI tools maintained", "description": "Converters and scripts still owned.", "unit": "count", "children": [], "icon": "kpi-itmg-itmg-bo-b1-m2.png"}], "icon": "kpi-itmg-itmg-bo-b1.png"}, {"id": "itmg-bo-b2", "name": "Security assurance", "description": "Ability to pass supplier assessments.", "unit": "score", "children": [{"id": "itmg-bo-b2-m1", "name": "Questionnaires answered from standard pack", "description": "Answered without custom work.", "unit": "%", "children": [], "icon": "kpi-itmg-itmg-bo-b2-m1.png"}, {"id": "itmg-bo-b2-m2", "name": "Open audit findings on integration", "description": "Findings against the EDI chain.", "unit": "count", "children": [], "icon": "kpi-itmg-itmg-bo-b2-m2.png"}], "icon": "kpi-itmg-itmg-bo-b2.png"}]}}, "productStrategy": {"vision": "IT connects the ERP once; Transus runs partner integration as a secure, monitored utility the company can prove to its own customers.", "timeHorizons": {"year1": {"focus": "API-first onboarding and NIS2-ready assurance for IT buyers.", "productTheme": "Integration and assurance", "customerKPI": {"northStar": "Partner integrations running without IT intervention", "supporting": ["Message delivery success", "Questionnaires answered from standard pack"]}, "businessKPI": {"northStar": "Total cost of B2B integration", "revenueStreams": ["Premium subscriptions", "Partner-delivered integrations"], "supporting": ["Total cost of B2B integration"]}, "milestones": ["Published NIS2 information pack", "API documentation for partners"]}, "year3": {"focus": "Katapull Commerce Hub connectors make Transus the default B2B layer for Logic4, Vendit and Picqer customers.", "productTheme": "Commerce Hub integration", "customerKPI": {"northStar": "Partner integrations running without IT intervention", "supporting": ["Time to connect a new partner", "Incident resolution time"]}, "businessKPI": {"northStar": "Total cost of B2B integration", "revenueStreams": ["Premium subscriptions", "Commerce Hub bundles"], "supporting": ["Internal EDI effort"]}, "milestones": ["Productised Logic4 and Picqer connectors", "Flow monitoring APIs for IT"]}, "year5": {"focus": "Integration changes (ERP upgrades, format changes) detected and adapted automatically.", "productTheme": "Self-healing integration", "customerKPI": {"northStar": "Partner integrations running without IT intervention", "supporting": ["Change agility", "EDI downtime during ERP migration"]}, "businessKPI": {"northStar": "Total cost of B2B integration", "revenueStreams": ["Platform subscription"], "supporting": ["Security assurance"]}, "milestones": ["Automatic mapping adaptation", "Continuous assurance reporting"]}}}, "icon": "customer-itmg-portrait.jpg"}, {"id": "impl", "name": "ERP Implementation Partner", "description": "Consultant or account manager at an ERP reseller or integrator (for example partners for AFAS, Business Central, Exact, KING, Odoo, SAP or Unit4) or at a sibling Katapull brand, who adds EDI to customer projects through the Transus Partner Network instead of building it.", "careAbout": ["Delivering projects on time", "A complete offer including EDI", "Recurring revenue from customers", "Direct access to EDI experts"], "winsThem": ["Reusable connector templates", "Partners often already on the network", "Support in Dutch, German or English", "Long-term recurring partnership"], "theirFear": ["EDI delaying the ERP go-live", "Owning EDI problems they cannot fix", "Customers moving to a competitor's EDI", "Unbillable integration hours"], "jobsToBeDone": [{"id": "impl-deliver", "name": "Add EDI to customer projects without building EDI technology", "whatItIs": "Deliver ERP projects with working partner connections from day one.", "outcome": "Customers go live on ERP and EDI together; the partner earns recurring revenue.", "steps": [{"step": "Integrate the customer ERP", "description": "Use the Transus API or connector for the ERP.", "streamsNeeded": [{"id": "integrate-erp-and-commerce-hub-systems", "name": "Integrate ERP and Commerce Hub Systems", "howItSupports": "API and connector framework."}], "media": []}, {"step": "Connect the customer's partners", "description": "Connect the retailers the customer trades with.", "streamsNeeded": [{"id": "connect-a-new-trading-partner", "name": "Connect a New Trading Partner", "howItSupports": "Network and onboarding."}], "media": []}, {"step": "Hand over and support", "description": "Escalate partner-side issues to Transus.", "streamsNeeded": [{"id": "monitor-and-resolve-message-exceptions", "name": "Monitor and Resolve Message Exceptions", "howItSupports": "Exception handling and expert support."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-impl-impl-deliver.png", "title": "ERP Implementation Partner JTBD infographic: Add EDI to customer projects without building EDI technology", "alt": "Enterprise infographic for the job \"Add EDI to customer projects without building EDI technology\" for customer \"ERP Implementation Partner\"."}]}], "customerJourneyStories": [{"id": "journey-impl-partner-network", "name": "Joining the Transus Partner Network", "linkedJobIds": ["impl-deliver"], "summary": "An ERP partner starts offering EDI through Transus after repeatedly losing time on customer EDI demands.", "stages": [{"stage": "Trigger", "narrative": "Two ERP projects slip because customers' retailers demand EDI and the partner has no EDI offer.", "media": []}, {"stage": "Discovery", "narrative": "Learns of the Transus Partner Network through a peer partner's connector (such as an AFAS or Business Central app) or the Katapull Commerce Hub.", "media": []}, {"stage": "Evaluation", "narrative": "Reviews partner terms, API documentation, connector templates, resale options and how support is split.", "media": []}, {"stage": "Trial", "narrative": "Introduction and onboarding with Transus; the first customer connection is set up together.", "media": []}, {"stage": "Engagement", "narrative": "Includes Transus in standard ERP proposals and scales to more customers and systems.", "media": []}, {"stage": "Retention", "narrative": "Stays because EDI is recurring, connections keep working month after month and Transus experts handle partner-side issues.", "media": []}], "media": [{"type": "image", "src": "media/journey-impl-impl-partner-network.png", "title": "ERP Implementation Partner customer journey: Joining the Transus Partner Network", "alt": "Enterprise journey storyboard for \"Joining the Transus Partner Network\" for customer \"ERP Implementation Partner\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "impl-co", "name": "Customer EDI projects live on schedule", "description": "Share of customer projects whose EDI connections go live on the planned date.", "unit": "%", "icon": "kpi-impl-impl-co.png"}, "branches": [{"id": "impl-co-b1", "name": "Project delivery", "description": "Speed and quality of EDI delivery.", "unit": "days", "children": [{"id": "impl-co-b1-m1", "name": "Time to first live connection", "description": "From project start to first live partner.", "unit": "days", "children": [{"id": "impl-co-b1-m1-a", "name": "Partner onboarding to platform", "description": "Time for the implementation partner to get platform access and training.", "unit": "days", "children": [], "icon": "kpi-impl-impl-co-b1-m1-a.png"}, {"id": "impl-co-b1-m1-b", "name": "First-connection mapping effort", "description": "Effort for the first connection.", "unit": "hours", "children": [], "icon": "kpi-impl-impl-co-b1-m1-b.png"}], "icon": "kpi-impl-impl-co-b1-m1.png"}, {"id": "impl-co-b1-m2", "name": "Go-live defects", "description": "Defects in the first month.", "unit": "count", "children": [{"id": "impl-co-b1-m2-a", "name": "Validation errors in first month", "description": "Blocked messages after go-live.", "unit": "count", "children": [], "icon": "kpi-impl-impl-co-b1-m2-a.png"}, {"id": "impl-co-b1-m2-b", "name": "Escalations to Transus support", "description": "Escalations needed.", "unit": "count", "children": [], "icon": "kpi-impl-impl-co-b1-m2-b.png"}], "icon": "kpi-impl-impl-co-b1-m2.png"}], "icon": "kpi-impl-impl-co-b1.png"}, {"id": "impl-co-b2", "name": "Customer satisfaction", "description": "Customer satisfaction with EDI.", "unit": "%", "children": [{"id": "impl-co-b2-m1", "name": "Customer retention on EDI", "description": "Customers keeping EDI after year one.", "unit": "%", "children": [{"id": "impl-co-b2-m1-a", "name": "Customers adding partners after go-live", "description": "Customers expanding connections.", "unit": "%", "children": [], "icon": "kpi-impl-impl-co-b2-m1-a.png"}, {"id": "impl-co-b2-m1-b", "name": "Customers churned to other EDI providers", "description": "Lost to competitors.", "unit": "%", "children": [], "icon": "kpi-impl-impl-co-b2-m1-b.png"}], "icon": "kpi-impl-impl-co-b2-m1.png"}, {"id": "impl-co-b2-m2", "name": "Support response time", "description": "Time to first response on escalations.", "unit": "hours", "children": [{"id": "impl-co-b2-m2-a", "name": "Tickets answered in customer language", "description": "Dutch, German or English as needed.", "unit": "%", "children": [], "icon": "kpi-impl-impl-co-b2-m2-a.png"}, {"id": "impl-co-b2-m2-b", "name": "Tickets resolved at first contact", "description": "First-contact resolution.", "unit": "%", "children": [], "icon": "kpi-impl-impl-co-b2-m2-b.png"}], "icon": "kpi-impl-impl-co-b2-m2.png"}], "icon": "kpi-impl-impl-co-b2.png"}]}, "businessOutcomes": {"top": {"id": "impl-bo", "name": "Recurring revenue from EDI customers", "description": "Partner recurring revenue linked to Transus customers.", "unit": "EUR/year", "icon": "kpi-impl-impl-bo.png"}, "branches": [{"id": "impl-bo-b1", "name": "EDI attach rate", "description": "Share of ERP projects including EDI.", "unit": "%", "children": [{"id": "impl-bo-b1-m1", "name": "ERP projects including EDI", "description": "Projects with EDI scope.", "unit": "%", "children": [], "icon": "kpi-impl-impl-bo-b1-m1.png"}, {"id": "impl-bo-b1-m2", "name": "Commerce Hub cross-referrals", "description": "Referrals between Katapull brands.", "unit": "count/year", "children": [], "icon": "kpi-impl-impl-bo-b1-m2.png"}], "icon": "kpi-impl-impl-bo-b1.png"}, {"id": "impl-bo-b2", "name": "Delivery margin", "description": "Margin on EDI delivery work.", "unit": "%", "children": [{"id": "impl-bo-b2-m1", "name": "Unbillable integration hours", "description": "Hours not billable.", "unit": "hours", "children": [], "icon": "kpi-impl-impl-bo-b2-m1.png"}, {"id": "impl-bo-b2-m2", "name": "Reused connector templates", "description": "Projects reusing templates.", "unit": "%", "children": [], "icon": "kpi-impl-impl-bo-b2-m2.png"}], "icon": "kpi-impl-impl-bo-b2.png"}]}}, "productStrategy": {"vision": "Every ERP partner and Katapull brand can offer EDI as a standard, recurring part of its projects without building EDI know-how.", "timeHorizons": {"year1": {"focus": "Grow the certified partner network with documented APIs and connector templates.", "productTheme": "Partner enablement", "customerKPI": {"northStar": "Customer EDI projects live on schedule", "supporting": ["Time to first live connection", "Go-live defects"]}, "businessKPI": {"northStar": "Recurring revenue from EDI customers", "revenueStreams": ["Partner-resold subscriptions"], "supporting": ["EDI attach rate"]}, "milestones": ["Partner portal with templates", "Connector certification"]}, "year3": {"focus": "Commerce Hub cross-selling: Logic4, Vendit, Highbiza and Picqer customers offered EDI by default.", "productTheme": "Hub cross-sell", "customerKPI": {"northStar": "Customer EDI projects live on schedule", "supporting": ["Customer retention on EDI", "Support response time"]}, "businessKPI": {"northStar": "Recurring revenue from EDI customers", "revenueStreams": ["Partner-resold subscriptions", "Commerce Hub bundles"], "supporting": ["Commerce Hub cross-referrals"]}, "milestones": ["Bundled offers with sibling brands", "Shared customer onboarding"]}, "year5": {"focus": "Partners self-serve connections with Traci AI; Transus focuses on network and exceptions.", "productTheme": "Self-service partner delivery", "customerKPI": {"northStar": "Customer EDI projects live on schedule", "supporting": ["Project delivery", "Customer satisfaction"]}, "businessKPI": {"northStar": "Recurring revenue from EDI customers", "revenueStreams": ["Platform subscription"], "supporting": ["Delivery margin"]}, "milestones": ["Self-service mapping for partners"]}}}, "icon": "customer-impl-portrait.jpg"}]}];
+    const insights = {"domainId": "edi-and-b2b-document-exchange-platform", "updated": "2026-10-30", "sources": [{"id": "transus-home", "title": "Transus - Digital trade. Made easy.", "url": "https://www.transus.com/en/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-prices", "title": "Transus prices", "url": "https://www.transus.com/en/prices/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-about", "title": "About Transus", "url": "https://www.transus.com/en/about-us/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-suppliers", "title": "EDI for suppliers", "url": "https://www.transus.com/en/suppliers/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-retailers", "title": "EDI for retailers", "url": "https://www.transus.com/en/retailers/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-partners", "title": "Transus Partner Network", "url": "https://www.transus.com/en/partners/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-traci", "title": "Traci AI", "url": "https://www.transus.com/en/traci-ai/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-why-edi", "title": "Why EDI?", "url": "https://www.transus.com/en/edi/why-edi/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-de-einvoicing", "title": "E-invoicing mandatory in Germany from 2027", "url": "https://www.transus.com/en/about-us/news/e-invoicing-germany-mandatory-from-2027/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-nis2", "title": "Ready for the Cybersecurity Act", "url": "https://www.transus.com/en/about-us/news/ready-for-the-cybersecurity-law/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-hornbach", "title": "Transus meets Hornbach's requirement with EDI and SSCC label service", "url": "https://www.transus.com/en/about-us/news/transus-meets-hornbachs-requirement-with-edi-and-sscc-label-service/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-anova", "title": "Customer case: Anova Seafood", "url": "https://www.transus.com/en/about-us/customer-cases/anova-seafood/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-vandebilt", "title": "Customer case: Henri van de Bilt (VMI for Albert Heijn)", "url": "https://www.transus.com/en/about-us/customer-cases/henri-van-de-bilt/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-md", "title": "Arjan Sloot new Managing Director at Transus", "url": "https://www.transus.com/en/about-us/news/arjan-sloot-new-managing-director-at-transus/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "katapull-home", "title": "Katapull Commerce Hub", "url": "https://katapull.nl/", "publisher": "Katapull", "date": "2026-10-30"}, {"id": "katapull-about", "title": "Over Katapull", "url": "https://katapull.nl/over-katapull/", "publisher": "Katapull", "date": "2026-10-30"}, {"id": "katapull-transus", "title": "EDI van Transus (Katapull)", "url": "https://katapull.nl/transus/", "publisher": "Katapull", "date": "2026-10-30"}], "items": [{"id": "edi-01", "title": "Retailer mandates are the main trigger for supplier adoption", "summary": "Transus names three reasons to adopt EDI: a retailer mandates it, an ERP migration, and coming e-invoicing mandates. Anova Seafood: \"If you want to participate as a supplier, you need to work with EDI\"; Hornbach made EDI and SSCC labels mandatory for suppliers.", "implication": "Acquisition follows retailer programmes; retailer profiles and fast connection matter more than features.", "priority": "high", "tags": ["adoption", "mandates"], "sourceIds": ["transus-why-edi", "transus-anova", "transus-hornbach"], "linkedCustomers": [{"customerId": "sord", "jobIds": ["sord-orders", "sord-ship"], "kpiIds": ["sord-co-b2-m2", "sord-co-b1-m1"]}, {"customerId": "rscm", "jobIds": ["rscm-onboard"], "kpiIds": ["rscm-co-b1-m1"]}], "sources": [{"id": "transus-why-edi", "title": "Why EDI?", "url": "https://www.transus.com/en/edi/why-edi/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-anova", "title": "Customer case: Anova Seafood", "url": "https://www.transus.com/en/about-us/customer-cases/anova-seafood/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-hornbach", "title": "Transus meets Hornbach's requirement with EDI and SSCC label service", "url": "https://www.transus.com/en/about-us/news/transus-meets-hornbachs-requirement-with-edi-and-sscc-label-service/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-02", "title": "The network is the moat: 100,000+ partners and connection in about a day", "summary": "Transus states more than 100,000 connected trading partners in 40+ countries and that simple connections are often live within 24 hours; Anova reports adding a retailer at no extra cost within 24 hours.", "implication": "Directory coverage and onboarding speed are the core value metrics; keep them measurable per connection.", "priority": "high", "tags": ["network", "onboarding"], "sourceIds": ["transus-home", "transus-retailers", "transus-anova"], "linkedCustomers": [{"customerId": "sord", "jobIds": ["sord-orders"], "kpiIds": ["sord-co"]}, {"customerId": "itmg", "jobIds": ["itmg-integrate"], "kpiIds": ["itmg-co-b2-m1"]}, {"customerId": "rscm", "jobIds": ["rscm-onboard"], "kpiIds": ["rscm-co-b1-m2"]}], "sources": [{"id": "transus-home", "title": "Transus - Digital trade. Made easy.", "url": "https://www.transus.com/en/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-retailers", "title": "EDI for retailers", "url": "https://www.transus.com/en/retailers/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-anova", "title": "Customer case: Anova Seafood", "url": "https://www.transus.com/en/about-us/customer-cases/anova-seafood/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-03", "title": "Flat pricing removes volume anxiety", "summary": "Plans include unlimited messages and trading partners at a fixed monthly price: Basic from EUR 79 and Plus from EUR 149 per month on annual terms (EUR 99/189 monthly), Premium on request.", "implication": "Revenue grows with customers and plan upgrades, not volume; the business must keep cost-to-serve per connection low (automation, Traci AI).", "priority": "medium", "tags": ["pricing"], "sourceIds": ["transus-prices"], "linkedCustomers": [{"customerId": "sord", "jobIds": ["sord-orders"], "kpiIds": ["sord-bo"]}, {"customerId": "itmg", "jobIds": ["itmg-integrate"], "kpiIds": ["itmg-bo"]}], "sources": [{"id": "transus-prices", "title": "Transus prices", "url": "https://www.transus.com/en/prices/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-04", "title": "German e-invoicing obligations create a 2027-2028 demand wave", "summary": "Germany requires receiving e-invoices since 2025, sending from 1 January 2027 for companies above EUR 800,000 turnover and for all from 2028, in XRechnung, ZUGFeRD 2.1+ or via Peppol (EN 16931). Transus supports these with Tickstar.", "implication": "E-invoicing is the strongest near-term growth lever for customers trading with Germany.", "priority": "high", "tags": ["e-invoicing", "regulation"], "sourceIds": ["transus-de-einvoicing"], "linkedCustomers": [{"customerId": "sfin", "jobIds": ["sfin-comply", "sfin-invoice"], "kpiIds": ["sfin-co-b1-m2", "sfin-bo-b2"]}], "sources": [{"id": "transus-de-einvoicing", "title": "E-invoicing mandatory in Germany from 2027", "url": "https://www.transus.com/en/about-us/news/e-invoicing-germany-mandatory-from-2027/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-05", "title": "NIS2 pushes security assurance into the sales cycle", "summary": "Customers classified as essential or important entities under NIS2 assess Transus as a supplier. Transus reports ISO/IEC 27001:2022 certification, encryption in transport (TLS/AS2/SFTP), Frankfurt hosting with Amsterdam DR, annual pentests and an incident response plan; it is not itself in NIS2 scope.", "implication": "A ready assurance pack shortens enterprise deals; continuity and incident reporting become product features.", "priority": "high", "tags": ["security", "regulation"], "sourceIds": ["transus-nis2"], "linkedCustomers": [{"customerId": "itmg", "jobIds": ["itmg-secure"], "kpiIds": ["itmg-bo-b2"]}], "sources": [{"id": "transus-nis2", "title": "Ready for the Cybersecurity Act", "url": "https://www.transus.com/en/about-us/news/ready-for-the-cybersecurity-law/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-06", "title": "AI-assisted mapping targets the slowest step", "summary": "Traci AI recognises and links trading documents automatically to remove manual mapping that \"often takes days or even weeks\".", "implication": "If it works at scale, onboarding cost falls and self-service becomes possible; specialist review remains needed for low-confidence cases (inference).", "priority": "medium", "tags": ["ai", "onboarding"], "sourceIds": ["transus-traci"], "linkedCustomers": [{"customerId": "itmg", "jobIds": ["itmg-integrate"], "kpiIds": ["itmg-co-b2-m1-b"]}, {"customerId": "impl", "jobIds": ["impl-deliver"], "kpiIds": ["impl-co-b1-m1"]}], "sources": [{"id": "transus-traci", "title": "Traci AI", "url": "https://www.transus.com/en/traci-ai/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-07", "title": "Validation and shared visibility build trust on both sides", "summary": "Messages with errors are blocked automatically with an alert explained in understandable language, and trading partners can log in to view message status even if they are not customers.", "implication": "Exception handling is a differentiator for non-IT users; monitoring belongs in the core product.", "priority": "medium", "tags": ["quality", "monitoring"], "sourceIds": ["transus-hornbach", "transus-retailers"], "linkedCustomers": [{"customerId": "sord", "jobIds": ["sord-orders"], "kpiIds": ["sord-co-b1-m1-b"]}, {"customerId": "itmg", "jobIds": ["itmg-integrate"], "kpiIds": ["itmg-co-b1-m2"]}], "sources": [{"id": "transus-hornbach", "title": "Transus meets Hornbach's requirement with EDI and SSCC label service", "url": "https://www.transus.com/en/about-us/news/transus-meets-hornbachs-requirement-with-edi-and-sscc-label-service/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-retailers", "title": "EDI for retailers", "url": "https://www.transus.com/en/retailers/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-08", "title": "Transus is the B2B connectivity layer of the Katapull Commerce Hub", "summary": "Katapull presents eight labels (Vendit, Logic4, Highbiza, EffectConnect, DeliveryMatch, Transus, Returnista, Picqer), 4,500+ customers in 40+ countries and 175+ specialists. Transus lists each sibling as a Commerce Hub partner that \"can be connected with Transus\". An interim Transus MD came from Katapull from February 2026.", "implication": "Cross-selling EDI into sibling customer bases and productised connectors are a strategic growth path; the acquisition date is not publicly confirmed in the sources reviewed.", "priority": "high", "tags": ["katapull", "portfolio"], "sourceIds": ["katapull-home", "katapull-about", "transus-partners", "transus-md"], "linkedCustomers": [{"customerId": "impl", "jobIds": ["impl-deliver"], "kpiIds": ["impl-bo-b1"]}, {"customerId": "itmg", "jobIds": ["itmg-integrate"], "kpiIds": ["itmg-co"]}], "sources": [{"id": "katapull-home", "title": "Katapull Commerce Hub", "url": "https://katapull.nl/", "publisher": "Katapull", "date": "2026-10-30"}, {"id": "katapull-about", "title": "Over Katapull", "url": "https://katapull.nl/over-katapull/", "publisher": "Katapull", "date": "2026-10-30"}, {"id": "transus-partners", "title": "Transus Partner Network", "url": "https://www.transus.com/en/partners/", "publisher": "Transus", "date": "2026-10-30"}, {"id": "transus-md", "title": "Arjan Sloot new Managing Director at Transus", "url": "https://www.transus.com/en/about-us/news/arjan-sloot-new-managing-director-at-transus/", "publisher": "Transus", "date": "2026-10-30"}]}, {"id": "edi-09", "title": "VMI extends EDI from transactions into collaboration", "summary": "Henri van de Bilt uses Transus VMI to replenish Albert Heijn from forecasts and stock data, sending DESADV to AH and XPO Logistics, to deliver fresher product.", "implication": "Collaboration services raise switching costs and value beyond message delivery.", "priority": "medium", "tags": ["vmi", "collaboration"], "sourceIds": ["transus-vandebilt"], "linkedCustomers": [{"customerId": "rscm", "jobIds": ["rscm-replenish"], "kpiIds": ["rscm-bo-b2"]}, {"customerId": "sord", "jobIds": ["sord-ship"], "kpiIds": ["sord-co-b2"]}], "sources": [{"id": "transus-vandebilt", "title": "Customer case: Henri van de Bilt (VMI for Albert Heijn)", "url": "https://www.transus.com/en/about-us/customer-cases/henri-van-de-bilt/", "publisher": "Transus", "date": "2026-10-30"}]}]};
+    const links = {"domainId": "edi-and-b2b-document-exchange-platform", "updated": "2026-10-30", "groups": [{"group": "Transus product and pricing", "description": "Primary sources on the platform.", "links": [{"title": "Transus home", "url": "https://www.transus.com/en/", "relevance": "Positioning, network size and headline claims used across the model.", "tags": ["product"]}, {"title": "Prices", "url": "https://www.transus.com/en/prices/", "relevance": "Plan structure and flat pricing that shape the business model.", "tags": ["pricing"]}, {"title": "Traci AI", "url": "https://www.transus.com/en/traci-ai/", "relevance": "The AI mapping capability behind the onboarding strategy.", "tags": ["ai"]}, {"title": "Partner network", "url": "https://www.transus.com/en/partners/", "relevance": "ERP and Katapull partners that integrate with Transus.", "tags": ["partners"]}, {"title": "Transus Online login", "url": "https://online.transus.com/", "relevance": "The web EDI portal used by suppliers without an ERP link.", "tags": ["portal"]}]}, {"group": "Regulation and standards", "description": "Context that drives demand.", "links": [{"title": "E-invoicing mandatory in Germany from 2027", "url": "https://www.transus.com/en/about-us/news/e-invoicing-germany-mandatory-from-2027/", "relevance": "Dates and formats for the German mandate.", "tags": ["e-invoicing"]}, {"title": "Ready for the Cybersecurity Act (NIS2)", "url": "https://www.transus.com/en/about-us/news/ready-for-the-cybersecurity-law/", "relevance": "Security controls customers ask for.", "tags": ["security"]}, {"title": "GS1 SSCC", "url": "https://www.gs1.org/standards/id-keys/sscc", "relevance": "The pallet identifier standard behind SSCC labels.", "tags": ["standards"]}, {"title": "Peppol", "url": "https://peppol.org/", "relevance": "The e-delivery network used for e-invoicing.", "tags": ["standards"]}]}, {"group": "Katapull group", "description": "The parent group and its brands.", "links": [{"title": "Katapull", "url": "https://katapull.nl/", "relevance": "Group overview listing the eight Commerce Hub labels.", "tags": ["group"]}, {"title": "Transus on Katapull", "url": "https://katapull.nl/transus/", "relevance": "How the group positions Transus.", "tags": ["group"]}]}]};
+    const relations = {"domainId": "edi-and-b2b-document-exchange-platform", "relationTypes": [{"id": "commercial", "name": "Commercial", "color": "#2563eb", "description": "Buying, selling and mandating."}, {"id": "operational", "name": "Operational", "color": "#059669", "description": "Running systems and processes for each other."}, {"id": "financial", "name": "Financial", "color": "#d97706", "description": "Invoices and payments."}, {"id": "information", "name": "Information", "color": "#7c3aed", "description": "Sharing orders, despatch, stock and forecast data."}], "relations": [{"id": "rel-01", "from": "rscm", "to": "sord", "type": "commercial", "name": "Buys from and mandates EDI for", "description": "Retailers buy from suppliers and set EDI, DESADV and SSCC requirements as listing conditions.", "streamIds": ["receive-and-confirm-retailer-orders", "ship-with-despatch-advice-and-sscc-labels"]}, {"id": "rel-02", "from": "sord", "to": "rscm", "type": "information", "name": "Announces deliveries to", "description": "Suppliers send DESADV and SSCC-labelled pallets to retailer DCs.", "streamIds": ["ship-with-despatch-advice-and-sscc-labels"]}, {"id": "rel-03", "from": "sfin", "to": "rscm", "type": "financial", "name": "Invoices", "description": "Supplier finance sends invoices that retailer payables must match.", "streamIds": ["invoice-electronically-and-meet-e-invoicing-mandates"]}, {"id": "rel-04", "from": "rscm", "to": "sord", "type": "information", "name": "Shares stock and forecasts with", "description": "In VMI the retailer shares stock and forecasts with the supplier.", "streamIds": ["replenish-retail-stock-with-vendor-managed-inventory"]}, {"id": "rel-05", "from": "itmg", "to": "sord", "type": "operational", "name": "Runs the integrations of", "description": "IT keeps ERP and EDI flows running for the order desk.", "streamIds": ["integrate-erp-and-commerce-hub-systems", "monitor-and-resolve-message-exceptions"]}, {"id": "rel-06", "from": "impl", "to": "itmg", "type": "commercial", "name": "Implements ERP and EDI for", "description": "ERP partners deliver integration projects and resell EDI.", "streamIds": ["integrate-erp-and-commerce-hub-systems"]}, {"id": "rel-07", "from": "itmg", "to": "sfin", "type": "operational", "name": "Connects the invoicing ERP for", "description": "IT connects ERP invoicing to e-invoicing channels.", "streamIds": ["invoice-electronically-and-meet-e-invoicing-mandates"]}, {"id": "rel-08", "from": "sord", "to": "sfin", "type": "operational", "name": "Hands delivered quantities to", "description": "Despatch data drives correct invoices.", "streamIds": ["ship-with-despatch-advice-and-sscc-labels"]}], "media": [{"type": "image", "src": "media/relations-overview.png", "title": "How the customers of edi-and-b2b-document-exchange-platform relate to each other", "alt": "Illustrated relationship map of the customer roles in the edi-and-b2b-document-exchange-platform domain."}]};
+    const customerCount = customers.reduce((total, group) => total + ((group.customers || []).length), 0);
+    const insightCount = (insights.items || []).length;
+    const linkCount = (links.groups || []).reduce((total, group) => total + ((group.links || []).length), 0);
+    const relationCount = (relations.relations || []).length;
+
+    function updateTabLabels() {
+        document.getElementById('tab_customers').textContent = 'Customers (' + customerCount + ')';
+        document.getElementById('tab_relations').textContent = 'Relations (' + relationCount + ')';
+        document.getElementById('tab_insights').textContent = 'Insights (' + insightCount + ')';
+        document.getElementById('tab_links').textContent = 'Links (' + linkCount + ')';
+    }
+
+    function topCustomerKpi(customer) {
+        return (((customer || {}).kpiPyramids || {}).customerOutcomes || {}).top || null;
+    }
+
+    function formatCurrentValue(kpi) {
+        if (!kpi || !kpi.currentValue) {
+            return '';
+        }
+        return String(kpi.currentValue) + (kpi.unit ? ' (' + String(kpi.unit) + ')' : '');
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function customerLookup() {
+        const lookup = {};
+        customers.forEach(group => {
+            group.customers.forEach(customer => {
+                lookup[customer.id] = customer;
+            });
+        });
+        return lookup;
+    }
+
+    function jobNamesForCustomer(customer, jobIds) {
+        const jobs = ((customer || {}).jobsToBeDone || []);
+        const jobLookup = {};
+        jobs.forEach(job => {
+            if (job.id) {
+                jobLookup[job.id] = job.name || job.id;
+            }
+        });
+        return (jobIds || []).map(jobId => jobLookup[jobId] || jobId);
+    }
+
+    function kpiLookupForCustomer(customer) {
+        const lookup = {};
+        function walk(node) {
+            if (!node) return;
+            if (node.id) {
+                lookup[node.id] = node.name || node.id;
+            }
+            (node.branches || []).forEach(walk);
+            (node.children || []).forEach(walk);
+        }
+        const pyramids = (customer || {}).kpiPyramids || {};
+        ['customerOutcomes', 'businessOutcomes'].forEach(key => {
+            const pyramid = pyramids[key];
+            if (!pyramid) return;
+            walk(pyramid.top);
+            (pyramid.branches || []).forEach(walk);
+        });
+        return lookup;
+    }
+
+    function kpiNamesForCustomer(customer, link) {
+        // Prefer stable KPI IDs; fall back to legacy display-name kpis.
+        if (link && link.kpiIds && link.kpiIds.length) {
+            const lookup = kpiLookupForCustomer(customer);
+            return link.kpiIds.map(kpiId => lookup[kpiId] || kpiId);
+        }
+        return (link && link.kpis) || [];
+    }
+
+    function customerMatchesSearch(customer, groupName, query) {
+        if (!query) return true;
+        const haystack = [customer.id, customer.name, customer.description, groupName]
+            .concat(customer.careAbout || [], customer.winsThem || [], customer.theirFear || [])
+            .filter(Boolean).join(' ').toLowerCase();
+        return haystack.includes(query);
+    }
+
+    let customerUrlStateRestored = false;
+
+    function renderCustomers() {
+        const searchInput = document.getElementById('CustomerSearch');
+        if (!customerUrlStateRestored) {
+            customerUrlStateRestored = true;
+            const initialQuery = new URLSearchParams(window.location.search).get('q');
+            if (initialQuery && searchInput) searchInput.value = initialQuery;
+        }
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        if (window.history && window.history.replaceState) {
+            const params = new URLSearchParams(window.location.search);
+            if (query) params.set('q', query); else params.delete('q');
+            const qs = params.toString();
+            window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+        }
+        let visible = 0;
+        let total = 0;
+        let html = '<div style="padding: 12px">';
+
+        customers.forEach(group => {
+            total += group.customers.length;
+            const matching = group.customers.filter(customer => customerMatchesSearch(customer, group.group, query));
+            visible += matching.length;
+            if (!matching.length) return;
+            html += '<div class="customer-group">';
+            html += '<div class="customer-group-label">' + escapeHtml(group.group) + '</div>';
+            matching.forEach(customer => {
+                html += '<a target="_blank" href="landing_pages/' + escapeHtml(customer.id) + '.html">';
+                html += '<div class="customer-card">';
+                html += '<img class="customer-card-photo" src="icons/' + escapeHtml(customer.icon) + '" onerror="this.onerror=null;this.src=\'icons/customer.png\'">';
+                html += '<div class="customer-card-name">' + escapeHtml(customer.name) + '</div>';
+                const topKpi = topCustomerKpi(customer);
+                if (topKpi && topKpi.name) {
+                    html += '<div class="kpi-badge">';
+                    html += '<div>KPI: ' + escapeHtml(topKpi.name) + '</div>';
+                    html += '</div>';
+                }
+                html += '</div></a>';
+            });
+            html += '</div>';
+        });
+
+        html += '</div>';
+        if (!visible) {
+            html = '<div class="customer-search-empty">No customers match the current search.</div>';
+        }
+        document.getElementById('CustomerCards').innerHTML = html;
+        const summary = document.getElementById('CustomerSearchSummary');
+        if (summary) {
+            summary.textContent = query ? `Showing ${visible} of ${total} customers` : '';
+        }
+    }
+
+    function update() {
+        renderCustomers();
+    }
+
+    function renderOverviewItems(items, emptyMessage) {
+        if (!items || !items.length) {
+            return '<div class="visual-overview-empty">' + escapeHtml(emptyMessage) + '</div>';
+        }
+        let html = '<div class="visual-overview-items">';
+        items.forEach(item => {
+            const name = item.name || item.id || '';
+            // Summary images belong to the job or journey itself, not its steps or stages.
+            const images = (item.media || []).filter(media => media && media.type === 'image' && media.src);
+            html += '<div class="visual-overview-item">';
+            html += '<div class="visual-overview-item-name">' + escapeHtml(name) + '</div>';
+            images.forEach(media => {
+                const src = escapeHtml(media.src);
+                const label = 'Open summary image for ' + name + ' in a new tab';
+                html += '<a class="visual-overview-image-link" href="' + src + '" target="_blank" rel="noopener noreferrer"' +
+                    ' aria-label="' + escapeHtml(label) + '" title="' + escapeHtml(media.title || label) + '">';
+                html += '<img class="visual-overview-image" src="' + src + '" alt="' + escapeHtml(media.alt || name + ' summary') +
+                    '" loading="lazy" decoding="async"></a>';
+            });
+            if (!images.length) {
+                html += '<div class="visual-overview-empty">No summary image available.</div>';
+            }
+            html += '</div>';
+        });
+        return html + '</div>';
+    }
+
+    function renderVisualOverview() {
+        const container = document.getElementById('tab_content_visual-overview');
+        if (!customerCount) {
+            container.innerHTML = '<div class="customer-search-empty">No customers defined for this domain yet.</div>';
+            return;
+        }
+        let html = '<div class="visual-overview-wrap"><table class="visual-overview-table" aria-label="Customer jobs and journey visual overview">';
+        html += '<thead><tr><th scope="col">Customer</th><th scope="col">Jobs to be done</th><th scope="col">Customer journeys</th></tr></thead><tbody>';
+        customers.forEach(group => {
+            (group.customers || []).forEach(customer => {
+                html += '<tr><th scope="row"><a href="landing_pages/' + escapeHtml(customer.id) + '.html">';
+                html += '<img class="visual-overview-customer-icon" src="icons/' + escapeHtml(customer.icon || 'customer.png') +
+                    '" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'icons/customer.png\'">';
+                html += escapeHtml(customer.name) + '</a></th>';
+                html += '<td>' + renderOverviewItems(customer.jobsToBeDone, 'No jobs to be done defined.') + '</td>';
+                html += '<td>' + renderOverviewItems(customer.customerJourneyStories, 'No customer journeys defined.') + '</td></tr>';
+            });
+        });
+        container.innerHTML = html + '</tbody></table></div>';
+    }
+
+    function renderInsights() {
+        const lookup = customerLookup();
+
+        if (!insights.items || insights.items.length === 0) {
+            document.getElementById('tab_content_insights').innerHTML = '<div style="padding:16px;color:#6b7280">No customer insights defined for this domain yet.</div>';
+            return;
+        }
+
+        let html = '<div class="insight-grid">';
+        insights.items.forEach(insight => {
+            html += '<div class="insight-card">';
+            html += '<div class="insight-title">' + escapeHtml(insight.title) + '</div>';
+            const evType = insight.evidenceType || ((insight.sourceIds && insight.sourceIds.length) || (insight.sources && insight.sources.length) ? 'sourced' : 'assumption');
+            const evStyles = {
+                sourced: 'background:#e3f2e6;color:#1b5e20',
+                assumption: 'background:#fdecea;color:#b71c1c',
+                hypothesis: 'background:#fff4e5;color:#8a4b00',
+                inferred: 'background:#eef2f7;color:#37474f'
+            };
+            const evLabels = { sourced: 'Sourced finding', assumption: 'Assumption', hypothesis: 'Hypothesis', inferred: 'Inferred strategy' };
+            html += '<div style="margin-bottom:8px"><span style="font-size:75%;font-weight:bold;padding:2px 8px;border-radius:10px;' + (evStyles[evType] || evStyles.inferred) + '">' + escapeHtml(evLabels[evType] || evType) + '</span></div>';
+            html += '<div class="insight-summary">' + escapeHtml(insight.summary) + '</div>';
+            if (insight.implication) {
+                html += '<div style="margin-bottom:12px"><b>Product implication:</b> ' + escapeHtml(insight.implication) + '</div>';
+            }
+            if (insight.validation) {
+                const v = insight.validation;
+                html += '<div style="margin-bottom:12px;padding:8px 10px;border-left:3px solid #8a4b00;background:#fff8ee">';
+                html += '<div style="font-size:80%;font-weight:bold;color:#8a4b00;margin-bottom:4px">Validation path (high-assumption inference)</div>';
+                if (v.researchQuestion) { html += '<div class="insight-source"><b>Open question:</b> ' + escapeHtml(v.researchQuestion) + '</div>'; }
+                if (v.evidenceTarget) { html += '<div class="insight-source"><b>Evidence to gather:</b> ' + escapeHtml(v.evidenceTarget) + '</div>'; }
+                if (v.wouldRaiseConfidenceIf) { html += '<div class="insight-source"><b>Would raise confidence if:</b> ' + escapeHtml(v.wouldRaiseConfidenceIf) + '</div>'; }
+                html += '</div>';
+            }
+            if (insight.tags && insight.tags.length) {
+                html += '<div style="margin-bottom:10px">';
+                insight.tags.forEach(tag => {
+                    html += '<span class="insight-tag">' + escapeHtml(tag) + '</span>';
+                });
+                html += '</div>';
+            }
+            if (insight.linkedCustomers && insight.linkedCustomers.length) {
+                html += '<div style="margin-bottom:8px"><b>Connected customers:</b></div>';
+                insight.linkedCustomers.forEach(link => {
+                    const customer = lookup[link.customerId];
+                    html += '<div class="insight-customer-link">';
+                    if (customer) {
+                        html += '<a target="_blank" href="landing_pages/' + escapeHtml(customer.id) + '.html" style="color:#315b7c;font-weight:bold">' + escapeHtml(customer.name) + '</a>';
+                    } else {
+                        html += '<span style="font-weight:bold">' + escapeHtml(link.customerId) + '</span>';
+                    }
+                    if (link.jobIds && link.jobIds.length) {
+                        html += '<div class="insight-source"><b>Jobs:</b> ' + escapeHtml(jobNamesForCustomer(customer, link.jobIds).join(', ')) + '</div>';
+                    }
+                    const kpiNames = kpiNamesForCustomer(customer, link);
+                    if (kpiNames.length) {
+                        html += '<div class="insight-source"><b>KPIs:</b> ' + escapeHtml(kpiNames.join(', ')) + '</div>';
+                    }
+                    html += '</div>';
+                });
+            }
+            if (insight.sources && insight.sources.length) {
+                html += '<div><b>Sources:</b></div>';
+                insight.sources.forEach(source => {
+                    html += '<div class="insight-source">';
+                    html += '<a target="_blank" href="' + escapeHtml(source.url) + '" style="color:#315b7c">' + escapeHtml(source.title) + '</a>';
+                    html += ' <span style="color:#6b7280">(' + escapeHtml(source.publisher || '') + (source.date ? ', ' + escapeHtml(source.date) : '') + ')</span>';
+                    html += '</div>';
+                });
+            }
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_insights').innerHTML = html;
+    }
+
+    function renderLinks() {
+        const groups = (links.groups || []).filter(group => (group.links || []).length);
+
+        if (!groups.length) {
+            document.getElementById('tab_content_links').innerHTML = '<div style="padding:16px;color:#6b7280">No external links defined for this domain yet.</div>';
+            return;
+        }
+
+        let html = '<div class="links-section">';
+        groups.forEach(group => {
+            html += '<div class="links-group">';
+            html += '<div class="links-group-label">' + escapeHtml(group.group) + '</div>';
+            if (group.description) {
+                html += '<div class="links-group-description">' + escapeHtml(group.description) + '</div>';
+            }
+            html += '<div class="links-grid">';
+            (group.links || []).forEach(link => {
+                html += '<a class="link-card" target="_blank" rel="noopener" href="' + escapeHtml(link.url) + '">';
+                html += '<div class="link-title">' + escapeHtml(link.title) + '</div>';
+                if (link.relevance) {
+                    html += '<div class="link-relevance">' + escapeHtml(link.relevance) + '</div>';
+                }
+                if (link.tags && link.tags.length) {
+                    html += '<div>';
+                    link.tags.forEach(tag => {
+                        html += '<span class="link-tag">' + escapeHtml(tag) + '</span>';
+                    });
+                    html += '</div>';
+                }
+                if (link.references && link.references.length) {
+                    html += '<div style="margin-top:8px;font-size:72%;color:#6b7280">Grounds: ';
+                    html += link.references.map(r => escapeHtml(r.label || (r.type + ':' + r.id))).join(' · ');
+                    html += '</div>';
+                }
+                html += '</a>';
+            });
+            html += '</div></div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_links').innerHTML = html;
+    }
+
+    const relationTypeState = {};
+
+    function toggleRelationType(typeId) {
+        relationTypeState[typeId] = !relationTypeState[typeId];
+        renderRelations();
+    }
+
+    function renderRelations() {
+        const allRels = (relations.relations || []);
+        const container = document.getElementById('tab_content_relations');
+        if (!allRels.length) {
+            container.innerHTML = '<div style="padding:16px;color:#6b7280">No customer relations defined for this domain yet.</div>';
+            return;
+        }
+
+        const lookup = customerLookup();
+        const types = relations.relationTypes || [];
+        const typeById = {};
+        types.forEach(type => {
+            typeById[type.id] = type;
+            if (!(type.id in relationTypeState)) relationTypeState[type.id] = true;
+        });
+        allRels.forEach(rel => {
+            if (!(rel.type in relationTypeState)) relationTypeState[rel.type] = true;
+        });
+        const colorFor = typeId => (typeById[typeId] || {}).color || '#64748b';
+        const rels = allRels.filter(rel => relationTypeState[rel.type]);
+
+        // Nodes: customers that participate in at least one relation (regardless of
+        // the type filter, so toggling never rearranges the ring), in group order.
+        const nodeIds = [];
+        customers.forEach(group => (group.customers || []).forEach(customer => {
+            if (allRels.some(rel => rel.from === customer.id || rel.to === customer.id)) {
+                nodeIds.push(customer.id);
+            }
+        }));
+
+        const W = 1000, H = 660, cx = W / 2, cy = H / 2 - 14, rx = 385, ry = 235;
+        const pos = {};
+        nodeIds.forEach((id, i) => {
+            const angle = -Math.PI / 2 + (i * 2 * Math.PI) / nodeIds.length;
+            pos[id] = { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) };
+        });
+
+        let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" role="img" aria-label="Customer relations diagram">';
+        svg += '<defs>';
+        const markerTypes = {};
+        rels.forEach(rel => { markerTypes[rel.type || 'default'] = colorFor(rel.type); });
+        Object.entries(markerTypes).forEach(([typeId, color]) => {
+            svg += '<marker id="rel-arrow-' + escapeHtml(typeId) + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">';
+            svg += '<path d="M 0 1 L 9 5 L 0 9 z" fill="' + escapeHtml(color) + '"/></marker>';
+        });
+        svg += '</defs>';
+
+        const NODE_R = 44;
+        rels.forEach(rel => {
+            const p1 = pos[rel.from], p2 = pos[rel.to];
+            if (!p1 || !p2) return;
+            const dx = p2.x - p1.x, dy = p2.y - p1.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len, uy = dy / len;
+            const sx = p1.x + ux * (NODE_R + 4), sy = p1.y + uy * (NODE_R + 4);
+            const ex = p2.x - ux * (NODE_R + 10), ey = p2.y - uy * (NODE_R + 10);
+            // Curve every edge to its left so A→B and B→A separate visually.
+            const mx = (sx + ex) / 2 - uy * 34, my = (sy + ey) / 2 + ux * 34;
+            const fromName = (lookup[rel.from] || {}).name || rel.from;
+            const toName = (lookup[rel.to] || {}).name || rel.to;
+            svg += '<path class="relation-edge" d="M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) +
+                ' Q ' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1) + '"' +
+                ' fill="none" stroke="' + escapeHtml(colorFor(rel.type)) + '" stroke-width="2.5"' +
+                ' marker-end="url(#rel-arrow-' + escapeHtml(rel.type || 'default') + ')">';
+            svg += '<title>' + escapeHtml(fromName + ' → ' + toName + ': ' + (rel.name || '')) + '</title></path>';
+        });
+
+        nodeIds.forEach(id => {
+            const customer = lookup[id] || {};
+            const p = pos[id];
+            const icon = 'icons/' + (customer.icon || (id + '.png'));
+            svg += '<a class="relation-node" href="landing_pages/' + escapeHtml(id) + '.html">';
+            svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + NODE_R + '" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>';
+            svg += '<image href="' + escapeHtml(icon) + '" x="' + (p.x - 30).toFixed(1) + '" y="' + (p.y - 30).toFixed(1) + '" width="60" height="60"/>';
+            const words = String(customer.name || id).split(' ');
+            const lines = [];
+            words.forEach(word => {
+                if (lines.length && (lines[lines.length - 1] + ' ' + word).length <= 16) {
+                    lines[lines.length - 1] += ' ' + word;
+                } else {
+                    lines.push(word);
+                }
+            });
+            svg += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + NODE_R + 18).toFixed(1) + '" text-anchor="middle">';
+            lines.forEach((line, i) => {
+                svg += '<tspan x="' + p.x.toFixed(1) + '" dy="' + (i === 0 ? 0 : 15) + '">' + escapeHtml(line) + '</tspan>';
+            });
+            svg += '</text></a>';
+        });
+        svg += '</svg>';
+
+        let html = '<div class="relations-section">';
+        if (relations.description) {
+            html += '<div class="relations-intro">' + escapeHtml(relations.description) + '</div>';
+        }
+        (relations.media || []).forEach(entry => {
+            if (entry && entry.type === 'image' && entry.src) {
+                html += '<div class="relations-media"><img src="' + escapeHtml(entry.src) + '"' +
+                    ' alt="' + escapeHtml(entry.alt || '') + '" title="' + escapeHtml(entry.title || '') + '"></div>';
+            }
+        });
+        html += '<div class="relations-legend">';
+        Object.keys(relationTypeState).forEach(typeId => {
+            const type = typeById[typeId] || { id: typeId };
+            const count = allRels.filter(rel => rel.type === typeId).length;
+            html += '<span class="relations-legend-item' + (relationTypeState[typeId] ? '' : ' off') + '"' +
+                ' onclick="toggleRelationType(\'' + escapeHtml(typeId) + '\')"' +
+                ' title="' + escapeHtml(type.description || '') + '">';
+            html += '<span class="relations-legend-swatch" style="background:' + escapeHtml(type.color || '#64748b') + '"></span>';
+            html += escapeHtml(type.name || typeId) + ' (' + count + ')';
+            html += '</span>';
+        });
+        html += '<span class="relations-legend-hint">Click a type to show or hide its relations.</span>';
+        html += '</div>';
+        html += '<div class="relations-diagram-wrap">' + svg + '</div>';
+
+        html += '<div class="relations-table-wrap"><table class="relations-table">';
+        html += '<tr><th>From</th><th>To</th><th>Type</th><th>Relation</th><th>Description</th><th>Via streams</th></tr>';
+        if (!rels.length) {
+            html += '<tr><td colspan="6" class="relations-empty-row">All relation types are switched off — click a type above to show its relations.</td></tr>';
+        }
+        rels.forEach(rel => {
+            const fromName = (lookup[rel.from] || {}).name || rel.from;
+            const toName = (lookup[rel.to] || {}).name || rel.to;
+            const type = typeById[rel.type] || {};
+            html += '<tr>';
+            html += '<td class="relation-endpoint"><a href="landing_pages/' + escapeHtml(rel.from) + '.html">' + escapeHtml(fromName) + '</a></td>';
+            html += '<td class="relation-endpoint"><a href="landing_pages/' + escapeHtml(rel.to) + '.html">' + escapeHtml(toName) + '</a></td>';
+            html += '<td><span class="relation-type-chip" style="background:' + escapeHtml(colorFor(rel.type)) + '">' + escapeHtml(type.name || rel.type || '') + '</span></td>';
+            html += '<td class="relation-name-cell">' + escapeHtml(rel.name || '') + '</td>';
+            html += '<td>' + escapeHtml(rel.description || '') + '</td>';
+            html += '<td class="relation-streams">' + (rel.streamIds || []).map(escapeHtml).join('<br>') + '</td>';
+            html += '</tr>';
+        });
+        html += '</table></div></div>';
+        container.innerHTML = html;
+    }
+
+    update();
+    renderVisualOverview();
+    renderRelations();
+    renderInsights();
+    renderLinks();
+    updateTabLabels();
+</script>
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../start/index.html",
+      "label": "EDI and B2B Document Exchange Platform Home"
+    },
+    {
+      "label": "Customers"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

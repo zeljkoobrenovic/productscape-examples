@@ -1,0 +1,212 @@
+{
+  "metadata": {
+    "domainId": "shipping-and-carrier-management-platform",
+    "title": "Shipping and Carrier Management Platform Residuality Stress Test",
+    "description": "How DeliveryMatch's shipping platform must change when carriers, customs rules, sustainability reporting, platform competition or the Katapull group shift.",
+    "modelVersion": "1.0",
+    "naiveArchitecture": "Hard-coded integrations per carrier and per webshop, fixed shipping methods per channel, labels printed from carrier portals, cost known only from the carrier invoice, and tracking e-mails sent by each carrier.",
+    "residualArchitecture": "A carrier adapter gateway with a uniform model and onboarding console; a versioned rules engine and selection engine that weigh cost, promise, performance and CO2; tracking normalised onto an event bus; expected cost stored at booking for freight audit; multi-client tenancy; and bridges and an API that let partners and Katapull siblings plug into the same flow."
+  },
+  "stressors": [
+    {
+      "id": "carrier-exit",
+      "name": "A major carrier changes its API, prices or exits a service at short notice",
+      "group": "Carrier market",
+      "detection": "Carrier announcements, failed bookings in monitoring, tariff letters, shippers asking for alternatives.",
+      "attractor": "Shippers locked into one carrier lose cut-offs or margin; checkout options go stale.",
+      "businessReaction": "Re-route by rule to alternative carriers, update rate cards centrally and show only valid options in checkout.",
+      "residue": "Carriers are interchangeable behind the adapter gateway and selection engine; rate cards and services are versioned data, not code.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "cnet",
+          "effect": "Adapter gateway isolates carrier-specific changes."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "csel",
+          "effect": "Re-selects services when one disappears."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "ecom/co-ecom-b1-c2",
+          "effect": "Cut-off performance protected by fallback carriers."
+        },
+        {
+          "targetType": "product",
+          "targetId": "dm-shipping-platform",
+          "effect": "Carrier change without IT projects is a selling point."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-carrier-exit.jpg",
+          "title": "Residuality stressor illustration: A major carrier changes its API, prices or exits a service at short notice",
+          "alt": "Illustration of the residuality stressor 'A major carrier changes its API, prices or exits a service at short notice', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "eu-low-value-customs",
+      "name": "EU removes the customs-duty exemption for low-value e-commerce parcels",
+      "group": "Regulation",
+      "detection": "EU customs reform decisions, carrier and broker guidance, merchants asking for duty handling on imports and cross-border returns.",
+      "attractor": "Every cross-border parcel needs complete customs data and duty calculation; missing data blocks shipments.",
+      "businessReaction": "Require HS codes and values from product data, generate customs documents and show landed cost in checkout for non-EU flows.",
+      "residue": "Customs and dangerous-goods data become first-class article data validated before booking.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "docs",
+          "effect": "Generates customs documents for more flows."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "erpw",
+          "effect": "Imports customs master data."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "whsl/co-whsl-b1-c2-l1",
+          "effect": "Customs rejections rise until data is complete."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "ship-b2b-pallets-and-international-freight",
+          "effect": "Adds duty and data checks."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-eu-low-value-customs.jpg",
+          "title": "Residuality stressor illustration: EU removes the customs-duty exemption for low-value e-commerce parcels",
+          "alt": "Illustration of the residuality stressor 'EU removes the customs-duty exemption for low-value e-commerce parcels', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "emission-reporting",
+      "name": "Shippers must report transport emissions with recognised methods",
+      "group": "Sustainability",
+      "detection": "Customers' sustainability reporting requests, tenders asking for CO2 per shipment, carriers publishing emission data.",
+      "attractor": "Estimated CO2 per option is no longer enough; reports must follow a recognised method and be auditable.",
+      "businessReaction": "Store emission factors and method versions per carrier, report per shipment and customer, and let checkout steer to lower-emission options.",
+      "residue": "Emission estimates are versioned facts linked to each shipment and reusable in checkout, selection and reports.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "co2c",
+          "effect": "Holds method and factors."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "dash",
+          "effect": "Reports per customer."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "rcpt/bo-rcpt-b1-l2",
+          "effect": "Sustainable option share becomes a reported KPI."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "wuunder",
+          "effect": "Competes with GreenChoice steering."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-emission-reporting.jpg",
+          "title": "Residuality stressor illustration: Shippers must report transport emissions with recognised methods",
+          "alt": "Illustration of the residuality stressor 'Shippers must report transport emissions with recognised methods', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "platform-consolidation",
+      "name": "Large shipping platforms consolidate and compete on price",
+      "group": "Competition",
+      "detection": "Sendcloud absorbing Sendy, nShift's merged portfolio, Wuunder acquiring Paazl, price pressure in deals.",
+      "attractor": "Simple label printing becomes a commodity; small vendors are squeezed unless they serve complex cases.",
+      "businessReaction": "Focus on complex scenarios (multi-warehouse, B2B freight, 3PL multi-client), control features and the Katapull chain.",
+      "residue": "Value sits in decision and control bricks and ecosystem bridges rather than in label generation.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "competitor",
+          "targetId": "sendcloud",
+          "effect": "Self-service price pressure."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "nshift",
+          "effect": "Enterprise breadth."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "fiac",
+          "effect": "Control feature that commodity tools lack."
+        },
+        {
+          "targetType": "vision",
+          "targetId": "tpls",
+          "effect": "3PL focus reinforced."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-platform-consolidation.jpg",
+          "title": "Residuality stressor illustration: Large shipping platforms consolidate and compete on price",
+          "alt": "Illustration of the residuality stressor 'Large shipping platforms consolidate and compete on price', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "katapull-hub",
+      "name": "Katapull turns its brands into one Commerce Hub and adds Picqer",
+      "group": "Ownership",
+      "detection": "Picqer acquisition (October 2026), joint Commerce Hub messaging, sibling customers asking for one chain.",
+      "attractor": "Customers expect sibling products to work together out of the box; overlaps (returns with Returnista, shipping in Picqer) need a group answer.",
+      "businessReaction": "Build bridges to every sibling, agree division of work (DeliveryMatch for transport, Returnista for returns handling), and co-sell.",
+      "residue": "A bridge brick and a public API make DeliveryMatch the shipping service of the hub without merging products.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "ktpl",
+          "effect": "Bridges to all siblings."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "papi",
+          "effect": "Same API for siblings and partners."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "swpt/bo-swpt-b2",
+          "effect": "Katapull cross-sell becomes measurable."
+        },
+        {
+          "targetType": "product",
+          "targetId": "dm-api-and-partner-program",
+          "effect": "Siblings integrate as partners."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-katapull-hub.jpg",
+          "title": "Residuality stressor illustration: Katapull turns its brands into one Commerce Hub and adds Picqer",
+          "alt": "Illustration of the residuality stressor 'Katapull turns its brands into one Commerce Hub and adds Picqer', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    }
+  ]
+}

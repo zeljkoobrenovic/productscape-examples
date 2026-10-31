@@ -1,0 +1,884 @@
+{
+  "metadata": {
+    "domainId": "shipping-and-carrier-management-platform",
+    "title": "Shipping and Carrier Management Platform Data Assets",
+    "description": "Catalog of order, recipient, shipment, document, tracking, return, carrier, rate, cost, emission and configuration data processed by DeliveryMatch, mostly as a data processor for merchants under GDPR.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Orders, Recipients and Shipments",
+      "description": "Operational data of every shipment from order to delivery.",
+      "subGroups": [
+        {
+          "name": "Orders and Recipients",
+          "description": "What must be shipped and to whom.",
+          "assets": [
+            {
+              "id": "shipping-order",
+              "name": "Shipping Order",
+              "kind": "transactional",
+              "description": "Channel-neutral order to ship: lines, weights, dimensions, ship-from location, requested delivery option and sales-channel reference.",
+              "businessMeaning": "The unit of work the platform turns into one or more shipments.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "recipient"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant users and their 3PL or partner where delegated",
+              "systemOfRecordBrickId": "ordi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipping order api",
+                  "description": "Order intake and routing."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for the contract term plus statutory bookkeeping periods; personal fields minimised after delivery and return window",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the selected carrier and fulfilment partner only as needed to deliver"
+              }
+            },
+            {
+              "id": "recipient-contact-and-address",
+              "name": "Recipient Contact and Address",
+              "kind": "master-data",
+              "description": "Name, delivery address, e-mail and phone of the person receiving or returning a parcel.",
+              "businessMeaning": "Needed for delivery, notifications and returns; the main personal data the platform processes on behalf of merchants.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "recipient",
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant users; carriers per shipment",
+              "systemOfRecordBrickId": "ordi",
+              "derivedFromAssetIds": [
+                "shipping-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "recipient api",
+                  "description": "Read by booking, notifications and returns."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted or pseudonymised after the agreed retention period set in the processing agreement",
+                "residency": "eu",
+                "sharingPolicy": "Processed as data processor for the merchant; passed to carriers and messaging providers only for delivery"
+              }
+            },
+            {
+              "id": "customs-and-dangerous-goods-data",
+              "name": "Customs and Dangerous-Goods Data",
+              "kind": "reference-data",
+              "description": "HS codes, country of origin, customs values and ADR classifications per article and shipment.",
+              "businessMeaning": "Makes international and dangerous-goods shipments legal and printable.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "customs",
+                "adr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant users",
+              "systemOfRecordBrickId": "erpw",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "article compliance api",
+                  "description": "Read by document generation."
+                }
+              ],
+              "governance": {
+                "retention": "Kept with shipment documents for customs evidence periods",
+                "residency": "eu",
+                "sharingPolicy": "Shared with carriers and customs brokers on the documents"
+              }
+            },
+            {
+              "id": "stock-availability-snapshot",
+              "name": "Stock Availability Snapshot",
+              "kind": "operational-snapshot",
+              "description": "Available quantity and expected replenishment date per article and location.",
+              "businessMeaning": "Lets checkout promise only deliveries that can be fulfilled.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Platform services of the tenant",
+              "systemOfRecordBrickId": "stkc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "event-stream",
+                  "role": "event-log"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "stock updated",
+                  "description": "Stock changes from ERP/WMS."
+                }
+              ],
+              "governance": {
+                "retention": "Overwritten continuously; history kept briefly for diagnostics",
+                "residency": "eu",
+                "sharingPolicy": "Not shared outside the tenant"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shipments and Documents",
+          "description": "What was booked and printed.",
+          "assets": [
+            {
+              "id": "shipment-record",
+              "name": "Shipment Record",
+              "kind": "transactional",
+              "description": "Booked shipment: parcels, carrier, service, tracking number, booking state and expected cost.",
+              "businessMeaning": "The central fact of the platform, used by tracking, reporting, invoicing and sibling Katapull products.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "recipient"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant users, 3PL clients for their own shipments",
+              "systemOfRecordBrickId": "book",
+              "derivedFromAssetIds": [
+                "shipping-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipment api",
+                  "description": "Booking and status."
+                },
+                {
+                  "type": "event",
+                  "name": "shipment booked",
+                  "description": "Published to consumers."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for the contract term plus statutory periods",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the carrier and, on request, with sales channels and partner systems"
+              }
+            },
+            {
+              "id": "shipping-label-and-transport-document",
+              "name": "Shipping Label and Transport Document",
+              "kind": "document",
+              "description": "Labels, return labels, packing slips, commercial invoices, ADR documents, CMRs and manifests.",
+              "businessMeaning": "Physical and legal proof that a shipment can travel.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "recipient"
+              ],
+              "legalTags": [
+                "gdpr",
+                "customs"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant users and print clients",
+              "systemOfRecordBrickId": "docs",
+              "derivedFromAssetIds": [
+                "shipment-record",
+                "customs-and-dangerous-goods-data"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "document api",
+                  "description": "Retrieve and reprint."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for reprint and customs evidence periods",
+                "residency": "eu",
+                "sharingPolicy": "Printed for carriers; shared with customs where required"
+              }
+            },
+            {
+              "id": "tracking-event",
+              "name": "Tracking Event",
+              "kind": "event",
+              "description": "Normalised carrier status event with timestamp, location and reason code.",
+              "businessMeaning": "Feeds notifications, exceptions, dashboards and channel write-back.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "pseudonymous",
+              "dataSubjects": [
+                "recipient"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant users; recipients via tracking page",
+              "systemOfRecordBrickId": "trck",
+              "derivedFromAssetIds": [
+                "shipment-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "event-stream",
+                  "role": "event-log"
+                },
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "tracking status changed",
+                  "description": "Published on the tracking event bus."
+                }
+              ],
+              "governance": {
+                "retention": "Kept with the shipment record",
+                "residency": "eu",
+                "sharingPolicy": "Shown to recipients and returned to sales channels"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Returns",
+          "description": "Items coming back.",
+          "assets": [
+            {
+              "id": "return-request",
+              "name": "Return Request",
+              "kind": "transactional",
+              "description": "Return registration with items, reason code, chosen return method, cost rule and status.",
+              "businessMeaning": "Turns returns into managed, analysable flows and feeds Returnista where used.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant users; Returnista where integrated",
+              "systemOfRecordBrickId": "retn",
+              "derivedFromAssetIds": [
+                "shipping-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "return api",
+                  "description": "Return registration and status."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for the contract term plus statutory periods",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the return carrier and Returnista when the merchant uses it"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Commercial and Carrier Data",
+      "description": "Carriers, prices and costs.",
+      "subGroups": [
+        {
+          "name": "Carrier Catalogue and Performance",
+          "description": "Who can carry what, and how well.",
+          "assets": [
+            {
+              "id": "carrier-service-catalogue",
+              "name": "Carrier Service Catalogue",
+              "kind": "reference-data",
+              "description": "Carriers, services, transit times, cut-offs, label specifications, pickup points and lockers.",
+              "businessMeaning": "The 200+ carrier network made usable by rules and checkout.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "All tenants (read)",
+              "systemOfRecordBrickId": "cnet",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "carrier-catalogue-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "carrier catalogue api",
+                  "description": "Services and pickup points."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while carriers are active; history for audit",
+                "residency": "eu",
+                "sharingPolicy": "Shared with all tenants in read form"
+              }
+            },
+            {
+              "id": "carrier-performance-metrics",
+              "name": "Carrier Performance Metrics",
+              "kind": "aggregate",
+              "description": "On-time, first-attempt, damage and exception rates per carrier, service, region and period.",
+              "businessMeaning": "Evidence for carrier choice, contract talks and WISMO prevention.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Tenant users",
+              "systemOfRecordBrickId": "excp",
+              "derivedFromAssetIds": [
+                "tracking-event"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "carrier scorecard api",
+                  "description": "Scorecards."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for multi-year trend analysis",
+                "residency": "eu",
+                "sharingPolicy": "Tenant-specific; cross-tenant benchmarks only anonymised (assumption)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prices, Costs and Invoices",
+          "description": "What shipping costs and what was charged.",
+          "assets": [
+            {
+              "id": "carrier-rate-card-and-contract",
+              "name": "Carrier Rate Card and Contract",
+              "kind": "commercial-terms",
+              "description": "Purchase rates, zones and surcharges per carrier contract and sales rates per customer or client.",
+              "businessMeaning": "Confidential commercial terms that determine margin.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "commercial-confidentiality"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant finance and logistics users",
+              "systemOfRecordBrickId": "rate",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "rate api",
+                  "description": "Rate lookup."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for contract term plus audit period",
+                "residency": "eu",
+                "sharingPolicy": "Never shared across tenants"
+              }
+            },
+            {
+              "id": "transport-cost-ledger",
+              "name": "Transport Cost Ledger",
+              "kind": "financial",
+              "description": "Expected purchase and sales cost per booked shipment.",
+              "businessMeaning": "Basis for checkout pricing, client re-invoicing, freight audit and cost reports.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "bookkeeping"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant finance users",
+              "systemOfRecordBrickId": "rate",
+              "derivedFromAssetIds": [
+                "shipment-record",
+                "carrier-rate-card-and-contract"
+              ],
+              "stores": [
+                {
+                  "storeId": "config-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "cost api",
+                  "description": "Cost per shipment."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory bookkeeping retention",
+                "residency": "eu",
+                "sharingPolicy": "Shared with 3PL clients or broker customers only as their own sales prices"
+              }
+            },
+            {
+              "id": "carrier-invoice-line",
+              "name": "Carrier Invoice Line",
+              "kind": "financial",
+              "description": "Invoiced cost per shipment and surcharge as parsed from carrier invoices, with match result and dispute status.",
+              "businessMeaning": "Finds overcharges and unexpected surcharges.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "bookkeeping"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Tenant finance users",
+              "systemOfRecordBrickId": "fiac",
+              "derivedFromAssetIds": [
+                "transport-cost-ledger"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-store",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "carrier invoice import",
+                  "description": "Invoice files per carrier."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory bookkeeping retention",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the carrier in disputes"
+              }
+            },
+            {
+              "id": "emission-estimate",
+              "name": "Emission Estimate",
+              "kind": "derived-metric",
+              "description": "Estimated CO2 per delivery option and per shipment.",
+              "businessMeaning": "Makes sustainability visible to shoppers and in reports.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Tenant users; shoppers in checkout",
+              "systemOfRecordBrickId": "co2c",
+              "derivedFromAssetIds": [
+                "shipment-record",
+                "carrier-service-catalogue"
+              ],
+              "stores": [
+                {
+                  "storeId": "carrier-catalogue-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "emission api",
+                  "description": "Estimates."
+                }
+              ],
+              "governance": {
+                "retention": "Kept with shipment facts",
+                "residency": "eu",
+                "sharingPolicy": "Shown in checkout and reports"
+              }
+            },
+            {
+              "id": "delivery-option-quote",
+              "name": "Delivery Option Quote",
+              "kind": "transactional",
+              "description": "Delivery options presented at checkout and the option the shopper chose.",
+              "businessMeaning": "Links the promise made at checkout to the booking and to conversion analysis.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "pseudonymous",
+              "dataSubjects": [
+                "shopper"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant users",
+              "systemOfRecordBrickId": "dcko",
+              "derivedFromAssetIds": [
+                "stock-availability-snapshot",
+                "carrier-service-catalogue"
+              ],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "delivery options api",
+                  "description": "Quotes."
+                }
+              ],
+              "governance": {
+                "retention": "Short retention for unconverted baskets; kept with order when converted",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Configuration and Access",
+      "description": "How each tenant has set up the platform.",
+      "subGroups": [
+        {
+          "name": "Tenant Configuration",
+          "description": "Rules, templates, connections and accounts.",
+          "assets": [
+            {
+              "id": "shipping-rule-set",
+              "name": "Shipping Rule Set",
+              "kind": "configuration",
+              "description": "Versioned rules on weight, destination, cost, channel and client that choose carriers, services and shopper prices.",
+              "businessMeaning": "Encodes the tenant's logistics strategy and customer agreements.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Tenant administrators",
+              "systemOfRecordBrickId": "rule",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "rule evaluation api",
+                  "description": "Evaluation."
+                }
+              ],
+              "governance": {
+                "retention": "All versions kept for audit",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "notification-template-and-branding",
+              "name": "Notification Template and Branding",
+              "kind": "configuration",
+              "description": "E-mail, SMS and WhatsApp templates, senders and branding per brand and sales channel.",
+              "businessMeaning": "Keeps the merchant's brand visible after checkout.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Tenant marketing and logistics users",
+              "systemOfRecordBrickId": "ntfy",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "template api",
+                  "description": "Templates."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while active",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "integration-connection-config",
+              "name": "Integration Connection Configuration",
+              "kind": "configuration",
+              "description": "Connections to webshops, marketplaces, ERP, WMS and partner APIs with mappings.",
+              "businessMeaning": "Determines which systems feed and receive shipping data.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Tenant administrators and implementation consultants",
+              "systemOfRecordBrickId": "papi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "config-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "secrets-vault",
+                  "role": "secret-reference"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "connection api",
+                  "description": "Connection settings."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while active",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            },
+            {
+              "id": "tenant-account-and-credentials",
+              "name": "Tenant Account and Credentials",
+              "kind": "master-data",
+              "description": "Tenants, client sub-accounts, users, roles, API keys and carrier account credentials.",
+              "businessMeaning": "Controls who may ship on which contract; central to ISO 27001 controls.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "user"
+              ],
+              "legalTags": [
+                "gdpr",
+                "iso-27001"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Tenant administrators; DeliveryMatch support under audit",
+              "systemOfRecordBrickId": "tnnt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "shipping-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "secrets-vault",
+                  "role": "secret-reference"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "tenant api",
+                  "description": "Identity and roles."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted after contract end",
+                "residency": "eu",
+                "sharingPolicy": "Never shared"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "shipping-db",
+      "name": "Shipping Operational DB",
+      "kind": "operational-database",
+      "description": "Orders to ship, shipments, returns and recipients per tenant.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "config-db",
+      "name": "Configuration DB",
+      "kind": "operational-database",
+      "description": "Rules, rate cards, templates, connection settings and tenant configuration.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "carrier-catalogue-db",
+      "name": "Carrier Catalogue DB",
+      "kind": "operational-database",
+      "description": "Carriers, services, label specifications, pickup points and emission factors.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
+      "id": "event-stream",
+      "name": "Event Stream",
+      "kind": "event-stream",
+      "description": "Tracking, booking and stock events distributed to consumers.",
+      "technology": "message-broker",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "document-store",
+      "name": "Document Store",
+      "kind": "object-storage",
+      "description": "Labels, CMRs, customs and ADR documents and carrier invoice files.",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "analytics-warehouse",
+      "name": "Analytics Warehouse",
+      "kind": "analytics-warehouse",
+      "description": "Tenant-scoped facts for dashboards and KPI reports.",
+      "technology": "columnar-warehouse",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "secrets-vault",
+      "name": "Secrets Vault",
+      "kind": "secrets-store",
+      "description": "API keys and carrier account credentials.",
+      "technology": "secrets-manager",
+      "status": "active",
+      "classification": "restricted"
+    }
+  ]
+}

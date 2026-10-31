@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How online orders find their way to your door: shipping and carrier management software</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>* { box-sizing: border-box; }
+html { scroll-padding-top: 1.5rem; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-wrap: anywhere;
+}
+a { color: var(--accent-ink); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.page { max-width: 1160px; padding: 1.5rem 2.5rem 3rem; margin: auto; }
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    margin: 2px 0 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: Ubuntu, Optima, Segoe, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.site-nav a {
+    color: #6b7280;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+.site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+.domain-nav { display: flex; flex-wrap: wrap; gap: .75rem; color: var(--ink-soft); font-size: .85rem; }
+.domain-nav a { color: inherit; }
+.hero { padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--line-strong); }
+.eyebrow, .chapter-number {
+    color: var(--accent-ink); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+h1, h2, h3, h4 { line-height: 1.25; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); letter-spacing: -.035em; margin: .5rem 0 1rem; max-width: 22ch; }
+h2 { font-size: 1.9rem; letter-spacing: -.025em; margin: .35rem 0 1.4rem; }
+h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+h4 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.metadata { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; color: var(--ink-soft); font-size: .85rem; }
+.reader-context { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem 3rem; margin-top: 1.8rem; font-size: .95rem; }
+.reader-context p:last-child { margin-bottom: 0; }
+.label { color: var(--ink-soft); font-size: .78rem; font-weight: 700; margin: 0 0 .25rem; }
+.labeled { margin-top: .75rem; }
+.reading-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 3.5rem; align-items: start; padding-top: 2.75rem; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .3rem .5rem .5rem 0; }
+.reading-layout > aside { align-self: stretch; }
+.contents h2 { font-size: .8rem; letter-spacing: .03em; margin: 0 0 .75rem; }
+.contents ol { padding-left: 1.4rem; margin: 0; font-size: .82rem; line-height: 1.45; }
+.contents li { padding: .28rem 0 .28rem .2rem; color: var(--ink-soft); }
+.contents a { color: var(--ink-soft); text-decoration: none; display: inline-block; padding: .1rem 0; }
+.contents a:hover { color: var(--accent-ink); text-decoration: underline; }
+main { min-width: 0; max-width: 740px; }
+section { margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--line-strong); }
+section:last-child { margin-bottom: 0; }
+.chapter-number { margin: 0; }
+section ul { padding-left: 1.35rem; }
+section li { padding-left: .3rem; }
+.entry { padding: 1.4rem 0; border-top: 1px solid var(--line); }
+h2 + .entry { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+.entry > :last-child, .labeled > :last-child { margin-bottom: 0; }
+.tutorial-illustration { margin: 1.3rem 0 1.5rem; break-inside: avoid; }
+.illustration-link { display: block; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: white; }
+.illustration-link:hover { border-color: var(--accent); }
+.tutorial-illustration img { display: block; width: 100%; height: auto; border-radius: inherit; }
+.tutorial-illustration figcaption { margin-top: .6rem; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }
+.tutorial-illustration figcaption p { margin: 0 0 .35rem; }
+.image-hint { display: block; font-size: .75rem; }
+.example { background: var(--accent-soft); border-left: 3px solid var(--accent-line); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.3rem; margin: 1.3rem 0; }
+.example .labeled:first-child { margin-top: 0; }
+.example > :last-child { margin-bottom: 0; }
+.timeline { border-left: 2px solid var(--accent-line); padding: 0 0 0 1.5rem; list-style: none; }
+.timeline li { position: relative; padding: .3rem 0 1.5rem; }
+.timeline li::before { content: ""; position: absolute; width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); left: -1.92rem; top: .7rem; }
+.timeline li:last-child { padding-bottom: 0; }
+.source { font-size: .8rem; margin-top: .7rem; }
+.steps { padding-left: 1.5rem; }
+.steps > li { padding: .4rem 0 1rem .5rem; }
+.steps > li::marker { color: var(--accent-ink); font-weight: 700; }
+.notice { background: var(--surface-muted); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1.4rem; margin-bottom: 2rem; }
+.notice h2 { font-size: 1.4rem; }
+.notice p:last-child { margin-bottom: 0; }
+details { margin-top: 1rem; background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+summary { cursor: pointer; padding: .7rem 1rem; color: var(--accent-ink); font-size: .95rem; font-weight: 600; }
+summary:hover { background: var(--accent-soft); border-radius: inherit; }
+.answer { padding: .5rem 1rem 1rem; }
+.answer > :last-child { margin-bottom: 0; }
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { padding: 0 0 1rem; }
+.reading-list p { margin: .3rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+footer { text-align: right; padding-top: 2rem; font-size: .85rem; }
+.skip-link { position: fixed; top: -10rem; left: 1rem; background: var(--panel); padding: .6rem 1rem; z-index: 2; }
+.skip-link:focus { top: 1rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 850px) {
+    .page { padding: 1.25rem; }
+    .hero { padding: 2rem 0; }
+    .reader-context { grid-template-columns: 1fr; gap: .5rem; }
+    .reading-layout { display: block; padding-top: 1.5rem; }
+    .contents { position: static; max-height: none; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--line-strong); }
+    .contents ol { columns: 2; column-gap: 2rem; }
+    .contents li { break-inside: avoid; }
+    .contents a { padding: .25rem 0; }
+    h2 { font-size: 1.65rem; }
+}
+@media (max-width: 430px) {
+    .contents ol { columns: 1; }
+    body { font-size: 16px; }
+}
+@media print {
+    body { background: white; color: black; font-size: 11pt; }
+    .page { max-width: none; padding: 0; }
+    .site-nav, .domain-nav, .reading-layout > aside, footer, .skip-link { display: none; }
+    .hero { padding: 0 0 1rem; }
+    h1 { font-size: 28pt; }
+    .reading-layout { display: block; padding-top: 1rem; }
+    main { max-width: none; }
+    section { padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h2, h3, h4 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .example, details, .timeline li { break-inside: avoid; }
+    details::details-content { content-visibility: visible; }
+    details > :not(summary) { display: block !important; }
+    summary { display: none; }
+    .image-hint { display: none; }
+}
+</style>
+</head>
+<body id="top">
+    <a class="skip-link" href="#main">Skip to the tutorial</a>
+    <div class="page">
+        <nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html" class="active" aria-current="page">Domain Tutorial</a>
+</nav>
+
+        <header class="hero">
+            <p class="eyebrow">A beginner's guide</p>
+            <h1>How online orders find their way to your door: shipping and carrier management software</h1>
+            <div class="metadata"><span>About 14 min to read</span><span>Updated <time datetime="2026-10-30">2026-10-30</time></span></div>
+            <div class="reader-context"><div class="labeled"><p class="label">Who this is for</p><p>A curious adult coming from a different field, with no assumed knowledge of logistics or e-commerce.</p></div><div class="labeled"><p class="label">What this guide covers</p><p>Covers the software that sits between a shop&#x27;s order systems and the companies that physically carry parcels and pallets: choosing delivery options at checkout, booking carriers, printing labels and documents, tracking, returns and checking transport costs. Examples come from the Netherlands and the wider European market, where DeliveryMatch operates. Warehousing (picking and packing), the carriers&#x27; own operations and customs law in detail are left out.</p></div></div>
+        </header>
+        <div class="reading-layout">
+            <aside><nav class="contents" aria-label="Tutorial contents"><h2>In this guide</h2><ol><li><a href="#learning-goals">What you will learn</a></li><li><a href="#introduction">Start with the everyday need</a></li><li><a href="#participants">The people involved</a></li><li><a href="#concepts">The key concepts</a></li><li><a href="#history">A little history</a></li><li><a href="#walkthrough">Follow one complete example</a></li><li><a href="#value">Value, money, and incentives</a></li><li><a href="#challenges">What makes this domain difficult</a></li><li><a href="#misconceptions">Common misunderstandings</a></li><li><a href="#takeaways">The ideas to take with you</a></li><li><a href="#knowledge-checks">Try it for yourself</a></li><li><a href="#next-questions">Questions to ask a practitioner</a></li><li><a href="#further-reading">Keep learning</a></li></ol></nav></aside>
+            <main id="main" tabindex="-1"><section id="learning-goals" aria-labelledby="heading-learning-goals"><p class="chapter-number">01</p><h2 id="heading-learning-goals">What you will learn</h2><ul><li><p>Explain why a shop that ships with several carriers needs a layer of software between its systems and the carriers.</p></li><li><p>Distinguish a delivery promise made at checkout from the delivery itself, and explain why stock and capacity matter for that promise.</p></li><li><p>Describe what happens between &#x27;order placed&#x27; and &#x27;parcel delivered&#x27;, including documents and tracking.</p></li><li><p>Explain how shippers, carriers, fulfilment companies and software partners each gain from such a platform, and where their interests conflict.</p></li><li><p>Recognise the main hard problems: keeping promises, controlling cost, handling exceptions and returns, and integrating many systems.</p></li></ul></section><section id="introduction" aria-labelledby="heading-introduction"><p class="chapter-number">02</p><h2 id="heading-introduction">Start with the everyday need</h2><p>When you buy something online, the shop has to decide how your order travels: which delivery company (a &#x27;carrier&#x27;), which service (next day, evening, pickup point), from which warehouse, at what cost. Then someone must tell the carrier the parcel is coming, print a label, and keep you informed. Shipping and carrier management software does this work for many orders at once, connecting the shop&#x27;s systems with dozens or hundreds of carriers.</p><p>Delivery is the part of online shopping the customer physically experiences. A wrong promise, a lost parcel or a painful return costs the shop the next sale, while transport is one of its largest costs. For businesses shipping thousands of parcels a day, doing this by hand in carrier websites is slow, error-prone and impossible to control.</p><aside class="example"><div class="labeled"><p class="label">A familiar comparison</p><p>Think of a travel booking site for parcels. A traveller compares airlines on price, time and comfort, books one, gets a boarding pass and receives updates. The shipping platform compares carriers, books one, prints the &#x27;boarding pass&#x27; (the label) and sends updates.</p></div><div class="labeled"><p class="label">Where the comparison stops</p><p>Unlike a traveller, a parcel cannot choose for itself, and the &#x27;booking&#x27; often has to happen before anyone knows exactly when the goods will be ready. The shop also promises a delivery date to its customer before the carrier has even been chosen, so the software must reason about stock, warehouse deadlines and carrier capacity at the moment of purchase.</p></div></aside></section><section id="participants" aria-labelledby="heading-participants"><p class="chapter-number">03</p><h2 id="heading-participants">The people involved</h2><div class="entry"><h3>The shopper or recipient</h3><p>Chooses a delivery option, receives the parcel and sometimes returns it.</p><div class="labeled"><p class="label">What matters to them</p><p>Knowing when it arrives, choosing where, paying little, and returning easily.</p></div></div><div class="entry"><h3>The shipper (webshop, retailer, wholesaler or manufacturer)</h3><p>Sells the goods, makes the delivery promise and pays for transport; buys the shipping software.</p><div class="labeled"><p class="label">What matters to them</p><p>Keeping promises at the lowest sensible cost without extra staff.</p></div></div><div class="entry"><h3>The fulfilment company (3PL)</h3><p>Stores and ships goods on behalf of many shops.</p><div class="labeled"><p class="label">What matters to them</p><p>Throughput, getting new client shops live quickly, and earning a margin on shipping.</p></div></div><div class="entry"><h3>The carrier or broker</h3><p>Physically moves parcels or pallets; a broker resells capacity from several carriers.</p><div class="labeled"><p class="label">What matters to them</p><p>Receiving clean, pre-announced shipments and being paid correctly.</p></div></div><div class="entry"><h3>The software partner</h3><p>Makes the shop&#x27;s webshop, ERP (business administration) or warehouse system and connects it to the shipping platform.</p><div class="labeled"><p class="label">What matters to them</p><p>Offering shipping features without building carrier links themselves.</p></div></div><div class="entry"><h3>The shipping platform provider (for example DeliveryMatch)</h3><p>Operates the software in the middle and maintains connections to carriers and systems.</p><div class="labeled"><p class="label">What matters to them</p><p>Reliable connections, happy shippers, and growth in the volume flowing through.</p></div></div></section><section id="concepts" aria-labelledby="heading-concepts"><p class="chapter-number">04</p><h2 id="heading-concepts">The key concepts</h2><div class="entry"><h3>Multi-carrier shipping</h3><p>Using several carriers through one system, choosing per shipment.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-multi-carrier-shipping.jpg" target="_blank" rel="noopener noreferrer" aria-label="Multi-carrier shipping — open full image in a new tab"><img src="media/concept-multi-carrier-shipping.jpg" alt="Multi-carrier shipping: A shop sends small parcels with one carrier, heavy items with another, and pallets with a freight company - all from the same screen." loading="lazy" decoding="async"></a><figcaption><p>No single carrier is best for everything; choice lowers cost and risk, but only if switching is easy.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A shop sends small parcels with one carrier, heavy items with another, and pallets with a freight company - all from the same screen.</p></div><div class="labeled"><p class="label">Why it matters</p><p>No single carrier is best for everything; choice lowers cost and risk, but only if switching is easy.</p></div></div><div class="entry"><h3>Pre-announcement and label</h3><p>Telling the carrier in advance about a shipment and receiving a tracking number and a barcode label to stick on it.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-pre-announcement-and-label.jpg" target="_blank" rel="noopener noreferrer" aria-label="Pre-announcement and label — open full image in a new tab"><img src="media/concept-pre-announcement-and-label.jpg" alt="Pre-announcement and label: The warehouse scans an order; the system sends the data to the carrier and prints the label within seconds." loading="lazy" decoding="async"></a><figcaption><p>A parcel without correct pre-announcement may be refused or delayed at the depot.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>The warehouse scans an order; the system sends the data to the carrier and prints the label within seconds.</p></div><div class="labeled"><p class="label">Why it matters</p><p>A parcel without correct pre-announcement may be refused or delayed at the depot.</p></div></div><div class="entry"><h3>Delivery promise</h3><p>What the shop tells the customer about when and how the parcel will arrive, made at checkout.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-delivery-promise.jpg" target="_blank" rel="noopener noreferrer" aria-label="Delivery promise — open full image in a new tab"><img src="media/concept-delivery-promise.jpg" alt="Delivery promise: &#x27;Delivered Thursday between 18:00 and 21:00&#x27; or &#x27;Pick up from Friday at the corner shop&#x27;." loading="lazy" decoding="async"></a><figcaption><p>The promise is made before the parcel exists; if stock or capacity are wrong, the shop breaks its word.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>&#x27;Delivered Thursday between 18:00 and 21:00&#x27; or &#x27;Pick up from Friday at the corner shop&#x27;.</p></div><div class="labeled"><p class="label">Why it matters</p><p>The promise is made before the parcel exists; if stock or capacity are wrong, the shop breaks its word.</p></div></div><div class="entry"><h3>Dynamic checkout</h3><p>A checkout that calculates delivery options live from stock, address, carrier services and capacity instead of showing fixed choices.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-dynamic-checkout.jpg" target="_blank" rel="noopener noreferrer" aria-label="Dynamic checkout — open full image in a new tab"><img src="media/concept-dynamic-checkout.jpg" alt="Dynamic checkout: If one item comes from a supplier next week, the checkout only offers dates from next week, or a split delivery." loading="lazy" decoding="async"></a><figcaption><p>It turns logistics from reacting after the order (&#x27;push&#x27;) into steering at the moment of purchase (&#x27;pull&#x27;).</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>If one item comes from a supplier next week, the checkout only offers dates from next week, or a split delivery.</p></div><div class="labeled"><p class="label">Why it matters</p><p>It turns logistics from reacting after the order (&#x27;push&#x27;) into steering at the moment of purchase (&#x27;pull&#x27;).</p></div></div><div class="entry"><h3>Shipping rules</h3><p>If-then logic that decides carrier, service and price per order.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-shipping-rules.jpg" target="_blank" rel="noopener noreferrer" aria-label="Shipping rules — open full image in a new tab"><img src="media/concept-shipping-rules.jpg" alt="Shipping rules: &#x27;Orders above 30 kg to Germany go by pallet carrier X; orders from the marketplace use service Y.&#x27;" loading="lazy" decoding="async"></a><figcaption><p>Rules capture the shop&#x27;s strategy and customer agreements so staff do not have to remember them.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>&#x27;Orders above 30 kg to Germany go by pallet carrier X; orders from the marketplace use service Y.&#x27;</p></div><div class="labeled"><p class="label">Why it matters</p><p>Rules capture the shop&#x27;s strategy and customer agreements so staff do not have to remember them.</p></div></div><div class="entry"><h3>Transport documents</h3><p>Papers or data that let goods travel legally: consignment notes (CMR) for road freight, customs invoices for export, dangerous-goods (ADR) declarations.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-transport-documents.jpg" target="_blank" rel="noopener noreferrer" aria-label="Transport documents — open full image in a new tab"><img src="media/concept-transport-documents.jpg" alt="Transport documents: A battery shipment to Switzerland needs both a customs invoice and dangerous-goods labels." loading="lazy" decoding="async"></a><figcaption><p>Missing documents stop shipments at borders or depots.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A battery shipment to Switzerland needs both a customs invoice and dangerous-goods labels.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Missing documents stop shipments at borders or depots.</p></div></div><div class="entry"><h3>Tracking events</h3><p>Status messages from the carrier: collected, sorted, out for delivery, delivered, failed.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-tracking-events.jpg" target="_blank" rel="noopener noreferrer" aria-label="Tracking events — open full image in a new tab"><img src="media/concept-tracking-events.jpg" alt="Tracking events: &#x27;Delivery attempt failed - recipient not home&#x27; arrives at 14:02." loading="lazy" decoding="async"></a><figcaption><p>They drive customer messages and let the shop act before the customer complains.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>&#x27;Delivery attempt failed - recipient not home&#x27; arrives at 14:02.</p></div><div class="labeled"><p class="label">Why it matters</p><p>They drive customer messages and let the shop act before the customer complains.</p></div></div><div class="entry"><h3>Freight audit (carrier invoice control)</h3><p>Comparing what the carrier invoices with what the shipment should have cost.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-freight-audit-carrier-invoice-control.jpg" target="_blank" rel="noopener noreferrer" aria-label="Freight audit (carrier invoice control) — open full image in a new tab"><img src="media/concept-freight-audit-carrier-invoice-control.jpg" alt="Freight audit (carrier invoice control): The invoice adds a size surcharge on a parcel that was booked as standard size." loading="lazy" decoding="async"></a><figcaption><p>Small overcharges across thousands of parcels add up; without expected costs there is nothing to compare.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>The invoice adds a size surcharge on a parcel that was booked as standard size.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Small overcharges across thousands of parcels add up; without expected costs there is nothing to compare.</p></div></div></section><section id="history" aria-labelledby="heading-history"><p class="chapter-number">05</p><h2 id="heading-history">A little history</h2><p>This is a selective, mostly Dutch and European view; other markets developed differently.</p><ol class="timeline"><li><h3>Before about 2010</h3><p>Shops booked shipments in each carrier&#x27;s own website or software and printed labels per carrier.</p><div class="labeled"><p class="label">What this helps explain</p><p>Every new carrier meant a new screen and a new process, which kept most shops on one carrier.</p></div></li><li><h3>2010s</h3><p>E-commerce growth brought independent multi-carrier platforms; in the Netherlands, research into consumers&#x27; delivery wishes (by DeliveryMatch&#x27;s founder from 2009 to 2012) led to the idea that delivery choice belongs in the checkout. DeliveryMatch was founded in 2013 and its first customer went live in 2014.</p><div class="labeled"><p class="label">What this helps explain</p><p>Delivery became a sales feature, not just a cost.</p></div><p class="source"><a href="https://www.deliverymatch.eu/over-ons/" rel="noreferrer">Source for 2010s</a></p></li><li><h3>Late 2010s to early 2020s</h3><p>Platforms connected to hundreds of carriers and business systems; pickup points, lockers and evening delivery spread across Europe.</p><div class="labeled"><p class="label">What this helps explain</p><p>Choice exploded, so deciding automatically between options became the main value.</p></div></li><li><h3>2020s</h3><p>Consolidation: larger groups formed (for example nShift in 2021 from several Nordic and Dutch vendors) and software groups such as Katapull combined complementary products - ERP, point of sale, marketplaces, EDI, returns, warehouse and shipping.</p><div class="labeled"><p class="label">What this helps explain</p><p>Shipping software increasingly competes as part of an ecosystem rather than as a standalone tool.</p></div><p class="source"><a href="https://katapull.nl/" rel="noreferrer">Source for 2020s</a></p></li></ol></section><section id="walkthrough" aria-labelledby="heading-walkthrough"><p class="chapter-number">06</p><h2 id="heading-walkthrough">Follow one complete example</h2><h3>One order for a camera bag and a tripod (illustrative example)</h3><p>Fictional characters: Sanne runs operations at a mid-size Dutch photography webshop that sells through its own site and a marketplace. The bag is in the shop&#x27;s warehouse; the tripod is held by a supplier that ships directly. A shopper, Jeroen, orders both on a Tuesday evening.</p><ol class="steps"><li><h4>Jeroen sees delivery options</h4><p>At checkout the platform checks stock: the bag is available now, the tripod ships from the supplier tomorrow. It offers Thursday home delivery for both parcels or a pickup point, with prices and an estimated CO2 figure.</p><div class="labeled"><p class="label">Why this step matters</p><p>The promise is based on real stock and carrier services, so it can be kept.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If the supplier&#x27;s stock feed is out of date, the promise is wrong from the start.</p></div></aside></li><li><h4>The order arrives in the shipping platform</h4><p>The webshop passes the order to the platform; Jeroen&#x27;s address is checked and rules choose carriers for the warehouse parcel and the supplier parcel.</p><div class="labeled"><p class="label">Why this step matters</p><p>No one re-types the order or decides manually.</p></div></li><li><h4>The warehouse scans and ships</h4><p>Next morning a packer scans the bag&#x27;s order; the platform pre-announces it to the carrier, prints the label and sends Jeroen a branded message. The supplier books its parcel through the same platform.</p><div class="labeled"><p class="label">Why this step matters</p><p>One scan replaces several manual steps; both parcels are visible in one place.</p></div></li><li><h4>A delay appears</h4><p>On Wednesday night the tripod parcel misses a sorting connection. The tracking event triggers an alert in Sanne&#x27;s exception list and a message to Jeroen with the new day.</p><div class="labeled"><p class="label">Why this step matters</p><p>The shop informs the customer before he asks.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>Different carriers describe the same problem with different codes; the platform has to translate them.</p></div></aside></li><li><h4>Jeroen returns the bag</h4><p>The bag is the wrong size. Jeroen registers a return in the shop&#x27;s portal, chooses a drop-off point and prints a return label.</p><div class="labeled"><p class="label">Why this step matters</p><p>An easy return keeps him as a customer; the reason code tells the shop something about its size descriptions.</p></div></li><li><h4>The invoice is checked</h4><p>At month end the carrier&#x27;s invoice is compared with the expected cost stored at booking; an unexpected surcharge is flagged for dispute.</p><div class="labeled"><p class="label">Why this step matters</p><p>The shop pays what it agreed, not what was billed by mistake.</p></div></li></ol><div class="labeled"><p class="label">The outcome</p><p>Jeroen received his order as promised (one parcel a day late, but announced), returned an item without effort, and will probably order again. Sanne&#x27;s team touched the order only to handle the exception, and the shop knows what the delivery really cost.</p></div></section><section id="value" aria-labelledby="heading-value"><p class="chapter-number">07</p><h2 id="heading-value">Value, money, and incentives</h2><div class="entry"><h3>Shippers save labour and keep promises</h3><p>Automation removes manual bookings and errors; reliable promises raise conversion and repeat purchases. Shippers pay a subscription and often usage-based fees (pricing is not published by DeliveryMatch).</p><div class="labeled"><p class="label">For example</p><p>A shop that books thousands of parcels a week no longer needs staff copying addresses into carrier websites.</p></div></div><div class="entry"><h3>Carriers want volume, shippers want freedom</h3><p>A platform makes it easy to add a carrier - and just as easy to move volume away. Carriers gain reach but lose some lock-in.</p><div class="labeled"><p class="label">For example</p><p>A rule change can move all heavy parcels from one carrier to another overnight.</p></div></div><div class="entry"><h3>3PLs earn a margin on shipping</h3><p>Fulfilment companies buy transport at their rates and re-sell it to client shops; software that calculates sales rates and audits invoices protects that margin.</p><div class="labeled"><p class="label">For example</p><p>A 3PL charges a client EUR 5.50 per parcel while paying the carrier less; freight audit catches surcharges that would erase the difference (illustrative figures).</p></div></div><div class="entry"><h3>Software partners and groups gain features</h3><p>ERP, warehouse and webshop vendors embed shipping instead of building carrier links; in a group like Katapull, connected products make the whole offer stickier.</p><div class="labeled"><p class="label">For example</p><p>A warehouse system sends shipment requests to the shipping platform and receives labels back.</p></div></div></section><section id="challenges" aria-labelledby="heading-challenges"><p class="chapter-number">08</p><h2 id="heading-challenges">What makes this domain difficult</h2><div class="entry"><h3>Promising what can be delivered</h3><p>The promise is made before goods are picked, using stock data from other systems and carrier capacity that changes daily.</p><div class="labeled"><p class="label">The competing needs</p><p>Fast promises sell better; safe promises are kept more often.</p></div><div class="labeled"><p class="label">In practice</p><p>A checkout shows next-day delivery for an item that is actually at a supplier.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Stock-aware promise calculation and cut-off rules; it is only as good as the stock data it receives.</p></div></div><div class="entry"><h3>Keeping hundreds of connections alive</h3><p>Every carrier, webshop, ERP and marketplace has its own interface, and they change.</p><div class="labeled"><p class="label">The competing needs</p><p>More connections attract customers but cost constant maintenance.</p></div><div class="labeled"><p class="label">In practice</p><p>A carrier changes its label format and labels are rejected at the depot.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>A uniform internal model with adapters per carrier and system; still needs a dedicated team.</p></div></div><div class="entry"><h3>Controlling transport cost</h3><p>Tariffs, zones, fuel and size surcharges differ by carrier and change often; invoices arrive weeks later.</p><div class="labeled"><p class="label">The competing needs</p><p>Detailed cost models take effort to maintain; simple ones miss surcharges.</p></div><div class="labeled"><p class="label">In practice</p><p>Oversize surcharges on 2% of parcels double the expected monthly cost increase.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Calculate expected cost at booking and audit invoices automatically; depends on accurate rate cards.</p></div></div><div class="entry"><h3>Exceptions and returns</h3><p>Delays, failed deliveries and returns are irregular and involve several parties.</p><div class="labeled"><p class="label">The competing needs</p><p>Generous returns win customers but cost money.</p></div><div class="labeled"><p class="label">In practice</p><p>A parcel shows &#x27;delivered&#x27; but the customer has not received it.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Normalised tracking, alerts and self-service returns portals with rules for return costs.</p></div></div></section><section id="misconceptions" aria-labelledby="heading-misconceptions"><p class="chapter-number">09</p><h2 id="heading-misconceptions">Common misunderstandings</h2><div class="entry"><h3>Shipping software just prints labels.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Label printing is the visible part; the value lies in deciding the carrier, making a keepable promise, informing the customer and controlling cost.</p></div></div><div class="entry"><h3>Faster delivery is always what customers want.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Many consumers prefer certainty and choice over speed; DeliveryMatch cites research that most will wait several days if the delivery moment is clear.</p></div></div><div class="entry"><h3>Using more carriers always makes things more complicated.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>With a platform in the middle, more carriers mainly add choice; the complexity sits in the platform&#x27;s connections and rules.</p></div></div></section><section id="takeaways" aria-labelledby="heading-takeaways"><p class="chapter-number">10</p><h2 id="heading-takeaways">The ideas to take with you</h2><ul><li><p>Shipping software sits between order systems and carriers and turns each order into a booked, labelled, tracked shipment.</p></li><li><p>The delivery promise is made at checkout, before the parcel exists, so it depends on stock and capacity data.</p></li><li><p>Rules and automatic selection replace human decisions per order; exceptions are where people still add value.</p></li><li><p>Cost control requires knowing the expected cost of each shipment before the invoice arrives.</p></li><li><p>Value grows with connections - to carriers, business systems and partner products - which is why ecosystems like Katapull matter.</p></li></ul></section><section id="knowledge-checks" aria-labelledby="heading-knowledge-checks"><p class="chapter-number">11</p><h2 id="heading-knowledge-checks">Try it for yourself</h2><p>Pause and think through each situation, then open the answer.</p><div class="entry"><h3>1. Why might a checkout show a later delivery date for an order with two items than for each item separately?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 1</span></summary><div class="answer"><p>Because one item is not in stock or ships from another location, so the complete order can only be delivered later.</p><div class="labeled"><p class="label">The reasoning</p><p>A stock-aware promise looks at when the whole order can be delivered, unless split delivery is allowed.</p></div></div></details></div><div class="entry"><h3>2. What does a shop need in order to check a carrier invoice automatically?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 2</span></summary><div class="answer"><p>The expected cost of each shipment calculated at booking from the agreed rates.</p><div class="labeled"><p class="label">The reasoning</p><p>Without an expected cost per shipment there is nothing to compare the invoice line with.</p></div></div></details></div><div class="entry"><h3>3. In the walkthrough, how did the shop learn about the tripod delay before Jeroen asked?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 3</span></summary><div class="answer"><p>A tracking event from the carrier triggered an exception alert and a message.</p><div class="labeled"><p class="label">The reasoning</p><p>Normalised tracking events let the platform spot deviations from expected milestones.</p></div></div></details></div><div class="entry"><h3>4. Why could a carrier be both happy and worried about shippers using a multi-carrier platform?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 4</span></summary><div class="answer"><p>It gains access to many shippers but can lose volume quickly when a rule changes.</p><div class="labeled"><p class="label">The reasoning</p><p>The platform lowers switching costs in both directions.</p></div></div></details></div></section><section id="next-questions" aria-labelledby="heading-next-questions"><p class="chapter-number">12</p><h2 id="heading-next-questions">Questions to ask a practitioner</h2><ul><li><p>Which share of your orders is booked without anyone touching them?</p></li><li><p>How do you decide which carrier gets which parcel, and who maintains those rules?</p></li><li><p>How often is the delivery date shown at checkout actually met?</p></li><li><p>How do you check carrier invoices today?</p></li><li><p>Which of your systems would need to connect to a shipping platform?</p></li></ul></section><section id="further-reading" aria-labelledby="heading-further-reading"><p class="chapter-number">13</p><h2 id="heading-further-reading">Keep learning</h2><ul class="reading-list"><li><a href="https://www.deliverymatch.eu/platform/" rel="noreferrer">DeliveryMatch platform overview</a><p>A concrete feature list of a European shipping platform.</p></li><li><a href="https://www.deliverymatch.eu/platform/dynamische-verzendopties/" rel="noreferrer">DeliveryMatch: dynamic checkout</a><p>Explains the push-to-pull idea in Dutch.</p></li><li><a href="https://katapull.nl/" rel="noreferrer">Katapull Commerce Hub</a><p>Shows how shipping fits with ERP, point of sale, marketplaces, EDI, returns and warehouse software.</p></li><li><a href="https://nshift.com/about" rel="noreferrer">About nShift</a><p>How a large European delivery management group was formed.</p></li></ul></section></main>
+        </div>
+        <footer><a href="#top">Back to the beginning</a></footer>
+    </div>
+</body>
+</html>

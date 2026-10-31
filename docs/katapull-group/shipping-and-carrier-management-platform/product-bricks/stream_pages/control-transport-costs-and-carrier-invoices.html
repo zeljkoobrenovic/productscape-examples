@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Control Transport Costs and Carrier Invoices — Stream (Shipping and Carrier Management Platform)</title>
+
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+
+    <style>
+
+        .links-group {
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .links-group-title {
+            font-size: 12px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .links-group-description {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .link-entry { margin-bottom: 16px; }
+        .link-entry:last-child { margin-bottom: 0; }
+
+        .link-entry-title {
+            color: #1d4ed8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-entry-title:hover { text-decoration: underline; }
+
+        .link-entry-copy {
+            color: #4b5563;
+            font-size: 13px;
+            margin: 4px 0 8px;
+            line-height: 1.45;
+        }
+
+        .link-embed {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            margin-top: 4px;
+        }
+
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page {
+            margin: 20px;
+        }
+
+        .nav-strip {
+            margin: 2px 20px 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .nav-link {
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        .nav-link.active {
+            border-bottom: 4px solid blue;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .header-meta {
+            font-size: 90%;
+            color: grey;
+        }
+
+        .header-title {
+            font-size: 50px;
+            line-height: 1.05;
+        }
+
+        .header-copy {
+            font-size: 16px;
+            color: grey;
+            margin-top: 6px;
+            max-width: 950px;
+        }
+
+        .activity-summary {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            background: #fff;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: blue;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            color: inherit;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #dbe2ea;
+            padding: 4px;
+            flex: 0 0 auto;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #315b7c;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .card-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .list li {
+            margin-bottom: 6px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            color: #374151;
+            font-size: 12px;
+        }
+
+        .pill img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 90%;
+        }
+
+        .dependency-diagram {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+            overflow-x: auto;
+        }
+
+        .flow-title {
+            font-size: 24px;
+            color: #315b7c;
+            margin-bottom: 6px;
+        }
+
+        .flow-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .flow-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .flow-step-card {
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fbfdff;
+        }
+
+        .flow-step-number {
+            font-size: 11px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-title {
+            font-size: 18px;
+            color: #315b7c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta-item {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }
+
+        .flow-step-meta-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
+        }
+
+        .flow-step-dependencies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .flow-matrix-wrap {
+            overflow-x: auto;
+        }
+
+        .flow-matrix {
+            width: 100%;
+            min-width: 1080px;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 90%;
+        }
+
+        .flow-matrix th,
+        .flow-matrix td {
+            border: 1px solid #dbe2ea;
+            vertical-align: top;
+            padding: 10px 12px;
+        }
+
+        .flow-matrix th {
+            background: #f8fafc;
+            text-align: left;
+        }
+
+        .flow-dependency-col {
+            min-width: 250px;
+            width: 250px;
+        }
+
+        .flow-dependency-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .flow-dependency-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            flex: 0 0 auto;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+
+        .flow-step-col {
+            min-width: 220px;
+        }
+
+        .flow-step-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .flow-dependency-name {
+            font-weight: bold;
+            color: #315b7c;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .flow-insight-row th {
+            background: #f1f5f9;
+            color: #315b7c;
+        }
+
+        .flow-insight-row td {
+            background: #f8fafc;
+        }
+
+        .flow-insight-list {
+            margin: 0;
+            padding-left: 16px;
+            line-height: 1.45;
+        }
+
+        .flow-insight-list li {
+            margin-bottom: 5px;
+        }
+
+        .flow-cell-empty {
+            background: #fbfdff;
+            color: #9ca3af;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .flow-cell-active {
+            background: #eef6ff;
+        }
+
+        .flow-cell-copy {
+            color: #374151;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .flow-cell-copy:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-cell-bricks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .flow-cell-brick {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+        }
+
+        .flow-cell-brick-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            flex: 0 0 auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+    <script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+</head>
+
+<body onload="initTab('home')" onhashchange="initTab()">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+
+<div id="breadcrumbs" style="margin-left: 20px"></div>
+
+<script src="../shared_data.js"></script>
+<script>
+    const config = {"domains": [{"id": "shipping-and-carrier-management-platform", "name": "Shipping and Carrier Management Platform", "description": "DeliveryMatch, Katapull's order and shipping platform: dynamic checkout, multi-carrier booking across 200+ carriers, transport management, tracking, returns and freight audit for webshops, wholesalers, 3PLs and brokers."}]};
+    const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
+    const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
+    const currentStream = {"id": "control-transport-costs-and-carrier-invoices", "name": "Control Transport Costs and Carrier Invoices", "icon": "control-transport-costs-and-carrier-invoices.png", "type": "outcome-based-stream", "description": "Know the expected cost and selling price of each shipment, audit carrier invoices against it automatically, re-invoice clients with margin, and report cost, performance and CO2 per customer, channel and carrier.", "group": "Control and Onboarding", "rootGroup": "Control and Grow", "flows": [{"id": "control-transport-flow", "title": "Booking to audited invoice", "description": "Expected cost is compared to invoiced cost.", "steps": [{"id": "calculate-expected-cost", "title": "Calculate expected purchase and sales cost", "keyFacts": ["Purchase and sales rates per contract and client", "Surcharges updated centrally"], "painPoints": ["Rate cards maintained in spreadsheets"], "dependencies": [{"type": "brick", "id": "rate", "name": "Rate Cards and Transport Cost Calculation", "description": "Holds purchase rates per carrier contract and sales rates per customer or client, including surcharges, and calculates the expected transport cost and...", "how": "Calculates and stores cost."}, {"type": "brick", "id": "tnnt", "name": "Tenants, Clients and Access", "description": "Accounts, users, roles and multi-client structures - a 3PL's clients or a broker's customers as sub-accounts with their own carriers, rates and brandi...", "how": "Separates clients and their price lists."}]}, {"id": "audit-invoice", "title": "Audit the carrier invoice", "keyFacts": ["Invoiced cost per shipment compared with booked cost", "Discrepancies and surcharges flagged for dispute"], "painPoints": ["Invoices arrive in carrier-specific formats"], "dependencies": [{"type": "brick", "id": "fiac", "name": "Carrier Invoice Control", "description": "Freight audit module: reads carrier invoices and automatically compares the invoiced cost of each shipment with the cost calculated at booking, flags ...", "how": "Parses, matches and disputes."}]}, {"id": "report-cost-and-co2", "title": "Report cost, performance and CO2", "keyFacts": ["KPI reports per client, channel and carrier", "CO2 per shipment"], "painPoints": ["Emission factors differ by method"], "dependencies": [{"type": "brick", "id": "dash", "name": "Logistics Dashboard and KPI Reporting", "description": "The DeliveryMatch dashboard to configure, execute and monitor shipping: real-time shipment overview, KPI reports on cost, lead time and carrier perfor...", "how": "Reports KPIs."}, {"type": "brick", "id": "co2c", "name": "CO2 Calculation and Reporting", "description": "Estimates the CO2 emissions of each delivery option and shipment per carrier and service, shows them in checkout and reports, and lets selection weigh...", "how": "Provides emissions."}]}]}], "outcomes": ["Overcharges recovered", "Margin per client visible", "Cost and CO2 reported per shipment"], "brickDependencies": [{"targetBrickId": "rate", "type": "composition"}, {"targetBrickId": "fiac", "type": "composition"}, {"targetBrickId": "dash", "type": "composition"}, {"targetBrickId": "co2c", "type": "composition"}, {"targetBrickId": "tnnt", "type": "composition"}], "externalSystemsThisStreamDependsOn": [{"system": "Carrier invoicing", "description": "Provides invoices."}], "externalSystemsDependingOnThisStream": []};
+    const related_bricks = [{"id": "rate", "name": "Rate Cards and Transport Cost Calculation", "type": "full-stack", "status": "sustaining", "description": "Holds purchase rates per carrier contract and sales rates per customer or client, including surcharges, and calculates the expected transport cost and selling price of every shipment in real time - the basis for checkout prices, 3PL and broker margins and invoice control.", "links": [], "layers": [{"layer": "ui", "description": "Rate maintenance.", "modules": [{"id": "module-rate-card-editor", "name": "Rate Card Editor", "type": "web-component", "description": "Upload and edit carrier tariffs, zones, surcharges and customer price lists.", "dependencies": {"modules": [{"moduleId": "module-rate-api", "type": "uses", "description": "Saves rate cards."}]}}]}, {"layer": "interfaces", "description": "Rate API.", "modules": [{"id": "module-rate-api", "name": "Rate API", "type": "api", "description": "Rate lookups and calculated costs per shipment.", "dependencies": {"modules": [{"moduleId": "module-rate-calculator", "type": "uses", "description": "Calculates."}, {"moduleId": "module-rate-card-store", "type": "uses", "description": "Reads and writes cards."}]}}]}, {"layer": "worker", "description": "Surcharge updates.", "modules": [{"id": "module-surcharge-update-daemon", "name": "Surcharge Update Daemon", "type": "daemon", "description": "Applies periodic fuel and other surcharge changes to active rate cards.", "dependencies": {"modules": [{"moduleId": "module-rate-card-store", "type": "uses", "description": "Updates surcharges."}]}}]}, {"layer": "stateless-service", "description": "Calculation.", "modules": [{"id": "module-rate-calculator", "name": "Transport Cost Calculator", "type": "stateless-service", "description": "Calculates purchase and sales price per shipment from weight, volume, zone and surcharges.", "dependencies": {"modules": [{"moduleId": "module-rate-card-store", "type": "uses", "description": "Reads rate cards."}]}}]}, {"layer": "service", "description": "Rate cards and cost ledger.", "modules": [{"id": "module-rate-card-store", "name": "Rate Card Store", "type": "stateful-service", "description": "Versioned purchase and sales rate cards and the calculated cost per shipment."}]}], "dataDependencies": [{"assetId": "carrier-rate-card-and-contract", "moduleIds": ["module-rate-card-store", "module-rate-card-editor"], "role": "own", "description": "System of record for purchase and sales rates."}, {"assetId": "transport-cost-ledger", "moduleIds": ["module-rate-card-store", "module-rate-calculator"], "role": "own", "description": "Expected purchase and sales cost per booked shipment."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Shipping Decisions and Execution", "group": "Decision Logic"}, {"id": "fiac", "name": "Carrier Invoice Control", "type": "full-stack", "status": "invest", "description": "Freight audit module: reads carrier invoices and automatically compares the invoiced cost of each shipment with the cost calculated at booking, flags surcharges and discrepancies, and supports disputes - giving shippers, 3PLs and brokers control over margins.", "links": [], "layers": [{"layer": "ui", "description": "Discrepancy review.", "modules": [{"id": "module-invoice-discrepancy-board", "name": "Discrepancy Board", "type": "web-component", "description": "Lists invoice lines that deviate from expected cost with dispute actions.", "dependencies": {"modules": [{"moduleId": "module-dispute-service", "type": "uses", "description": "Manages disputes."}]}}]}, {"layer": "interfaces", "description": "Invoice intake.", "modules": [{"id": "module-invoice-upload-api", "name": "Carrier Invoice Upload API", "type": "api", "description": "Accepts carrier invoice files and electronic invoices.", "dependencies": {"modules": [{"moduleId": "module-invoice-parser", "type": "uses", "description": "Queues parsing."}]}}]}, {"layer": "worker", "description": "Parsing.", "modules": [{"id": "module-invoice-parser", "name": "Invoice Parser", "type": "message-consumer", "description": "Parses invoice formats per carrier into lines per shipment.", "dependencies": {"modules": [{"moduleId": "module-invoice-matcher", "type": "uses", "description": "Matches lines."}]}}]}, {"layer": "stateless-service", "description": "Matching.", "modules": [{"id": "module-invoice-matcher", "name": "Invoice Matcher", "type": "stateless-service", "description": "Matches invoice lines to shipments and expected costs.", "dependencies": {"modules": [{"moduleId": "module-dispute-service", "type": "uses", "description": "Records results."}]}}]}, {"layer": "service", "description": "Disputes.", "modules": [{"id": "module-dispute-service", "name": "Discrepancy and Dispute Service", "type": "stateful-service", "description": "Discrepancies, credit claims and resolution status."}]}], "dataDependencies": [{"assetId": "carrier-invoice-line", "moduleIds": ["module-invoice-parser", "module-dispute-service"], "role": "own", "description": "System of record for audited invoice lines."}, {"assetId": "transport-cost-ledger", "moduleIds": ["module-invoice-matcher"], "role": "read", "description": "Compares against expected cost."}, {"assetId": "carrier-rate-card-and-contract", "moduleIds": ["module-invoice-matcher"], "role": "read", "description": "Explains surcharges against contracts."}], "brickDependencies": [{"targetBrickId": "rate", "moduleId": "module-rate-api", "sourceModuleId": "module-invoice-matcher", "type": "uses", "description": "Retrieves the expected cost per shipment."}], "externalSystemsThisBrickDependsOn": [{"system": "Carrier invoicing", "type": "partner", "interface": "Invoice files and e-invoices", "description": "Source of invoiced transport costs.", "sourceModuleId": "module-invoice-upload-api"}], "externalSystemsDependingOnThisBrick": [], "domain": "Control, Insight and Sustainability", "group": "Cost and Performance Control"}, {"id": "dash", "name": "Logistics Dashboard and KPI Reporting", "type": "full-stack", "status": "sustaining", "description": "The DeliveryMatch dashboard to configure, execute and monitor shipping: real-time shipment overview, KPI reports on cost, lead time and carrier performance per client, channel and carrier, and exports.", "links": [], "layers": [{"layer": "ui", "description": "Dashboards.", "modules": [{"id": "module-shipment-overview", "name": "Shipment Overview", "type": "web-component", "description": "Live list of shipments with status filters per channel, location and client.", "dependencies": {"modules": [{"moduleId": "module-reporting-api", "type": "uses", "description": "Reads data."}]}}, {"id": "module-report-builder", "name": "KPI Report Builder", "type": "web-component", "description": "Configurable KPI reports and scheduled exports.", "dependencies": {"modules": [{"moduleId": "module-reporting-api", "type": "uses", "description": "Reads data."}]}}]}, {"layer": "interfaces", "description": "Reporting API.", "modules": [{"id": "module-reporting-api", "name": "Reporting API", "type": "api", "description": "Aggregated queries over shipments, costs, emissions and performance.", "dependencies": {"modules": [{"moduleId": "module-analytics-mart", "type": "uses", "description": "Queries the mart."}]}}]}, {"layer": "worker", "description": "Loading.", "modules": [{"id": "module-analytics-loader", "name": "Analytics Loader", "type": "message-consumer", "description": "Loads shipment, cost and tracking facts into the analytics mart.", "dependencies": {"modules": [{"moduleId": "module-analytics-mart", "type": "uses", "description": "Writes facts."}]}}]}, {"layer": "service", "description": "Analytics mart.", "modules": [{"id": "module-analytics-mart", "name": "Logistics Analytics Mart", "type": "stateful-service", "description": "Tenant-scoped facts for reporting."}]}], "dataDependencies": [{"assetId": "shipment-record", "moduleIds": ["module-analytics-loader"], "role": "read", "description": "Loads shipment facts."}, {"assetId": "transport-cost-ledger", "moduleIds": ["module-analytics-loader"], "role": "read", "description": "Loads cost facts."}, {"assetId": "carrier-performance-metrics", "moduleIds": ["module-reporting-api"], "role": "read", "description": "Shows carrier scorecards."}, {"assetId": "emission-estimate", "moduleIds": ["module-analytics-loader"], "role": "read", "description": "Reports CO2 per shipment."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Control, Insight and Sustainability", "group": "Cost and Performance Control"}, {"id": "co2c", "name": "CO2 Calculation and Reporting", "type": "full-stack", "status": "invest", "description": "Estimates the CO2 emissions of each delivery option and shipment per carrier and service, shows them in checkout and reports, and lets selection weigh emissions alongside cost and speed.", "links": [], "layers": [{"layer": "interfaces", "description": "Emission API.", "modules": [{"id": "module-emission-api", "name": "Emission API", "type": "api", "description": "Emission estimates per option and shipment.", "dependencies": {"modules": [{"moduleId": "module-emission-calculator", "type": "uses", "description": "Calculates."}]}}]}, {"layer": "stateless-service", "description": "Calculation.", "modules": [{"id": "module-emission-calculator", "name": "Emission Calculator", "type": "stateless-service", "description": "Calculates emissions from distance, weight, mode and carrier factors.", "dependencies": {"modules": [{"moduleId": "module-emission-factor-store", "type": "uses", "description": "Reads factors."}]}}]}, {"layer": "service", "description": "Factors and estimates.", "modules": [{"id": "module-emission-factor-store", "name": "Emission Factor Store", "type": "stateful-service", "description": "Emission factors per carrier and service and stored estimates per shipment."}]}], "dataDependencies": [{"assetId": "emission-estimate", "moduleIds": ["module-emission-factor-store", "module-emission-calculator"], "role": "own", "description": "System of record for emission estimates."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Control, Insight and Sustainability", "group": "Cost and Performance Control"}, {"id": "tnnt", "name": "Tenants, Clients and Access", "type": "full-stack", "status": "sustaining", "description": "Accounts, users, roles and multi-client structures - a 3PL's clients or a broker's customers as sub-accounts with their own carriers, rates and branding - with the audit trail and access controls that support DeliveryMatch's ISO 27001 certification (June 2026).", "links": [], "layers": [{"layer": "ui", "description": "Administration.", "modules": [{"id": "module-account-admin", "name": "Account Administration", "type": "web-component", "description": "Manage users, roles, clients and sub-accounts.", "dependencies": {"modules": [{"moduleId": "module-tenant-api", "type": "uses", "description": "Updates accounts."}]}}]}, {"layer": "interfaces", "description": "Tenant API.", "modules": [{"id": "module-tenant-api", "name": "Tenant API", "type": "api", "description": "Tenant, client and user lookups for all bricks.", "dependencies": {"modules": [{"moduleId": "module-identity-service", "type": "uses", "description": "Reads identities."}]}}]}, {"layer": "service", "description": "Identity and audit.", "modules": [{"id": "module-identity-service", "name": "Identity and Role Service", "type": "stateful-service", "description": "Users, roles, tenants and client hierarchy."}, {"id": "module-audit-log", "name": "Audit Log", "type": "service", "description": "Immutable record of configuration and access changes."}]}], "dataDependencies": [{"assetId": "tenant-account-and-credentials", "moduleIds": ["module-identity-service", "module-tenant-api"], "role": "own", "description": "System of record for accounts and access."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Platform Foundation", "group": "Shared Services"}];
+    const linked_products = [{"id": "dm-shipping-platform", "name": "DeliveryMatch Shipping Platform", "icon": "product.png", "type": "B2B SaaS - multi-carrier shipping and transport management", "whyUsed": "Transport cost per shipment."}, {"id": "dm-carrier-invoice-control", "name": "DeliveryMatch Carrier Invoice Control", "icon": "product.png", "type": "B2B SaaS add-on - freight audit", "whyUsed": "Expected cost for audit."}, {"id": "dm-carrier-broker-tms", "name": "DeliveryMatch for Carriers and Brokers", "icon": "product.png", "type": "B2B SaaS - transport management for carriers and brokers", "whyUsed": "Per-customer sales rates."}, {"id": "dm-shopify-app", "name": "DeliveryMatch Shopify App", "icon": "product.png", "type": "App marketplace listing", "whyUsed": "Shipment status dashboard."}, {"id": "dm-dynamic-checkout", "name": "DeliveryMatch Dynamic Checkout", "icon": "product.png", "type": "B2B SaaS add-on - checkout delivery options", "whyUsed": "CO2 per option."}];
+    const supported_jobs = [{"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "ecom-returns", "jobName": "Turn returns into repeat purchases instead of pure cost", "jobWhatItIs": "Make returning easy for the customer while controlling return cost and learning why items come back.", "jobOutcome": "Returns are registered self-service, cost less and lead to repeat orders.", "supportRationale": "Cost reporting.", "usedInSteps": [{"step": "See return costs alongside outbound costs", "description": "Report return cost per channel and carrier.", "howItSupports": "Cost reporting.", "media": []}]}, {"customerId": "whsl", "customerName": "Logistics Manager at a Manufacturer or Wholesaler", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-whsl-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "whsl-cost", "jobName": "Know and control what transport really costs", "jobWhatItIs": "Calculate expected transport cost per shipment, check carrier invoices and report cost and CO2 per customer.", "jobOutcome": "Transport cost per customer is known and overcharges are recovered.", "supportRationale": "Rate cards and cost calculation.", "usedInSteps": [{"step": "Calculate expected cost per shipment", "description": "Purchase rates and surcharges per contract.", "howItSupports": "Rate cards and cost calculation.", "media": []}, {"step": "Audit carrier invoices", "description": "Compare invoiced with booked cost automatically.", "howItSupports": "Carrier Invoice Control.", "media": []}, {"step": "Report cost and CO2 per customer", "description": "Use data in pricing and sustainability reporting.", "howItSupports": "Dashboard and CO2.", "media": []}]}, {"customerId": "tpls", "customerName": "Fulfilment and 3PL Operations Lead", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-tpls-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "tpls-onboard", "jobName": "Onboard a new fulfilment client in days, not weeks, and earn on shipping", "jobWhatItIs": "Connect the client's channels, set up carriers, rates and branding, and re-invoice shipping with margin.", "jobOutcome": "New clients ship within days and shipping is a profitable service.", "supportRationale": "Rates and freight audit.", "usedInSteps": [{"step": "Re-invoice shipping to clients with margin", "description": "Sales rates per client and audited purchase cost.", "howItSupports": "Rates and freight audit.", "media": []}]}, {"customerId": "whsl", "customerName": "Logistics Manager at a Manufacturer or Wholesaler", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-whsl-portrait.jpg", "productId": "dm-carrier-invoice-control", "productName": "DeliveryMatch Carrier Invoice Control", "productIcon": "product.png", "jobId": "whsl-cost", "jobName": "Know and control what transport really costs", "jobWhatItIs": "Calculate expected transport cost per shipment, check carrier invoices and report cost and CO2 per customer.", "jobOutcome": "Transport cost per customer is known and overcharges are recovered.", "supportRationale": "Rate cards and cost calculation.", "usedInSteps": [{"step": "Calculate expected cost per shipment", "description": "Purchase rates and surcharges per contract.", "howItSupports": "Rate cards and cost calculation.", "media": []}, {"step": "Audit carrier invoices", "description": "Compare invoiced with booked cost automatically.", "howItSupports": "Carrier Invoice Control.", "media": []}, {"step": "Report cost and CO2 per customer", "description": "Use data in pricing and sustainability reporting.", "howItSupports": "Dashboard and CO2.", "media": []}]}, {"customerId": "tpls", "customerName": "Fulfilment and 3PL Operations Lead", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-tpls-portrait.jpg", "productId": "dm-carrier-invoice-control", "productName": "DeliveryMatch Carrier Invoice Control", "productIcon": "product.png", "jobId": "tpls-onboard", "jobName": "Onboard a new fulfilment client in days, not weeks, and earn on shipping", "jobWhatItIs": "Connect the client's channels, set up carriers, rates and branding, and re-invoice shipping with margin.", "jobOutcome": "New clients ship within days and shipping is a profitable service.", "supportRationale": "Rates and freight audit.", "usedInSteps": [{"step": "Re-invoice shipping to clients with margin", "description": "Sales rates per client and audited purchase cost.", "howItSupports": "Rates and freight audit.", "media": []}]}, {"customerId": "crbr", "customerName": "Carrier or Transport Broker Partner", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-crbr-portrait.jpg", "productId": "dm-carrier-invoice-control", "productName": "DeliveryMatch Carrier Invoice Control", "productIcon": "product.png", "jobId": "crbr-broker", "jobName": "Run a brokerage with per-customer pricing and audited carrier invoices", "jobWhatItIs": "Sell transport to customers at their own rates, book with subcontracted carriers and check their invoices.", "jobOutcome": "Each customer is priced correctly and subcontractor invoices are verified automatically.", "supportRationale": "Rates per customer.", "usedInSteps": [{"step": "Quote and sell rates per customer", "description": "Sales rate cards per customer.", "howItSupports": "Rates per customer.", "media": []}, {"step": "Audit carrier invoices", "description": "Compare purchase invoices with expected cost.", "howItSupports": "Carrier Invoice Control.", "media": []}]}, {"customerId": "crbr", "customerName": "Carrier or Transport Broker Partner", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-crbr-portrait.jpg", "productId": "dm-carrier-broker-tms", "productName": "DeliveryMatch for Carriers and Brokers", "productIcon": "product.png", "jobId": "crbr-broker", "jobName": "Run a brokerage with per-customer pricing and audited carrier invoices", "jobWhatItIs": "Sell transport to customers at their own rates, book with subcontracted carriers and check their invoices.", "jobOutcome": "Each customer is priced correctly and subcontractor invoices are verified automatically.", "supportRationale": "Rates per customer.", "usedInSteps": [{"step": "Quote and sell rates per customer", "description": "Sales rate cards per customer.", "howItSupports": "Rates per customer.", "media": []}, {"step": "Audit carrier invoices", "description": "Compare purchase invoices with expected cost.", "howItSupports": "Carrier Invoice Control.", "media": []}]}, {"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-shopify-app", "productName": "DeliveryMatch Shopify App", "productIcon": "product.png", "jobId": "ecom-returns", "jobName": "Turn returns into repeat purchases instead of pure cost", "jobWhatItIs": "Make returning easy for the customer while controlling return cost and learning why items come back.", "jobOutcome": "Returns are registered self-service, cost less and lead to repeat orders.", "supportRationale": "Cost reporting.", "usedInSteps": [{"step": "See return costs alongside outbound costs", "description": "Report return cost per channel and carrier.", "howItSupports": "Cost reporting.", "media": []}]}, {"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-dynamic-checkout", "productName": "DeliveryMatch Dynamic Checkout", "productIcon": "product.png", "jobId": "ecom-returns", "jobName": "Turn returns into repeat purchases instead of pure cost", "jobWhatItIs": "Make returning easy for the customer while controlling return cost and learning why items come back.", "jobOutcome": "Returns are registered self-service, cost less and lead to repeat orders.", "supportRationale": "Cost reporting.", "usedInSteps": [{"step": "See return costs alongside outbound costs", "description": "Report return cost per channel and carrier.", "howItSupports": "Cost reporting.", "media": []}]}];
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {
+            htmlLabels: false
+        }
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function dedupe(items, keyFn) {
+        const seen = new Set();
+        const ordered = [];
+        items.forEach(item => {
+            const key = keyFn(item);
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            ordered.push(item);
+        });
+        return ordered;
+    }
+
+    function getFlows() {
+        return currentStream.flows || [];
+    }
+
+    function getFlowDependencies(flow) {
+        const dependencyIndex = new Map();
+        (flow.steps || []).forEach(step => {
+            (step.dependencies || []).forEach(dependency => {
+                if ((dependency.type || 'brick') !== 'brick') {
+                    return;
+                }
+                const key = [dependency.type || 'dependency', dependency.id || dependency.name || 'unknown'].join('::');
+                if (!dependencyIndex.has(key)) {
+                    dependencyIndex.set(key, dependency);
+                }
+            });
+        });
+        return Array.from(dependencyIndex.values());
+    }
+
+    function getStepDependency(step, dependency) {
+        return (step.dependencies || []).find(item => (item.type || '') === (dependency.type || '') && (item.id || '') === (dependency.id || '')) || null;
+    }
+
+    function getPrimaryActors() {
+        const streamJobs = currentStream.supportedCustomerJobs || [];
+        const allJobs = streamJobs.length ? streamJobs : supported_jobs;
+        return dedupe(allJobs.map(item => item.customerName || item.customerGroup || '').filter(Boolean), item => item);
+    }
+
+    function summarizeFlow(flow) {
+        const steps = flow.steps || [];
+        const firstStep = steps[0] || {};
+        const lastStep = steps[steps.length - 1] || {};
+        return {
+            actor: flow.primaryActor || firstStep.actor || '',
+            trigger: flow.trigger || firstStep.trigger || '',
+            result: flow.successSignal || flow.outcome || lastStep.successSignal || lastStep.output || ''
+        };
+    }
+
+    function renderStepMeta(label, value) {
+        if (!value) {
+            return '';
+        }
+        return '<div class="flow-step-meta-item"><div class="flow-step-meta-label">' + escapeHtml(label) + '</div><div class="flow-step-copy">' + escapeHtml(value) + '</div></div>';
+    }
+
+    function flowDependencyIconFile(dependency) {
+        const dependencyId = dependency.id || '';
+        const linkedBrick = related_bricks.find(brick => brick.id === dependencyId) || all_bricks.find(brick => brick.id === dependencyId) || {};
+        return dependency.icon || linkedBrick.icon || (dependencyId ? dependencyId + '.png' : 'brick.png');
+    }
+
+    function renderFlowDependencyIcon(dependency, className) {
+        return '<img class="' + escapeHtml(className) + '" src="../icons/' + escapeHtml(flowDependencyIconFile(dependency)) + '" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+    }
+
+    function renderStepDependencyPills(step) {
+        const dependencies = step.dependencies || [];
+        if (!dependencies.length) {
+            return '<div class="muted">No step-specific dependencies listed.</div>';
+        }
+
+        return '<div class="flow-step-dependencies">' + dependencies.map(dep => {
+            const label = dep.name || dep.id || 'Dependency';
+            const kind = 'Brick';
+            return '<span class="flow-cell-brick">' + renderFlowDependencyIcon(dep, 'flow-cell-brick-icon') + '<span>' + escapeHtml(kind + ': ' + label) + '</span></span>';
+        }).join('') + '</div>';
+    }
+
+    function simplifySupportCopy(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return '';
+        }
+        const simplified = text.replace(/^Supports .*? by helping users help /i, 'Facilitate ');
+        return simplified;
+    }
+</script>
+
+<div id="Header"></div>
+
+<div class="page">
+    <div class="tab" id="primary_tabs">
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
+    </div>
+
+    <div id="tab_content_home" class="tabcontent"></div>
+    <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_links" class="tabcontent"></div>
+
+
+</div>
+
+<script>
+    function streamMetaPath(stream) {
+        const parts = [];
+        if (stream.group) {
+            parts.push(stream.group);
+        }
+        if (stream.rootGroup && stream.rootGroup !== stream.group) {
+            parts.push(stream.rootGroup);
+        }
+        if (!parts.length) {
+            parts.push('Stream');
+        }
+        return parts.join(' / ');
+    }
+
+    let headerHtml = '<div class="nav-strip">';
+    allStreams.forEach(item => {
+        headerHtml += '<a class="nav-link" href="' + escapeHtml(item.id) + '.html">';
+        headerHtml += '<img src="../icons/' + escapeHtml(item.icon || 'stream.png') + '" class="' + (item.id === currentStream.id ? 'tab-image-selected' : 'tab-image') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+        headerHtml += '</a>';
+    });
+    headerHtml += '</div>';
+
+    headerHtml += '<div class="page">';
+    headerHtml += '<div class="header">';
+    headerHtml += '<img class="header-icon" src="../icons/' + escapeHtml(currentStream.icon || 'stream.png') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+    headerHtml += '<div>';
+    headerHtml += '<div class="header-meta">';
+    headerHtml += '<div class="page-type-badge">Stream</div>';
+    headerHtml += escapeHtml(streamMetaPath(currentStream)) + ' / <span style="color:blue;font-weight:bold;">' + escapeHtml((currentStream.id || '').toUpperCase()) + '</span></div>';
+    headerHtml += '<div class="header-title">' + escapeHtml(currentStream.name || currentStream.id) + '</div>';
+    headerHtml += '<div class="header-copy">' + escapeHtml(currentStream.description || '') + '</div>';
+    headerHtml += '</div></div></div>';
+    document.getElementById('Header').innerHTML = headerHtml;
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const primaryActors = getPrimaryActors();
+        let html = '';
+
+        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
+        if (!flows.length) {
+            html += '<div class="muted">No flows listed for this stream.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            flows.forEach(flow => {
+                const summary = summarizeFlow(flow);
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
+                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
+                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Outcomes</div>';
+        if (!(currentStream.outcomes || []).length) {
+            html += '<div class="muted">No outcomes listed for this stream.</div>';
+        } else {
+            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
+        if (!related_bricks.length) {
+            html += '<div class="muted">No linked product bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            related_bricks.forEach(brick => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../landing_pages/' + escapeHtml(brick.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml((brick.group || brick.domain || 'Product Brick')) + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../icons/' + escapeHtml(brick.id) + '.png" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+                html += '<div class="card-title">' + escapeHtml(brick.name || brick.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(brick.description || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Linked Products</div>';
+        if (!linked_products.length) {
+            html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            linked_products.forEach(product => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../product-deployments/landing_pages/' + escapeHtml(product.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml(product.type || 'Product') + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../../product-deployments/icons/' + escapeHtml(product.icon) + '" alt="" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+                html += '<div class="card-title">' + escapeHtml(product.name || product.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(product.whyUsed || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!supported_jobs.length) {
+            html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            supported_jobs.forEach(job => {
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.supportRationale) {
+                    html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
+                }
+                if ((job.usedInSteps || []).length) {
+                    html += '<ul class="list">' + job.usedInSteps.map(step => '<li>' + escapeHtml(step.step || step.description || '') + '</li>').join('') + '</ul>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function renderFlows() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        let html = '';
+
+        document.getElementById('tab_flows').innerHTML = 'Flow Narratives (' + flows.length + ')';
+
+        flows.forEach(flow => {
+            const dependenciesInFlow = getFlowDependencies(flow);
+            const summary = summarizeFlow(flow);
+            html += '<div class="group">';
+            html += '<div class="section-title">Flow</div>';
+            html += '<div class="flow-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+            html += '<div class="flow-description">' + escapeHtml(flow.description || '') + '</div>';
+            if (summary.actor || summary.trigger || summary.result) {
+                html += '<div class="card" style="margin-bottom:16px;">';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Primary actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '<div class="section-title">Dependency Traceability</div>';
+            html += '<div class="flow-matrix-wrap">';
+            html += '<table class="flow-matrix">';
+            html += '<thead>';
+            html += '<tr><th class="flow-dependency-col"></th>';
+            (flow.steps || []).forEach((step, index) => {
+                html += '<th class="flow-step-col"><div class="flow-step-label">Step ' + (index + 1) + '</div><div class="card-title">' + escapeHtml(step.title || step.id) + '</div></th>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right">Key Facts</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkblue">';
+                if ((step.keyFacts || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.keyFacts.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No key facts listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right; color: darkred">Pain Points</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkred">';
+                if ((step.painPoints || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.painPoints.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No pain points listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+            html += '</thead><tbody>';
+
+            dependenciesInFlow.forEach(dependency => {
+                const dependencyTypeLabel = 'Product Brick';
+                html += '<tr>';
+                html += '<td>';
+                html += '<div class="flow-dependency-header">';
+                html += renderFlowDependencyIcon(dependency, 'flow-dependency-icon');
+                html += '<div>';
+                html += '<a class="flow-dependency-name" href="../landing_pages/' + escapeHtml(dependency.id) + '.html">' + escapeHtml(dependency.name || dependency.id) + '</a>';
+                if (dependency.interface) {
+                    html += '<div class="muted">' + escapeHtml(dependency.interface) + '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+                html += '</td>';
+                (flow.steps || []).forEach(step => {
+                    const stepDependency = getStepDependency(step, dependency);
+                    if (!stepDependency) {
+                        html += '<td class="flow-cell-empty">-</td>';
+                        return;
+                    }
+                    html += '<td class="flow-cell-active">';
+                    html += '<div class="flow-cell-copy">' + escapeHtml(simplifySupportCopy(stepDependency.how || stepDependency.description || 'Supports this step.')) + '</div>';
+                    html += '</td>';
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        document.getElementById('tab_content_flows').innerHTML = html;
+    }
+
+    function renderLinks() {
+        // Grouped links from config: [{group, description, links: [{label, link,
+        // description, embedLink?, embedHeight?}]}]. embedLink renders an iframe
+        // (default height 400px) while the label still opens `link` directly.
+        const groups = currentStream.links || [];
+        let html = '<div class="page">';
+        let count = 0;
+        if (!groups.length) {
+            html += '<div class="muted">No links are configured for this stream.</div>';
+        }
+        groups.forEach(group => {
+            html += '<div class="links-group">';
+            html += '<div class="links-group-title">' + escapeHtml(group.group || 'Links') + '</div>';
+            if (group.description) {
+                html += '<div class="links-group-description">' + escapeHtml(group.description) + '</div>';
+            }
+            (group.links || []).forEach(link => {
+                count++;
+                html += '<div class="link-entry">';
+                html += '<a class="link-entry-title" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(link.link || '#') + '">'
+                    + escapeHtml(link.label || link.link || 'Reference') + ' &#8599;</a>';
+                if (link.description) {
+                    html += '<div class="link-entry-copy">' + escapeHtml(link.description) + '</div>';
+                }
+                if (link.embedLink) {
+                    const embedHeight = Number(link.embedHeight) || 400;
+                    html += '<iframe class="link-embed" loading="lazy" src="' + escapeHtml(link.embedLink)
+                        + '" style="height: ' + embedHeight + 'px" title="' + escapeHtml(link.label || 'Embedded link') + '"></iframe>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_links').innerHTML = html;
+        const linksTab = document.getElementById('tab_links');
+        if (linksTab) {
+            linksTab.textContent = 'Links (' + count + ')';
+        }
+    }
+
+    renderHome();
+    renderFlows();
+    renderLinks();
+</script>
+
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Shipping and Carrier Management Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Streams Index"
+    },
+    {
+      "label": "Control Transport Costs and Carrier Invoices"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+
+
+</body>
+</html>

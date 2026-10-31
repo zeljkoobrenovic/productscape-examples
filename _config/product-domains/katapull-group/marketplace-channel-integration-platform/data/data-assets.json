@@ -1,0 +1,861 @@
+{
+  "metadata": {
+    "domainId": "marketplace-channel-integration-platform",
+    "title": "Marketplace Channel Integration Platform Data Assets",
+    "description": "Catalogue, pricing, order, fulfilment, account, integration and insight data of EffectConnect, with GDPR and marketplace-terms governance.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Catalogue and Content Data",
+      "description": "What is sold and how it is described per channel.",
+      "subGroups": [
+        {
+          "name": "Catalogue and Content Data",
+          "description": "What is sold and how it is described per channel.",
+          "assets": [
+            {
+              "id": "product-catalog-record",
+              "name": "Product Catalogue Record",
+              "kind": "master-data",
+              "description": "Product with EAN, variants, family, bundle, cost, base content and images, merged from webshop, back office and extra feeds.",
+              "businessMeaning": "The merchant's sellable assortment; the starting point for every listing, feed and price.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "catalog api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while the account is active; deleted after account closure per contract.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with marketplaces and feed channels as listing content."
+              }
+            },
+            {
+              "id": "product-selection",
+              "name": "Product Selection",
+              "kind": "configuration",
+              "description": "Rule-defined set of products for a channel, feed or repricer strategy.",
+              "businessMeaning": "Decides what is offered where.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "product-catalog-record"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "selection api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "marketplace-category-schema",
+              "name": "Marketplace Category Schema",
+              "kind": "reference-data",
+              "description": "Category trees, required attributes and allowed values per marketplace and country.",
+              "businessMeaning": "The rules a listing must satisfy to be accepted.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "All accounts (read)",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "cache"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "mapping api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Refreshed continuously; history kept 12 months.",
+                "residency": "eu",
+                "sharingPolicy": "Derived from marketplace documentation and APIs."
+              }
+            },
+            {
+              "id": "channel-listing",
+              "name": "Channel Listing",
+              "kind": "transactional-data",
+              "description": "Marketplace-specific listing content and mapping for a product: category, attributes, title, offer state and validation result.",
+              "businessMeaning": "What the customer sees on the marketplace.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "product-catalog-record",
+                "marketplace-category-schema",
+                "content-rule-set",
+                "translated-content"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "mapping api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account.",
+                "residency": "eu",
+                "sharingPolicy": "Published to the marketplace."
+              }
+            },
+            {
+              "id": "content-rule-set",
+              "name": "Content Rule Set",
+              "kind": "configuration",
+              "description": "Smart data rules and custom attribute templates.",
+              "businessMeaning": "Encoded content know-how of the marketplace manager.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "rule api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "translated-content",
+              "name": "Translated Content",
+              "kind": "derived-data",
+              "description": "Approved translations of product content per language.",
+              "businessMeaning": "Lets the same assortment sell in other countries.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "product-catalog-record"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "translation api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account.",
+                "residency": "eu",
+                "sharingPolicy": "Sent to translation providers under processor terms; published to marketplaces."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pricing and Market Data",
+      "description": "Prices, competition and promotion channels.",
+      "subGroups": [
+        {
+          "name": "Pricing and Market Data",
+          "description": "Prices, competition and promotion channels.",
+          "assets": [
+            {
+              "id": "price-rule-set",
+              "name": "Price Rule Set",
+              "kind": "configuration",
+              "description": "Price formulas, floors, ceilings, currency rules, promotions and repricer strategies.",
+              "businessMeaning": "The merchant's pricing policy per channel.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with pricing role",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "pricing api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account; changes versioned 24 months.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "offer-price-history",
+              "name": "Offer Price History",
+              "kind": "time-series",
+              "description": "Own price changes and buy box state over time.",
+              "businessMeaning": "Explains revenue and margin movements.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "price-rule-set",
+                "competitor-offer-snapshot"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "repricer api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "24 months.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "competitor-offer-snapshot",
+              "name": "Competitor Offer Snapshot",
+              "kind": "time-series",
+              "description": "Competing sellers' offers per product: price, delivery promise, rating, buy box holder.",
+              "businessMeaning": "Market position per product.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "marketplace-terms"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "offer analysis api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "12 months.",
+                "residency": "eu",
+                "sharingPolicy": "Used only within the account under marketplace API terms."
+              }
+            },
+            {
+              "id": "feed-export-definition",
+              "name": "Feed Export Definition",
+              "kind": "configuration",
+              "description": "Feed fields, selections, destinations and schedules.",
+              "businessMeaning": "Controls product exposure in ad and comparison channels.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "catalog-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "product-selection"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "feed api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Lifetime of account.",
+                "residency": "eu",
+                "sharingPolicy": "Feed output is shared with destinations."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order and Fulfilment Data",
+      "description": "Orders, shipments and stock.",
+      "subGroups": [
+        {
+          "name": "Order and Fulfilment Data",
+          "description": "Orders, shipments and stock.",
+          "assets": [
+            {
+              "id": "marketplace-order",
+              "name": "Marketplace Order",
+              "kind": "transactional-data",
+              "description": "Order from a marketplace with consumer name, delivery address, lines, prices and fulfilment method, in canonical form.",
+              "businessMeaning": "Revenue and the obligation to deliver within the marketplace promise.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "marketplace-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account users with order role; partners for their customers",
+              "stores": [
+                {
+                  "storeId": "order-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "analytics-copy"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "order api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Personal data minimised after the marketplace's retention window; order facts kept as required for bookkeeping by the merchant's systems.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the merchant's back office, WMS or embedded partner as processor of the merchant."
+              }
+            },
+            {
+              "id": "shipment-status-update",
+              "name": "Shipment and Status Update",
+              "kind": "transactional-data",
+              "description": "Shipment confirmations with carrier and tracking code, cancellations and return statuses.",
+              "businessMeaning": "Proof of fulfilment that protects seller performance scores.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users and partners",
+              "stores": [
+                {
+                  "storeId": "order-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "marketplace-order"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipment api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Same as orders.",
+                "residency": "eu",
+                "sharingPolicy": "Sent to marketplaces."
+              }
+            },
+            {
+              "id": "stock-position",
+              "name": "Stock Position",
+              "kind": "operational-data",
+              "description": "Stock per product and location, including marketplace warehouses, with buffers and available-to-sell.",
+              "businessMeaning": "What can be promised to customers.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "order-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "stock api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Current state plus 12 months history.",
+                "residency": "eu",
+                "sharingPolicy": "Available-to-sell sent to marketplaces."
+              }
+            },
+            {
+              "id": "fulfilment-replenishment-plan",
+              "name": "Fulfilment Replenishment Plan",
+              "kind": "operational-data",
+              "description": "Planned inbound shipments to LVB or FBA with quantities, splits and labels.",
+              "businessMeaning": "Keeps marketplace-fulfilled offers in stock.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "order-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "stock-position"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "fulfilment api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "24 months.",
+                "residency": "eu",
+                "sharingPolicy": "Registered with marketplace fulfilment programmes."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Account, Integration and Insight Data",
+      "description": "Who uses the hub, how syncs run and how channels perform.",
+      "subGroups": [
+        {
+          "name": "Account, Integration and Insight Data",
+          "description": "Who uses the hub, how syncs run and how channels perform.",
+          "assets": [
+            {
+              "id": "merchant-account",
+              "name": "Merchant Account and Subscription",
+              "kind": "master-data",
+              "description": "Account, plan, add-ons, allowances, contacts and onboarding status.",
+              "businessMeaning": "Commercial relationship and entitlements.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "merchant-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "EffectConnect staff; account admins",
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "account api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Contract duration plus statutory retention for invoices.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared outside Katapull processors."
+              }
+            },
+            {
+              "id": "channel-connection",
+              "name": "Channel Connection",
+              "kind": "configuration",
+              "description": "Connection to a marketplace account with credentials, countries and settings.",
+              "businessMeaning": "The keys to the merchant's marketplace seller accounts.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "marketplace-terms"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "System only; settings visible to account admins",
+              "stores": [
+                {
+                  "storeId": "credential-vault",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "account-db",
+                  "role": "settings"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "channel config api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted on disconnection.",
+                "residency": "eu",
+                "sharingPolicy": "Never shared."
+              }
+            },
+            {
+              "id": "partner-tenant",
+              "name": "Partner Tenant",
+              "kind": "master-data",
+              "description": "Embedded partner, its customers, branding and commercial terms.",
+              "businessMeaning": "Basis of embedded revenue and partner support.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "partner-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "EffectConnect partner team; partner admins",
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "partner api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Contract duration.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the partner."
+              }
+            },
+            {
+              "id": "user-account",
+              "name": "User Account",
+              "kind": "master-data",
+              "description": "Users, roles and API keys.",
+              "businessMeaning": "Who may change prices, listings and connections.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "merchant-user"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "System and account admins",
+              "stores": [
+                {
+                  "storeId": "account-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "auth api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted after account closure.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "integration-event-log",
+              "name": "Integration Event Log",
+              "kind": "log-data",
+              "description": "Events, errors and retries of every sync job.",
+              "businessMeaning": "Evidence for incident analysis and support.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "EffectConnect staff; account IT users",
+              "stores": [
+                {
+                  "storeId": "event-log-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "integration monitor",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "90 days detailed, 12 months aggregated.",
+                "residency": "eu",
+                "sharingPolicy": "Not shared."
+              }
+            },
+            {
+              "id": "sales-performance-metrics",
+              "name": "Sales Performance Metrics",
+              "kind": "derived-data",
+              "description": "Revenue, orders, buy box share and margin per channel, product and period.",
+              "businessMeaning": "How marketplaces perform for the merchant.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users",
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [
+                "marketplace-order",
+                "offer-price-history"
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "reporting api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "36 months.",
+                "residency": "eu",
+                "sharingPolicy": "Optionally exported to Google Analytics."
+              }
+            },
+            {
+              "id": "retail-media-campaign-performance",
+              "name": "Retail Media Campaign Performance",
+              "kind": "derived-data",
+              "description": "Campaign and trade-deal spend and results per retailer, category and product line.",
+              "businessMeaning": "Basis for retail media budget decisions.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Brand users",
+              "stores": [
+                {
+                  "storeId": "analytics-warehouse",
+                  "role": "system-of-record"
+                }
+              ],
+              "derivedFromAssetIds": [],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "retail media api",
+                  "description": "Accessed through the owning brick's API."
+                }
+              ],
+              "governance": {
+                "retention": "36 months.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the brand's media agency if configured."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "catalog-db",
+      "name": "Catalogue DB",
+      "kind": "operational-database",
+      "description": "Products, listings, selections, rules, prices and translations per account.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "order-db",
+      "name": "Order DB",
+      "kind": "operational-database",
+      "description": "Marketplace orders, shipments and stock positions.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "credential-vault",
+      "name": "Credential Vault",
+      "kind": "secret-store",
+      "description": "Marketplace tokens, API keys and partner secrets.",
+      "technology": "secrets-manager",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "event-log-store",
+      "name": "Event Log Store",
+      "kind": "log-store",
+      "description": "Integration events and errors.",
+      "technology": "log-and-search-store",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "analytics-warehouse",
+      "name": "Analytics Warehouse",
+      "kind": "analytics-warehouse",
+      "description": "Aggregated sales, price, competitor and retail media metrics.",
+      "technology": "columnar-warehouse",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "account-db",
+      "name": "Account DB",
+      "kind": "operational-database",
+      "description": "Accounts, subscriptions, partners and users.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    }
+  ]
+}

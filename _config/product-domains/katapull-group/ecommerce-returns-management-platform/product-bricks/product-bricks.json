@@ -1,0 +1,2020 @@
+{
+  "metadata": {
+    "domainId": "ecommerce-returns-management-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of Returnista's returns management platform: branded portal, exchanges and store credit, return operations (rules, AI agent, warranty gate), insights (dashboard, Product Return Impact Index, benchmark) and integrations with shop platforms, carriers, WMS/ERP and apps.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Shopper Returns Experience",
+            "Revenue Retention"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Return Operations",
+            "Return Insights"
+          ]
+        },
+        {
+          "row": 3,
+          "rootGroupNames": [
+            "Integration and Merchant Platform"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Shopper Returns Experience",
+      "description": "Everything the shopper sees: portal, fees, labels, carriers and tracking.",
+      "subGroups": [
+        {
+          "name": "Self-service Return Request",
+          "description": "Starting a return.",
+          "bricks": [
+            {
+              "id": "rprt",
+              "name": "Branded Returns Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Shopper-facing self-service portal on the merchant's own branding and domain: order lookup by order number and email, item and reason selection, policy-filtered options, return instructions and FAQs.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-portal-web-app",
+                      "name": "Portal Web App",
+                      "type": "web-component",
+                      "description": "Branded multi-step return request flow."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-portal-bff",
+                      "name": "Portal BFF",
+                      "type": "bff",
+                      "description": "Backend for the portal; aggregates order, policy, exchange and label calls."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-return-request-service",
+                      "name": "Return Request Service",
+                      "type": "stateful-service",
+                      "description": "System of record for return requests and their lifecycle states."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rpol",
+                  "moduleId": "module-policy-evaluation-api",
+                  "sourceModuleId": "module-portal-bff",
+                  "type": "uses",
+                  "description": "Evaluates eligible items, reasons, windows and fees."
+                },
+                {
+                  "targetBrickId": "ecom",
+                  "moduleId": "module-order-import-adapter",
+                  "sourceModuleId": "module-portal-bff",
+                  "type": "uses",
+                  "description": "Looks up the order and line items."
+                },
+                {
+                  "targetBrickId": "mloc",
+                  "moduleId": "module-locale-resolver",
+                  "sourceModuleId": "module-portal-bff",
+                  "type": "uses",
+                  "description": "Resolves language and country rules."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-return-request-service"
+                  ],
+                  "role": "own",
+                  "description": "Creates and updates return requests."
+                },
+                {
+                  "assetId": "order-snapshot",
+                  "moduleIds": [
+                    "module-portal-bff"
+                  ],
+                  "role": "read",
+                  "description": "Validates order lookup."
+                },
+                {
+                  "assetId": "shopper-contact",
+                  "moduleIds": [
+                    "module-portal-bff"
+                  ],
+                  "role": "read",
+                  "description": "Matches email to the order."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Shopper browsers",
+                  "type": "channel-consumer",
+                  "interface": "Portal web app",
+                  "description": "Shoppers open the portal from shop and email links.",
+                  "moduleId": "module-portal-web-app"
+                }
+              ]
+            },
+            {
+              "id": "mloc",
+              "name": "Multi-country Returns and Localisation",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Country-specific return addresses, carriers, languages and rules so one merchant account serves several EU markets (pricing lists multi-country returns).",
+              "layers": [
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-locale-resolver",
+                      "name": "Locale Resolver",
+                      "type": "stateless-service",
+                      "description": "Resolves language, country and currency for a request."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-country-config-service",
+                      "name": "Country Configuration Service",
+                      "type": "stateful-service",
+                      "description": "Stores per-country addresses, carriers and texts."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "merchant-account-config",
+                  "moduleIds": [
+                    "module-country-config-service"
+                  ],
+                  "role": "read-write",
+                  "description": "Per-country settings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rpay",
+              "name": "Paid Returns and Return Fees",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Adjustable return fees and a payment screen with popular European payment methods for paid returns; fees can be deducted from refunds.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-fee-checkout",
+                      "name": "Return Fee Checkout",
+                      "type": "web-component",
+                      "description": "Payment step inside the portal."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-fee-calculator",
+                      "name": "Fee Calculator",
+                      "type": "stateless-service",
+                      "description": "Calculates fees by policy, country and option."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-psp-adapter",
+                      "name": "Payment Service Provider Adapter",
+                      "type": "integration",
+                      "description": "Connects to the payment provider for European methods."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rpol",
+                  "moduleId": "module-policy-evaluation-api",
+                  "sourceModuleId": "module-fee-calculator",
+                  "type": "uses",
+                  "description": "Reads fee rules."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "refund-and-payment-transaction",
+                  "moduleIds": [
+                    "module-psp-adapter"
+                  ],
+                  "role": "write",
+                  "description": "Records fee payments."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment service provider (iDEAL, cards and other European methods)",
+                  "type": "payments",
+                  "interface": "PSP API",
+                  "description": "Collects return fees; provider not disclosed on current site (2022 article named PayPal and Buckaroo).",
+                  "sourceModuleId": "module-psp-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Return Logistics for Shoppers",
+          "description": "Labels, carriers and status.",
+          "bricks": [
+            {
+              "id": "rlbl",
+              "name": "Return Labels and Carrier Selection",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Issues return labels instantly or after approval, lets shoppers choose among configured carriers, and supports merchants' own carrier contracts (Professional pack).",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-label-api",
+                      "name": "Label API",
+                      "type": "api",
+                      "description": "Requests labels for an approved return."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-label-service",
+                      "name": "Label Service",
+                      "type": "stateful-service",
+                      "description": "Creates shipments, stores labels and tracking codes."
+                    },
+                    {
+                      "id": "module-carrier-contract-service",
+                      "name": "Carrier Contract Service",
+                      "type": "stateful-service",
+                      "description": "Stores merchant carrier accounts and Returnista default contracts."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "carr",
+                  "moduleId": "module-carrier-gateway",
+                  "sourceModuleId": "module-label-service",
+                  "type": "uses",
+                  "description": "Books the shipment with the carrier."
+                },
+                {
+                  "targetBrickId": "gate",
+                  "moduleId": "module-claim-case-service",
+                  "sourceModuleId": "module-label-api",
+                  "type": "context",
+                  "description": "Labels wait for approval when gatekeeping applies."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-shipment",
+                  "moduleIds": [
+                    "module-label-service"
+                  ],
+                  "role": "own",
+                  "description": "Return shipments and labels."
+                },
+                {
+                  "assetId": "carrier-contract",
+                  "moduleIds": [
+                    "module-carrier-contract-service"
+                  ],
+                  "role": "own",
+                  "description": "Merchant carrier accounts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "carr",
+              "name": "Carrier Network Integration",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Connectors to parcel carriers listed by Returnista (bpost, Brenger, BRT, Chronopost, DHL, DPD, GLS, Mondial Relay, Nieuwhoff, PostNord, PostNL, UPS) for labels and tracking events.",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-tracking-poller",
+                      "name": "Tracking Poller",
+                      "type": "daemon",
+                      "description": "Polls or receives carrier scan events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-carrier-gateway",
+                      "name": "Carrier Gateway",
+                      "type": "integration",
+                      "description": "Normalised label and tracking interface across carriers."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "return-shipment",
+                  "moduleIds": [
+                    "module-tracking-poller"
+                  ],
+                  "role": "write",
+                  "description": "Updates tracking status."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Parcel carriers (PostNL, DHL, DPD, UPS, GLS, bpost and others)",
+                  "type": "logistics",
+                  "interface": "Carrier label and tracking APIs",
+                  "description": "Label creation and scan events.",
+                  "sourceModuleId": "module-carrier-gateway"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rtrk",
+              "name": "Return Tracking and Notifications",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Visual tracking flow for shoppers and automatic emails about return shipments and refunds.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tracking-page",
+                      "name": "Return Tracking Page",
+                      "type": "web-component",
+                      "description": "Shows return status: picked up, en route, delivered, resolved."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-notification-dispatcher",
+                      "name": "Notification Dispatcher",
+                      "type": "message-consumer",
+                      "description": "Sends milestone emails on return events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-email-adapter",
+                      "name": "Email Delivery Adapter",
+                      "type": "integration",
+                      "description": "Sends transactional emails."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-return-event-bus",
+                  "sourceModuleId": "module-notification-dispatcher",
+                  "type": "subscribes",
+                  "description": "Consumes return lifecycle events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-shipment",
+                  "moduleIds": [
+                    "module-tracking-page"
+                  ],
+                  "role": "read",
+                  "description": "Displays carrier status."
+                },
+                {
+                  "assetId": "shopper-contact",
+                  "moduleIds": [
+                    "module-notification-dispatcher"
+                  ],
+                  "role": "read",
+                  "description": "Email address for notifications."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Transactional email provider",
+                  "type": "messaging",
+                  "interface": "Email API",
+                  "description": "Delivers notifications (provider not disclosed).",
+                  "sourceModuleId": "module-email-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Revenue Retention",
+      "description": "Turning refunds into exchanges and store credit.",
+      "subGroups": [
+        {
+          "name": "Exchanges and Credit",
+          "description": "Exchange and credit capabilities.",
+          "bricks": [
+            {
+              "id": "exch",
+              "name": "Exchange Engine",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Size-based and variant exchanges in the portal using real-time availability; exchanges confirmed instantly or after inspection per category; optional free exchange shipping.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-exchange-picker",
+                      "name": "Exchange Picker",
+                      "type": "web-component",
+                      "description": "Lets shoppers choose an alternative variant."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-exchange-orchestrator",
+                      "name": "Exchange Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Checks stock, applies rules and decides instant vs inspected exchange."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-exchange-order-service",
+                      "name": "Exchange Order Service",
+                      "type": "stateful-service",
+                      "description": "Tracks exchange orders until fulfilled."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ecom",
+                  "moduleId": "module-order-writeback-adapter",
+                  "sourceModuleId": "module-exchange-order-service",
+                  "type": "uses",
+                  "description": "Creates the replacement order in the shop platform."
+                },
+                {
+                  "targetBrickId": "ecom",
+                  "moduleId": "module-catalog-stock-adapter",
+                  "sourceModuleId": "module-exchange-orchestrator",
+                  "type": "uses",
+                  "description": "Reads live variant stock."
+                },
+                {
+                  "targetBrickId": "rpol",
+                  "moduleId": "module-policy-evaluation-api",
+                  "sourceModuleId": "module-exchange-orchestrator",
+                  "type": "uses",
+                  "description": "Exchange eligibility rules."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "exchange-order",
+                  "moduleIds": [
+                    "module-exchange-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Exchange orders."
+                },
+                {
+                  "assetId": "product-catalog-and-stock",
+                  "moduleIds": [
+                    "module-exchange-orchestrator"
+                  ],
+                  "role": "read",
+                  "description": "Variant availability."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "scrd",
+              "name": "Store Credit and Bonus Credit",
+              "type": "service",
+              "status": "invest",
+              "description": "Issues store credit automatically when a return is processed, with an optional bonus (up to EUR 10 or 15% per order), synced as gift cards or credit to Shopify, Magento or via API.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-store-credit-api",
+                      "name": "Store Credit API",
+                      "type": "api",
+                      "description": "Issue and query credit."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-credit-ledger-service",
+                      "name": "Credit Ledger Service",
+                      "type": "stateful-service",
+                      "description": "Ledger of issued credit and bonuses."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-gift-card-sync-adapter",
+                      "name": "Gift Card Sync Adapter",
+                      "type": "integration",
+                      "description": "Creates gift cards or credit in the shop platform."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ecom",
+                  "moduleId": "module-order-writeback-adapter",
+                  "sourceModuleId": "module-gift-card-sync-adapter",
+                  "type": "uses",
+                  "description": "Writes credit to the shop platform."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "store-credit-ledger",
+                  "moduleIds": [
+                    "module-credit-ledger-service"
+                  ],
+                  "role": "own",
+                  "description": "Issued credit and bonus."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Return Operations",
+      "description": "Rules, approval, receipt, resolution and service.",
+      "subGroups": [
+        {
+          "name": "Policy and Automation",
+          "description": "Rules and AI-assisted automation.",
+          "bricks": [
+            {
+              "id": "rpol",
+              "name": "Return Policy and Rules Engine",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Return windows, eligible reasons, exceptions, fees and handling rules by product, region and shopper segment, evaluated consistently for every request.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-policy-editor",
+                      "name": "Policy Editor",
+                      "type": "web-component",
+                      "description": "Merchant UI for rules."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-policy-evaluation-api",
+                      "name": "Policy Evaluation API",
+                      "type": "api",
+                      "description": "Answers what is allowed for a request."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-rule-evaluator",
+                      "name": "Rule Evaluator",
+                      "type": "stateless-service",
+                      "description": "Evaluates rule sets against request context."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-policy-store",
+                      "name": "Policy Store",
+                      "type": "stateful-service",
+                      "description": "Versioned rule sets per merchant."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mloc",
+                  "moduleId": "module-country-config-service",
+                  "sourceModuleId": "module-rule-evaluator",
+                  "type": "uses",
+                  "description": "Country-specific variants."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-policy-ruleset",
+                  "moduleIds": [
+                    "module-policy-store"
+                  ],
+                  "role": "own",
+                  "description": "Versioned rules."
+                },
+                {
+                  "assetId": "order-snapshot",
+                  "moduleIds": [
+                    "module-rule-evaluator"
+                  ],
+                  "role": "read",
+                  "description": "Order date, items and segment."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "auto",
+              "name": "Return Automation and AI Rule Agent",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "AI agent that helps build return rules and automate repetitive actions, plus automation runner for resolutions, order tagging and restock location assignment.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-rule-agent-chat",
+                      "name": "Rule Agent Chat",
+                      "type": "web-component",
+                      "description": "Conversational rule building."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-automation-runner",
+                      "name": "Automation Runner",
+                      "type": "message-consumer",
+                      "description": "Executes automations on return events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-rule-drafting-agent",
+                      "name": "Rule Drafting Agent",
+                      "type": "stateless-service",
+                      "description": "Turns merchant intent into draft rules."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-llm-provider-adapter",
+                      "name": "LLM Provider Adapter",
+                      "type": "integration",
+                      "description": "Calls the language model provider."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rpol",
+                  "moduleId": "module-policy-store",
+                  "sourceModuleId": "module-rule-drafting-agent",
+                  "type": "writes",
+                  "description": "Saves drafted rules for approval."
+                },
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-return-event-bus",
+                  "sourceModuleId": "module-automation-runner",
+                  "type": "subscribes",
+                  "description": "Triggers automations."
+                },
+                {
+                  "targetBrickId": "rres",
+                  "moduleId": "module-resolution-orchestrator",
+                  "sourceModuleId": "module-automation-runner",
+                  "type": "uses",
+                  "description": "Releases automated resolutions."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-policy-ruleset",
+                  "moduleIds": [
+                    "module-rule-drafting-agent"
+                  ],
+                  "role": "write",
+                  "description": "Draft rules."
+                },
+                {
+                  "assetId": "return-event-stream",
+                  "moduleIds": [
+                    "module-automation-runner"
+                  ],
+                  "role": "consume",
+                  "description": "Return events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Large language model provider (assumed; not disclosed)",
+                  "type": "ai",
+                  "interface": "LLM API",
+                  "description": "Powers the rule agent.",
+                  "sourceModuleId": "module-llm-provider-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Approval, Receipt and Resolution",
+          "description": "From claim to money movement.",
+          "bricks": [
+            {
+              "id": "gate",
+              "name": "Warranty, Claims and Approval Gate",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Requires approval before labels are issued, collects answers and photos, and lets the team review damage and warranty claims centrally before refunds or exchanges (warranty flow add-on).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-claim-intake-form",
+                      "name": "Claim Intake Form",
+                      "type": "web-component",
+                      "description": "Questions and photo upload in the portal."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-review-queue-console",
+                      "name": "Review Queue Console",
+                      "type": "backoffice-interface",
+                      "description": "Central approval queue."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-claim-case-service",
+                      "name": "Claim Case Service",
+                      "type": "stateful-service",
+                      "description": "Claim cases and decisions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-claim-case-service",
+                  "type": "context",
+                  "description": "Links claims to return requests."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-evidence-media",
+                  "moduleIds": [
+                    "module-claim-intake-form",
+                    "module-claim-case-service"
+                  ],
+                  "role": "own",
+                  "description": "Photos and answers."
+                },
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-claim-case-service"
+                  ],
+                  "role": "read-write",
+                  "description": "Approval state."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "insp",
+              "name": "Return Receipt and Inspection",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Receiving and grading of returned items, inspection-dependent resolutions and restock location assignment (inferred from automation and WMS features; may run in the partner WMS instead).",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-receiving-console",
+                      "name": "Receiving Console",
+                      "type": "backoffice-interface",
+                      "description": "Scan and grade returned items."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-restock-location-assigner",
+                      "name": "Restock Location Assigner",
+                      "type": "stateless-service",
+                      "description": "Assigns restock location by rule."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-inspection-service",
+                      "name": "Inspection Service",
+                      "type": "stateful-service",
+                      "description": "Stores receipt and grading results."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-inspection-service",
+                  "type": "updates",
+                  "description": "Marks requests received."
+                },
+                {
+                  "targetBrickId": "erpw",
+                  "moduleId": "module-wms-return-sync",
+                  "sourceModuleId": "module-inspection-service",
+                  "type": "uses",
+                  "description": "Receives inspection results from partner WMS."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "inspection-result",
+                  "moduleIds": [
+                    "module-inspection-service"
+                  ],
+                  "role": "own",
+                  "description": "Grading results."
+                },
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-receiving-console"
+                  ],
+                  "role": "read",
+                  "description": "Expected items."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rres",
+              "name": "Refund and Resolution Orchestration",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Decides and executes refunds, exchanges or store credit when a return is approved or inspected; writes refunds back to the shop platform and deducts fees.",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-resolution-queue",
+                      "name": "Resolution Queue",
+                      "type": "message-queue",
+                      "description": "Pending resolutions."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-resolution-orchestrator",
+                      "name": "Resolution Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Chooses and executes the resolution."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-refund-writeback-adapter",
+                      "name": "Refund Write-back Adapter",
+                      "type": "integration",
+                      "description": "Creates refunds in the shop platform."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ecom",
+                  "moduleId": "module-order-writeback-adapter",
+                  "sourceModuleId": "module-refund-writeback-adapter",
+                  "type": "uses",
+                  "description": "Refund in shop platform."
+                },
+                {
+                  "targetBrickId": "scrd",
+                  "moduleId": "module-store-credit-api",
+                  "sourceModuleId": "module-resolution-orchestrator",
+                  "type": "uses",
+                  "description": "Issues credit."
+                },
+                {
+                  "targetBrickId": "exch",
+                  "moduleId": "module-exchange-order-service",
+                  "sourceModuleId": "module-resolution-orchestrator",
+                  "type": "uses",
+                  "description": "Releases exchanges."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "refund-and-payment-transaction",
+                  "moduleIds": [
+                    "module-refund-writeback-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Refund records."
+                },
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-resolution-orchestrator"
+                  ],
+                  "role": "write",
+                  "description": "Resolution state."
+                },
+                {
+                  "assetId": "inspection-result",
+                  "moduleIds": [
+                    "module-resolution-orchestrator"
+                  ],
+                  "role": "read",
+                  "description": "Inspection outcome."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "isrt",
+              "name": "In-store Returns",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Lets shoppers return online orders in a physical store, registered in the same return flow (listed in the pricing feature matrix).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-store-return-console",
+                      "name": "Store Return Console",
+                      "type": "web-component",
+                      "description": "Store staff register a return."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-store-return-api",
+                      "name": "Store Return API",
+                      "type": "api",
+                      "description": "Lets POS systems register returns."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-store-return-api",
+                  "type": "uses",
+                  "description": "Creates the return request."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-store-return-api"
+                  ],
+                  "role": "write",
+                  "description": "In-store returns."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Retail POS systems (e.g. Vendit - potential Katapull sibling integration, not confirmed)",
+                  "type": "channel-consumer",
+                  "interface": "Store Return API",
+                  "description": "POS could register in-store returns.",
+                  "moduleId": "module-store-return-api"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Service Desk",
+          "description": "Return inquiries.",
+          "bricks": [
+            {
+              "id": "cxin",
+              "name": "Return Inquiry Handling",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Return context in helpdesk tools (Gorgias, Trengo, CM.com, Engaige) and an optional service where Returnista handles return-related inquiries on the merchant's behalf.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-helpdesk-context-api",
+                      "name": "Helpdesk Context API",
+                      "type": "api",
+                      "description": "Return details for a ticket."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-managed-inquiry-desk",
+                      "name": "Managed Inquiry Desk",
+                      "type": "service",
+                      "description": "Returnista-operated inquiry handling."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-helpdesk-adapter",
+                      "name": "Helpdesk Adapter",
+                      "type": "integration",
+                      "description": "Connects helpdesk tools."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-helpdesk-context-api",
+                  "type": "reads",
+                  "description": "Return details."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-helpdesk-context-api"
+                  ],
+                  "role": "read",
+                  "description": "Return context."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Helpdesk and messaging tools (Gorgias, Trengo, CM.com, Engaige)",
+                  "type": "support",
+                  "interface": "Helpdesk app APIs",
+                  "description": "Shows return context.",
+                  "sourceModuleId": "module-helpdesk-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Return Insights",
+      "description": "Turning return data into prevention.",
+      "subGroups": [
+        {
+          "name": "Analytics",
+          "description": "Dashboards, index, benchmarks and export.",
+          "bricks": [
+            {
+              "id": "pipe",
+              "name": "Return Event and Analytics Pipeline",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Publishes return lifecycle events and loads them into the analytics mart used by dashboards, automations, webhooks and benchmarks.",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-return-event-bus",
+                      "name": "Return Event Bus",
+                      "type": "message-queue",
+                      "description": "Lifecycle events."
+                    },
+                    {
+                      "id": "module-analytics-loader",
+                      "name": "Analytics Loader",
+                      "type": "message-consumer",
+                      "description": "Loads events into the mart."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-analytics-mart",
+                      "name": "Analytics Mart",
+                      "type": "stateful-service",
+                      "description": "Return facts by SKU, reason, payment method and shopper."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "return-event-stream",
+                  "moduleIds": [
+                    "module-return-event-bus"
+                  ],
+                  "role": "own",
+                  "description": "Events."
+                },
+                {
+                  "assetId": "return-analytics-mart",
+                  "moduleIds": [
+                    "module-analytics-mart",
+                    "module-analytics-loader"
+                  ],
+                  "role": "own",
+                  "description": "Mart."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rins",
+              "name": "Return Insights Dashboard",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Product- and revenue-level return rates, trends with historical comparison, exchange and store credit insights, payment method analysis and customer behaviour patterns.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-insights-dashboard",
+                      "name": "Insights Dashboard",
+                      "type": "web-component",
+                      "description": "Merchant dashboard."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-insights-query-api",
+                      "name": "Insights Query BFF",
+                      "type": "bff",
+                      "description": "Queries for the dashboard."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-metrics-service",
+                      "name": "Metrics Service",
+                      "type": "service",
+                      "description": "Metric definitions and calculations."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-analytics-mart",
+                  "sourceModuleId": "module-metrics-service",
+                  "type": "reads",
+                  "description": "Return facts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-analytics-mart",
+                  "moduleIds": [
+                    "module-metrics-service"
+                  ],
+                  "role": "read",
+                  "description": "Metrics."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ridx",
+              "name": "Product Return Impact Index",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Measures the revenue impact of returns per SKU, flags high-return SKUs and shows the reasons behind them.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-sku-root-cause-view",
+                      "name": "SKU Root-cause View",
+                      "type": "web-component",
+                      "description": "Ranked SKU list with reasons."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-sku-flagging-job",
+                      "name": "SKU Flagging Job",
+                      "type": "daemon",
+                      "description": "Nightly flagging."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-impact-index-calculator",
+                      "name": "Impact Index Calculator",
+                      "type": "stateless-service",
+                      "description": "Computes the index."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-analytics-mart",
+                  "sourceModuleId": "module-impact-index-calculator",
+                  "type": "reads",
+                  "description": "Return facts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-analytics-mart",
+                  "moduleIds": [
+                    "module-impact-index-calculator"
+                  ],
+                  "role": "read",
+                  "description": "Facts."
+                },
+                {
+                  "assetId": "product-catalog-and-stock",
+                  "moduleIds": [
+                    "module-sku-flagging-job"
+                  ],
+                  "role": "read",
+                  "description": "SKU attributes."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "bnch",
+              "name": "Benchmarking and Category Insights",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Anonymised aggregates across brands on the platform used for the annual benchmark report and category comparisons.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-benchmark-view",
+                      "name": "Benchmark View",
+                      "type": "web-component",
+                      "description": "Compare to category (assumed in-product)."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-benchmark-aggregator",
+                      "name": "Benchmark Aggregator",
+                      "type": "daemon",
+                      "description": "Builds anonymised aggregates."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-analytics-mart",
+                  "sourceModuleId": "module-benchmark-aggregator",
+                  "type": "reads",
+                  "description": "Facts across tenants."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-benchmark-aggregate",
+                  "moduleIds": [
+                    "module-benchmark-aggregator"
+                  ],
+                  "role": "own",
+                  "description": "Aggregates."
+                },
+                {
+                  "assetId": "return-analytics-mart",
+                  "moduleIds": [
+                    "module-benchmark-aggregator"
+                  ],
+                  "role": "read",
+                  "description": "Facts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "bexp",
+              "name": "BI Export and Data Feeds",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Connects return data to merchants' BI tools (Enterprise pack).",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-bi-export-api",
+                      "name": "BI Export API",
+                      "type": "api",
+                      "description": "Bulk export."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-bi-connector",
+                      "name": "BI Connector",
+                      "type": "integration",
+                      "description": "Pushes to warehouses or BI tools."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-analytics-mart",
+                  "sourceModuleId": "module-bi-export-api",
+                  "type": "reads",
+                  "description": "Facts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-analytics-mart",
+                  "moduleIds": [
+                    "module-bi-export-api"
+                  ],
+                  "role": "read",
+                  "description": "Facts."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Merchant BI tools",
+                  "type": "analytics",
+                  "interface": "BI export",
+                  "description": "Merchants analyse returns.",
+                  "moduleId": "module-bi-connector"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Integration and Merchant Platform",
+      "description": "Connectors, API and account foundations.",
+      "subGroups": [
+        {
+          "name": "Commerce Stack Connectors",
+          "description": "Shop, ERP, WMS and app connectors.",
+          "bricks": [
+            {
+              "id": "ecom",
+              "name": "E-commerce Platform Connectors",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Connectors for Shopify, Shopify Plus, Shopware, Magento, Lightspeed and WooCommerce (plus custom platforms on Enterprise): order and catalog import, refund, exchange and credit write-back; distributed as platform apps.",
+              "layers": [
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-platform-app-installer",
+                      "name": "Platform App Installer",
+                      "type": "service",
+                      "description": "Handles app installs and tokens."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-order-import-adapter",
+                      "name": "Order Import Adapter",
+                      "type": "integration",
+                      "description": "Imports orders and customers."
+                    },
+                    {
+                      "id": "module-catalog-stock-adapter",
+                      "name": "Catalog and Stock Adapter",
+                      "type": "integration",
+                      "description": "Reads variants and stock."
+                    },
+                    {
+                      "id": "module-order-writeback-adapter",
+                      "name": "Order Write-back Adapter",
+                      "type": "integration",
+                      "description": "Writes refunds, exchanges, credit and tags."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "order-snapshot",
+                  "moduleIds": [
+                    "module-order-import-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Imported orders."
+                },
+                {
+                  "assetId": "product-catalog-and-stock",
+                  "moduleIds": [
+                    "module-catalog-stock-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Catalog snapshot."
+                },
+                {
+                  "assetId": "shopper-contact",
+                  "moduleIds": [
+                    "module-order-import-adapter"
+                  ],
+                  "role": "own",
+                  "description": "Shopper name and email from orders."
+                },
+                {
+                  "assetId": "integration-connection",
+                  "moduleIds": [
+                    "module-platform-app-installer"
+                  ],
+                  "role": "read",
+                  "description": "Tokens."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "E-commerce platforms (Shopify, Shopware, Magento, Lightspeed, WooCommerce)",
+                  "type": "commerce",
+                  "interface": "Platform APIs",
+                  "description": "Orders, products, refunds.",
+                  "sourceModuleId": "module-order-import-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "erpw",
+              "name": "ERP, WMS and Fulfilment Connectors",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Native return sync with WMS and fulfilment partners (Picqer, Monta/Montapacking, Active Ants, Bleckmann, QLS, ModeXpress, itsperfect WMS) and ERPs (ACA, Becosoft, itsperfect, xCore); candidate home for Katapull sibling connectors (Logic4, DeliveryMatch).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-sync-retry-queue",
+                      "name": "Sync Retry Queue",
+                      "type": "message-queue",
+                      "description": "Retries failed syncs."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-wms-return-sync",
+                      "name": "WMS Return Sync",
+                      "type": "integration",
+                      "description": "Announces returns and receives inspection results."
+                    },
+                    {
+                      "id": "module-erp-return-sync",
+                      "name": "ERP Return Sync",
+                      "type": "integration",
+                      "description": "Posts returns and credit notes to ERPs."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-return-event-bus",
+                  "sourceModuleId": "module-wms-return-sync",
+                  "type": "subscribes",
+                  "description": "Return events to sync."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-wms-return-sync"
+                  ],
+                  "role": "read",
+                  "description": "Announced returns."
+                },
+                {
+                  "assetId": "inspection-result",
+                  "moduleIds": [
+                    "module-wms-return-sync"
+                  ],
+                  "role": "write",
+                  "description": "Results from WMS."
+                },
+                {
+                  "assetId": "integration-connection",
+                  "moduleIds": [
+                    "module-wms-return-sync",
+                    "module-erp-return-sync"
+                  ],
+                  "role": "read",
+                  "description": "Credentials."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "WMS and fulfilment systems (Picqer, Monta, Active Ants, Bleckmann)",
+                  "type": "logistics",
+                  "interface": "WMS APIs",
+                  "description": "Return announcement and receipt.",
+                  "sourceModuleId": "module-wms-return-sync"
+                },
+                {
+                  "system": "ERPs (ACA, Becosoft, itsperfect, xCore)",
+                  "type": "erp",
+                  "interface": "ERP APIs",
+                  "description": "Return and credit note posting.",
+                  "sourceModuleId": "module-erp-return-sync"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "ecos",
+              "name": "Ecosystem App Connectors",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Connectors to marketing (Klaviyo), loyalty (Leat), size-and-fit (Faslet, Easysize), fraud prevention (Guzco) and stock planning (Optiply, Channeldock).",
+              "layers": [
+                {
+                  "layer": "integration",
+                  "description": "Adapters to external systems.",
+                  "modules": [
+                    {
+                      "id": "module-marketing-loyalty-adapter",
+                      "name": "Marketing and Loyalty Adapter",
+                      "type": "integration",
+                      "description": "Sends return events to Klaviyo and Leat."
+                    },
+                    {
+                      "id": "module-size-fit-adapter",
+                      "name": "Size and Fit Adapter",
+                      "type": "integration",
+                      "description": "Shares fit reasons with Faslet and Easysize."
+                    },
+                    {
+                      "id": "module-fraud-screening-adapter",
+                      "name": "Fraud Screening Adapter",
+                      "type": "integration",
+                      "description": "Checks returns with Guzco."
+                    },
+                    {
+                      "id": "module-stock-planning-adapter",
+                      "name": "Stock Planning Adapter",
+                      "type": "integration",
+                      "description": "Feeds returns to Optiply and Channeldock."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-return-event-bus",
+                  "sourceModuleId": "module-marketing-loyalty-adapter",
+                  "type": "subscribes",
+                  "description": "Return events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-event-stream",
+                  "moduleIds": [
+                    "module-marketing-loyalty-adapter",
+                    "module-size-fit-adapter",
+                    "module-stock-planning-adapter"
+                  ],
+                  "role": "consume",
+                  "description": "Events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Ecosystem apps (Klaviyo, Leat, Faslet, Easysize, Guzco, Optiply, Channeldock)",
+                  "type": "saas",
+                  "interface": "App APIs",
+                  "description": "Downstream use of return data.",
+                  "sourceModuleId": "module-marketing-loyalty-adapter"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Platform Foundations",
+          "description": "API and merchant accounts.",
+          "bricks": [
+            {
+              "id": "oapi",
+              "name": "Open API and Webhooks",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Public REST API and webhooks documented at platform.returnista.com for custom integrations and partners.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-public-rest-api",
+                      "name": "Public REST API",
+                      "type": "api",
+                      "description": "Returns, orders and configuration."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-webhook-dispatcher",
+                      "name": "Webhook Dispatcher",
+                      "type": "message-consumer",
+                      "description": "Delivers webhooks."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-api-key-service",
+                      "name": "API Key Service",
+                      "type": "stateful-service",
+                      "description": "Keys and scopes."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pipe",
+                  "moduleId": "module-return-event-bus",
+                  "sourceModuleId": "module-webhook-dispatcher",
+                  "type": "subscribes",
+                  "description": "Events."
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-public-rest-api",
+                  "type": "uses",
+                  "description": "Return data."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-event-stream",
+                  "moduleIds": [
+                    "module-webhook-dispatcher"
+                  ],
+                  "role": "consume",
+                  "description": "Events."
+                },
+                {
+                  "assetId": "integration-connection",
+                  "moduleIds": [
+                    "module-api-key-service"
+                  ],
+                  "role": "read-write",
+                  "description": "API keys."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Partner and merchant systems",
+                  "type": "integration-consumer",
+                  "interface": "REST API and webhooks",
+                  "description": "Custom integrations.",
+                  "moduleId": "module-public-rest-api"
+                }
+              ]
+            },
+            {
+              "id": "tnnt",
+              "name": "Merchant Account, Branding and Onboarding",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Merchant accounts, storefronts, branding (colours, logo, font, domain), users, plan and onboarding by an onboarding specialist and customer success manager.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-merchant-settings",
+                      "name": "Merchant Settings",
+                      "type": "web-component",
+                      "description": "Branding and account settings."
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs, BFFs and back-office consoles.",
+                  "modules": [
+                    {
+                      "id": "module-onboarding-console",
+                      "name": "Onboarding Console",
+                      "type": "backoffice-interface",
+                      "description": "Internal onboarding and success tools."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-merchant-account-service",
+                      "name": "Merchant Account Service",
+                      "type": "stateful-service",
+                      "description": "Accounts, storefronts and plans."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "merchant-account-config",
+                  "moduleIds": [
+                    "module-merchant-account-service"
+                  ],
+                  "role": "own",
+                  "description": "Accounts."
+                },
+                {
+                  "assetId": "integration-connection",
+                  "moduleIds": [
+                    "module-merchant-account-service"
+                  ],
+                  "role": "own",
+                  "description": "Connection registry."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

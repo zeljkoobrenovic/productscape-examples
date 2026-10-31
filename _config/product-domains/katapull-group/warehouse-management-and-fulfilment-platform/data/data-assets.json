@@ -1,0 +1,1082 @@
+{
+  "metadata": {
+    "domainId": "warehouse-management-and-fulfilment-platform",
+    "title": "Warehouse Management & Fulfilment Platform Data Assets",
+    "description": "Catalogue of order, customer, stock, location, lot, purchasing, picking, shipping, return, fulfilment-client, collaboration and configuration data processed by Picqer, mostly as a data processor for its customers under GDPR. Stores and retention are inferred unless stated.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Orders, Customers and Shipments",
+      "description": "Outbound transactional data.",
+      "subGroups": [
+        {
+          "name": "Orders and Customers",
+          "description": "Orders from every channel.",
+          "assets": [
+            {
+              "id": "sales-order",
+              "name": "Sales Order",
+              "kind": "transactional",
+              "description": "Order from a channel, API, portal or manual entry with lines, priority, pause reason and status.",
+              "businessMeaning": "The unit of work the warehouse fulfils.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "business-customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "ordm",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "orders api",
+                  "description": "Public API orders endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with carrier and channel as needed to deliver."
+              }
+            },
+            {
+              "id": "customer-and-address",
+              "name": "Customer and Delivery Address",
+              "kind": "master",
+              "description": "Name, address, e-mail and phone of the end customer or business customer.",
+              "businessMeaning": "Where and to whom goods are shipped.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "business-customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "ordm",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "customers api",
+                  "description": "Customer endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Minimised after delivery and return window (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with carriers only for delivery."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Picking, Shipping and Returns",
+          "description": "Execution records.",
+          "assets": [
+            {
+              "id": "picklist-and-batch",
+              "name": "Picklist and Batch",
+              "kind": "transactional",
+              "description": "Picklists, batches, picks, pauses and splits.",
+              "businessMeaning": "What has to be picked and by whom.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "pkls",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "event-bus",
+                  "role": "event-stream"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "picklist events",
+                  "description": "Webhook and internal events."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal; status via webhooks."
+              }
+            },
+            {
+              "id": "shipment-record",
+              "name": "Shipment Record",
+              "kind": "transactional",
+              "description": "Shipment, carrier, service and tracking code.",
+              "businessMeaning": "Proof of dispatch and tracking.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "ship",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipments api",
+                  "description": "Shipment endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Tracking shared with channel and customer."
+              }
+            },
+            {
+              "id": "shipping-label-document",
+              "name": "Shipping Label and Packing Slip",
+              "kind": "document",
+              "description": "Label and packing slip files.",
+              "businessMeaning": "Physical documents on the parcel.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "ship",
+              "derivedFromAssetIds": [
+                "shipment-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "document-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "label pdf",
+                  "description": "Print jobs."
+                }
+              ],
+              "governance": {
+                "retention": "Short-lived (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Printed only."
+              }
+            },
+            {
+              "id": "packaging-usage",
+              "name": "Packaging Usage",
+              "kind": "transactional",
+              "description": "Packaging type used per shipment.",
+              "businessMeaning": "Cost of material and basis for client re-invoicing.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "pack",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "report",
+                  "name": "packaging report",
+                  "description": "Per client."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with fulfilment client."
+              }
+            },
+            {
+              "id": "return-record",
+              "name": "Return Record",
+              "kind": "transactional",
+              "description": "Return with reason, items, inspection outcome and restock decision.",
+              "businessMeaning": "Closes the loop on returned goods.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "retu",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "returns api",
+                  "description": "Return pre-registration."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with return platform."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products, Stock and Purchasing",
+      "description": "Inventory master and ledger.",
+      "subGroups": [
+        {
+          "name": "Product and Stock",
+          "description": "What is where.",
+          "assets": [
+            {
+              "id": "product-master",
+              "name": "Product Master",
+              "kind": "master",
+              "description": "Product, barcodes, supplier, weight, dimensions, images and stock settings.",
+              "businessMeaning": "Shared product truth for warehouse and channels.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "prod",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "products api",
+                  "description": "Product endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Synced with channels."
+              }
+            },
+            {
+              "id": "stock-ledger",
+              "name": "Stock Ledger",
+              "kind": "transactional",
+              "description": "Every stock mutation with user, reason, location and resulting balances.",
+              "businessMeaning": "Auditable stock truth; basis for free stock.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "invt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "event-bus",
+                  "role": "event-stream"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "event",
+                  "name": "stock events",
+                  "description": "Stock change webhooks."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for account lifetime (Picqer says changes are saved forever)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Free stock shared with channels."
+              }
+            },
+            {
+              "id": "location-and-warehouse",
+              "name": "Warehouse and Location",
+              "kind": "master",
+              "description": "Warehouses, pick and bulk locations, containers and A/B class.",
+              "businessMeaning": "Physical layout for routing.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "locn",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "locations api",
+                  "description": "Location endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            },
+            {
+              "id": "stock-count",
+              "name": "Stock Count",
+              "kind": "transactional",
+              "description": "Count rounds, counted quantities and corrections.",
+              "businessMeaning": "Evidence for stock accuracy.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "cycl",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "report",
+                  "name": "count report",
+                  "description": "Differences."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            },
+            {
+              "id": "batch-and-expiry-lot",
+              "name": "Batch and Best-Before Lot",
+              "kind": "transactional",
+              "description": "Batch numbers and best-before dates per stock, movement and shipment.",
+              "businessMeaning": "Traceability for food, supplements, cosmetics, plants and medicines.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "lotb",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "report",
+                  "name": "batch report",
+                  "description": "Portal batch views."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory product traceability periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with fulfilment client."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inbound",
+          "description": "Suppliers and receipts.",
+          "assets": [
+            {
+              "id": "supplier",
+              "name": "Supplier",
+              "kind": "master",
+              "description": "Supplier contact and purchasing settings.",
+              "businessMeaning": "Who to buy from.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "supplier-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "purc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "suppliers api",
+                  "description": "Supplier endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            },
+            {
+              "id": "purchase-order",
+              "name": "Purchase Order",
+              "kind": "transactional",
+              "description": "Purchase orders, lines and expected dates.",
+              "businessMeaning": "Expected inbound stock.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "purc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "po pdf and excel",
+                  "description": "Mailed to supplier."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Sent to supplier."
+              }
+            },
+            {
+              "id": "goods-receipt",
+              "name": "Goods Receipt",
+              "kind": "transactional",
+              "description": "Received quantities, put-away and receivers.",
+              "businessMeaning": "Turns expected stock into stock.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "rcvg",
+              "derivedFromAssetIds": [
+                "purchase-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "receipts api",
+                  "description": "Receipt endpoints."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fulfilment, Collaboration and Insight",
+      "description": "Client, team and analytics data.",
+      "subGroups": [
+        {
+          "name": "Fulfilment Clients",
+          "description": "3PL business data.",
+          "assets": [
+            {
+              "id": "fulfilment-client-account",
+              "name": "Fulfilment Client Account",
+              "kind": "master",
+              "description": "Client, settings, rights and portal branding.",
+              "businessMeaning": "Scopes all client data.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "ften",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "portal",
+                  "description": "Fulfilment portal."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal to 3PL."
+              }
+            },
+            {
+              "id": "fulfilment-rate-card-and-invoice-line",
+              "name": "Fulfilment Rate Card and Invoice Line",
+              "kind": "transactional",
+              "description": "Client rates and generated invoice lines by category.",
+              "businessMeaning": "Revenue of the 3PL.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "finv",
+              "derivedFromAssetIds": [
+                "warehouse-activity-log",
+                "packaging-usage"
+              ],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "file",
+                  "name": "invoice export",
+                  "description": "Assumed export."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory bookkeeping period",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with the client."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Team and Insight",
+          "description": "Collaboration and analytics.",
+          "assets": [
+            {
+              "id": "comment-and-task",
+              "name": "Comment and Task",
+              "kind": "transactional",
+              "description": "Comments, mentions, reactions, photos and tasks.",
+              "businessMeaning": "Context for exceptions.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee",
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "coll",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "document-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "for you inbox",
+                  "description": "Inbox and app."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Shared with fulfilment client when on their objects."
+              }
+            },
+            {
+              "id": "warehouse-activity-log",
+              "name": "Warehouse Activity Log",
+              "kind": "derived",
+              "description": "Aggregated picks, packs, receipts, counts and moves per user, client and day.",
+              "businessMeaning": "Performance, reports and billing basis.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "rprt",
+              "derivedFromAssetIds": [
+                "picklist-and-batch",
+                "stock-ledger"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-warehouse"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "report",
+                  "name": "reports",
+                  "description": "Reports and portal."
+                }
+              ],
+              "governance": {
+                "retention": "Rolling (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Client sees own aggregates."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Configuration and Access",
+      "description": "Tenant setup.",
+      "subGroups": [
+        {
+          "name": "Configuration",
+          "description": "Connections, rules, devices, users and plans.",
+          "assets": [
+            {
+              "id": "integration-connection-config",
+              "name": "Integration Connection Config",
+              "kind": "configuration",
+              "description": "Store, carrier and hub credentials and mappings.",
+              "businessMeaning": "Keeps channels in sync.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "chan",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "settings",
+                  "description": "Settings screens."
+                }
+              ],
+              "governance": {
+                "retention": "Until disconnected",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Never shared."
+              }
+            },
+            {
+              "id": "api-key-and-webhook-subscription",
+              "name": "API Key and Webhook Subscription",
+              "kind": "configuration",
+              "description": "API keys and webhook endpoints.",
+              "businessMeaning": "Partner access.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "papi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "webhooks api",
+                  "description": "Webhook management."
+                }
+              ],
+              "governance": {
+                "retention": "Until revoked",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Never shared."
+              }
+            },
+            {
+              "id": "automation-rule-set",
+              "name": "Automation Rule Set",
+              "kind": "configuration",
+              "description": "Rules with conditions and actions.",
+              "businessMeaning": "Encoded warehouse know-how.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "rule",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "rule editor",
+                  "description": "Rules screen."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            },
+            {
+              "id": "hardware-device-registry",
+              "name": "Hardware Device Registry",
+              "kind": "configuration",
+              "description": "Printers, stations and devices.",
+              "businessMeaning": "Where documents print.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "prnt",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "device settings",
+                  "description": "Settings."
+                }
+              ],
+              "governance": {
+                "retention": "Contract term plus statutory periods (assumed)",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Internal."
+              }
+            },
+            {
+              "id": "user-account-and-rights",
+              "name": "User Account and Rights",
+              "kind": "master",
+              "description": "Users, logins and rights.",
+              "businessMeaning": "Access control.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee",
+                "client-contact"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "acct",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "user admin",
+                  "description": "Users screen."
+                }
+              ],
+              "governance": {
+                "retention": "Until user removed",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Never shared."
+              }
+            },
+            {
+              "id": "subscription-and-order-usage",
+              "name": "Subscription and Order Usage",
+              "kind": "transactional",
+              "description": "Plan, included orders, additional orders and payments.",
+              "businessMeaning": "Picqer revenue.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "account-owner"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Account users with the relevant rights; fulfilment clients only for their own data",
+              "systemOfRecordBrickId": "subs",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "wms-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ui",
+                  "name": "billing",
+                  "description": "Billing screen."
+                }
+              ],
+              "governance": {
+                "retention": "Statutory bookkeeping period",
+                "residency": "eu (assumed)",
+                "sharingPolicy": "Payment provider only."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "wms-db",
+      "name": "WMS Operational Database",
+      "kind": "operational-database",
+      "description": "Multi-tenant transactional store for orders, stock, picklists, shipments and configuration (technology not published).",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "event-bus",
+      "name": "Event Bus and Job Queue",
+      "kind": "event-stream",
+      "description": "Stock, picklist and order events for webhooks, sync and aggregation (inferred).",
+      "technology": "message-queue",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
+      "id": "analytics-store",
+      "name": "Reporting Store",
+      "kind": "analytics-warehouse",
+      "description": "Aggregates for reports, portal reports and billing (inferred).",
+      "technology": "columnar-or-relational",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "document-store",
+      "name": "Document and Media Store",
+      "kind": "object-storage",
+      "description": "Labels, packing slips, PO PDFs and comment photos (inferred).",
+      "technology": "object-storage",
+      "status": "active",
+      "classification": "confidential"
+    }
+  ]
+}

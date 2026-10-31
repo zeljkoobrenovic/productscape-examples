@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Online Shopper Returning an Item</title>
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .review-image {
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+            width: 400px;
+            margin: 10px;
+            padding: 10px
+        }
+
+        .review-image-small {
+            width: 100%;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 40px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            vertical-align: top;
+        }
+
+        .kpi {
+            margin-top: -3px;
+            margin-bottom: -6px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            vertical-align: top;
+            display: block;
+            background-color: #f0f0f0;
+        }
+
+        .step {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            display: inline-block;
+            width: 280px;
+            vertical-align: top;
+        }
+
+        .outcome {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 3px solid blue;
+            vertical-align: top;
+            font-size: 130%;
+            display: inline-block;
+        }
+
+        .repo {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+        .aws {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+
+        .person {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        .docs {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            vertical-align: top;
+        }
+
+        .number {
+            display: inline-block;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            margin: 8px;
+            width: 100px;
+        }
+
+        .dependency-icon {
+            height: 32px;
+            margin-left: 8px;
+            margin-right: 8px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            padding: 4px;
+            border-radius: 5px;
+        }
+
+        .kpi-title {
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .kpi-icon {
+            height: 50px;
+            padding: 0;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 40px 0px 40px 80px;
+            border-color: transparent transparent transparent black;
+            transform: rotate(0deg);
+        }
+
+        .activity-summary {
+            margin: 14px 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th,
+        .activity-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .activity-table th {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-link {
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
+        .activity-muted {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .activity-block {
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 3px solid #d7dce1;
+        }
+
+        .activity-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            font-size: 12px;
+        }
+
+        .activity-pill-highlight {
+            background-color: #dbeafe;
+            border: 1px solid #60a5fa;
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #d7dce1;
+            background-color: white;
+        }
+
+        .activity-icon-round {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .jobs-view-toggle {
+            display: inline-flex;
+            gap: 8px;
+            margin: 0 0 18px 24px;
+            padding: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background-color: #f8fafc;
+        }
+
+        .jobs-view-button {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            background-color: transparent;
+            color: #475569;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .jobs-view-button-active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .job-summary-table {
+            margin: 24px;
+            font-size: 120%;
+        }
+
+        .job-detail-group {
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+
+        .job-detail-hero {
+            width: 900px;
+            object-fit: contain;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .job-step-image {
+            max-width: 240px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .comic-job {
+            margin: 20px 24px 36px 24px;
+            padding: 24px;
+            border: 1px solid #d1d5db;
+            border-radius: 16px;
+            background-color: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px;
+        }
+
+        .comic-job-title {
+            color: #2563eb;
+            font-size: 220%;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comic-job-media {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .comic-job-media img {
+            width: min(100%, 900px);
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 12px;
+            background: white;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 28px;
+        }
+
+        .comic-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .comic-step {
+            width: 500px;
+            max-width: 100%;
+            padding: 18px;
+            border: 1px solid #d7dce1;
+            border-radius: 14px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 6px 18px;
+        }
+
+        .comic-step-title {
+            color: #2563eb;
+            font-size: 135%;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comic-step-media {
+            text-align: center;
+        }
+
+        .comic-step-media img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+</head>
+<body onload="initTab('HomeTab')" onhashchange="initTab('HomeTab')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html" class="active" aria-current="page">Customers</a>
+    <a href="../../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs" style="margin-left: 18px"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+<script>
+    const config = {"domains": [{"id": "ecommerce-returns-management-platform", "name": "E-commerce Returns Management Platform", "description": "Returnista (Katapull group): branded returns portal, exchanges and store credit, return operations and returns insights for European webshops, integrated with shop platforms, carriers, WMS and ERP."}]};
+    const all_customers = [{"id": "eown", "name": "E-commerce Director (Fashion and Lifestyle Brand)", "description": "Owner or e-commerce director of a European direct-to-consumer brand or multi-brand webshop, typically fashion, footwear, sports or lifestyle, running on Shopify, Shopware, Magento or Lightspeed. Category return rates of 28-37% (Returnista benchmark 2026 for footwear, clothing and swimwear) make returns a margin problem the director owns. Buys and renews the returns platform.", "icon": "customer-eown-portrait.jpg", "careAbout": ["Contribution margin after returns and return shipping", "Keeping revenue when shoppers send items back", "A return experience that does not hurt conversion or reviews", "Expanding to Germany, Belgium and other EU markets without separate processes"], "winsThem": ["Exchanges and store credit that visibly keep revenue in the first months", "Live within days on the existing shop platform and carriers", "Peer brands in the same category using it", "A customer success manager who reviews the numbers regularly"], "theirFear": ["Return rates eroding margin faster than growth", "A stricter or paid return policy driving shoppers to competitors", "Another tool that the warehouse and ERP do not understand", "Lock-in to a platform that cannot follow multi-country expansion"], "jobsToBeDone": [{"id": "eown-retain", "name": "Keep revenue when customers return items", "whatItIs": "Turn as many returns as possible into exchanges or store credit instead of refunds, without making returning harder.", "outcome": "A growing share of returned value stays in the business and refunds shrink as a share of returns.", "steps": [{"step": "Offer the right alternative at the moment of return", "description": "Present size swaps based on live stock and store credit with an optional bonus inside the return request.", "streamsNeeded": [{"id": "retain-revenue-with-exchanges-and-store-credit", "name": "Retain Revenue with Exchanges and Store Credit", "howItSupports": "Exchange picker with stock check and bonus credit options."}, {"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "The branded portal is where the alternative is offered."}], "media": []}, {"step": "Fulfil exchanges quickly", "description": "Create the replacement order instantly or after inspection depending on product category.", "streamsNeeded": [{"id": "retain-revenue-with-exchanges-and-store-credit", "name": "Retain Revenue with Exchanges and Store Credit", "howItSupports": "Exchange orders are written back to the shop platform."}, {"id": "receive-inspect-and-resolve-returns", "name": "Receive, Inspect and Resolve Returns", "howItSupports": "Inspection-dependent exchanges are released on receipt."}], "media": []}, {"step": "Track what was retained", "description": "Review exchange and store credit conversion and the products returned but rarely exchanged.", "streamsNeeded": [{"id": "reduce-return-rates-with-product-insights", "name": "Reduce Return Rates with Product Insights", "howItSupports": "Exchange and store credit insights on the dashboard."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-eown-eown-retain.png", "title": "E-commerce Director (Fashion and Lifestyle Brand) JTBD infographic: Keep revenue when customers return items", "alt": "Enterprise infographic for the job \"Keep revenue when customers return items\" for customer \"E-commerce Director (Fashion and Lifestyle Brand)\"."}]}, {"id": "eown-policy", "name": "Set a return policy that protects margin without hurting conversion", "whatItIs": "Decide windows, fees, eligible reasons, carriers and exceptions per product, region and shopper segment, and apply them consistently.", "outcome": "Unwanted and fraudulent returns fall while shoppers still see a fair, clear policy.", "steps": [{"step": "Define rules and fees", "description": "Set the return window, adjustable return fees, eligible reasons and exceptions, optionally drafted with the AI rule agent.", "streamsNeeded": [{"id": "set-up-return-policy-and-onboard-a-merchant", "name": "Set Up Return Policy and Onboard a Merchant", "howItSupports": "Policy editor and rule agent."}, {"id": "gatekeep-warranty-and-damage-claims", "name": "Gatekeep Warranty and Damage Claims", "howItSupports": "Approval rules for high-risk items."}], "media": []}, {"step": "Roll out per country", "description": "Apply rules, carriers and languages for each market the shop sells into.", "streamsNeeded": [{"id": "set-up-return-policy-and-onboard-a-merchant", "name": "Set Up Return Policy and Onboard a Merchant", "howItSupports": "Country-specific configuration."}, {"id": "ship-and-track-a-return", "name": "Ship and Track a Return", "howItSupports": "Carrier options per country."}], "media": []}, {"step": "Evaluate the policy effect", "description": "Compare return rates and retained revenue before and after a policy change.", "streamsNeeded": [{"id": "reduce-return-rates-with-product-insights", "name": "Reduce Return Rates with Product Insights", "howItSupports": "Historical comparisons on the return rate dashboard."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-eown-eown-policy.png", "title": "E-commerce Director (Fashion and Lifestyle Brand) JTBD infographic: Set a return policy that protects margin without hurting conversion", "alt": "Enterprise infographic for the job \"Set a return policy that protects margin without hurting conversion\" for customer \"E-commerce Director (Fashion and Lifestyle Brand)\"."}]}], "customerJourneyStories": [{"id": "journey-eown-peak-season", "name": "Replacing manual email returns after a peak season", "linkedJobIds": ["eown-retain", "eown-policy"], "summary": "A fashion brand outgrows email-and-spreadsheet returns and adopts Returnista to keep revenue through exchanges.", "stages": [{"stage": "Trigger", "narrative": "After a peak season the inbox fills with return requests, refunds go out before items arrive, and the finance review shows refunds growing faster than revenue.", "media": []}, {"stage": "Discovery", "narrative": "The director hears about Returnista from a peer brand, sees it in the Shopify App Store listing for returns and exchanges, and reads the Returnista benchmark report on category return rates.", "media": []}, {"stage": "Evaluation", "narrative": "Compares Returnista with Shopify's native returns, Returnless and Loop on exchanges, carrier support and Dutch/German coverage; checks the Essential and Professional pack prices and whether own carrier contracts can be used.", "media": []}, {"stage": "Trial", "narrative": "Goes live with an onboarding specialist within weeks on one storefront, with size exchanges and store credit bonus enabled for clothing only.", "media": []}, {"stage": "Engagement", "narrative": "Returnista becomes the only way to return; the customer success manager reviews exchange conversion and high-return SKUs every few weeks.", "media": []}, {"stage": "Retention", "narrative": "Renews and upgrades to Professional to use own carrier contracts, adds the German storefront and the warranty flow add-on; recommends it to peers in the category.", "media": []}], "media": [{"type": "image", "src": "media/journey-eown-eown-peak-season.png", "title": "E-commerce Director (Fashion and Lifestyle Brand) customer journey: Replacing manual email returns after a peak season", "alt": "Enterprise journey storyboard for \"Replacing manual email returns after a peak season\" for customer \"E-commerce Director (Fashion and Lifestyle Brand)\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-eown-top", "name": "Revenue retained from returns", "description": "Share of returned order value kept as exchanges or store credit instead of refunds. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "%", "currentValue": "18", "targetValue": "35", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-co-eown-top.png"}, "branches": [{"id": "co-eown-b1", "name": "Revenue retention mix", "description": "Composite of exchange and store credit conversion.", "unit": "%", "currentValue": "18", "targetValue": "35", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-eown-b1-c1", "name": "Exchange conversion rate", "description": "Share of return requests converted into an exchange.", "unit": "%", "currentValue": "12", "targetValue": "25", "children": [{"id": "co-eown-b1-c1-l1", "name": "Size-swap exchange share", "description": "Share of exchanges that are a different size of the same product.", "unit": "%", "currentValue": "70", "targetValue": "80", "children": [], "icon": "kpi-eown-co-eown-b1-c1-l1.png"}, {"id": "co-eown-b1-c1-l2", "name": "Exchanges blocked by stock-outs", "description": "Share of exchange attempts blocked because the alternative was out of stock.", "unit": "%", "currentValue": "15", "targetValue": "8", "children": [], "icon": "kpi-eown-co-eown-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-co-eown-b1-c1.png"}, {"id": "co-eown-b1-c2", "name": "Store credit conversion rate", "description": "Share of return requests resolved as store credit.", "unit": "%", "currentValue": "6", "targetValue": "12", "children": [{"id": "co-eown-b1-c2-l1", "name": "Bonus credit uptake", "description": "Share of store credit choices where a bonus was offered.", "unit": "%", "currentValue": "40", "targetValue": "55", "children": [], "icon": "kpi-eown-co-eown-b1-c2-l1.png"}, {"id": "co-eown-b1-c2-l2", "name": "Store credit redeemed within 90 days", "description": "Share of issued store credit spent within 90 days.", "unit": "%", "currentValue": "55", "targetValue": "70", "children": [], "icon": "kpi-eown-co-eown-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-co-eown-b1-c2.png"}], "icon": "kpi-eown-co-eown-b1.png"}, {"id": "co-eown-b2", "name": "Return rate reduction", "description": "Return rate by revenue; seeded at the 29% Returnista 2026 benchmark for clothing.", "unit": "%", "currentValue": "29", "targetValue": "25", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-eown-b2-c1", "name": "Return rate by revenue", "description": "Returned value divided by shipped value.", "unit": "%", "currentValue": "29", "targetValue": "25", "children": [{"id": "co-eown-b2-c1-l1", "name": "Return rate of top-20 returned SKUs", "description": "Return rate of the 20 most returned SKUs.", "unit": "%", "currentValue": "45", "targetValue": "35", "children": [], "icon": "kpi-eown-co-eown-b2-c1-l1.png"}, {"id": "co-eown-b2-c1-l2", "name": "Size-and-fit return reason share", "description": "Share of returns citing size or fit.", "unit": "%", "currentValue": "50", "targetValue": "40", "children": [], "icon": "kpi-eown-co-eown-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-co-eown-b2-c1.png"}, {"id": "co-eown-b2-c2", "name": "Cost per return", "description": "Label, handling and support cost per return.", "unit": "EUR", "currentValue": "9", "targetValue": "7", "children": [{"id": "co-eown-b2-c2-l1", "name": "Return label cost per parcel", "description": "Average carrier cost per return label.", "unit": "EUR", "currentValue": "5", "targetValue": "4.2", "children": [], "icon": "kpi-eown-co-eown-b2-c2-l1.png"}, {"id": "co-eown-b2-c2-l2", "name": "Manual handling minutes per return", "description": "Staff minutes spent per return across service and warehouse.", "unit": "minutes", "currentValue": "12", "targetValue": "6", "children": [], "icon": "kpi-eown-co-eown-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/co-eown-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-co-eown-b2-c2.png"}], "icon": "kpi-eown-co-eown-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-eown-top", "name": "Contribution margin after returns", "description": "Net revenue minus product, fulfilment, return and refund costs. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "% of net revenue", "currentValue": "14", "targetValue": "18", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-bo-eown-top.png"}, "branches": [{"id": "bo-eown-b1", "name": "Return cost control", "description": "Return-related costs as share of revenue.", "unit": "% of revenue", "currentValue": "6", "targetValue": "4.5", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-eown-b1-c1", "name": "Returns handling cost", "description": "Shipping, labour and write-offs for returns.", "unit": "% of revenue", "currentValue": "4", "targetValue": "3", "children": [{"id": "bo-eown-b1-c1-l1", "name": "Return shipping cost share of revenue", "description": "Return label spend over revenue.", "unit": "%", "currentValue": "2", "targetValue": "1.5", "children": [], "icon": "kpi-eown-bo-eown-b1-c1-l1.png"}, {"id": "bo-eown-b1-c1-l2", "name": "Unwanted or fraudulent return share", "description": "Returns rejected or flagged after review.", "unit": "%", "currentValue": "3", "targetValue": "1.5", "children": [], "icon": "kpi-eown-bo-eown-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-bo-eown-b1-c1.png"}, {"id": "bo-eown-b1-c2", "name": "Refund leakage", "description": "Value lost through premature or unjustified refunds.", "unit": "% of revenue", "currentValue": "2", "targetValue": "1.5", "children": [{"id": "bo-eown-b1-c2-l1", "name": "Refunds issued before inspection", "description": "Share of refunds released before the item was checked.", "unit": "%", "currentValue": "60", "targetValue": "30", "children": [], "icon": "kpi-eown-bo-eown-b1-c2-l1.png"}, {"id": "bo-eown-b1-c2-l2", "name": "Return fee recovery", "description": "Share of return label cost recovered through return fees.", "unit": "%", "currentValue": "20", "targetValue": "40", "children": [], "icon": "kpi-eown-bo-eown-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-bo-eown-b1-c2.png"}], "icon": "kpi-eown-bo-eown-b1.png"}, {"id": "bo-eown-b2", "name": "Customer lifetime value", "description": "Twelve-month gross margin per returning shopper.", "unit": "EUR", "currentValue": "160", "targetValue": "190", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-eown-b2-c1", "name": "Repeat purchase rate after a return", "description": "Share of shoppers who return and buy again within 6 months.", "unit": "%", "currentValue": "30", "targetValue": "40", "children": [{"id": "bo-eown-b2-c1-l1", "name": "Shopper return experience score", "description": "Post-return survey score.", "unit": "score 1-5", "currentValue": "3.8", "targetValue": "4.4", "children": [], "icon": "kpi-eown-bo-eown-b2-c1-l1.png"}, {"id": "bo-eown-b2-c1-l2", "name": "Time from return to refund or exchange", "description": "Days from drop-off to resolution.", "unit": "days", "currentValue": "8", "targetValue": "4", "children": [], "icon": "kpi-eown-bo-eown-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-bo-eown-b2-c1.png"}, {"id": "bo-eown-b2-c2", "name": "Exchange order margin", "description": "Gross margin of exchange and store credit orders.", "unit": "%", "currentValue": "40", "targetValue": "45", "children": [{"id": "bo-eown-b2-c2-l1", "name": "Free exchange shipping cost", "description": "Outbound cost of free exchanges.", "unit": "EUR", "currentValue": "4", "targetValue": "3.5", "children": [], "icon": "kpi-eown-bo-eown-b2-c2-l1.png"}, {"id": "bo-eown-b2-c2-l2", "name": "Upsell value on store credit orders", "description": "Spend above credit value on redemption orders.", "unit": "EUR", "currentValue": "12", "targetValue": "18", "children": [], "icon": "kpi-eown-bo-eown-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/eown/kpis/bo-eown-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-eown-bo-eown-b2-c2.png"}], "icon": "kpi-eown-bo-eown-b2.png"}]}}, "productStrategy": {"vision": "Every return becomes a retained sale or a lesson that prevents the next return, without making returning harder for shoppers.", "timeHorizons": {"year1": {"focus": "Convert refunds into exchanges and store credit on the existing shop platform.", "productTheme": "Exchange-first portal", "customerKPI": {"northStar": "Revenue retained from returns", "supporting": ["Exchange conversion rate", "Store credit conversion rate"]}, "businessKPI": {"northStar": "Contribution margin after returns", "revenueStreams": ["Essential and Professional subscriptions"], "supporting": ["Return fee recovery"]}}, "year3": {"focus": "Cut return rates with SKU-level root causes and stricter, per-segment rules.", "productTheme": "Prevention and policy intelligence", "customerKPI": {"northStar": "Return rate by revenue", "supporting": ["Size-and-fit return reason share", "Cost per return"]}, "businessKPI": {"northStar": "Contribution margin after returns", "revenueStreams": ["Professional and Enterprise subscriptions", "Warranty flow add-on"], "supporting": ["Refund leakage"]}}, "year5": {"focus": "Run returns as one flow across shop, ERP, warehouse and carrier within the Katapull commerce hub.", "productTheme": "Connected returns in the commerce hub", "customerKPI": {"northStar": "Revenue retained from returns", "supporting": ["Time from return to refund or exchange", "Repeat purchase rate after a return"]}, "businessKPI": {"northStar": "Customer lifetime value", "revenueStreams": ["Enterprise subscriptions", "Bundled Katapull hub offerings (assumption)"], "supporting": ["Returns handling cost"]}}}}, "domain": "Merchant Leadership"}, {"id": "ecan", "name": "E-commerce and Merchandising Analyst", "description": "Analyst, merchandiser or category manager at a mid-size or enterprise webshop who turns return data into assortment, size-advice and product-content decisions. Uses the insights dashboard, the Product Return Impact Index and BI exports.", "icon": "customer-ecan-portrait.jpg", "careAbout": ["Knowing which SKUs and reasons drive returns", "Separating fit problems from quality and expectation problems", "Comparing return rates with category benchmarks", "Getting return data into the company BI stack"], "winsThem": ["Return reasons captured consistently at SKU level", "An index ranking products by revenue impact of returns", "Exports or connectors to existing BI tools", "Clear before-and-after evidence of fixes"], "theirFear": ["Free-text return reasons that cannot be analysed", "Acting on noise from small samples", "Data locked in a vendor dashboard", "Blame for a buying decision without data"], "jobsToBeDone": [{"id": "ecan-reduce", "name": "Find and fix the products that drive returns", "whatItIs": "Use structured return reasons, SKU-level return rates and payment-method patterns to prioritise assortment, size advice and content fixes.", "outcome": "Return rates of corrected products fall measurably and buyers avoid reordering high-return items.", "steps": [{"step": "Capture usable reasons", "description": "Make sure every return carries a structured reason and, where relevant, photos or comments.", "streamsNeeded": [{"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "Configurable return reasons in the portal."}], "media": []}, {"step": "Rank products by impact", "description": "Rank SKUs by return rate and revenue impact and inspect the reasons behind them.", "streamsNeeded": [{"id": "reduce-return-rates-with-product-insights", "name": "Reduce Return Rates with Product Insights", "howItSupports": "Product Return Impact Index and root-cause views."}], "media": []}, {"step": "Share and act", "description": "Push findings to buying, size-advice and BI tools and track the effect.", "streamsNeeded": [{"id": "reduce-return-rates-with-product-insights", "name": "Reduce Return Rates with Product Insights", "howItSupports": "BI export and historical comparison."}, {"id": "sync-returns-across-the-commerce-stack", "name": "Sync Returns Across the Commerce Stack", "howItSupports": "Size-and-fit and stock-planning connectors."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-ecan-ecan-reduce.png", "title": "E-commerce and Merchandising Analyst JTBD infographic: Find and fix the products that drive returns", "alt": "Enterprise infographic for the job \"Find and fix the products that drive returns\" for customer \"E-commerce and Merchandising Analyst\"."}]}], "customerJourneyStories": [{"id": "journey-ecan-impact-index", "name": "From return spreadsheets to a product impact index", "linkedJobIds": ["ecan-reduce"], "summary": "An analyst replaces monthly spreadsheet exports with SKU-level return insights.", "stages": [{"stage": "Trigger", "narrative": "The board asks why returns rose this season; the analyst spends days merging shop exports and warehouse notes to answer.", "media": []}, {"stage": "Discovery", "narrative": "Learns that Returnista's dashboard already holds structured reasons from the portal the e-commerce director introduced, and sees the Product Return Impact Index in a product update.", "media": []}, {"stage": "Evaluation", "narrative": "Checks reason granularity, history depth, payment-method analysis and whether data can be exported to the company BI tools (Enterprise pack).", "media": []}, {"stage": "Trial", "narrative": "Runs one season's analysis in the dashboard and validates the top flagged SKUs against warehouse grading.", "media": []}, {"stage": "Engagement", "narrative": "Uses the impact index in weekly assortment meetings and adds size advice where fit reasons dominate.", "media": []}, {"stage": "Retention", "narrative": "Keeps the insights module central to merchandising reviews; requests BI connection and benchmark comparisons at renewal.", "media": []}], "media": [{"type": "image", "src": "media/journey-ecan-ecan-impact-index.png", "title": "E-commerce and Merchandising Analyst customer journey: From return spreadsheets to a product impact index", "alt": "Enterprise journey storyboard for \"From return spreadsheets to a product impact index\" for customer \"E-commerce and Merchandising Analyst\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-ecan-top", "name": "Return rate of the active assortment", "description": "Revenue-weighted return rate of SKUs currently on sale. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "%", "currentValue": "27", "targetValue": "22", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-co-ecan-top.png"}, "branches": [{"id": "co-ecan-b1", "name": "Root cause visibility", "description": "Share of returned value with an actionable cause.", "unit": "%", "currentValue": "60", "targetValue": "85", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecan-b1-c1", "name": "Return reason capture completeness", "description": "Share of returns with a specific reason code.", "unit": "%", "currentValue": "75", "targetValue": "95", "children": [{"id": "co-ecan-b1-c1-l1", "name": "Returns with a specific reason code", "description": "Returns not using 'other' or no reason.", "unit": "%", "currentValue": "75", "targetValue": "95", "children": [], "icon": "kpi-ecan-co-ecan-b1-c1-l1.png"}, {"id": "co-ecan-b1-c1-l2", "name": "Returns with photos or comments", "description": "Returns carrying shopper evidence.", "unit": "%", "currentValue": "10", "targetValue": "25", "children": [], "icon": "kpi-ecan-co-ecan-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-co-ecan-b1-c1.png"}, {"id": "co-ecan-b1-c2", "name": "SKU-level return attribution", "description": "Share of returned units attributed to a variant SKU.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [{"id": "co-ecan-b1-c2-l1", "name": "SKUs flagged above category benchmark", "description": "SKUs whose return rate exceeds the category benchmark.", "unit": "count", "currentValue": "40", "targetValue": "20", "children": [], "icon": "kpi-ecan-co-ecan-b1-c2-l1.png"}, {"id": "co-ecan-b1-c2-l2", "name": "Time from flag to assortment action", "description": "Days between a SKU flag and a decision.", "unit": "days", "currentValue": "30", "targetValue": "10", "children": [], "icon": "kpi-ecan-co-ecan-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-co-ecan-b1-c2.png"}], "icon": "kpi-ecan-co-ecan-b1.png"}, {"id": "co-ecan-b2", "name": "Assortment correction impact", "description": "Return rate change on products that were acted on.", "unit": "percentage points", "currentValue": "3", "targetValue": "6", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecan-b2-c1", "name": "Return rate change on corrected SKUs", "description": "Drop in return rate after fixes.", "unit": "percentage points", "currentValue": "3", "targetValue": "6", "children": [{"id": "co-ecan-b2-c1-l1", "name": "Size advice changes made", "description": "Size charts or fit notes updated.", "unit": "count per month", "currentValue": "5", "targetValue": "15", "children": [], "icon": "kpi-ecan-co-ecan-b2-c1-l1.png"}, {"id": "co-ecan-b2-c1-l2", "name": "Product content fixes made", "description": "Images or descriptions corrected.", "unit": "count per month", "currentValue": "5", "targetValue": "15", "children": [], "icon": "kpi-ecan-co-ecan-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-co-ecan-b2-c1.png"}, {"id": "co-ecan-b2-c2", "name": "Payment method return skew", "description": "Return rate gap between pay-later and prepaid orders.", "unit": "percentage points", "currentValue": "8", "targetValue": "5", "children": [{"id": "co-ecan-b2-c2-l1", "name": "Return rate of pay-later orders", "description": "Return rate for buy-now-pay-later orders.", "unit": "%", "currentValue": "35", "targetValue": "30", "children": [], "icon": "kpi-ecan-co-ecan-b2-c2-l1.png"}, {"id": "co-ecan-b2-c2-l2", "name": "Return rate of prepaid orders", "description": "Return rate for orders paid upfront.", "unit": "%", "currentValue": "27", "targetValue": "24", "children": [], "icon": "kpi-ecan-co-ecan-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/co-ecan-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-co-ecan-b2-c2.png"}], "icon": "kpi-ecan-co-ecan-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-ecan-top", "name": "Margin recovered by assortment actions", "description": "Estimated margin no longer lost to returns on corrected SKUs. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR per month", "currentValue": "8000", "targetValue": "20000", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/bo-ecan-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecan-bo-ecan-top.png"}, "branches": [{"id": "bo-ecan-b1", "name": "Lower return volume", "description": "Returned units avoided on corrected SKUs.", "unit": "units per month", "currentValue": "400", "targetValue": "1000", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/bo-ecan-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecan-b1-l1", "name": "Returned units avoided", "description": "Fewer returns versus baseline.", "unit": "units per month", "currentValue": "400", "targetValue": "1000", "children": [], "icon": "kpi-ecan-bo-ecan-b1-l1.png"}, {"id": "bo-ecan-b1-l2", "name": "Return shipping cost avoided", "description": "Label cost no longer incurred.", "unit": "EUR per month", "currentValue": "2000", "targetValue": "5000", "children": [], "icon": "kpi-ecan-bo-ecan-b1-l2.png"}], "icon": "kpi-ecan-bo-ecan-b1.png"}, {"id": "bo-ecan-b2", "name": "Better buying decisions", "description": "Share of buying decisions informed by return data.", "unit": "%", "currentValue": "30", "targetValue": "70", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/ecan/kpis/bo-ecan-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecan-b2-l1", "name": "Reorders of high-return SKUs avoided", "description": "Planned reorders cancelled or changed.", "unit": "count per season", "currentValue": "5", "targetValue": "15", "children": [], "icon": "kpi-ecan-bo-ecan-b2-l1.png"}, {"id": "bo-ecan-b2-l2", "name": "Share of buying reviews using return data", "description": "Reviews where return insights were presented.", "unit": "%", "currentValue": "30", "targetValue": "80", "children": [], "icon": "kpi-ecan-bo-ecan-b2-l2.png"}], "icon": "kpi-ecan-bo-ecan-b2.png"}]}}, "productStrategy": {"vision": "Return data is the most honest product feedback a webshop has; make it structured, ranked and shared.", "timeHorizons": {"year1": {"focus": "Structured reasons and SKU-level dashboards.", "productTheme": "Return rate dashboard", "customerKPI": {"northStar": "Return rate of the active assortment", "supporting": ["Return reason capture completeness"]}, "businessKPI": {"northStar": "Margin recovered by assortment actions", "revenueStreams": ["Insights in Essential and above"], "supporting": ["Lower return volume"]}}, "year3": {"focus": "Rank and act: impact index, payment-method analysis and benchmarks.", "productTheme": "Product Return Impact Index", "customerKPI": {"northStar": "Root cause visibility", "supporting": ["SKU-level return attribution", "Payment method return skew"]}, "businessKPI": {"northStar": "Margin recovered by assortment actions", "revenueStreams": ["Enterprise BI connection"], "supporting": ["Better buying decisions"]}}, "year5": {"focus": "Return signals feed size advice, buying and stock planning automatically.", "productTheme": "Closed-loop prevention", "customerKPI": {"northStar": "Assortment correction impact", "supporting": ["Return rate change on corrected SKUs"]}, "businessKPI": {"northStar": "Margin recovered by assortment actions", "revenueStreams": ["Enterprise subscriptions", "Benchmark data products (assumption)"], "supporting": ["Reorders of high-return SKUs avoided"]}}}}, "domain": "Merchant Teams"}, {"id": "cxmg", "name": "Customer Service Lead", "description": "Leads a small in-house or outsourced customer service team that answers 'where is my refund' and return questions by email, chat and helpdesk tools such as Gorgias or Trengo.", "icon": "customer-cxmg-portrait.jpg", "careAbout": ["Fewer return-related tickets", "Full return context inside the helpdesk", "Clear status the team can quote", "Consistent decisions on exceptions"], "winsThem": ["Shoppers who track their own return", "Automatic emails at each return milestone", "Helpdesk integration showing the return", "Optional outsourcing of return inquiries"], "theirFear": ["Peak-season ticket backlogs", "Agents re-issuing labels by hand", "Angry reviews about slow refunds", "Inconsistent goodwill decisions"], "jobsToBeDone": [{"id": "cxmg-deflect", "name": "Prevent or quickly answer return questions", "whatItIs": "Let shoppers self-serve return status and handle remaining questions with full context in the helpdesk.", "outcome": "Return-related contacts per return fall and remaining cases are resolved at first contact.", "steps": [{"step": "Give shoppers status proactively", "description": "Send milestone emails and a tracking page for each return.", "streamsNeeded": [{"id": "resolve-return-inquiries-and-notify-shoppers", "name": "Resolve Return Inquiries and Notify Shoppers", "howItSupports": "Notification dispatcher and tracking page."}, {"id": "ship-and-track-a-return", "name": "Ship and Track a Return", "howItSupports": "Carrier scan events feed the status."}], "media": []}, {"step": "Answer with full context", "description": "See the return request, label, tracking and resolution inside the helpdesk.", "streamsNeeded": [{"id": "resolve-return-inquiries-and-notify-shoppers", "name": "Resolve Return Inquiries and Notify Shoppers", "howItSupports": "Helpdesk context integration."}], "media": []}, {"step": "Handle exceptions consistently", "description": "Approve or reject exceptions using the same rules the portal applies.", "streamsNeeded": [{"id": "gatekeep-warranty-and-damage-claims", "name": "Gatekeep Warranty and Damage Claims", "howItSupports": "Central review queue for claims."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-cxmg-cxmg-deflect.png", "title": "Customer Service Lead JTBD infographic: Prevent or quickly answer return questions", "alt": "Enterprise infographic for the job \"Prevent or quickly answer return questions\" for customer \"Customer Service Lead\"."}]}], "customerJourneyStories": [{"id": "journey-cxmg-ticket-flood", "name": "Taming the return ticket flood", "linkedJobIds": ["cxmg-deflect"], "summary": "A service lead sees return tickets fall once tracking and notifications are switched on.", "stages": [{"stage": "Trigger", "narrative": "Every January the team drowns in 'where is my refund' tickets and agents copy tracking numbers from carrier sites by hand.", "media": []}, {"stage": "Discovery", "narrative": "Hears in a Trengo or Gorgias partner listing, or from the e-commerce director, that Returnista shows return status to shoppers and inside the helpdesk.", "media": []}, {"stage": "Evaluation", "narrative": "Checks which notifications are automatic, whether return details appear in the helpdesk, and whether Returnista can handle return inquiries on the shop's behalf.", "media": []}, {"stage": "Trial", "narrative": "Enables tracking emails and the helpdesk integration for one brand and compares ticket volumes for a month.", "media": []}, {"stage": "Engagement", "narrative": "Agents work return tickets from the helpdesk sidebar; the status page link is in every macro.", "media": []}, {"stage": "Retention", "narrative": "Keeps the integration as a standard; considers outsourcing return inquiries in peak season.", "media": []}], "media": [{"type": "image", "src": "media/journey-cxmg-cxmg-ticket-flood.png", "title": "Customer Service Lead customer journey: Taming the return ticket flood", "alt": "Enterprise journey storyboard for \"Taming the return ticket flood\" for customer \"Customer Service Lead\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cxmg-top", "name": "Return-related contacts per 100 returns", "description": "Inbound contacts mentioning a return divided by returns. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "contacts", "currentValue": "35", "targetValue": "15", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-co-cxmg-top.png"}, "branches": [{"id": "co-cxmg-b1", "name": "Self-service resolution", "description": "Share of returns completed without contacting service.", "unit": "%", "currentValue": "60", "targetValue": "85", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cxmg-b1-c1", "name": "Portal self-service share", "description": "Returns started in the portal rather than by email.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [{"id": "co-cxmg-b1-c1-l1", "name": "Returns started without contacting support", "description": "Share of returns with no prior contact.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [], "icon": "kpi-cxmg-co-cxmg-b1-c1-l1.png"}, {"id": "co-cxmg-b1-c1-l2", "name": "Where-is-my-refund contacts per 100 returns", "description": "Status-chasing contacts.", "unit": "contacts", "currentValue": "15", "targetValue": "5", "children": [], "icon": "kpi-cxmg-co-cxmg-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-co-cxmg-b1-c1.png"}, {"id": "co-cxmg-b1-c2", "name": "Proactive notification coverage", "description": "Returns receiving milestone notifications.", "unit": "%", "currentValue": "50", "targetValue": "100", "children": [{"id": "co-cxmg-b1-c2-l1", "name": "Returns with tracking emails sent", "description": "Returns with at least one tracking update.", "unit": "%", "currentValue": "50", "targetValue": "100", "children": [], "icon": "kpi-cxmg-co-cxmg-b1-c2-l1.png"}, {"id": "co-cxmg-b1-c2-l2", "name": "Refund confirmations sent within 24 hours", "description": "Refund emails sent within a day of resolution.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [], "icon": "kpi-cxmg-co-cxmg-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-co-cxmg-b1-c2.png"}], "icon": "kpi-cxmg-co-cxmg-b1.png"}, {"id": "co-cxmg-b2", "name": "Agent handling efficiency", "description": "Average handling time per return case.", "unit": "minutes", "currentValue": "8", "targetValue": "4", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cxmg-b2-c1", "name": "Average handling time per return case", "description": "Agent time per return ticket.", "unit": "minutes", "currentValue": "8", "targetValue": "4", "children": [{"id": "co-cxmg-b2-c1-l1", "name": "Cases with return context in helpdesk", "description": "Tickets enriched with return data.", "unit": "%", "currentValue": "0", "targetValue": "90", "children": [], "icon": "kpi-cxmg-co-cxmg-b2-c1-l1.png"}, {"id": "co-cxmg-b2-c1-l2", "name": "Manual label re-issues", "description": "Labels re-created by agents.", "unit": "count per week", "currentValue": "30", "targetValue": "5", "children": [], "icon": "kpi-cxmg-co-cxmg-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-co-cxmg-b2-c1.png"}, {"id": "co-cxmg-b2-c2", "name": "First contact resolution on returns", "description": "Return tickets closed at first reply.", "unit": "%", "currentValue": "65", "targetValue": "85", "children": [{"id": "co-cxmg-b2-c2-l1", "name": "Escalations to warehouse", "description": "Tickets needing warehouse input.", "unit": "%", "currentValue": "20", "targetValue": "8", "children": [], "icon": "kpi-cxmg-co-cxmg-b2-c2-l1.png"}, {"id": "co-cxmg-b2-c2-l2", "name": "Reopened return cases", "description": "Tickets reopened after closure.", "unit": "%", "currentValue": "10", "targetValue": "4", "children": [], "icon": "kpi-cxmg-co-cxmg-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/co-cxmg-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-co-cxmg-b2-c2.png"}], "icon": "kpi-cxmg-co-cxmg-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-cxmg-top", "name": "Customer service cost per return", "description": "Service labour cost divided by returns. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR", "currentValue": "3", "targetValue": "1.5", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/bo-cxmg-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cxmg-bo-cxmg-top.png"}, "branches": [{"id": "bo-cxmg-b1", "name": "Contact volume", "description": "Return-related contacts per week.", "unit": "contacts per week", "currentValue": "600", "targetValue": "250", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/bo-cxmg-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cxmg-b1-l1", "name": "Contacts per return", "description": "Contacts divided by returns.", "unit": "contacts", "currentValue": "0.35", "targetValue": "0.15", "children": [], "icon": "kpi-cxmg-bo-cxmg-b1-l1.png"}, {"id": "bo-cxmg-b1-l2", "name": "Share of return contacts outsourced", "description": "Return inquiries handled by an external desk.", "unit": "%", "currentValue": "0", "targetValue": "30", "children": [], "icon": "kpi-cxmg-bo-cxmg-b1-l2.png"}], "icon": "kpi-cxmg-bo-cxmg-b1.png"}, {"id": "bo-cxmg-b2", "name": "Shopper satisfaction with returns", "description": "Satisfaction on return interactions.", "unit": "score 1-5", "currentValue": "3.8", "targetValue": "4.4", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/cxmg/kpis/bo-cxmg-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cxmg-b2-l1", "name": "Return ticket CSAT", "description": "Survey score after return tickets.", "unit": "score 1-5", "currentValue": "3.9", "targetValue": "4.5", "children": [], "icon": "kpi-cxmg-bo-cxmg-b2-l1.png"}, {"id": "bo-cxmg-b2-l2", "name": "Negative reviews mentioning returns", "description": "Public reviews complaining about returns.", "unit": "count per month", "currentValue": "12", "targetValue": "4", "children": [], "icon": "kpi-cxmg-bo-cxmg-b2-l2.png"}], "icon": "kpi-cxmg-bo-cxmg-b2.png"}]}}, "productStrategy": {"vision": "Shoppers never need to ask where their return is, and when they do, the agent already knows.", "timeHorizons": {"year1": {"focus": "Tracking page and milestone emails.", "productTheme": "Proactive status", "customerKPI": {"northStar": "Return-related contacts per 100 returns", "supporting": ["Proactive notification coverage"]}, "businessKPI": {"northStar": "Customer service cost per return", "revenueStreams": ["Included in subscriptions"], "supporting": ["Contact volume"]}}, "year3": {"focus": "Helpdesk context and consistent exception handling.", "productTheme": "Helpdesk-native returns", "customerKPI": {"northStar": "Agent handling efficiency", "supporting": ["First contact resolution on returns"]}, "businessKPI": {"northStar": "Customer service cost per return", "revenueStreams": ["Professional subscriptions"], "supporting": ["Shopper satisfaction with returns"]}}, "year5": {"focus": "Automated and outsourced return inquiry handling.", "productTheme": "Managed return inquiries", "customerKPI": {"northStar": "Self-service resolution", "supporting": ["Portal self-service share"]}, "businessKPI": {"northStar": "Customer service cost per return", "revenueStreams": ["Managed inquiry service (assumption)"], "supporting": ["Share of return contacts outsourced"]}}}}, "domain": "Merchant Teams"}, {"id": "rops", "name": "Returns and Warehouse Operations Lead", "description": "Runs inbound returns in the merchant's own warehouse or coordinates with a fulfilment partner: receives parcels, inspects and grades items, assigns restock locations and triggers refunds or exchanges. Also handles warranty and damage claims.", "icon": "customer-rops-portrait.jpg", "careAbout": ["Knowing what is coming back before it arrives", "Fast restocking of sellable items", "Fair decisions on damaged or warranty items", "No double data entry between returns tool, WMS and ERP"], "winsThem": ["Returns pre-registered with reason and items", "Automated resolutions and restock location assignment", "Photo-based approval before labels are issued", "Native WMS integrations such as Picqer or Monta"], "theirFear": ["Unidentified parcels without paperwork", "Refunds released for items never returned", "Peak-season backlog of unopened returns", "Integration failures discovered by finance"], "jobsToBeDone": [{"id": "rops-process", "name": "Process inbound returns quickly and accurately", "whatItIs": "Receive, identify, inspect and resolve every returned parcel and get sellable stock back on the shelf.", "outcome": "Returns are resolved within a day of arrival and sellable items are back in stock within 48 hours.", "steps": [{"step": "Expect the parcel", "description": "See announced returns with items, reasons and tracking before arrival.", "streamsNeeded": [{"id": "ship-and-track-a-return", "name": "Ship and Track a Return", "howItSupports": "Return shipment and tracking data."}, {"id": "sync-returns-across-the-commerce-stack", "name": "Sync Returns Across the Commerce Stack", "howItSupports": "Return announced in the WMS."}], "media": []}, {"step": "Inspect and grade", "description": "Check condition, record the result and assign a restock location.", "streamsNeeded": [{"id": "receive-inspect-and-resolve-returns", "name": "Receive, Inspect and Resolve Returns", "howItSupports": "Receiving console and restock location assignment."}], "media": []}, {"step": "Trigger the resolution", "description": "Release refund, exchange or store credit based on the inspection.", "streamsNeeded": [{"id": "receive-inspect-and-resolve-returns", "name": "Receive, Inspect and Resolve Returns", "howItSupports": "Resolution orchestration and write-back."}, {"id": "retain-revenue-with-exchanges-and-store-credit", "name": "Retain Revenue with Exchanges and Store Credit", "howItSupports": "Exchange release after inspection."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-rops-rops-process.png", "title": "Returns and Warehouse Operations Lead JTBD infographic: Process inbound returns quickly and accurately", "alt": "Enterprise infographic for the job \"Process inbound returns quickly and accurately\" for customer \"Returns and Warehouse Operations Lead\"."}]}, {"id": "rops-claims", "name": "Handle warranty and damage claims fairly", "whatItIs": "Decide claims with evidence before goods travel or money moves.", "outcome": "Unjustified claims are rejected early and valid claims are settled quickly.", "steps": [{"step": "Collect evidence", "description": "Ask questions and photos before issuing a label.", "streamsNeeded": [{"id": "gatekeep-warranty-and-damage-claims", "name": "Gatekeep Warranty and Damage Claims", "howItSupports": "Claim intake form with photo upload."}], "media": []}, {"step": "Decide centrally", "description": "Review in a queue and approve, reject or request more information.", "streamsNeeded": [{"id": "gatekeep-warranty-and-damage-claims", "name": "Gatekeep Warranty and Damage Claims", "howItSupports": "Review queue console."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-rops-rops-claims.png", "title": "Returns and Warehouse Operations Lead JTBD infographic: Handle warranty and damage claims fairly", "alt": "Enterprise infographic for the job \"Handle warranty and damage claims fairly\" for customer \"Returns and Warehouse Operations Lead\"."}]}], "customerJourneyStories": [{"id": "journey-rops-wms-sync", "name": "Connecting returns to the warehouse system", "linkedJobIds": ["rops-process", "rops-claims"], "summary": "An operations lead adopts Returnista's WMS integration and approval gate to stop blind returns.", "stages": [{"stage": "Trigger", "narrative": "Parcels arrive without paperwork, staff search orders by name, and refunds are released for items that never came back.", "media": []}, {"stage": "Discovery", "narrative": "Discovers that Returnista integrates with the WMS already used (for example Picqer or Monta) through the WMS vendor's integration page.", "media": []}, {"stage": "Evaluation", "narrative": "Checks what data is pushed to the WMS, how inspection results flow back, how restock locations are assigned and how claims with photos are reviewed.", "media": []}, {"stage": "Trial", "narrative": "Pilots announced returns and inspection-gated refunds for one product category.", "media": []}, {"stage": "Engagement", "narrative": "All returns are announced in the WMS; automations assign restock locations and release resolutions after grading.", "media": []}, {"stage": "Retention", "narrative": "Stays because the warehouse process now depends on the integration; asks for the warranty flow add-on for electronics and footwear claims.", "media": []}], "media": [{"type": "image", "src": "media/journey-rops-rops-wms-sync.png", "title": "Returns and Warehouse Operations Lead customer journey: Connecting returns to the warehouse system", "alt": "Enterprise journey storyboard for \"Connecting returns to the warehouse system\" for customer \"Returns and Warehouse Operations Lead\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-rops-top", "name": "Return dock-to-resolution time", "description": "Hours from parcel arrival to refund, exchange or credit release. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "hours", "currentValue": "72", "targetValue": "24", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-co-rops-top.png"}, "branches": [{"id": "co-rops-b1", "name": "Inbound predictability", "description": "Share of arriving returns that were announced with complete data.", "unit": "%", "currentValue": "60", "targetValue": "95", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-rops-b1-c1", "name": "Pre-announced returns share", "description": "Returns registered before arrival.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [{"id": "co-rops-b1-c1-l1", "name": "Returns registered in portal before arrival", "description": "Parcels matched to a portal request.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [], "icon": "kpi-rops-co-rops-b1-c1-l1.png"}, {"id": "co-rops-b1-c1-l2", "name": "Unidentified parcels", "description": "Parcels without a matching request.", "unit": "count per week", "currentValue": "40", "targetValue": "5", "children": [], "icon": "kpi-rops-co-rops-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-co-rops-b1-c1.png"}, {"id": "co-rops-b1-c2", "name": "Carrier scan completeness", "description": "Returns with in-transit tracking.", "unit": "%", "currentValue": "80", "targetValue": "98", "children": [{"id": "co-rops-b1-c2-l1", "name": "Returns with in-transit tracking", "description": "Returns with at least one carrier scan.", "unit": "%", "currentValue": "80", "targetValue": "98", "children": [], "icon": "kpi-rops-co-rops-b1-c2-l1.png"}, {"id": "co-rops-b1-c2-l2", "name": "Lost return parcels", "description": "Returns never delivered.", "unit": "per 1,000 returns", "currentValue": "4", "targetValue": "1", "children": [], "icon": "kpi-rops-co-rops-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-co-rops-b1-c2.png"}], "icon": "kpi-rops-co-rops-b1.png"}, {"id": "co-rops-b2", "name": "Processing efficiency", "description": "Returns processed per warehouse labour hour.", "unit": "returns per labour hour", "currentValue": "10", "targetValue": "18", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-rops-b2-c1", "name": "Automated resolution share", "description": "Resolutions released by rules without manual steps.", "unit": "%", "currentValue": "20", "targetValue": "60", "children": [{"id": "co-rops-b2-c1-l1", "name": "Automated resolutions", "description": "Resolutions triggered by automation.", "unit": "%", "currentValue": "20", "targetValue": "60", "children": [], "icon": "kpi-rops-co-rops-b2-c1-l1.png"}, {"id": "co-rops-b2-c1-l2", "name": "Restock locations auto-assigned", "description": "Items given a restock location by rule.", "unit": "%", "currentValue": "0", "targetValue": "80", "children": [], "icon": "kpi-rops-co-rops-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-co-rops-b2-c1.png"}, {"id": "co-rops-b2-c2", "name": "Restock-ready rate", "description": "Returned items fit for resale.", "unit": "%", "currentValue": "70", "targetValue": "85", "children": [{"id": "co-rops-b2-c2-l1", "name": "Items restocked within 48 hours", "description": "Sellable items back in stock within two days.", "unit": "%", "currentValue": "50", "targetValue": "90", "children": [], "icon": "kpi-rops-co-rops-b2-c2-l1.png"}, {"id": "co-rops-b2-c2-l2", "name": "Items graded unsellable", "description": "Items written off or sent to outlet.", "unit": "%", "currentValue": "12", "targetValue": "8", "children": [], "icon": "kpi-rops-co-rops-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/co-rops-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-co-rops-b2-c2.png"}], "icon": "kpi-rops-co-rops-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-rops-top", "name": "Cost per processed return", "description": "Warehouse labour and write-off cost per return. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR", "currentValue": "4", "targetValue": "2.5", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/bo-rops-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-rops-bo-rops-top.png"}, "branches": [{"id": "bo-rops-b1", "name": "Labour cost per return", "description": "Receiving and inspection labour cost.", "unit": "EUR", "currentValue": "2.5", "targetValue": "1.5", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/bo-rops-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-rops-b1-l1", "name": "Minutes per return in warehouse", "description": "Handling time per return.", "unit": "minutes", "currentValue": "6", "targetValue": "3.5", "children": [], "icon": "kpi-rops-bo-rops-b1-l1.png"}, {"id": "bo-rops-b1-l2", "name": "Overtime hours in return peaks", "description": "Overtime caused by return backlogs.", "unit": "hours per month", "currentValue": "80", "targetValue": "20", "children": [], "icon": "kpi-rops-bo-rops-b1-l2.png"}], "icon": "kpi-rops-bo-rops-b1.png"}, {"id": "bo-rops-b2", "name": "Write-off cost per return", "description": "Value written off for damaged or fraudulent returns.", "unit": "EUR", "currentValue": "1.5", "targetValue": "1", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/rops/kpis/bo-rops-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-rops-b2-l1", "name": "Rejected claims share", "description": "Claims rejected after evidence review.", "unit": "%", "currentValue": "10", "targetValue": "20", "children": [], "icon": "kpi-rops-bo-rops-b2-l1.png"}, {"id": "bo-rops-b2-l2", "name": "Refunds paid for items not received", "description": "Refunds without a matching receipt.", "unit": "count per month", "currentValue": "15", "targetValue": "2", "children": [], "icon": "kpi-rops-bo-rops-b2-l2.png"}], "icon": "kpi-rops-bo-rops-b2.png"}]}}, "productStrategy": {"vision": "Every returned parcel is expected, identified in seconds and resolved by rule.", "timeHorizons": {"year1": {"focus": "Announced returns and inspection-gated resolutions.", "productTheme": "Expected returns", "customerKPI": {"northStar": "Return dock-to-resolution time", "supporting": ["Pre-announced returns share"]}, "businessKPI": {"northStar": "Cost per processed return", "revenueStreams": ["Professional subscriptions"], "supporting": ["Labour cost per return"]}}, "year3": {"focus": "Automations and restock location assignment.", "productTheme": "Rule-driven operations", "customerKPI": {"northStar": "Processing efficiency", "supporting": ["Automated resolution share", "Restock-ready rate"]}, "businessKPI": {"northStar": "Cost per processed return", "revenueStreams": ["Warranty flow add-on"], "supporting": ["Write-off cost per return"]}}, "year5": {"focus": "One return record shared with WMS, ERP and carrier in the Katapull hub.", "productTheme": "Hub-native return operations", "customerKPI": {"northStar": "Inbound predictability", "supporting": ["Carrier scan completeness"]}, "businessKPI": {"northStar": "Cost per processed return", "revenueStreams": ["Enterprise subscriptions"], "supporting": ["Labour cost per return"]}}}}, "domain": "Merchant Teams"}, {"id": "shpr", "name": "Online Shopper Returning an Item", "description": "A consumer in the Netherlands, Belgium, Germany or elsewhere in Europe who bought online and wants to return or swap an item, often clothing or shoes that do not fit. Never buys Returnista but experiences it as the merchant's branded return page.", "icon": "customer-shpr-portrait.jpg", "careAbout": ["Getting the right size quickly", "Knowing when the refund arrives", "Not printing labels or paying fees", "A drop-off point nearby"], "winsThem": ["Starting a return with order number and email", "Instant size swap when in stock", "Label sent instantly", "Status updates by email"], "theirFear": ["Losing money on a parcel that goes missing", "Waiting weeks for a refund", "Hidden return fees", "Store credit they never use"], "jobsToBeDone": [{"id": "shpr-return", "name": "Send back or swap an item with minimal effort and certainty of refund", "whatItIs": "Return or exchange an online purchase without contacting the shop and know what will happen to the money.", "outcome": "The right item or the money arrives quickly and the shopper buys again.", "steps": [{"step": "Start the return", "description": "Look up the order, pick items and a reason, and see the options allowed by the policy.", "streamsNeeded": [{"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "Branded portal with order lookup and policy-filtered options."}], "media": []}, {"step": "Choose refund, exchange or credit", "description": "Pick a size swap or store credit with bonus, or a refund.", "streamsNeeded": [{"id": "retain-revenue-with-exchanges-and-store-credit", "name": "Retain Revenue with Exchanges and Store Credit", "howItSupports": "Exchange and store credit choices."}, {"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "Return fee payment if the shop charges one."}], "media": []}, {"step": "Ship and follow the return", "description": "Get a label, choose a carrier, drop off and track until resolution.", "streamsNeeded": [{"id": "ship-and-track-a-return", "name": "Ship and Track a Return", "howItSupports": "Label, carrier choice and tracking."}, {"id": "resolve-return-inquiries-and-notify-shoppers", "name": "Resolve Return Inquiries and Notify Shoppers", "howItSupports": "Milestone emails."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-shpr-shpr-return.png", "title": "Online Shopper Returning an Item JTBD infographic: Send back or swap an item with minimal effort and certainty of refund", "alt": "Enterprise infographic for the job \"Send back or swap an item with minimal effort and certainty of refund\" for customer \"Online Shopper Returning an Item\"."}]}], "customerJourneyStories": [{"id": "journey-shpr-size-swap", "name": "A size swap that keeps the shopper", "linkedJobIds": ["shpr-return"], "summary": "A shopper uses a merchant's Returnista portal to swap shoes for a larger size.", "stages": [{"stage": "Trigger", "narrative": "New shoes are half a size too small and the shopper wants the right size before the weekend.", "media": []}, {"stage": "Discovery", "narrative": "Finds the return link in the shipping confirmation email and on the shop's returns page; the portal carries the shop's own branding and domain.", "media": []}, {"stage": "Evaluation", "narrative": "Reads the return window, any fee and the options shown; sees the larger size is in stock and an exchange is free.", "media": []}, {"stage": "Trial", "narrative": "Submits a first exchange in a few minutes, receives a label instantly and drops the parcel at the nearest carrier point.", "media": []}, {"stage": "Engagement", "narrative": "Follows the status emails ('en route', 'delivered'); the replacement ships without contacting the shop.", "media": []}, {"stage": "Retention", "narrative": "Next time a return is needed the shopper trusts the process, chooses store credit with a bonus and keeps buying from the shop.", "media": []}], "media": [{"type": "image", "src": "media/journey-shpr-shpr-size-swap.png", "title": "Online Shopper Returning an Item customer journey: A size swap that keeps the shopper", "alt": "Enterprise journey storyboard for \"A size swap that keeps the shopper\" for customer \"Online Shopper Returning an Item\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-shpr-top", "name": "Effortless return completion", "description": "Share of returns completed without contacting the merchant. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "%", "currentValue": "75", "targetValue": "92", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-top.png"}, "branches": [{"id": "co-shpr-b1", "name": "Ease of starting", "description": "Time to submit a return request.", "unit": "minutes", "currentValue": "6", "targetValue": "3", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-shpr-b1-c1", "name": "Time to submit a return request", "description": "From opening the portal to confirmation.", "unit": "minutes", "currentValue": "6", "targetValue": "3", "children": [{"id": "co-shpr-b1-c1-l1", "name": "Order lookup success rate", "description": "Lookups that find the order first time.", "unit": "%", "currentValue": "90", "targetValue": "98", "children": [], "icon": "kpi-shpr-co-shpr-b1-c1-l1.png"}, {"id": "co-shpr-b1-c1-l2", "name": "Steps to choose reason and option", "description": "Screens to complete a request.", "unit": "count", "currentValue": "6", "targetValue": "4", "children": [], "icon": "kpi-shpr-co-shpr-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b1-c1.png"}, {"id": "co-shpr-b1-c2", "name": "Option clarity", "description": "Shoppers who understood options and fees.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [{"id": "co-shpr-b1-c2-l1", "name": "Shoppers shown an exchange option", "description": "Requests where an exchange was offered.", "unit": "%", "currentValue": "50", "targetValue": "80", "children": [], "icon": "kpi-shpr-co-shpr-b1-c2-l1.png"}, {"id": "co-shpr-b1-c2-l2", "name": "Return fee shown before submission", "description": "Requests where fees were visible upfront.", "unit": "%", "currentValue": "80", "targetValue": "100", "children": [], "icon": "kpi-shpr-co-shpr-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b1-c2.png"}], "icon": "kpi-shpr-co-shpr-b1.png"}, {"id": "co-shpr-b2", "name": "Confidence of outcome", "description": "Days from drop-off to refund or replacement.", "unit": "days", "currentValue": "8", "targetValue": "4", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-shpr-b2-c1", "name": "Time to refund or exchange", "description": "Days from drop-off to resolution.", "unit": "days", "currentValue": "8", "targetValue": "4", "children": [{"id": "co-shpr-b2-c1-l1", "name": "Days from drop-off to refund", "description": "Refund lead time.", "unit": "days", "currentValue": "8", "targetValue": "4", "children": [], "icon": "kpi-shpr-co-shpr-b2-c1-l1.png"}, {"id": "co-shpr-b2-c1-l2", "name": "Instant exchange share", "description": "Exchanges shipped before the return arrives.", "unit": "%", "currentValue": "20", "targetValue": "40", "children": [], "icon": "kpi-shpr-co-shpr-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b2-c1.png"}, {"id": "co-shpr-b2-c2", "name": "Status visibility", "description": "Returns with visible status.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [{"id": "co-shpr-b2-c2-l1", "name": "Return status page views per return", "description": "Self-service status checks.", "unit": "views", "currentValue": "1.5", "targetValue": "2.5", "children": [], "icon": "kpi-shpr-co-shpr-b2-c2-l1.png"}, {"id": "co-shpr-b2-c2-l2", "name": "Shipments with live tracking", "description": "Returns with carrier scans.", "unit": "%", "currentValue": "80", "targetValue": "98", "children": [], "icon": "kpi-shpr-co-shpr-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b2-c2.png"}], "icon": "kpi-shpr-co-shpr-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-shpr-top", "name": "Shopper cost to return", "description": "Fees and costs the shopper bears per return. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR", "currentValue": "2", "targetValue": "1", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-bo-shpr-top.png"}, "branches": [{"id": "bo-shpr-b1", "name": "Direct costs", "description": "Fees paid for returning.", "unit": "EUR", "currentValue": "1.5", "targetValue": "0.8", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-shpr-b1-l1", "name": "Return fee paid", "description": "Average fee charged to the shopper.", "unit": "EUR", "currentValue": "1.5", "targetValue": "0.8", "children": [], "icon": "kpi-shpr-bo-shpr-b1-l1.png"}, {"id": "bo-shpr-b1-l2", "name": "Paid return share", "description": "Returns where the shopper paid a fee.", "unit": "%", "currentValue": "30", "targetValue": "20", "children": [], "icon": "kpi-shpr-bo-shpr-b1-l2.png"}], "icon": "kpi-shpr-bo-shpr-b1.png"}, {"id": "bo-shpr-b2", "name": "Time costs", "description": "Time spent returning.", "unit": "minutes", "currentValue": "25", "targetValue": "12", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-shpr-b2-l1", "name": "Label-free return share", "description": "Returns without a printed label (assumed carrier QR option).", "unit": "%", "currentValue": "20", "targetValue": "60", "children": [], "icon": "kpi-shpr-bo-shpr-b2-l1.png"}, {"id": "bo-shpr-b2-l2", "name": "Distance to drop-off point", "description": "Distance to the chosen carrier point.", "unit": "km", "currentValue": "2", "targetValue": "1", "children": [], "icon": "kpi-shpr-bo-shpr-b2-l2.png"}], "icon": "kpi-shpr-bo-shpr-b2.png"}]}}, "productStrategy": {"vision": "Returning online feels as easy and certain as returning in a store.", "timeHorizons": {"year1": {"focus": "Fast, branded self-service with instant labels.", "productTheme": "Self-service portal", "customerKPI": {"northStar": "Effortless return completion", "supporting": ["Ease of starting"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions (shopper pays nothing to Returnista)"], "supporting": ["Direct costs"]}}, "year3": {"focus": "Instant exchanges and clear status.", "productTheme": "Exchange-first return", "customerKPI": {"northStar": "Confidence of outcome", "supporting": ["Time to refund or exchange", "Status visibility"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions"], "supporting": ["Time costs"]}}, "year5": {"focus": "Return anywhere: in-store, label-free and multi-country.", "productTheme": "Return anywhere", "customerKPI": {"northStar": "Effortless return completion", "supporting": ["Option clarity"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions"], "supporting": ["Label-free return share"]}}}}, "domain": "Shoppers"}, {"id": "fulp", "name": "Fulfilment and 3PL Partner Manager", "description": "Account or IT manager at a fulfilment provider or 3PL (for example Monta, Active Ants, Bleckmann) or a WMS vendor (for example Picqer, now a Katapull sibling) that processes returns for many merchant clients and connects to Returnista through native integrations.", "icon": "customer-fulp-portrait.jpg", "careAbout": ["Returns arriving with client data already attached", "Reliable integration for many clients", "Clear client instructions on resolution", "Fast onboarding of new webshop clients"], "winsThem": ["Native integration listed on both sides", "Automatic sync of return and order data", "Partner programme and referrals", "Webhooks and APIs for custom flows"], "theirFear": ["Per-client custom integrations", "Sync failures that clients blame on the warehouse", "Clients choosing a returns tool the warehouse cannot read", "SLA penalties in peak season"], "jobsToBeDone": [{"id": "fulp-serve", "name": "Process returns for many merchant clients without manual reconciliation", "whatItIs": "Receive returns for many webshops with announced data, report inspection results back and keep client SLAs.", "outcome": "Returns flow automatically between client portal, warehouse and client back office.", "steps": [{"step": "Connect a new client", "description": "Activate the integration when a webshop client uses Returnista.", "streamsNeeded": [{"id": "sync-returns-across-the-commerce-stack", "name": "Sync Returns Across the Commerce Stack", "howItSupports": "Native WMS and fulfilment connectors."}, {"id": "set-up-return-policy-and-onboard-a-merchant", "name": "Set Up Return Policy and Onboard a Merchant", "howItSupports": "Merchant onboarding with integration setup."}], "media": []}, {"step": "Process and report", "description": "Process announced returns and report results back.", "streamsNeeded": [{"id": "receive-inspect-and-resolve-returns", "name": "Receive, Inspect and Resolve Returns", "howItSupports": "Inspection results trigger resolutions."}, {"id": "sync-returns-across-the-commerce-stack", "name": "Sync Returns Across the Commerce Stack", "howItSupports": "Results synced back with retry."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-fulp-fulp-serve.png", "title": "Fulfilment and 3PL Partner Manager JTBD infographic: Process returns for many merchant clients without manual reconciliation", "alt": "Enterprise infographic for the job \"Process returns for many merchant clients without manual reconciliation\" for customer \"Fulfilment and 3PL Partner Manager\"."}]}], "customerJourneyStories": [{"id": "journey-fulp-partner", "name": "Becoming a Returnista integration partner", "linkedJobIds": ["fulp-serve"], "summary": "A fulfilment provider standardises on Returnista integration for its webshop clients.", "stages": [{"stage": "Trigger", "narrative": "Several webshop clients ask the warehouse to read returns from Returnista instead of emailed lists.", "media": []}, {"stage": "Discovery", "narrative": "Learns of Returnista's partner programme and sees peers (Monta, Picqer) announcing integrations.", "media": []}, {"stage": "Evaluation", "narrative": "Reviews API documentation, webhook events and the data mapping between return requests and warehouse orders.", "media": []}, {"stage": "Trial", "narrative": "Builds or activates the integration for two clients and runs both flows in parallel for a month.", "media": []}, {"stage": "Engagement", "narrative": "Every new client using Returnista is connected by configuration; returns arrive pre-announced.", "media": []}, {"stage": "Retention", "narrative": "Stays a listed partner, refers clients to Returnista and co-markets the integration.", "media": []}], "media": [{"type": "image", "src": "media/journey-fulp-fulp-partner.png", "title": "Fulfilment and 3PL Partner Manager customer journey: Becoming a Returnista integration partner", "alt": "Enterprise journey storyboard for \"Becoming a Returnista integration partner\" for customer \"Fulfilment and 3PL Partner Manager\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-fulp-top", "name": "Client return SLA adherence", "description": "Share of returns processed within the client SLA. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "%", "currentValue": "85", "targetValue": "97", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-co-fulp-top.png"}, "branches": [{"id": "co-fulp-b1", "name": "Data completeness", "description": "Returns arriving with complete client data.", "unit": "%", "currentValue": "70", "targetValue": "98", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-fulp-b1-c1", "name": "Returns received with portal data", "description": "Returns matched to an announced request.", "unit": "%", "currentValue": "70", "targetValue": "98", "children": [{"id": "co-fulp-b1-c1-l1", "name": "Pre-notified return share", "description": "Returns announced before arrival.", "unit": "%", "currentValue": "70", "targetValue": "98", "children": [], "icon": "kpi-fulp-co-fulp-b1-c1-l1.png"}, {"id": "co-fulp-b1-c1-l2", "name": "Reason codes passed to WMS", "description": "Returns with reason codes in the WMS.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [], "icon": "kpi-fulp-co-fulp-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-co-fulp-b1-c1.png"}, {"id": "co-fulp-b1-c2", "name": "Integration sync reliability", "description": "Successful syncs between Returnista and WMS.", "unit": "%", "currentValue": "97", "targetValue": "99.8", "children": [{"id": "co-fulp-b1-c2-l1", "name": "Sync failures per 1,000 returns", "description": "Failed or duplicate syncs.", "unit": "count", "currentValue": "10", "targetValue": "1", "children": [], "icon": "kpi-fulp-co-fulp-b1-c2-l1.png"}, {"id": "co-fulp-b1-c2-l2", "name": "Mean time to recover a failed sync", "description": "Time to fix sync errors.", "unit": "hours", "currentValue": "12", "targetValue": "1", "children": [], "icon": "kpi-fulp-co-fulp-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-co-fulp-b1-c2.png"}], "icon": "kpi-fulp-co-fulp-b1.png"}, {"id": "co-fulp-b2", "name": "Throughput", "description": "Returns processed per FTE day.", "unit": "returns per FTE day", "currentValue": "120", "targetValue": "200", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-fulp-b2-c1", "name": "Returns processed per FTE day", "description": "Warehouse productivity on returns.", "unit": "returns", "currentValue": "120", "targetValue": "200", "children": [{"id": "co-fulp-b2-c1-l1", "name": "Scan-to-identify time", "description": "Time to identify a parcel.", "unit": "seconds", "currentValue": "60", "targetValue": "15", "children": [], "icon": "kpi-fulp-co-fulp-b2-c1-l1.png"}, {"id": "co-fulp-b2-c1-l2", "name": "Manual data entry per return", "description": "Typing time per return.", "unit": "minutes", "currentValue": "2", "targetValue": "0.2", "children": [], "icon": "kpi-fulp-co-fulp-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-co-fulp-b2-c1.png"}, {"id": "co-fulp-b2-c2", "name": "Client resolution latency", "description": "From inspection to client resolution.", "unit": "hours", "currentValue": "24", "targetValue": "4", "children": [{"id": "co-fulp-b2-c2-l1", "name": "Inspection result to refund trigger time", "description": "Lag until the merchant's resolution fires.", "unit": "hours", "currentValue": "24", "targetValue": "2", "children": [], "icon": "kpi-fulp-co-fulp-b2-c2-l1.png"}, {"id": "co-fulp-b2-c2-l2", "name": "Exceptions needing client decision", "description": "Returns waiting on client instructions.", "unit": "%", "currentValue": "10", "targetValue": "4", "children": [], "icon": "kpi-fulp-co-fulp-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/co-fulp-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-co-fulp-b2-c2.png"}], "icon": "kpi-fulp-co-fulp-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-fulp-top", "name": "Returns service margin per client", "description": "Margin on returns handling per client. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR per month", "currentValue": "800", "targetValue": "1200", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/bo-fulp-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-fulp-bo-fulp-top.png"}, "branches": [{"id": "bo-fulp-b1", "name": "Client retention", "description": "Clients retained per year.", "unit": "%", "currentValue": "88", "targetValue": "95", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/bo-fulp-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-fulp-b1-l1", "name": "Clients using integrated returns", "description": "Share of clients on an integrated returns tool.", "unit": "%", "currentValue": "30", "targetValue": "70", "children": [], "icon": "kpi-fulp-bo-fulp-b1-l1.png"}, {"id": "bo-fulp-b1-l2", "name": "Client SLA complaints", "description": "Complaints about returns handling.", "unit": "count per month", "currentValue": "6", "targetValue": "1", "children": [], "icon": "kpi-fulp-bo-fulp-b1-l2.png"}], "icon": "kpi-fulp-bo-fulp-b1.png"}, {"id": "bo-fulp-b2", "name": "Onboarding cost per client", "description": "Integration effort per new client.", "unit": "hours", "currentValue": "16", "targetValue": "2", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/fulp/kpis/bo-fulp-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-fulp-b2-l1", "name": "Custom integration projects", "description": "Clients needing custom work.", "unit": "count per year", "currentValue": "8", "targetValue": "1", "children": [], "icon": "kpi-fulp-bo-fulp-b2-l1.png"}, {"id": "bo-fulp-b2-l2", "name": "Days to connect a new client", "description": "Elapsed time to live integration.", "unit": "days", "currentValue": "10", "targetValue": "1", "children": [], "icon": "kpi-fulp-bo-fulp-b2-l2.png"}], "icon": "kpi-fulp-bo-fulp-b2.png"}]}}, "productStrategy": {"vision": "Returns move between shop, shopper, warehouse and back office as one connected record.", "timeHorizons": {"year1": {"focus": "Native WMS and fulfilment connectors.", "productTheme": "Native connectors", "customerKPI": {"northStar": "Client return SLA adherence", "supporting": ["Data completeness"]}, "businessKPI": {"northStar": "Returns service margin per client", "revenueStreams": ["Partner referrals"], "supporting": ["Onboarding cost per client"]}}, "year3": {"focus": "Webhooks, retries and monitoring.", "productTheme": "Reliable sync", "customerKPI": {"northStar": "Integration sync reliability", "supporting": ["Sync failures per 1,000 returns"]}, "businessKPI": {"northStar": "Returns service margin per client", "revenueStreams": ["Partner programme"], "supporting": ["Client retention"]}}, "year5": {"focus": "Shared return events across Katapull brands (Picqer, Logic4, DeliveryMatch).", "productTheme": "Hub-wide return events", "customerKPI": {"northStar": "Throughput", "supporting": ["Client resolution latency"]}, "businessKPI": {"northStar": "Returns service margin per client", "revenueStreams": ["Katapull hub bundles (assumption)"], "supporting": ["Clients using integrated returns"]}}}}, "domain": "Logistics and Integration Partners"}];
+    const customer = {"id": "shpr", "name": "Online Shopper Returning an Item", "description": "A consumer in the Netherlands, Belgium, Germany or elsewhere in Europe who bought online and wants to return or swap an item, often clothing or shoes that do not fit. Never buys Returnista but experiences it as the merchant's branded return page.", "icon": "customer-shpr-portrait.jpg", "careAbout": ["Getting the right size quickly", "Knowing when the refund arrives", "Not printing labels or paying fees", "A drop-off point nearby"], "winsThem": ["Starting a return with order number and email", "Instant size swap when in stock", "Label sent instantly", "Status updates by email"], "theirFear": ["Losing money on a parcel that goes missing", "Waiting weeks for a refund", "Hidden return fees", "Store credit they never use"], "jobsToBeDone": [{"id": "shpr-return", "name": "Send back or swap an item with minimal effort and certainty of refund", "whatItIs": "Return or exchange an online purchase without contacting the shop and know what will happen to the money.", "outcome": "The right item or the money arrives quickly and the shopper buys again.", "steps": [{"step": "Start the return", "description": "Look up the order, pick items and a reason, and see the options allowed by the policy.", "streamsNeeded": [{"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "Branded portal with order lookup and policy-filtered options."}], "media": []}, {"step": "Choose refund, exchange or credit", "description": "Pick a size swap or store credit with bonus, or a refund.", "streamsNeeded": [{"id": "retain-revenue-with-exchanges-and-store-credit", "name": "Retain Revenue with Exchanges and Store Credit", "howItSupports": "Exchange and store credit choices."}, {"id": "start-a-self-service-return", "name": "Start a Self-service Return", "howItSupports": "Return fee payment if the shop charges one."}], "media": []}, {"step": "Ship and follow the return", "description": "Get a label, choose a carrier, drop off and track until resolution.", "streamsNeeded": [{"id": "ship-and-track-a-return", "name": "Ship and Track a Return", "howItSupports": "Label, carrier choice and tracking."}, {"id": "resolve-return-inquiries-and-notify-shoppers", "name": "Resolve Return Inquiries and Notify Shoppers", "howItSupports": "Milestone emails."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-shpr-shpr-return.png", "title": "Online Shopper Returning an Item JTBD infographic: Send back or swap an item with minimal effort and certainty of refund", "alt": "Enterprise infographic for the job \"Send back or swap an item with minimal effort and certainty of refund\" for customer \"Online Shopper Returning an Item\"."}]}], "customerJourneyStories": [{"id": "journey-shpr-size-swap", "name": "A size swap that keeps the shopper", "linkedJobIds": ["shpr-return"], "summary": "A shopper uses a merchant's Returnista portal to swap shoes for a larger size.", "stages": [{"stage": "Trigger", "narrative": "New shoes are half a size too small and the shopper wants the right size before the weekend.", "media": []}, {"stage": "Discovery", "narrative": "Finds the return link in the shipping confirmation email and on the shop's returns page; the portal carries the shop's own branding and domain.", "media": []}, {"stage": "Evaluation", "narrative": "Reads the return window, any fee and the options shown; sees the larger size is in stock and an exchange is free.", "media": []}, {"stage": "Trial", "narrative": "Submits a first exchange in a few minutes, receives a label instantly and drops the parcel at the nearest carrier point.", "media": []}, {"stage": "Engagement", "narrative": "Follows the status emails ('en route', 'delivered'); the replacement ships without contacting the shop.", "media": []}, {"stage": "Retention", "narrative": "Next time a return is needed the shopper trusts the process, chooses store credit with a bonus and keeps buying from the shop.", "media": []}], "media": [{"type": "image", "src": "media/journey-shpr-shpr-size-swap.png", "title": "Online Shopper Returning an Item customer journey: A size swap that keeps the shopper", "alt": "Enterprise journey storyboard for \"A size swap that keeps the shopper\" for customer \"Online Shopper Returning an Item\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-shpr-top", "name": "Effortless return completion", "description": "Share of returns completed without contacting the merchant. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "%", "currentValue": "75", "targetValue": "92", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-top.png"}, "branches": [{"id": "co-shpr-b1", "name": "Ease of starting", "description": "Time to submit a return request.", "unit": "minutes", "currentValue": "6", "targetValue": "3", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-shpr-b1-c1", "name": "Time to submit a return request", "description": "From opening the portal to confirmation.", "unit": "minutes", "currentValue": "6", "targetValue": "3", "children": [{"id": "co-shpr-b1-c1-l1", "name": "Order lookup success rate", "description": "Lookups that find the order first time.", "unit": "%", "currentValue": "90", "targetValue": "98", "children": [], "icon": "kpi-shpr-co-shpr-b1-c1-l1.png"}, {"id": "co-shpr-b1-c1-l2", "name": "Steps to choose reason and option", "description": "Screens to complete a request.", "unit": "count", "currentValue": "6", "targetValue": "4", "children": [], "icon": "kpi-shpr-co-shpr-b1-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b1-c1.png"}, {"id": "co-shpr-b1-c2", "name": "Option clarity", "description": "Shoppers who understood options and fees.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [{"id": "co-shpr-b1-c2-l1", "name": "Shoppers shown an exchange option", "description": "Requests where an exchange was offered.", "unit": "%", "currentValue": "50", "targetValue": "80", "children": [], "icon": "kpi-shpr-co-shpr-b1-c2-l1.png"}, {"id": "co-shpr-b1-c2-l2", "name": "Return fee shown before submission", "description": "Requests where fees were visible upfront.", "unit": "%", "currentValue": "80", "targetValue": "100", "children": [], "icon": "kpi-shpr-co-shpr-b1-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b1-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b1-c2.png"}], "icon": "kpi-shpr-co-shpr-b1.png"}, {"id": "co-shpr-b2", "name": "Confidence of outcome", "description": "Days from drop-off to refund or replacement.", "unit": "days", "currentValue": "8", "targetValue": "4", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-shpr-b2-c1", "name": "Time to refund or exchange", "description": "Days from drop-off to resolution.", "unit": "days", "currentValue": "8", "targetValue": "4", "children": [{"id": "co-shpr-b2-c1-l1", "name": "Days from drop-off to refund", "description": "Refund lead time.", "unit": "days", "currentValue": "8", "targetValue": "4", "children": [], "icon": "kpi-shpr-co-shpr-b2-c1-l1.png"}, {"id": "co-shpr-b2-c1-l2", "name": "Instant exchange share", "description": "Exchanges shipped before the return arrives.", "unit": "%", "currentValue": "20", "targetValue": "40", "children": [], "icon": "kpi-shpr-co-shpr-b2-c1-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2-c1", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b2-c1.png"}, {"id": "co-shpr-b2-c2", "name": "Status visibility", "description": "Returns with visible status.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [{"id": "co-shpr-b2-c2-l1", "name": "Return status page views per return", "description": "Self-service status checks.", "unit": "views", "currentValue": "1.5", "targetValue": "2.5", "children": [], "icon": "kpi-shpr-co-shpr-b2-c2-l1.png"}, {"id": "co-shpr-b2-c2-l2", "name": "Shipments with live tracking", "description": "Returns with carrier scans.", "unit": "%", "currentValue": "80", "targetValue": "98", "children": [], "icon": "kpi-shpr-co-shpr-b2-c2-l2.png"}], "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/co-shpr-b2-c2", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-co-shpr-b2-c2.png"}], "icon": "kpi-shpr-co-shpr-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-shpr-top", "name": "Shopper cost to return", "description": "Fees and costs the shopper bears per return. Modeled seed value for a representative merchant, not a figure reported by Returnista.", "unit": "EUR", "currentValue": "2", "targetValue": "1", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-shpr-bo-shpr-top.png"}, "branches": [{"id": "bo-shpr-b1", "name": "Direct costs", "description": "Fees paid for returning.", "unit": "EUR", "currentValue": "1.5", "targetValue": "0.8", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-shpr-b1-l1", "name": "Return fee paid", "description": "Average fee charged to the shopper.", "unit": "EUR", "currentValue": "1.5", "targetValue": "0.8", "children": [], "icon": "kpi-shpr-bo-shpr-b1-l1.png"}, {"id": "bo-shpr-b1-l2", "name": "Paid return share", "description": "Returns where the shopper paid a fee.", "unit": "%", "currentValue": "30", "targetValue": "20", "children": [], "icon": "kpi-shpr-bo-shpr-b1-l2.png"}], "icon": "kpi-shpr-bo-shpr-b1.png"}, {"id": "bo-shpr-b2", "name": "Time costs", "description": "Time spent returning.", "unit": "minutes", "currentValue": "25", "targetValue": "12", "link": "https://dashboard.example.com/ecommerce-returns-management-platform/customers/shpr/kpis/bo-shpr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-shpr-b2-l1", "name": "Label-free return share", "description": "Returns without a printed label (assumed carrier QR option).", "unit": "%", "currentValue": "20", "targetValue": "60", "children": [], "icon": "kpi-shpr-bo-shpr-b2-l1.png"}, {"id": "bo-shpr-b2-l2", "name": "Distance to drop-off point", "description": "Distance to the chosen carrier point.", "unit": "km", "currentValue": "2", "targetValue": "1", "children": [], "icon": "kpi-shpr-bo-shpr-b2-l2.png"}], "icon": "kpi-shpr-bo-shpr-b2.png"}]}}, "productStrategy": {"vision": "Returning online feels as easy and certain as returning in a store.", "timeHorizons": {"year1": {"focus": "Fast, branded self-service with instant labels.", "productTheme": "Self-service portal", "customerKPI": {"northStar": "Effortless return completion", "supporting": ["Ease of starting"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions (shopper pays nothing to Returnista)"], "supporting": ["Direct costs"]}}, "year3": {"focus": "Instant exchanges and clear status.", "productTheme": "Exchange-first return", "customerKPI": {"northStar": "Confidence of outcome", "supporting": ["Time to refund or exchange", "Status visibility"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions"], "supporting": ["Time costs"]}}, "year5": {"focus": "Return anywhere: in-store, label-free and multi-country.", "productTheme": "Return anywhere", "customerKPI": {"northStar": "Effortless return completion", "supporting": ["Option clarity"]}, "businessKPI": {"northStar": "Shopper cost to return", "revenueStreams": ["Merchant subscriptions"], "supporting": ["Label-free return share"]}}}}, "domain": "Shoppers"};
+    // id -> 'stream' | 'brick'; lets JTBD tiles link to the owning page.
+    const streamBrickKinds = {"rprt": "brick", "mloc": "brick", "rpay": "brick", "rlbl": "brick", "carr": "brick", "rtrk": "brick", "exch": "brick", "scrd": "brick", "rpol": "brick", "auto": "brick", "gate": "brick", "insp": "brick", "rres": "brick", "isrt": "brick", "cxin": "brick", "pipe": "brick", "rins": "brick", "ridx": "brick", "bnch": "brick", "bexp": "brick", "ecom": "brick", "erpw": "brick", "ecos": "brick", "oapi": "brick", "tnnt": "brick", "start-a-self-service-return": "stream", "retain-revenue-with-exchanges-and-store-credit": "stream", "ship-and-track-a-return": "stream", "resolve-return-inquiries-and-notify-shoppers": "stream", "receive-inspect-and-resolve-returns": "stream", "gatekeep-warranty-and-damage-claims": "stream", "reduce-return-rates-with-product-insights": "stream", "set-up-return-policy-and-onboard-a-merchant": "stream", "sync-returns-across-the-commerce-stack": "stream"};
+    function streamBrickHref(id) {
+        const kind = streamBrickKinds[id];
+        if (kind === 'stream') return '../../product-bricks/stream_pages/' + id + '.html';
+        if (kind === 'brick') return '../../product-bricks/landing_pages/' + id + '.html';
+        return null;
+    }
+    const customerInsights = [{"id": "rtn-01", "title": "Exchanges and store credit are Returnista's core revenue-retention claim", "summary": "Returnista's exchanges page claims merchants can retain up to 40% of return value, with 30-40% exchange conversion and 10-20% store credit conversion (vendor claims, no period or sample stated). Bonus credit can be up to EUR 10 or 15% per order; exchanges are blocked when the alternative is out of stock.", "implication": "Model retained revenue as the e-commerce director's north star, but treat the ranges as vendor marketing, not benchmarks.", "priority": "high", "tags": ["exchanges", "store-credit", "vendor-claim"], "sources": [{"id": "returnista-exchanges", "title": "Returnista - Exchanges", "url": "https://www.returnista.nl/en/exchanges", "publisher": "Returnista", "date": "2026-10-30"}], "link": {"customerId": "shpr", "jobIds": ["shpr-return"], "kpiIds": ["co-shpr-b2-c1"]}}, {"id": "rtn-11", "title": "Shopper-facing convenience and sustainability", "summary": "The branded portal lets shoppers start returns 24/7 with order number and email, choose a configured carrier and receive a label instantly. In 2022 Returnista said shoppers could return without printing labels and that it compensated CO2 emissions (older source; current site does not repeat these claims).", "implication": "Label-free and multi-carrier choice are shopper-effort levers; treat label-free availability as carrier-dependent.", "priority": "medium", "tags": ["shopper", "sustainability"], "sources": [{"id": "returnista-portal", "title": "Returnista - Returns portal", "url": "https://www.returnista.nl/en/returns-portal", "publisher": "Returnista", "date": "2026-10-30"}, {"id": "siliconcanals-2022", "title": "Returnista turns returns into opportunities", "url": "https://siliconcanals.com/returnista-turns-returns-into-opportunities/", "publisher": "Silicon Canals", "date": "2022-10"}], "link": {"customerId": "shpr", "jobIds": ["shpr-return"], "kpiIds": ["co-shpr-b1", "bo-shpr-b2-l1"]}}];
+</script>
+<div id="Navigation"></div>
+<div style="margin: 20px">
+    <div id="Header"></div>
+
+    <div style="margin: 0; margin-top: 12px">
+        <div class="tab">
+            <button class="tablinks active" id="tab_HomeTab" onclick="openTab('HomeTab')">Home</button>
+            <button class="tablinks" id="tab_JobsTab" onclick="openTab('JobsTab')">Jobs To Be Done</button>
+            <button class="tablinks" id="tab_JourneysTab" onclick="openTab('JourneysTab')">Journeys</button>
+            <button class="tablinks" id="tab_KPITab" onclick="openTab('KPITab')">KPIs</button>
+            <button class="tablinks" id="tab_RoadmapTab" onclick="openTab('RoadmapTab')">Product Vision</button>
+            <button class="tablinks" id="tab_InsightsTab" onclick="openTab('InsightsTab')">Insights</button>
+        </div>
+
+        <div id="tab_content_HomeTab" class="tabcontent" style="padding: 10px">
+            <div id="Home"></div>
+        </div>
+        <div id="tab_content_JobsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Jobs"></div>
+        </div>
+        <div id="tab_content_JourneysTab" class="tabcontent" style="padding: 10px;">
+            <div id="Journeys"></div>
+        </div>
+        <div id="tab_content_KPITab" class="tabcontent" style="padding: 10px;">
+            <div id="KPI"></div>
+        </div>
+        <div id="tab_content_RoadmapTab" class="tabcontent" style="padding: 10px;">
+            <div id="Roadmap"></div>
+        </div>
+        <div id="tab_content_InsightsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Insights"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addNavigation() {
+        let html = '';
+        html += '<div class="image-tabs" style="margin: 4px 20px 10px 20px; font-size: 85%; color: black">';
+        let prev_domain = all_customers[0].domain;
+        all_customers.forEach(per => {
+            if (prev_domain.toLowerCase() !== per.domain.toLowerCase()) {
+                prev_domain = per.domain;
+                html += '<div style="margin-top: 5px; margin-left: 4px; vertical-align: top; display: inline-block; border-left: 2px solid lightgrey; height: 30px;">&nbsp;</div>';
+            }
+            html += '<a href="' + per.id + '.html">';
+            const tabClass = per.id === customer.id ? 'tab-image-selected' : 'tab-image';
+            html += '<img src="../icons/' + per.icon + '" style="" class="' + tabClass + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '</a>';
+        });
+        html += '</div>';
+
+        document.getElementById('Navigation').innerHTML = html;
+    }
+
+    addNavigation();
+
+    function addHeader() {
+        let html = '';
+
+        html += '<table>';
+        html += '<tr>';
+        html += '<td>';
+        html += '<div>';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 200px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="vertical-align: top">';
+        html += '<div style="margin-left: 20px; font-size: 90%; color: grey; vertical-align: top">';
+        html += '<div class="page-type-badge" style="">Customer</div>';
+        html += '</div>';
+        html += '<div style="font-size: 50px; margin-left: 20px">';
+        html += customer.name;
+        html += '</div>';
+        html += '<div style="font-size: 16px; margin-left: 20px; color: grey; margin-top: 3px">';
+        html += customer.description ? customer.description : '';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        document.getElementById('Header').innerHTML = html;
+    }
+
+    function addHome() {
+        let html = '';
+
+        html += '<div class="doc" style="text-align: center; margin-bottom: 22px; margin-left: 24px">';
+        html += '<table>';
+        html += '<tr>';
+        html += '<td style="width: 48px; vertical-align: top">';
+        html += '<img src="../icons/care.png" style="height: 64px; margin: 8px">';
+        html += '<div style="color: darkgreen; font-size: 90%">care about</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.careAbout.forEach(item => {
+            html += '<div style="background-color: rgba(0, 100, 0, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+
+        html += '<td style="width: 22px"></td>';
+
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/win.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: blue; font-size: 90%">wins them</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.winsThem.forEach(item => {
+            html += '<div style="background-color: rgba(0, 0, 100, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="width: 22px"></td>';
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/fear.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: crimson; font-size: 90%">their fear</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.theirFear.forEach(item => {
+            html += '<div style="background-color: rgba(100, 0, 0, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        html += '</div>';
+
+        document.getElementById('Home').innerHTML = html;
+    }
+
+    function jobNamesForCustomer(jobIds) {
+        const jobs = (customer.jobsToBeDone || []);
+        const jobLookup = {};
+        jobs.forEach(job => {
+            if (job.id) {
+                jobLookup[job.id] = job.name || job.id;
+            }
+        });
+        return (jobIds || []).map(jobId => jobLookup[jobId] || jobId);
+    }
+
+    function kpiNamesForLink(link) {
+        // Prefer stable KPI IDs resolved against this customer's KPI pyramid; fall back to legacy display-name kpis.
+        if (link && link.kpiIds && link.kpiIds.length) {
+            const lookup = {};
+            function walk(node) {
+                if (!node) return;
+                if (node.id) {
+                    lookup[node.id] = node.name || node.id;
+                }
+                (node.branches || []).forEach(walk);
+                (node.children || []).forEach(walk);
+            }
+            const pyramids = (customer || {}).kpiPyramids || {};
+            ['customerOutcomes', 'businessOutcomes'].forEach(key => {
+                const pyramid = pyramids[key];
+                if (!pyramid) return;
+                walk(pyramid.top);
+                (pyramid.branches || []).forEach(walk);
+            });
+            return link.kpiIds.map(kpiId => lookup[kpiId] || kpiId);
+        }
+        return (link && link.kpis) || [];
+    }
+
+    function addInsights() {
+        let html = '';
+
+        html += '<div style="margin: 24px">';
+
+        if (!customerInsights || customerInsights.length === 0) {
+            html += '<div class="group">No customer-linked insights defined for this domain yet.</div>';
+        } else {
+            customerInsights.forEach(insight => {
+                html += '<div class="group" style="width: 250px; display: inline-block; margin: 8px; padding: 16px; background: white">';
+                html += '<div style="font-size: 150%; color: #1d4ed8; margin-bottom: 8px">' + escapeHtml(insight.title) + '</div>';
+                html += '<div style="margin-bottom: 10px">' + escapeHtml(insight.summary) + '</div>';
+                if (insight.implication) {
+                    html += '<div style="margin-bottom: 10px"><b>Product implication:</b> ' + escapeHtml(insight.implication) + '</div>';
+                }
+                if (insight.link) {
+                    if (insight.link.jobIds && insight.link.jobIds.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>Jobs:</b> ' + escapeHtml(jobNamesForCustomer(insight.link.jobIds).join(', ')) + '</div>';
+                    }
+                    const kpiNames = kpiNamesForLink(insight.link);
+                    if (kpiNames.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>KPIs:</b> ' + escapeHtml(kpiNames.join(', ')) + '</div>';
+                    }
+                }
+                if (insight.tags && insight.tags.length) {
+                    html += '<div style="margin-top: 8px; margin-bottom: 10px">';
+                    insight.tags.forEach(tag => {
+                        html += '<span style="display:inline-block; margin:0 8px 6px 0; padding:4px 10px; border-radius:999px; background:#eef2f6; font-size:12px">' + escapeHtml(tag) + '</span>';
+                    });
+                    html += '</div>';
+                }
+                if (insight.sources && insight.sources.length) {
+                    html += '<div style="margin-top: 8px">';
+                    html += '<div style="font-size: 13px; color: #6b7280; margin-bottom: 4px">Sources</div>';
+                    insight.sources.forEach(source => {
+                        html += '<div style="font-size: 13px; margin-bottom: 4px">';
+                        html += '<a class="activity-link" target="_blank" href="' + escapeHtml(source.url) + '">' + escapeHtml(source.title) + '</a>';
+                        html += '<span class="activity-muted"> (' + escapeHtml(source.publisher || '') + (source.date ? ', ' + escapeHtml(source.date) : '') + ')</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        document.getElementById('Insights').innerHTML = html;
+    }
+
+    function addJBTD() {
+        let html = '';
+
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="jobs-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJobsView(\'default\')">Default View</button>';
+        html += '<button id="jobs-view-comic" class="jobs-view-button" onclick="setJobsView(\'comic\')">Comic View</button>';
+        html += '</div>';
+
+        html += '<div id="jobs-default-view">';
+        html += '<table class="job-summary-table">';
+        html += '<tr style="font-size: 80%; color: grey">';
+        html += '<td>Job</td>';
+        html += '<td></td>';
+        html += '<td>Outcome</td>';
+        html += '</tr>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<tr>';
+            html += '<td>';
+            html += '<div style="text-align: left">';
+            html += '<div style="font-size: 100%; color: blue;">' + job.name + '</div>';
+            html += '</div>';
+            html += '<ul style="font-size: 70%">';
+            job.steps.forEach(step => {
+                html += '<li>';
+                html += step.step;
+                html += '</li>';
+            });
+            html += '</ul>';
+            html += '</td>';
+            html += '<td style="width: 20px">';
+            html += '</td>';
+            html += '<td style="vertical-align: top">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">(' + job.whatItIs + ')</div>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+
+        html += '<div style="height: 50px"></div>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="group job-detail-group">';
+            if (job.media) {
+                html += '<div style="margin-top: 10px">';
+                job.media.forEach(item => {
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + job.name + '</div>';
+            html += '<div style="">' + job.whatItIs + '</div>';
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            html += '<div  class="outcome">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '</div>';
+            html += '<div style=""><img src="../icons/up.png" style="width: 60px"></div>';
+            job.steps.forEach(step => {
+                html += '<div style="" class="step">';
+                html += '<div style="color: blue; font-size: 140%; margin-bottom: 20px">' + step.step + '</div>';
+                html += '<div style="">' + step.description + '</div>';
+                html += '<div style="margin-top: 14px">';
+                html += '<table>';
+                (step.streamsNeeded || []).forEach(stream => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px; border: 1px dashed lightgrey; padding: 6px; ">';
+                    html += '<div style="color: blue; font-size: 80%; white-space: nowrap; overflow: hidden; ">';
+                    const streamHref = streamBrickHref(stream.id);
+                    html += streamHref
+                        ? '<a href="' + streamHref + '" style="color: blue; text-decoration: none;">' + stream.name + '</a>'
+                        : stream.name;
+                    html += '</div>';
+                    html += '<div style="font-size: 70%;">';
+                    html += stream.howItSupports;
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                (step.bricksNeeded || []).forEach(brick => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px 6px 6px 24px; border-left: 2px solid #eee; padding: 2px 6px; ">';
+                    html += '<div style="color: #888; font-size: 70%; white-space: nowrap; overflow: hidden; ">';
+                    const brickHref = streamBrickHref(brick.id);
+                    html += '&#8627; ' + (brickHref
+                        ? '<a href="' + brickHref + '" style="color: #888; text-decoration: none;">' + brick.name + '</a>'
+                        : brick.name);
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                html += '</table>';
+                html += '</div>';
+                if (step.media) {
+                    html += '<div style="margin-top: 10px">';
+                    step.media.forEach(item => {
+                        html += '<div style="display: inline-block">';
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="job-step-image">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<div id="jobs-comic-view" style="display: none">';
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + job.name + '</div>';
+            if (job.media) {
+                html += '<div class="comic-job-media">';
+                job.media.forEach(item => {
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            job.steps.forEach(step => {
+                html += '<div class="comic-step">';
+                html += '<div class="comic-step-title">' + step.step + '</div>';
+                if (step.media) {
+                    html += '<div class="comic-step-media">';
+                    step.media.forEach(item => {
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Jobs').innerHTML = html;
+        setJobsView('default');
+    }
+
+    function addJourneys() {
+        const journeys = customer.customerJourneyStories || [];
+        if (!journeys.length) {
+            document.getElementById('Journeys').innerHTML = '<div class="group">No customer journeys defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="journeys-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJourneysView(\'default\')">Default View</button>';
+        html += '<button id="journeys-view-comic" class="jobs-view-button" onclick="setJourneysView(\'comic\')">Comics View</button>';
+        html += '</div>';
+
+        html += '<div id="journeys-default-view">';
+        html += '<div style="height: 50px"></div>';
+
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="group job-detail-group">';
+            if (journey.media && journey.media.length) {
+                html += '<div style="margin-top: 10px">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="margin-bottom: 12px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.linkedJobIds && journey.linkedJobIds.length) {
+                html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">Linked jobs: ' + escapeHtml(journey.linkedJobIds.join(', ')) + '</div>';
+            }
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            stages.forEach((stage, index) => {
+                html += '<div class="step">';
+                html += '<div style="font-size: 70%; color: grey; margin-bottom: 8px">Stage ' + (index + 1) + '</div>';
+                html += '<div style="font-size: 130%; color: blue; margin-bottom: 12px">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<div style="margin-bottom: 12px">';
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="review-image-small">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                }
+                if (stage.narrative) {
+                    html += '<div style="font-size: 90%; margin-top: 8px">' + escapeHtml(stage.narrative) + '</div>';
+                }
+                html += '</div>';
+                if (index < stages.length - 1) {
+                    html += '<div style="display: inline-block; vertical-align: top; margin-top: 120px;">';
+                    html += '<img src="../icons/right.png" style="width: 32px; margin-left: 8px; margin-right: 8px">';
+                    html += '</div>';
+                }
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+
+        html += '<div id="journeys-comic-view" style="display: none">';
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="text-align: center; margin-bottom: 16px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.media && journey.media.length) {
+                html += '<div class="comic-job-media">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            stages.forEach((stage, index) => {
+                html += '<div class="comic-step">';
+                html += '<div style="font-size: 75%; color: grey; margin-bottom: 8px; text-align: center">Stage ' + (index + 1) + '</div>';
+                html += '<div class="comic-step-title">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    html += '<div class="comic-step-media">';
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Journeys').innerHTML = html;
+        setJourneysView('default');
+    }
+
+    function setJobsView(view) {
+        const defaultView = document.getElementById('jobs-default-view');
+        const comicView = document.getElementById('jobs-comic-view');
+        const defaultButton = document.getElementById('jobs-view-default');
+        const comicButton = document.getElementById('jobs-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function setJourneysView(view) {
+        const defaultView = document.getElementById('journeys-default-view');
+        const comicView = document.getElementById('journeys-comic-view');
+        const defaultButton = document.getElementById('journeys-view-default');
+        const comicButton = document.getElementById('journeys-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function kpiIconFile(node) {
+        return (node && node.icon) ? node.icon : 'kpi.png';
+    }
+
+    function kpiCurrentValue(node) {
+        if (!node || !node.currentValue) {
+            return '';
+        }
+        return String(node.currentValue) + (node.unit ? ' (' + String(node.unit) + ')' : '');
+    }
+
+    function kpiValueStatusLabel(node) {
+        if (!node || !node.valueStatus) {
+            return '';
+        }
+        const labels = {
+            example: 'illustrative example',
+            baseline: 'measured baseline',
+            target: 'target',
+            placeholder: 'placeholder'
+        };
+        return labels[node.valueStatus] || String(node.valueStatus);
+    }
+
+    function renderKpiMeta(node) {
+        let html = '';
+        if (node && node.currentValue) {
+            const statusLabel = kpiValueStatusLabel(node);
+            const valueLabel = (node.valueStatus === 'target') ? 'Target:' : 'Current:';
+            html += '<div style="font-size: 80%; color: #1d4ed8; margin-top: 4px"><b>' + valueLabel + '</b> ' + escapeHtml(kpiCurrentValue(node));
+            if (statusLabel) {
+                html += ' <span style="color:#888; font-style: italic;">(' + escapeHtml(statusLabel) + ')</span>';
+            }
+            html += '</div>';
+        }
+        if (node && node.target) {
+            html += '<div style="font-size: 80%; color: #047857; margin-top: 2px"><b>Target:</b> ' + escapeHtml(String(node.target)) + '</div>';
+        }
+        if (node && node.guardrailRole) {
+            html += '<div style="font-size: 78%; color: #b91c1c; margin-top: 2px"><b>Guardrail:</b> ' + escapeHtml(String(node.guardrailRole)) + '</div>';
+        }
+        if (node && (node.period || node.calculationMethod || node.valueSource)) {
+            html += '<div style="font-size: 76%; color: #6b7280; margin-top: 3px">';
+            if (node.period) { html += '<div><b>Period:</b> ' + escapeHtml(String(node.period)) + '</div>'; }
+            if (node.calculationMethod) { html += '<div><b>How measured:</b> ' + escapeHtml(String(node.calculationMethod)) + '</div>'; }
+            if (node.valueSource) { html += '<div><b>Value source:</b> ' + escapeHtml(String(node.valueSource)) + '</div>'; }
+            html += '</div>';
+        }
+        if (node && node.guardrail) {
+            html += '<div style="font-size: 76%; color: #7c3aed; margin-top: 3px"><b>Composite guardrail:</b> ' + escapeHtml(String(node.guardrail)) + '</div>';
+        }
+        if (node && node.link) {
+            html += '<div style="font-size: 80%; margin-top: 4px"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(node.link) + '">' + escapeHtml(node.linkLabel || 'Open link') + '</a></div>';
+        }
+        return html;
+    }
+
+    function renderKpiTitle(node) {
+        let html = '';
+        html += '<div class="kpi-title">';
+        html += '<div><img class="kpi-icon" src="../icons/' + escapeHtml(kpiIconFile(node)) + '" onerror="this.onerror=null;this.src=\'../icons/kpi.png\'"></div>';
+        html += '<div><div>' + escapeHtml(node.name || '') + '</div>' + renderKpiMeta(node) + '</div>';
+        html += '</div>';
+        return html;
+    }
+
+    function addKPIChild(child, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '|';
+        html += '<table style="vertical-align: top; width: 100%; max-width:800px">';
+        html += '<tr>';
+        html += '<td colspan="' + (child.children ? child.children.length : 1) + '" style="vertical-align: top">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 100%; padding: 4px">';
+        html += renderKpiTitle(child);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px">';
+        html += child.description ? child.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        if (child.children) {
+            child.children.forEach(c => {
+                html += '<td style="vertical-align: top">';
+                html += addKPIChild(c, color);
+                html += '</td>';
+            });
+        }
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIPyramid(pyramid, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '<table style="vertical-align: top">';
+        html += '<tr>';
+        html += '<td colspan="' + pyramid.branches.length + '">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 120%; padding: 4px">';
+        html += renderKpiTitle(pyramid.top);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px">';
+        html += pyramid.top.description ? pyramid.top.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        pyramid.branches.forEach(c => {
+            html += '<td style="vertical-align: top;">';
+            html += addKPIChild(c, color);
+            html += '</td>';
+        });
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIs() {
+        if (!customer.kpiPyramids || !customer.kpiPyramids.customerOutcomes || !customer.kpiPyramids.businessOutcomes) {
+            document.getElementById('KPI').innerHTML = '<div class="group">No KPI pyramid defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Customer Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.customerOutcomes, '#C0F3EA');
+        html += '</div>'
+
+        html += '<div class="group">'
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Business Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.businessOutcomes, '#B7BDF7');
+        html += '</div>'
+
+        document.getElementById('KPI').innerHTML = html;
+    }
+
+    function normalizeRoadmapKpi(value, supportingKey) {
+        if (!value) {
+            return {northStar: '', [supportingKey]: []};
+        }
+        if (typeof value === 'string') {
+            return {northStar: value, [supportingKey]: []};
+        }
+        const normalized = Object.assign({}, value);
+        normalized.northStar = normalized.northStar || normalized.name || '';
+        normalized[supportingKey] = normalized[supportingKey] || [];
+        return normalized;
+    }
+
+    function renderCategoryGate(horizon) {
+        if (!horizon || !horizon.categoryGate) {
+            return '';
+        }
+        return '<div style="padding: 8px 10px; margin: 4px 6px; font-size: 72%; background:#fff8e1; border-left: 3px solid #f0b429; color:#5c4400">'
+            + '<b>Category gate:</b> ' + horizon.categoryGate + '</div>';
+    }
+
+    function addProductVision() {
+        if (!customer.productStrategy || !customer.productStrategy.timeHorizons) {
+            document.getElementById('Roadmap').innerHTML = '<div class="group">No product vision defined for this customer yet.</div>';
+            return;
+        }
+
+        let strategy = customer.productStrategy;
+        const timeHorizon1 = strategy.timeHorizons['year1'];
+        const timeHorizon2 = strategy.timeHorizons['year3'];
+        const timeHorizon3 = strategy.timeHorizons['year5'];
+        const businessKpi1 = normalizeRoadmapKpi(timeHorizon1.businessKPI, 'revenueStreams');
+        const businessKpi2 = normalizeRoadmapKpi(timeHorizon2.businessKPI, 'revenueStreams');
+        const businessKpi3 = normalizeRoadmapKpi(timeHorizon3.businessKPI, 'revenueStreams');
+        const customerKpi1 = normalizeRoadmapKpi(timeHorizon1.customerKPI, 'supporting');
+        const customerKpi2 = normalizeRoadmapKpi(timeHorizon2.customerKPI, 'supporting');
+        const customerKpi3 = normalizeRoadmapKpi(timeHorizon3.customerKPI, 'supporting');
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<table>';
+        html += '<tr style="font-size: 80%; color: #a0a0a0">';
+        html += '<td></td>';
+        html += '<td style="padding-left: 16px">Year 1</td>';
+        html += '<td style="padding-left: 16px">Year 3</td>';
+        html += '<td style="padding-left: 16px">Year 5</td>';
+        html += '<td style="padding-left: 16px"></td>';
+        html += '<td rowspan="10" style="width: 280px; vertical-align: top; padding: 20px">';
+        html += '<div style="font-size: 120%; margin-bottom: 24px">';
+        html += 'VISION';
+        html += '</div>';
+        html += '<div style="font-size: 120%">';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 100px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '<div style="font-size: 140%">';
+        html += strategy.vision;
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon1.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon1.focus + '</div>';
+        html += renderCategoryGate(timeHorizon1);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon2.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon2.focus + '</div>';
+        html += renderCategoryGate(timeHorizon2);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon3.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon3.focus + '</div>';
+        html += renderCategoryGate(timeHorizon3);
+        html += '</td>';
+        html += '<td style="padding: 10px"></td>';
+        html += '<td>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 1 (Year 1)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 2 (Year 3)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 3 (Year 5)</td>';
+        html += '<td><div class="triangle"></div></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Business<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi1.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi2.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi3.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Customer<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi1.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi2.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi3.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td>';
+        html += '';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>'
+
+
+        document.getElementById('Roadmap').innerHTML = html;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function formatDate(dateValue) {
+        if (!dateValue) return 'No date';
+        const date = new Date(dateValue + 'T00:00:00');
+        if (isNaN(date.getTime())) return dateValue;
+        return date.toLocaleDateString('en-GB', {year: 'numeric', month: 'short', day: 'numeric'});
+    }
+
+    function renderKpis(items) {
+        let html = '';
+        items.forEach(item => {
+            html += '<div><b>' + escapeHtml(item.kpi) + '</b>';
+            if (item.unit) {
+                html += ' <span class="activity-muted">(' + escapeHtml(item.unit) + ')</span>';
+            }
+            if (item.expectedImpact) {
+                html += ': ' + escapeHtml(item.expectedImpact);
+            }
+            if (item.currentValue) {
+                html += '<div class="activity-muted"><b>Current:</b> ' + escapeHtml(String(item.currentValue)) + '</div>';
+            }
+            if (item.description) {
+                html += '<div class="activity-muted">' + escapeHtml(item.description) + '</div>';
+            }
+            if (item.link) {
+                html += '<div class="activity-muted"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(item.link) + '">' + escapeHtml(item.linkLabel || 'Open link') + '</a></div>';
+            }
+            html += '</div>';
+        });
+        return html;
+    }
+
+    function renderImpactCell(item, currentCustomerId) {
+        let html = '';
+        (item.customerImpact || []).forEach(impact => {
+            const isCurrent = impact.customerId === currentCustomerId;
+            html += '<div class="activity-block' + (isCurrent ? ' activity-pill-highlight' : '') + '">';
+            html += '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">';
+            html += '<img class="activity-icon activity-icon-round" src="../icons/' + escapeHtml(impact.customer.icon) + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '<div><div style="font-weight:bold; color:' + (isCurrent ? '#1d4ed8' : '#111827') + '">' + escapeHtml(impact.customer.name) + ' <span class="activity-muted">(' + escapeHtml(impact.customerId) + ')</span></div></div>';
+            html += '</div>';
+            html += renderKpis(impact.customerKPIs || []);
+            html += renderKpis(impact.businessKPIs || []);
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No customer impact listed</span>';
+    }
+
+    function renderBrickCell(item) {
+        let html = '';
+        (item.productBricks || []).forEach(brick => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-bricks/icons/' + escapeHtml(brick.brick.icon) + '" onerror="this.onerror=null;this.src=\'../../product-bricks/icons/logo.png\'">';
+            html += '<div><div><b>' + escapeHtml(brick.brick.name) + '</b> <span class="activity-muted">(#' + escapeHtml(brick.brickId) + ')</span></div><div class="activity-muted">' + escapeHtml(brick.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No product bricks listed</span>';
+    }
+
+    function renderChannelCell(item) {
+        let html = '';
+        (item.deliveryChannels || []).forEach(channel => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-deployments/icons/' + escapeHtml(channel.channel.icon) + '" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+            html += '<div><div><b>' + escapeHtml(channel.channel.name) + '</b> <span class="activity-muted">(' + escapeHtml(channel.channelId) + ')</span></div><div class="activity-muted">' + escapeHtml(channel.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No delivery channels listed</span>';
+    }
+
+    function renderActivityTable(data, kind, currentCustomerId) {
+        const items = (data && data.items) ? data.items : [];
+        let html = '';
+        html += '<div class="activity-summary">';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.length + '</div><div class="activity-stat-label">' + kind + '</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.customerImpact || []).length > 0).length + '</div><div class="activity-stat-label">With customer impact</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.productBricks || []).length > 0).length + '</div><div class="activity-stat-label">With bricks</div></div>';
+        html += '</div>';
+
+        if (!items.length) {
+            html += '<div class="group" style="margin-top:0">No related ' + kind.toLowerCase() + ' found for this customer.</div>';
+            return html;
+        }
+
+        html += '<table class="activity-table">';
+        html += '<tr><th>Date</th><th>Description</th><th>Customer Impact</th><th>Product Bricks</th><th>Delivery Channels</th></tr>';
+        items.forEach(item => {
+            html += '<tr>';
+            html += '<td style="white-space:nowrap">' + escapeHtml(formatDate(item.date)) + '</td>';
+            html += '<td><a class="activity-link" target="_blank" rel="noopener noreferrer" href="../../' + kind.toLowerCase() + '/landing_pages/' + item.landingPageIndex + '.html">' + escapeHtml(item.description || item.name || kind) + '</a></td>';
+            html += '<td>' + renderImpactCell(item, currentCustomerId) + '</td>';
+            html += '<td>' + renderBrickCell(item) + '</td>';
+            html += '<td>' + renderChannelCell(item) + '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+        return html;
+    }
+
+    addHeader();
+    addHome();
+    addJBTD();
+    addJourneys();
+    addKPIs();
+    addProductVision();
+    addInsights();
+
+
+</script>
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "E-commerce Returns Management Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Customers"
+    },
+    {
+      "label": "Online Shopper Returning an Item"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

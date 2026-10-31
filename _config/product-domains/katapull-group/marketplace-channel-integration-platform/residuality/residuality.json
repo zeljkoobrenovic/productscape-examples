@@ -1,0 +1,232 @@
+{
+  "metadata": {
+    "domainId": "marketplace-channel-integration-platform",
+    "title": "Marketplace Channel Integration Platform Residuality Stress Test",
+    "description": "How EffectConnect must change when marketplaces, regulation, the Katapull group, pricing models or buying behaviour shift.",
+    "modelVersion": "1.0",
+    "naiveArchitecture": "One hand-built connector per marketplace and per webshop, prices and stock pushed in nightly batches, credentials stored with settings, and a single support team fixing failures reported by merchants.",
+    "residualArchitecture": "A canonical offer, order and shipment model behind versioned marketplace adapters; shared job queue with rate-limit governance and an event log visible to merchants and consultants; rule-based content and pricing per channel; a partner-tenant model that lets other SaaS embed the hub; entitlements decoupled from metering so pricing models can change; and connectors to Katapull siblings treated as products.",
+    "note": "Stressors marked candidate are plausible scenarios, not announced changes."
+  },
+  "stressors": [
+    {
+      "id": "marketplace-api-overhaul",
+      "name": "A major marketplace replaces its seller API",
+      "group": "Marketplaces",
+      "detection": "Deprecation notices from bol or Amazon, partner programme briefings.",
+      "attractor": "All adapters for that marketplace must be rebuilt before a hard cut-off while merchants keep selling.",
+      "businessReaction": "Rebuild the adapter behind the canonical model and migrate connections in waves.",
+      "residue": "Versioned adapters behind a stable canonical model; merchants and partners never integrate marketplace APIs directly.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "mcon",
+          "effect": "Adapter versions behind the canonical model."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "itld/itld-co-b2-c1-l2",
+          "effect": "Share of marketplace API changes absorbed by the hub."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "irun",
+          "effect": "Monitoring catches regressions."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-marketplace-api-overhaul.jpg",
+          "title": "Residuality stressor illustration: A major marketplace replaces its seller API",
+          "alt": "Illustration of the residuality stressor 'A major marketplace replaces its seller API', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "back-office-drops-native-connector",
+      "name": "A back-office vendor drops its own marketplace connector",
+      "group": "Ecosystem",
+      "detection": "Back-office partner announces end of its own bol integration; inbound demand from its merchants.",
+      "attractor": "Many merchants must switch integrator within months.",
+      "businessReaction": "Offer a migration playbook and native connector from the back office, with onboarding capacity planned for the wave.",
+      "residue": "Back-office connectors as first-class products and a repeatable migration path, built on the canonical model and versioned adapters.",
+      "status": "already-survived",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "erpi",
+          "effect": "Native Logic4 connector absorbs the migrating merchants."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "mown/mown-bo-b2-c1-l1",
+          "effect": "Time to go live becomes the competitive weapon."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "connect-a-commerce-backend-to-marketplaces",
+          "effect": "Migration route added."
+        }
+      ],
+      "reusesResidueIds": [
+        "marketplace-api-overhaul"
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-back-office-drops-native-connector.jpg",
+          "title": "Residuality stressor illustration: A back-office vendor drops its own marketplace connector",
+          "alt": "Illustration of the residuality stressor 'A back-office vendor drops its own marketplace connector', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "product-safety-data-requirements",
+      "name": "Regulation demands more product data on marketplaces",
+      "group": "Regulation",
+      "detection": "Marketplaces add mandatory attributes (e.g. manufacturer and responsible-person data under EU product safety rules) and reject listings without them.",
+      "attractor": "Listings are blocked until new attributes are filled across the assortment.",
+      "businessReaction": "Add the attributes to category schemas, rules to derive them and bulk validation.",
+      "residue": "Schema refresh and validation that make new mandatory attributes visible before listings fail.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "cmap",
+          "effect": "Schema refresh and validator."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "rule",
+          "effect": "Derive attributes from brand data."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "mmgr/mmgr-co-b1-c1-l1",
+          "effect": "Rejection rate spikes until mapped."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-product-safety-data-requirements.jpg",
+          "title": "Residuality stressor illustration: Regulation demands more product data on marketplaces",
+          "alt": "Illustration of the residuality stressor 'Regulation demands more product data on marketplaces', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "picqer-joins-katapull",
+      "name": "Katapull adds a WMS (Picqer) to the Commerce Hub",
+      "group": "Group strategy",
+      "detection": "Katapull announced the Picqer acquisition on 7 October 2026.",
+      "attractor": "Merchants expect marketplace orders, stock and LVB replenishment to flow natively between hub brands.",
+      "businessReaction": "Use Embedded Integrations and the back-office connector contract for Picqer, DeliveryMatch and Returnista.",
+      "residue": "A partner-tenant model and uniform order format reused by every sibling.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "embd",
+          "effect": "Sibling WMS and shipping brands embed marketplace connections."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "embed-marketplace-connectivity-in-a-partner-platform",
+          "effect": "Sibling partners as first users."
+        },
+        {
+          "targetType": "product",
+          "targetId": "ecem",
+          "effect": "Becomes the hub-wide marketplace layer."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-picqer-joins-katapull.jpg",
+          "title": "Residuality stressor illustration: Katapull adds a WMS (Picqer) to the Commerce Hub",
+          "alt": "Illustration of the residuality stressor 'Katapull adds a WMS (Picqer) to the Commerce Hub', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "commission-pricing-pressure",
+      "name": "Competitors switch to aggressive fixed or free entry pricing",
+      "group": "Competition",
+      "detection": "Competitor price pages and lost deals cite free plugins or lower entry tiers.",
+      "attractor": "Fixed-fee differentiation weakens at the low end.",
+      "businessReaction": "Change plan packaging without code changes and compete on service and Katapull integration.",
+      "residue": "Entitlements and metering decoupled from features so pricing can change quickly.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "tnnt",
+          "effect": "Plans and allowances configurable."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "mown/mown-bo-top",
+          "effect": "Net revenue retention under pressure."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "channelengine",
+          "effect": "Main reference for price moves."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-commission-pricing-pressure.jpg",
+          "title": "Residuality stressor illustration: Competitors switch to aggressive fixed or free entry pricing",
+          "alt": "Illustration of the residuality stressor 'Competitors switch to aggressive fixed or free entry pricing', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "agentic-shopping",
+      "name": "AI shopping agents become a meaningful sales channel",
+      "group": "Technology",
+      "detection": "Marketplaces and search platforms open agent-facing product and checkout APIs.",
+      "attractor": "Content and offers must be machine-readable and current in new channels.",
+      "businessReaction": "Treat agent channels as further adapters and feeds from the same catalogue and price rules.",
+      "residue": "Canonical catalogue and offer model reused for any new channel type.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "fdmg",
+          "effect": "Feeds for agent channels."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "mcon",
+          "effect": "New adapter type."
+        },
+        {
+          "targetType": "vision",
+          "targetId": "mown",
+          "effect": "Channel mix widens beyond marketplaces."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-agentic-shopping.jpg",
+          "title": "Residuality stressor illustration: AI shopping agents become a meaningful sales channel",
+          "alt": "Illustration of the residuality stressor 'AI shopping agents become a meaningful sales channel', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    }
+  ],
+  "freshStressorTest": {
+    "naiveSurvivals": 1,
+    "residualSurvivals": 5,
+    "stressors": 6,
+    "note": "Qualitative judgement of which stressors each architecture absorbs without major rework."
+  }
+}

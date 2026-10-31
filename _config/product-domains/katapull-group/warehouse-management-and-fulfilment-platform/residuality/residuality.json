@@ -1,0 +1,286 @@
+{
+  "metadata": {
+    "domainId": "warehouse-management-and-fulfilment-platform",
+    "title": "Warehouse Management & Fulfilment Platform Residuality Stress Test",
+    "description": "How Picqer must change when channels and carriers change, labour is scarce, peak volumes spike, traceability rules tighten, Katapull integrates its hub, or mechanisation becomes mainstream.",
+    "modelVersion": "1.0",
+    "naiveArchitecture": "A single-tenant stock list per webshop with hard-coded imports from one store, printed picklists, labels from carrier portals and stock counted once a year; 3PL clients get Excel exports.",
+    "residualArchitecture": "A multi-tenant warehouse core with an append-only stock ledger, location model and lot tracking; adapters for stores, carriers, hub siblings and hardware behind stable internal contracts; an event stream feeding webhooks, reports and billing; rules as data; and the same workflows exposed in web, app and client portal."
+  },
+  "stressors": [
+    {
+      "id": "channel-or-carrier-api-change",
+      "name": "A major webshop platform, marketplace or carrier changes its API or terms at short notice",
+      "group": "Ecosystem",
+      "detection": "Failed imports or label calls in monitoring, partner announcements, support tickets.",
+      "attractor": "Orders stop flowing or labels fail during the working day; customers blame the WMS.",
+      "businessReaction": "Fix adapters centrally, fall back to another shipping platform via rules, and notify affected accounts.",
+      "residue": "Store and carrier specifics live in replaceable adapters; rules can switch shipping method without code.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "chan",
+          "effect": "Adapter isolation."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "ship",
+          "effect": "Many shipping routes available."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "wsop/co-wsop-b1",
+          "effect": "Same-day shipping protected."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "capture-and-allocate-orders-from-every-channel",
+          "effect": "Flow continues via retry and fallback."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-channel-or-carrier-api-change.jpg",
+          "title": "Residuality stressor illustration: A major webshop platform, marketplace or carrier changes its API or terms at short notice",
+          "alt": "Illustration of the residuality stressor 'A major webshop platform, marketplace or carrier changes its API or terms at short notice', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "warehouse-labour-scarcity",
+      "name": "Warehouse labour becomes scarce and mostly temporary",
+      "group": "Labour market",
+      "detection": "Vacancies unfilled, higher temp share, rising error rates of new staff.",
+      "attractor": "Warehouses depend on untrained staff; errors and slow peak days follow.",
+      "businessReaction": "Make every task guided and scan-verified in the app; let new staff work after minutes of instruction.",
+      "residue": "Knowledge sits in the system (locations, routes, rules, packaging advice) instead of in people.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "mapp",
+          "effect": "Guided handheld work."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "pack",
+          "effect": "Packaging advice removes judgement."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "pick/co-pick-b2-c1",
+          "effect": "Training time falls."
+        },
+        {
+          "targetType": "job",
+          "targetId": "pick/pick-shift",
+          "effect": "Productive from the first shift."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-warehouse-labour-scarcity.jpg",
+          "title": "Residuality stressor illustration: Warehouse labour becomes scarce and mostly temporary",
+          "alt": "Illustration of the residuality stressor 'Warehouse labour becomes scarce and mostly temporary', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "peak-volume-surge",
+      "name": "Peak season brings several times normal order volume",
+      "group": "Demand",
+      "detection": "Order backlog and API load in November and December; customer peak plans.",
+      "attractor": "Cut-offs missed, systems slow, temp staff overwhelmed.",
+      "businessReaction": "Rely on guided temp work, batching, singles and fallback shipping routes; scale cloud capacity.",
+      "residue": "Reuses guided work and replaceable adapters; peak becomes a capacity question, not a redesign.",
+      "status": "already-survived",
+      "reusesResidueIds": [
+        "channel-or-carrier-api-change",
+        "warehouse-labour-scarcity"
+      ],
+      "impacts": [
+        {
+          "targetType": "kpi",
+          "targetId": "whmg/co-whmg-top",
+          "effect": "Peak on-time shipping."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "pkls",
+          "effect": "Batching and singles absorb volume."
+        },
+        {
+          "targetType": "product",
+          "targetId": "picqer-wms",
+          "effect": "Reliability at peak is a reference argument."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-peak-volume-surge.jpg",
+          "title": "Residuality stressor illustration: Peak season brings several times normal order volume",
+          "alt": "Illustration of the residuality stressor 'Peak season brings several times normal order volume', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "traceability-requirements",
+      "name": "Retailers and regulators demand batch and expiry traceability for food, supplements and cosmetics",
+      "group": "Regulation",
+      "detection": "Fulfilment clients in regulated categories, retailer audits, recall requests.",
+      "attractor": "Without lot data, 3PLs lose regulated clients and cannot execute recalls.",
+      "businessReaction": "Record batch and best-before at receipt, track through all movements and show in the portal.",
+      "residue": "Lot is a first-class dimension of the stock ledger.",
+      "status": "integrated",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "lotb",
+          "effect": "Lot tracking."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "fulf/co-fulf-b2-c2",
+          "effect": "Traceability coverage."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "keep-inventory-accurate-and-traceable",
+          "effect": "Trace step added."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-traceability-requirements.jpg",
+          "title": "Residuality stressor illustration: Retailers and regulators demand batch and expiry traceability for food, supplements and cosmetics",
+          "alt": "Illustration of the residuality stressor 'Retailers and regulators demand batch and expiry traceability for food, supplements and cosmetics', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "katapull-hub-integration",
+      "name": "Katapull expects Picqer to integrate deeply with Logic4, DeliveryMatch, Returnista, Transus and others",
+      "group": "Ownership",
+      "detection": "Group roadmap decisions, Logic4 customers asking for a WMS, co-selling targets.",
+      "attractor": "Pressure for exclusive or preferential connections could weaken Picqer's open-platform promise.",
+      "businessReaction": "Build hub bridges on the same public API and event contracts that other partners use; keep third-party integrations listed.",
+      "residue": "A hub bridge layer on public contracts, not private back doors.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "ktpl",
+          "effect": "Hub bridges."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "papi",
+          "effect": "Public contracts reused."
+        },
+        {
+          "targetType": "vision",
+          "targetId": "ptnr",
+          "effect": "Open warehouse core of the hub."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "whmg/bo-whmg-b2-c2-l1",
+          "effect": "Logic4 upgrades."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "goedgepickt",
+          "effect": "Open-platform argument vs. alternatives."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-katapull-hub-integration.jpg",
+          "title": "Residuality stressor illustration: Katapull expects Picqer to integrate deeply with Logic4, DeliveryMatch, Returnista, Transus and others",
+          "alt": "Illustration of the residuality stressor 'Katapull expects Picqer to integrate deeply with Logic4, DeliveryMatch, Returnista, Transus and others', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "mechanisation-mainstream",
+      "name": "Goods-to-person systems and robots become affordable for mid-size warehouses",
+      "group": "Technology",
+      "detection": "Hardware partner pipeline, customers asking for AutoStore or picking robots below enterprise volume.",
+      "attractor": "Customers might move to enterprise WMS with warehouse control systems.",
+      "businessReaction": "Standardise mechanisation adapters with partners and task hand-over between people and machines.",
+      "residue": "Hardware behind adapter contracts; picking tasks are device-agnostic.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "prnt",
+          "effect": "Mechanisation adapters."
+        },
+        {
+          "targetType": "product",
+          "targetId": "picqer-hardware-and-robotics",
+          "effect": "Becomes a retention product."
+        },
+        {
+          "targetType": "kpi",
+          "targetId": "whmg/bo-whmg-b1-c2",
+          "effect": "Hardware-integrated accounts."
+        },
+        {
+          "targetType": "competitor",
+          "targetId": "shiphero",
+          "effect": "Benchmark for automation features."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-mechanisation-mainstream.jpg",
+          "title": "Residuality stressor illustration: Goods-to-person systems and robots become affordable for mid-size warehouses",
+          "alt": "Illustration of the residuality stressor 'Goods-to-person systems and robots become affordable for mid-size warehouses', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    },
+    {
+      "id": "fulfilment-margin-pressure",
+      "name": "Fulfilment companies face margin pressure and must bill every activity",
+      "group": "Market",
+      "detection": "Rising labour and energy cost, 3PL requests for invoicing, churn to 3PL-specific WMS.",
+      "attractor": "Unbilled packaging, storage and returns erode 3PL margins.",
+      "businessReaction": "Ship client invoicing on top of recorded activity and packaging usage.",
+      "residue": "Every warehouse event is billable data via the activity log.",
+      "status": "candidate",
+      "impacts": [
+        {
+          "targetType": "brick",
+          "targetId": "finv",
+          "effect": "Client invoicing."
+        },
+        {
+          "targetType": "job",
+          "targetId": "fulf/fulf-bill",
+          "effect": "Billing becomes automatic."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "invoice-fulfilment-clients-from-warehouse-activity",
+          "effect": "Stream goes live."
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "src": "media/stressor-fulfilment-margin-pressure.jpg",
+          "title": "Residuality stressor illustration: Fulfilment companies face margin pressure and must bill every activity",
+          "alt": "Illustration of the residuality stressor 'Fulfilment companies face margin pressure and must bill every activity', showing its signal, attractor, business response, and surviving residue."
+        }
+      ]
+    }
+  ]
+}

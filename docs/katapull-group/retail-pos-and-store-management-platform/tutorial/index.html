@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How a specialty shop runs on its till: an introduction to retail POS and store management</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>* { box-sizing: border-box; }
+html { scroll-padding-top: 1.5rem; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-wrap: anywhere;
+}
+a { color: var(--accent-ink); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.page { max-width: 1160px; padding: 1.5rem 2.5rem 3rem; margin: auto; }
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    margin: 2px 0 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-family: Ubuntu, Optima, Segoe, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.site-nav a {
+    color: #6b7280;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+.site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+.domain-nav { display: flex; flex-wrap: wrap; gap: .75rem; color: var(--ink-soft); font-size: .85rem; }
+.domain-nav a { color: inherit; }
+.hero { padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--line-strong); }
+.eyebrow, .chapter-number {
+    color: var(--accent-ink); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+h1, h2, h3, h4 { line-height: 1.25; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); letter-spacing: -.035em; margin: .5rem 0 1rem; max-width: 22ch; }
+h2 { font-size: 1.9rem; letter-spacing: -.025em; margin: .35rem 0 1.4rem; }
+h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+h4 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.metadata { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; color: var(--ink-soft); font-size: .85rem; }
+.reader-context { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem 3rem; margin-top: 1.8rem; font-size: .95rem; }
+.reader-context p:last-child { margin-bottom: 0; }
+.label { color: var(--ink-soft); font-size: .78rem; font-weight: 700; margin: 0 0 .25rem; }
+.labeled { margin-top: .75rem; }
+.reading-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 3.5rem; align-items: start; padding-top: 2.75rem; }
+.contents { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; padding: .3rem .5rem .5rem 0; }
+.reading-layout > aside { align-self: stretch; }
+.contents h2 { font-size: .8rem; letter-spacing: .03em; margin: 0 0 .75rem; }
+.contents ol { padding-left: 1.4rem; margin: 0; font-size: .82rem; line-height: 1.45; }
+.contents li { padding: .28rem 0 .28rem .2rem; color: var(--ink-soft); }
+.contents a { color: var(--ink-soft); text-decoration: none; display: inline-block; padding: .1rem 0; }
+.contents a:hover { color: var(--accent-ink); text-decoration: underline; }
+main { min-width: 0; max-width: 740px; }
+section { margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--line-strong); }
+section:last-child { margin-bottom: 0; }
+.chapter-number { margin: 0; }
+section ul { padding-left: 1.35rem; }
+section li { padding-left: .3rem; }
+.entry { padding: 1.4rem 0; border-top: 1px solid var(--line); }
+h2 + .entry { border-top: 0; padding-top: 0; }
+.entry:last-child { padding-bottom: 0; }
+.entry > :last-child, .labeled > :last-child { margin-bottom: 0; }
+.tutorial-illustration { margin: 1.3rem 0 1.5rem; break-inside: avoid; }
+.illustration-link { display: block; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: white; }
+.illustration-link:hover { border-color: var(--accent); }
+.tutorial-illustration img { display: block; width: 100%; height: auto; border-radius: inherit; }
+.tutorial-illustration figcaption { margin-top: .6rem; color: var(--ink-soft); font-size: .85rem; line-height: 1.5; }
+.tutorial-illustration figcaption p { margin: 0 0 .35rem; }
+.image-hint { display: block; font-size: .75rem; }
+.example { background: var(--accent-soft); border-left: 3px solid var(--accent-line); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.3rem; margin: 1.3rem 0; }
+.example .labeled:first-child { margin-top: 0; }
+.example > :last-child { margin-bottom: 0; }
+.timeline { border-left: 2px solid var(--accent-line); padding: 0 0 0 1.5rem; list-style: none; }
+.timeline li { position: relative; padding: .3rem 0 1.5rem; }
+.timeline li::before { content: ""; position: absolute; width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); left: -1.92rem; top: .7rem; }
+.timeline li:last-child { padding-bottom: 0; }
+.source { font-size: .8rem; margin-top: .7rem; }
+.steps { padding-left: 1.5rem; }
+.steps > li { padding: .4rem 0 1rem .5rem; }
+.steps > li::marker { color: var(--accent-ink); font-weight: 700; }
+.notice { background: var(--surface-muted); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1.4rem; margin-bottom: 2rem; }
+.notice h2 { font-size: 1.4rem; }
+.notice p:last-child { margin-bottom: 0; }
+details { margin-top: 1rem; background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+summary { cursor: pointer; padding: .7rem 1rem; color: var(--accent-ink); font-size: .95rem; font-weight: 600; }
+summary:hover { background: var(--accent-soft); border-radius: inherit; }
+.answer { padding: .5rem 1rem 1rem; }
+.answer > :last-child { margin-bottom: 0; }
+.reading-list { list-style: none; padding: 0; }
+.reading-list li { padding: 0 0 1rem; }
+.reading-list p { margin: .3rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+footer { text-align: right; padding-top: 2rem; font-size: .85rem; }
+.skip-link { position: fixed; top: -10rem; left: 1rem; background: var(--panel); padding: .6rem 1rem; z-index: 2; }
+.skip-link:focus { top: 1rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 850px) {
+    .page { padding: 1.25rem; }
+    .hero { padding: 2rem 0; }
+    .reader-context { grid-template-columns: 1fr; gap: .5rem; }
+    .reading-layout { display: block; padding-top: 1.5rem; }
+    .contents { position: static; max-height: none; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--line-strong); }
+    .contents ol { columns: 2; column-gap: 2rem; }
+    .contents li { break-inside: avoid; }
+    .contents a { padding: .25rem 0; }
+    h2 { font-size: 1.65rem; }
+}
+@media (max-width: 430px) {
+    .contents ol { columns: 1; }
+    body { font-size: 16px; }
+}
+@media print {
+    body { background: white; color: black; font-size: 11pt; }
+    .page { max-width: none; padding: 0; }
+    .site-nav, .domain-nav, .reading-layout > aside, footer, .skip-link { display: none; }
+    .hero { padding: 0 0 1rem; }
+    h1 { font-size: 28pt; }
+    .reading-layout { display: block; padding-top: 1rem; }
+    main { max-width: none; }
+    section { padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h2, h3, h4 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .example, details, .timeline li { break-inside: avoid; }
+    details::details-content { content-visibility: visible; }
+    details > :not(summary) { display: block !important; }
+    summary { display: none; }
+    .image-hint { display: none; }
+}
+</style>
+</head>
+<body id="top">
+    <a class="skip-link" href="#main">Skip to the tutorial</a>
+    <div class="page">
+        <nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../product-deployments/index.html">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html" class="active" aria-current="page">Domain Tutorial</a>
+</nav>
+
+        <header class="hero">
+            <p class="eyebrow">A beginner's guide</p>
+            <h1>How a specialty shop runs on its till: an introduction to retail POS and store management</h1>
+            <div class="metadata"><span>About 13 min to read</span><span>Updated <time datetime="2026-10-30">2026-10-30</time></span></div>
+            <div class="reader-context"><div class="labeled"><p class="label">Who this is for</p><p>A curious adult coming from a different field, with no assumed knowledge of retail or software.</p></div><div class="labeled"><p class="label">What this guide covers</p><p>Covers the software that independent specialty shops, small chains and franchise formulas in the Netherlands and Belgium use to sell at the counter, manage stock, buy from suppliers, sell online and keep their books. Examples come from Vendit, one Dutch vendor that belongs to the Katapull software group. Restaurants, supermarkets and large department-store systems are left out.</p></div></div>
+        </header>
+        <div class="reading-layout">
+            <aside><nav class="contents" aria-label="Tutorial contents"><h2>In this guide</h2><ol><li><a href="#learning-goals">What you will learn</a></li><li><a href="#introduction">Start with the everyday need</a></li><li><a href="#participants">The people involved</a></li><li><a href="#concepts">The key concepts</a></li><li><a href="#history">A little history</a></li><li><a href="#walkthrough">Follow one complete example</a></li><li><a href="#value">Value, money, and incentives</a></li><li><a href="#challenges">What makes this domain difficult</a></li><li><a href="#misconceptions">Common misunderstandings</a></li><li><a href="#takeaways">The ideas to take with you</a></li><li><a href="#knowledge-checks">Try it for yourself</a></li><li><a href="#next-questions">Questions to ask a practitioner</a></li><li><a href="#further-reading">Keep learning</a></li></ol></nav></aside>
+            <main id="main" tabindex="-1"><section id="learning-goals" aria-labelledby="heading-learning-goals"><p class="chapter-number">01</p><h2 id="heading-learning-goals">What you will learn</h2><ul><li><p>Explain what a modern till system does beyond taking money.</p></li><li><p>Describe why stock accuracy matters for both the shop floor and the webshop.</p></li><li><p>Distinguish selling, stock, purchasing and reporting as separate but linked activities.</p></li><li><p>Explain why specialty branches such as bike shops need features general shops do not.</p></li><li><p>Name the main trade-offs a shop owner faces when choosing and switching systems.</p></li></ul></section><section id="introduction" aria-labelledby="heading-introduction"><p class="chapter-number">02</p><h2 id="heading-introduction">Start with the everyday need</h2><p>A retail point-of-sale (POS) and store management system is the software behind the till in a shop. It records each sale, but it also keeps the list of everything the shop sells, how many of each item are on the shelves, what they cost to buy, which customers are regulars, and what the day&#x27;s numbers look like.</p><p>In a specialty shop - a bike shop, jeweller, outdoor store or hobby shop - the same system often also runs the repair workshop, the webshop and the orders sent to suppliers.</p><p>Small shops compete with large online sellers on advice and service, not on scale. If the shop says &quot;sold out&quot; while the item sits in the back room, or the webshop sells something that is no longer there, it loses exactly the trust it depends on. The till system is where the shop&#x27;s information either stays correct or quietly goes wrong.</p><aside class="example"><div class="labeled"><p class="label">A familiar comparison</p><p>Think of it as the shop&#x27;s memory and nervous system: every scan at the till is a signal that updates what the shop knows about its stock, money and customers.</p></div><div class="labeled"><p class="label">Where the comparison stops</p><p>Unlike a memory, the system only knows what people and connected systems tell it. If deliveries are not scanned in, or a supplier sends outdated data, it will confidently report wrong facts.</p></div></aside></section><section id="participants" aria-labelledby="heading-participants"><p class="chapter-number">03</p><h2 id="heading-participants">The people involved</h2><div class="entry"><h3>Shop owner</h3><p>Buys the system, decides on prices and assortment, carries the financial risk.</p><div class="labeled"><p class="label">What matters to them</p><p>Margin, stock tied up in money, time spent on admin, and not being let down on a busy Saturday.</p></div></div><div class="entry"><h3>Sales associate</h3><p>Advises customers and works the till.</p><div class="labeled"><p class="label">What matters to them</p><p>A quick, error-free checkout and being able to tell a customer whether an item can be had.</p></div></div><div class="entry"><h3>Workshop technician</h3><p>Repairs bikes, jewellery or devices that customers bring in.</p><div class="labeled"><p class="label">What matters to them</p><p>A clear plan, parts in stock, and customers who know when to come back.</p></div></div><div class="entry"><h3>Head office of a chain or franchise formula</h3><p>Sets prices, campaigns and joint purchasing for many shops.</p><div class="labeled"><p class="label">What matters to them</p><p>That every shop executes the formula consistently.</p></div></div><div class="entry"><h3>Supplier or wholesaler</h3><p>Delivers goods and product data.</p><div class="labeled"><p class="label">What matters to them</p><p>Receiving correct orders electronically and having its products described correctly in shops.</p></div></div><div class="entry"><h3>Shopper</h3><p>Buys in store, on the webshop or on a marketplace.</p><div class="labeled"><p class="label">What matters to them</p><p>Availability, advice and easy service - they rarely know which software is behind it.</p></div></div><div class="entry"><h3>Software vendor</h3><p>Builds, installs and supports the system, often including hardware.</p><div class="labeled"><p class="label">What matters to them</p><p>Shops that stay for years and grow into more modules.</p></div></div></section><section id="concepts" aria-labelledby="heading-concepts"><p class="chapter-number">04</p><h2 id="heading-concepts">The key concepts</h2><div class="entry"><h3>Point of sale (POS)</h3><p>The place and software where a sale is registered and paid.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-point-of-sale-pos.jpg" target="_blank" rel="noopener noreferrer" aria-label="Point of sale (POS) — open full image in a new tab"><img src="media/concept-point-of-sale-pos.jpg" alt="Point of sale (POS): Scanning a bike lock, applying a 10% loyalty discount and taking a card payment." loading="lazy" decoding="async"></a><figcaption><p>It is the most frequent and time-critical moment in the shop; everything else depends on it being recorded correctly.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Scanning a bike lock, applying a 10% loyalty discount and taking a card payment.</p></div><div class="labeled"><p class="label">Why it matters</p><p>It is the most frequent and time-critical moment in the shop; everything else depends on it being recorded correctly.</p></div></div><div class="entry"><h3>Article master</h3><p>The shop&#x27;s list of every item it can sell, with barcode, price, supplier and description.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-article-master.jpg" target="_blank" rel="noopener noreferrer" aria-label="Article master — open full image in a new tab"><img src="media/concept-article-master.jpg" alt="Article master: A helmet in three sizes is one article with three variants, each with its own barcode." loading="lazy" decoding="async"></a><figcaption><p>The till, the webshop and the marketplaces all read from it; one mistake appears everywhere.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A helmet in three sizes is one article with three variants, each with its own barcode.</p></div><div class="labeled"><p class="label">Why it matters</p><p>The till, the webshop and the marketplaces all read from it; one mistake appears everywhere.</p></div></div><div class="entry"><h3>Stock ledger</h3><p>The running record of how many of each item are where, changed by every sale, delivery, return and correction.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-stock-ledger.jpg" target="_blank" rel="noopener noreferrer" aria-label="Stock ledger — open full image in a new tab"><img src="media/concept-stock-ledger.jpg" alt="Stock ledger: Selling one helmet in the Haarlem store lowers Haarlem stock by one and the webshop shows one fewer." loading="lazy" decoding="async"></a><figcaption><p>Real-time stock is what lets a shop avoid saying &quot;no&quot; while the item is somewhere in the business.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Selling one helmet in the Haarlem store lowers Haarlem stock by one and the webshop shows one fewer.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Real-time stock is what lets a shop avoid saying &quot;no&quot; while the item is somewhere in the business.</p></div></div><div class="entry"><h3>Margin</h3><p>The difference between what an item sells for and what it cost to buy, after discounts.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-margin.jpg" target="_blank" rel="noopener noreferrer" aria-label="Margin — open full image in a new tab"><img src="media/concept-margin.jpg" alt="Margin: A EUR 100 jacket bought for EUR 55 gives EUR 45 margin, unless it is sold with a 20% discount." loading="lazy" decoding="async"></a><figcaption><p>Turnover can grow while margin shrinks; owners steer on margin.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A EUR 100 jacket bought for EUR 55 gives EUR 45 margin, unless it is sold with a 20% discount.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Turnover can grow while margin shrinks; owners steer on margin.</p></div></div><div class="entry"><h3>Min/max replenishment</h3><p>A rule per item saying at what stock level to reorder and up to what level.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-min-max-replenishment.jpg" target="_blank" rel="noopener noreferrer" aria-label="Min/max replenishment — open full image in a new tab"><img src="media/concept-min-max-replenishment.jpg" alt="Min/max replenishment: Inner tubes: reorder when fewer than 10, top up to 40." loading="lazy" decoding="async"></a><figcaption><p>It turns daily sales into a purchase proposal instead of relying on memory.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Inner tubes: reorder when fewer than 10, top up to 40.</p></div><div class="labeled"><p class="label">Why it matters</p><p>It turns daily sales into a purchase proposal instead of relying on memory.</p></div></div><div class="entry"><h3>Omnichannel</h3><p>Selling through several channels (shop, own webshop, marketplaces) from one stock and one customer view.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-omnichannel.jpg" target="_blank" rel="noopener noreferrer" aria-label="Omnichannel — open full image in a new tab"><img src="media/concept-omnichannel.jpg" alt="Omnichannel: A tent listed in the shop, on the webshop and on bol, with one shared stock count." loading="lazy" decoding="async"></a><figcaption><p>Without shared stock, channels oversell each other and customers receive cancellations.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A tent listed in the shop, on the webshop and on bol, with one shared stock count.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Without shared stock, channels oversell each other and customers receive cancellations.</p></div></div><div class="entry"><h3>Supplier connection / EDI</h3><p>Electronic exchange of product data, orders, delivery notes and invoices between shop and supplier. EDI (electronic data interchange) is a standardised form of this.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-supplier-connection-edi.jpg" target="_blank" rel="noopener noreferrer" aria-label="Supplier connection / EDI — open full image in a new tab"><img src="media/concept-supplier-connection-edi.jpg" alt="Supplier connection / EDI: A bike shop orders from a wholesaler inside its till system and receives frame numbers with the delivery." loading="lazy" decoding="async"></a><figcaption><p>It removes retyping, which is where many price and stock errors start.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>A bike shop orders from a wholesaler inside its till system and receives frame numbers with the delivery.</p></div><div class="labeled"><p class="label">Why it matters</p><p>It removes retyping, which is where many price and stock errors start.</p></div></div><div class="entry"><h3>Formula / franchise</h3><p>A chain of independently owned shops operating under one brand and shared rules.</p><figure class="tutorial-illustration concept-illustration"><a class="illustration-link" href="media/concept-formula-franchise.jpg" target="_blank" rel="noopener noreferrer" aria-label="Formula / franchise — open full image in a new tab"><img src="media/concept-formula-franchise.jpg" alt="Formula / franchise: Franchise stores of a household brand receiving prices and campaigns from a service organisation." loading="lazy" decoding="async"></a><figcaption><p>Head office needs to publish centrally while each owner runs their own shop.</p><span class="image-hint">Click the image to open it in a new tab.</span></figcaption></figure><div class="labeled"><p class="label">For example</p><p>Franchise stores of a household brand receiving prices and campaigns from a service organisation.</p></div><div class="labeled"><p class="label">Why it matters</p><p>Head office needs to publish centrally while each owner runs their own shop.</p></div></div></section><section id="history" aria-labelledby="heading-history"><p class="chapter-number">05</p><h2 id="heading-history">A little history</h2><p>A selective, Netherlands-focused view of how shop automation changed; dates are broad periods.</p><ol class="timeline"><li><h3>1970s-1980s</h3><p>Electronic cash registers with barcode scanning replaced mechanical tills; small software firms began building PC-based till programs. Vendit traces its start to 1986.</p><div class="labeled"><p class="label">What this helps explain</p><p>Sales started to become data that could update stock automatically.</p></div><p class="source"><a href="https://www.vendit.nl/vendit-winkelmanagement/" rel="noreferrer">Source for 1970s-1980s</a></p></li><li><h3>1990s-2000s</h3><p>PC-based systems added stock management, purchasing and links to accounting; branch associations and wholesalers started exchanging electronic product files.</p><div class="labeled"><p class="label">What this helps explain</p><p>Specialty branches developed their own data standards and specialist vendors.</p></div></li><li><h3>2010s</h3><p>Webshops and marketplaces became normal sales channels for small shops; cloud hosting and monthly subscriptions replaced one-off licences.</p><div class="labeled"><p class="label">What this helps explain</p><p>Stock had to be shared across channels in near real time.</p></div></li><li><h3>2020s</h3><p>Software groups formed by combining specialised vendors. In March 2025 Vendit joined Logic4, DeliveryMatch, EffectConnect and Highbiza in the Katapull group, which later added Transus, Returnista and Picqer.</p><div class="labeled"><p class="label">What this helps explain</p><p>Shops can connect till, marketplaces, shipping and returns from one group of vendors, but face questions about which product fits as they grow.</p></div><p class="source"><a href="https://katapull.nl/" rel="noreferrer">Source for 2020s</a></p></li></ol></section><section id="walkthrough" aria-labelledby="heading-walkthrough"><p class="chapter-number">06</p><h2 id="heading-walkthrough">Follow one complete example</h2><h3>A spring Saturday at a fictional bike shop</h3><p>Fictional example: Anna owns a two-branch bike shop. Her associate Tom works the till, Sven runs the workshop. The shop sells in store, on its own webshop and on one marketplace. Numbers are illustrative.</p><ol class="steps"><li><h4>Morning numbers</h4><p>Anna opens the dashboard on her phone: yesterday&#x27;s turnover, margin and average receipt compared with last year.</p><div class="labeled"><p class="label">Why this step matters</p><p>She sees that discounts ate into margin and tells Tom to stop giving ad-hoc price reductions.</p></div></li><li><h4>A customer wants a specific e-bike</h4><p>Tom checks stock: none in this branch, one at the other branch. He reserves it and arranges a transfer.</p><div class="labeled"><p class="label">Why this step matters</p><p>Real-time stock across branches turns a &quot;no&quot; into a sale.</p></div><aside class="example"><div class="labeled"><p class="label">When things go differently</p><p>If the other branch sold it online ten minutes earlier and the sync is slow, the promise breaks.</p></div></aside></li><li><h4>A repair comes in</h4><p>A customer brings a bike with brake problems. Tom registers a repair order on the customer&#x27;s name with the frame number. Sven sees it on his planning board.</p><div class="labeled"><p class="label">Why this step matters</p><p>The repair cannot be lost, and parts used are taken from stock.</p></div></li><li><h4>Online orders and returns</h4><p>Two marketplace orders arrive in the system. Labels are printed from the till system; a returned helmet from last week is booked back into stock.</p><div class="labeled"><p class="label">Why this step matters</p><p>Online sales share the same stock, so nothing is sold twice.</p></div></li><li><h4>Exception: supplier price change</h4><p>A wholesaler raised purchase prices overnight. The supplier connection updates the article data, and the system flags items whose margin is now below target.</p><div class="labeled"><p class="label">Why this step matters</p><p>Without the connection, Anna would discover the margin loss weeks later.</p></div></li><li><h4>Closing the day</h4><p>Tom counts the drawer; it matches card and cash totals. The day&#x27;s figures are prepared for the accountant. Overnight, the system proposes reorders based on min/max levels.</p><div class="labeled"><p class="label">Why this step matters</p><p>The books and stock are right before the next day starts.</p></div></li></ol><div class="labeled"><p class="label">The outcome</p><p>The shop sold more without extra admin: the e-bike sale was saved, the repair was planned, online orders were shipped and margins were protected. Success for Anna is a calm Saturday evening; for the shopper it is getting what was promised.</p></div></section><section id="value" aria-labelledby="heading-value"><p class="chapter-number">07</p><h2 id="heading-value">Value, money, and incentives</h2><div class="entry"><h3>Who pays and how</h3><p>Shops pay a monthly subscription that depends on package, number of workstations and modules; vendors such as Vendit bundle hardware, installation, data migration and support into that fee.</p><div class="labeled"><p class="label">For example</p><p>Vendit lists its entry POS package from about EUR 119-129 per month and a webshop module from EUR 299 per month (October 2026).</p></div></div><div class="entry"><h3>Where the shop gains</h3><p>Fewer lost sales from stock errors, less time on admin, better buying decisions and extra online reach.</p><div class="labeled"><p class="label">For example</p><p>An owner who stops retyping supplier price lists frees hours each week.</p></div></div><div class="entry"><h3>Vendor incentives</h3><p>Vendors earn most from shops that stay for many years and add modules. Switching is costly for shops, which gives vendors stable revenue but also a responsibility not to exploit lock-in.</p><div class="labeled"><p class="label">For example</p><p>A shop that adds a webshop and marketplace module roughly doubles its monthly fee.</p></div></div><div class="entry"><h3>Ecosystem partners</h3><p>Payment, shipping, marketplace and accounting partners earn per transaction or subscription and depend on good connections with the till system.</p><div class="labeled"><p class="label">For example</p><p>A marketplace connector charges per listing volume; a shipping platform per label.</p></div></div></section><section id="challenges" aria-labelledby="heading-challenges"><p class="chapter-number">08</p><h2 id="heading-challenges">What makes this domain difficult</h2><div class="entry"><h3>Keeping stock true across channels</h3><p>Every channel changes stock at its own time, and some updates (deliveries, theft, damage) only happen when people record them.</p><div class="labeled"><p class="label">The competing needs</p><p>Faster synchronisation costs more integration effort; slower sync risks overselling.</p></div><div class="labeled"><p class="label">In practice</p><p>A marketplace sells the last tent before the shop sale reaches it, leading to a cancellation and a seller-rating penalty.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Real-time stock publication plus safety buffers on marketplaces; limited because buffers hide available stock.</p></div></div><div class="entry"><h3>Switching systems without disrupting the shop</h3><p>Years of articles, customers and history must move, and staff must relearn routines during trading hours.</p><div class="labeled"><p class="label">The competing needs</p><p>A thorough migration takes time; a fast one risks dirty data.</p></div><div class="labeled"><p class="label">In practice</p><p>Customer loyalty balances missing after go-live upset regulars.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Vendor-run migration and training before go-live; still dependent on the quality of the old data.</p></div></div><div class="entry"><h3>Branch-specific needs</h3><p>Bike shops need frame numbers and workshop planning, jewellers need gemstone specs and repairs, wholesalers need invoices.</p><div class="labeled"><p class="label">The competing needs</p><p>Specialist features add complexity for shops that do not need them.</p></div><div class="labeled"><p class="label">In practice</p><p>A general cloud POS cannot order from bike wholesalers inside the till.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Branch modules and supplier connections switched on per shop.</p></div></div><div class="entry"><h3>Growing out of the system</h3><p>A shop that becomes a chain with a large webshop needs warehouse and ERP features a POS-centred system may not have.</p><div class="labeled"><p class="label">The competing needs</p><p>Changing to a heavier system adds cost and complexity; staying may limit growth.</p></div><div class="labeled"><p class="label">In practice</p><p>A retailer with a large webshop considers a full commerce ERP.</p></div><div class="labeled"><p class="label">How people respond, and its limits</p><p>Groups like Katapull offer an upgrade path to a sibling ERP; the boundaries between products must stay clear.</p></div></div></section><section id="misconceptions" aria-labelledby="heading-misconceptions"><p class="chapter-number">09</p><h2 id="heading-misconceptions">Common misunderstandings</h2><div class="entry"><h3>A till system just takes payments.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Payment is one step; most value is in stock, purchasing, customer and reporting data the till produces.</p></div></div><div class="entry"><h3>Cloud means the shop cannot sell when the internet is down.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>It depends on the system; some keep local data so sales can continue and sync later. Shops should check this explicitly.</p></div></div><div class="entry"><h3>Selling on marketplaces is just uploading products.</h3><div class="labeled"><p class="label">A better way to understand it</p><p>Stock, prices and orders must stay synchronised continuously, or cancellations harm the shop&#x27;s rating.</p></div></div></section><section id="takeaways" aria-labelledby="heading-takeaways"><p class="chapter-number">10</p><h2 id="heading-takeaways">The ideas to take with you</h2><ul><li><p>Every sale is also a data event that updates stock, margin and customer history.</p></li><li><p>Stock accuracy connects the shop floor, the webshop and the marketplaces.</p></li><li><p>Supplier connections prevent errors at the source.</p></li><li><p>Specialty shops need branch-specific features such as repairs and serial numbers.</p></li><li><p>Choosing a system is a long-term decision because switching is costly.</p></li></ul></section><section id="knowledge-checks" aria-labelledby="heading-knowledge-checks"><p class="chapter-number">11</p><h2 id="heading-knowledge-checks">Try it for yourself</h2><p>Pause and think through each situation, then open the answer.</p><div class="entry"><h3>1. Why might a shop with an accurate till still oversell online?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 1</span></summary><div class="answer"><p>Because online channels may receive stock changes with a delay.</p><div class="labeled"><p class="label">The reasoning</p><p>Correct stock in the till is not enough if marketplaces or webshops are updated slowly; synchronisation speed matters.</p></div></div></details></div><div class="entry"><h3>2. In the walkthrough, what prevented the margin loss after the supplier price change?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 2</span></summary><div class="answer"><p>The supplier connection updated purchase prices and the system flagged low-margin items.</p><div class="labeled"><p class="label">The reasoning</p><p>Margin depends on purchase price; automatic supplier data makes the change visible immediately.</p></div></div></details></div><div class="entry"><h3>3. Why does a franchise head office need different tools than a single shop owner?</h3><details><summary>Reveal answer<span class="visually-hidden"> to question 3</span></summary><div class="answer"><p>It must publish prices and campaigns to many independently owned shops and compare them.</p><div class="labeled"><p class="label">The reasoning</p><p>Central control and consistent execution across shops is a different job from running one shop.</p></div></div></details></div></section><section id="next-questions" aria-labelledby="heading-next-questions"><p class="chapter-number">12</p><h2 id="heading-next-questions">Questions to ask a practitioner</h2><ul><li><p>What happens at your till when the internet connection drops?</p></li><li><p>How long does it take for a sale in the shop to show on your webshop and marketplaces?</p></li><li><p>Which suppliers send you product data electronically, and which do you type in?</p></li><li><p>What would make you switch systems, and what stops you?</p></li></ul></section><section id="further-reading" aria-labelledby="heading-further-reading"><p class="chapter-number">13</p><h2 id="heading-further-reading">Keep learning</h2><ul class="reading-list"><li><a href="https://www.vendit.nl/kassasysteem/" rel="noreferrer">Vendit kassasysteem</a><p>A vendor description of a complete till offer including hardware, migration and support.</p></li><li><a href="https://www.vendit.nl/voorraadbeheersysteem-van-vendit/" rel="noreferrer">Vendit voorraadbeheer</a><p>Explains real-time stock and min/max replenishment in shop language.</p></li><li><a href="https://katapull.nl/" rel="noreferrer">Katapull</a><p>Shows how specialised commerce software vendors combine into one group.</p></li></ul></section></main>
+        </div>
+        <footer><a href="#top">Back to the beginning</a></footer>
+    </div>
+</body>
+</html>

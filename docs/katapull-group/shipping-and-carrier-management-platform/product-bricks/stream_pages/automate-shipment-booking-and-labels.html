@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Automate Shipment Booking and Labels — Stream (Shipping and Carrier Management Platform)</title>
+
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+
+    <style>
+
+        .links-group {
+            margin-bottom: 20px;
+            padding: 16px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .links-group-title {
+            font-size: 12px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .links-group-description {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .link-entry { margin-bottom: 16px; }
+        .link-entry:last-child { margin-bottom: 0; }
+
+        .link-entry-title {
+            color: #1d4ed8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-entry-title:hover { text-decoration: underline; }
+
+        .link-entry-copy {
+            color: #4b5563;
+            font-size: 13px;
+            margin: 4px 0 8px;
+            line-height: 1.45;
+        }
+
+        .link-embed {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            margin-top: 4px;
+        }
+
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .page {
+            margin: 20px;
+        }
+
+        .nav-strip {
+            margin: 2px 20px 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .nav-link {
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        .nav-link.active {
+            border-bottom: 4px solid blue;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .header-meta {
+            font-size: 90%;
+            color: grey;
+        }
+
+        .header-title {
+            font-size: 50px;
+            line-height: 1.05;
+        }
+
+        .header-copy {
+            font-size: 16px;
+            color: grey;
+            margin-top: 6px;
+            max-width: 950px;
+        }
+
+        .activity-summary {
+            margin: 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            background: #fff;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: blue;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fff;
+            color: inherit;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #dbe2ea;
+            padding: 4px;
+            flex: 0 0 auto;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #315b7c;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .card-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .list li {
+            margin-bottom: 6px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            color: #374151;
+            font-size: 12px;
+        }
+
+        .pill img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 90%;
+        }
+
+        .dependency-diagram {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+            overflow-x: auto;
+        }
+
+        .flow-title {
+            font-size: 24px;
+            color: #315b7c;
+            margin-bottom: 6px;
+        }
+
+        .flow-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .flow-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .flow-step-card {
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fbfdff;
+        }
+
+        .flow-step-number {
+            font-size: 11px;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-title {
+            font-size: 18px;
+            color: #315b7c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .flow-step-copy {
+            color: #4b5563;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step-meta-item {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+        }
+
+        .flow-step-meta-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 3px;
+        }
+
+        .flow-step-dependencies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .flow-matrix-wrap {
+            overflow-x: auto;
+        }
+
+        .flow-matrix {
+            width: 100%;
+            min-width: 1080px;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 90%;
+        }
+
+        .flow-matrix th,
+        .flow-matrix td {
+            border: 1px solid #dbe2ea;
+            vertical-align: top;
+            padding: 10px 12px;
+        }
+
+        .flow-matrix th {
+            background: #f8fafc;
+            text-align: left;
+        }
+
+        .flow-dependency-col {
+            min-width: 250px;
+            width: 250px;
+        }
+
+        .flow-dependency-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .flow-dependency-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            flex: 0 0 auto;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+        }
+
+        .flow-step-col {
+            min-width: 220px;
+        }
+
+        .flow-step-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .flow-dependency-name {
+            font-weight: bold;
+            color: #315b7c;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .flow-insight-row th {
+            background: #f1f5f9;
+            color: #315b7c;
+        }
+
+        .flow-insight-row td {
+            background: #f8fafc;
+        }
+
+        .flow-insight-list {
+            margin: 0;
+            padding-left: 16px;
+            line-height: 1.45;
+        }
+
+        .flow-insight-list li {
+            margin-bottom: 5px;
+        }
+
+        .flow-cell-empty {
+            background: #fbfdff;
+            color: #9ca3af;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .flow-cell-active {
+            background: #eef6ff;
+        }
+
+        .flow-cell-copy {
+            color: #374151;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .flow-cell-copy:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-cell-bricks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .flow-cell-brick {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+        }
+
+        .flow-cell-brick-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            flex: 0 0 auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+    <script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+</head>
+
+<body onload="initTab('home')" onhashchange="initTab()">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html">Customers</a>
+    <a href="../../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+
+<div id="breadcrumbs" style="margin-left: 20px"></div>
+
+<script src="../shared_data.js"></script>
+<script>
+    const config = {"domains": [{"id": "shipping-and-carrier-management-platform", "name": "Shipping and Carrier Management Platform", "description": "DeliveryMatch, Katapull's order and shipping platform: dynamic checkout, multi-carrier booking across 200+ carriers, transport management, tracking, returns and freight audit for webshops, wholesalers, 3PLs and brokers."}]};
+    const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
+    const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
+    const currentStream = {"id": "automate-shipment-booking-and-labels", "name": "Automate Shipment Booking and Labels", "icon": "automate-shipment-booking-and-labels.png", "type": "outcome-based-stream", "description": "From an order in a webshop, marketplace, ERP or WMS to a pre-announced shipment with label, documents and track-and-trace - automatically, by one scan, or with one click - across 200+ carriers.", "group": "Promise and Execute", "rootGroup": "Deliver the Promise", "flows": [{"id": "automate-shipment-flow", "title": "Order to label", "description": "Orders flow in, rules decide, the carrier is pre-announced and labels print.", "steps": [{"id": "import-order", "title": "Import the order to ship", "keyFacts": ["Orders come from 40+ webshop systems, marketplaces and 75+ ERP/WMS/planning systems", "Addresses are checked before booking"], "painPoints": ["Orders arrive incomplete (no weight or dimensions)"], "dependencies": [{"type": "brick", "id": "ordi", "name": "Webshop and Marketplace Order Connectors", "description": "Imports orders to ship from 40+ webshop systems (DeliveryMatch names Magento, WooCommerce, Shopify, Lightspeed, Shopware and PrestaShop) and from mark...", "how": "Imports channel orders."}, {"type": "brick", "id": "erpw", "name": "ERP and WMS Connectors", "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Busin...", "how": "Receives ERP/WMS releases."}, {"type": "brick", "id": "addr", "name": "Address Validation", "description": "Checks postcode and house number and recognises incorrect addresses before booking, so labels are not printed for undeliverable parcels.", "how": "Validates the address."}]}, {"id": "decide-carrier", "title": "Decide carrier and service", "keyFacts": ["Rules use weight, destination, cost, channel and client", "Automatic selection balances price, service and lead time"], "painPoints": ["Rules drift from carrier contracts"], "dependencies": [{"type": "brick", "id": "rule", "name": "Shipping Rules Engine", "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instea...", "how": "Evaluates rules."}, {"type": "brick", "id": "csel", "name": "Carrier and Service Selection", "description": "Chooses the best carrier and service for each shipment from the eligible options on price, service level, transit time, capacity, SLA and CO2 - automa...", "how": "Selects the service."}]}, {"id": "book-and-print", "title": "Pre-announce and print by scan or batch", "keyFacts": ["One scan books, prints label and documents and sends track-and-trace", "Batches handle end-of-day peaks"], "painPoints": ["Carrier API outages at peak"], "dependencies": [{"type": "brick", "id": "book", "name": "Carrier Booking and Label Generation", "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for pa...", "how": "Books the shipment."}, {"type": "brick", "id": "cnet", "name": "Carrier Connector Network", "description": "The network of 200+ carrier and broker integrations (DeliveryMatch's own figure; the Katapull page says 180+) for parcels, pallets and freight - e.g. ...", "how": "Calls the carrier."}, {"type": "brick", "id": "docs", "name": "Transport and Customs Documents", "description": "Generates every document a shipment needs in line with the chosen service: shipping and return labels, packing slips, customs documents (commercial in...", "how": "Generates documents."}, {"type": "brick", "id": "prnt", "name": "Scan-to-Ship and Print Management", "description": "One scan pre-announces the shipment, prints the right label and documents on the right printer and sends track-and-trace, without keyboard or mouse; p...", "how": "Prints at the right station."}]}]}], "outcomes": ["Less manual work per order", "Fewer label and address errors", "Shipments leave before carrier cut-off"], "brickDependencies": [{"targetBrickId": "ordi", "type": "composition"}, {"targetBrickId": "erpw", "type": "composition"}, {"targetBrickId": "addr", "type": "composition"}, {"targetBrickId": "rule", "type": "composition"}, {"targetBrickId": "csel", "type": "composition"}, {"targetBrickId": "book", "type": "composition"}, {"targetBrickId": "docs", "type": "composition"}, {"targetBrickId": "prnt", "type": "composition"}, {"targetBrickId": "cnet", "type": "composition"}, {"targetBrickId": "tnnt", "type": "composition"}], "externalSystemsThisStreamDependsOn": [{"system": "Carriers", "description": "Accept pre-announcements and return labels."}], "externalSystemsDependingOnThisStream": []};
+    const related_bricks = [{"id": "ordi", "name": "Webshop and Marketplace Order Connectors", "type": "full-stack", "status": "sustaining", "description": "Imports orders to ship from 40+ webshop systems (DeliveryMatch names Magento, WooCommerce, Shopify, Lightspeed, Shopware and PrestaShop) and from marketplaces such as bol, Amazon and Zalando, and writes tracking numbers and status back to the sales channel.", "links": [], "layers": [{"layer": "ui", "description": "Merchant self-service setup of sales channels.", "modules": [{"id": "module-channel-setup-wizard", "name": "Sales Channel Setup Wizard", "type": "web-component", "description": "Connects a webshop or marketplace account, maps order statuses and shipping methods, and runs a test import.", "dependencies": {"modules": [{"moduleId": "module-order-intake-api", "type": "uses", "description": "Saves channel configuration."}]}}]}, {"layer": "interfaces", "description": "Order intake for pushed and pulled orders.", "modules": [{"id": "module-order-intake-api", "name": "Order Intake API", "type": "api", "description": "Receives orders pushed by webshop plugins and stores normalised shipping orders.", "dependencies": {"modules": [{"moduleId": "module-shipping-order-service", "type": "uses", "description": "Persists the normalised order."}]}}]}, {"layer": "worker", "description": "Polling and write-back jobs per channel.", "modules": [{"id": "module-order-poller", "name": "Channel Order Poller", "type": "daemon", "description": "Polls channels without push support for new and changed orders.", "dependencies": {"modules": [{"moduleId": "module-webshop-connectors", "type": "uses", "description": "Calls webshop APIs."}, {"moduleId": "module-marketplace-connectors", "type": "uses", "description": "Calls marketplace APIs."}]}}, {"id": "module-status-writeback", "name": "Tracking Write-back Consumer", "type": "message-consumer", "description": "Writes tracking numbers, carrier and shipped status back to the originating channel.", "dependencies": {"modules": [{"moduleId": "module-webshop-connectors", "type": "uses", "description": "Updates webshop orders."}, {"moduleId": "module-marketplace-connectors", "type": "uses", "description": "Confirms marketplace shipments."}]}}]}, {"layer": "service", "description": "Normalised order to ship.", "modules": [{"id": "module-shipping-order-service", "name": "Shipping Order Service", "type": "stateful-service", "description": "Holds the channel-neutral order to ship: lines, weights, dimensions, recipient, requested delivery option and channel reference."}]}, {"layer": "integration", "description": "Channel adapters.", "modules": [{"id": "module-webshop-connectors", "name": "Webshop Platform Connectors", "type": "integration", "description": "Plugins and API adapters for webshop platforms."}, {"id": "module-marketplace-connectors", "name": "Marketplace Connectors", "type": "integration", "description": "Adapters for bol, Amazon, Zalando and other marketplaces, including tracking confirmation rules."}]}], "dataDependencies": [{"assetId": "shipping-order", "moduleIds": ["module-shipping-order-service", "module-order-intake-api"], "role": "own", "description": "System of record for orders to ship coming from sales channels."}, {"assetId": "recipient-contact-and-address", "moduleIds": ["module-shipping-order-service"], "role": "write", "description": "Captures the recipient name, address, e-mail and phone from the order."}, {"assetId": "integration-connection-config", "moduleIds": ["module-order-poller", "module-channel-setup-wizard"], "role": "read-write", "description": "Stores channel credentials and mappings."}], "brickDependencies": [{"targetBrickId": "addr", "moduleId": "module-address-check-api", "sourceModuleId": "module-shipping-order-service", "type": "uses", "description": "Validates postcode and house number before an order becomes shippable."}, {"targetBrickId": "rule", "moduleId": "module-rule-evaluation-api", "sourceModuleId": "module-shipping-order-service", "type": "uses", "description": "Applies the merchant's shipping rules to each imported order."}], "externalSystemsThisBrickDependsOn": [{"system": "Webshop platforms (Shopify, Magento, WooCommerce, Lightspeed, Shopware, PrestaShop)", "type": "channel", "interface": "Platform APIs and plugins", "description": "Source of webshop orders and target of tracking write-back.", "sourceModuleId": "module-webshop-connectors"}, {"system": "Marketplaces (bol, Amazon, Zalando)", "type": "channel", "interface": "Marketplace seller APIs", "description": "Source of marketplace orders and target of shipment confirmation.", "sourceModuleId": "module-marketplace-connectors"}], "externalSystemsDependingOnThisBrick": [{"system": "Merchants using the DeliveryMatch Shopify app", "type": "channel-consumer", "interface": "Shopify app", "description": "Shopify merchants install the app to route orders to carriers.", "moduleId": "module-channel-setup-wizard"}], "domain": "Order Intake and System Integration", "group": "Sales Channel and Business System Connectors"}, {"id": "erpw", "name": "ERP and WMS Connectors", "type": "full-stack", "status": "invest", "description": "Standard connectors to 75+ ERP, WMS and planning systems (DeliveryMatch lists among others Exact, AFAS, Odoo, CloudSuite, Microsoft Dynamics 365 Business Central via idyn, Monta and Picqer) so shipments are created from the system where orders and stock live, and labels, packing lists and tracking flow back.", "links": [], "layers": [{"layer": "interfaces", "description": "Shipment requests from business systems.", "modules": [{"id": "module-erp-wms-shipment-api", "name": "ERP/WMS Shipment API", "type": "api", "description": "Accepts shipment requests and product master data from ERP and WMS systems and returns label, packing list and tracking code.", "dependencies": {"modules": [{"moduleId": "module-system-mapping", "type": "uses", "description": "Translates system-specific payloads."}]}}]}, {"layer": "worker", "description": "Asynchronous return of documents.", "modules": [{"id": "module-document-return-consumer", "name": "Document Return Consumer", "type": "message-consumer", "description": "Pushes labels, manifests and tracking codes back to the originating ERP or WMS.", "dependencies": {"modules": [{"moduleId": "module-erp-connectors", "type": "uses", "description": "Writes to ERP."}, {"moduleId": "module-wms-connectors", "type": "uses", "description": "Writes to WMS."}]}}]}, {"layer": "stateless-service", "description": "Mapping between system dialects and the shipping model.", "modules": [{"id": "module-system-mapping", "name": "System Field Mapping", "type": "stateless-service", "description": "Maps order, article, packaging and dangerous-goods fields to the DeliveryMatch shipment model."}]}, {"layer": "integration", "description": "Business system adapters.", "modules": [{"id": "module-erp-connectors", "name": "ERP Connectors", "type": "integration", "description": "Adapters for ERP systems including the Katapull ERP Logic4."}, {"id": "module-wms-connectors", "name": "WMS Connectors", "type": "integration", "description": "Adapters for WMS systems such as Monta and Picqer."}]}], "dataDependencies": [{"assetId": "shipping-order", "moduleIds": ["module-erp-wms-shipment-api"], "role": "write", "description": "Creates orders to ship from ERP and WMS releases."}, {"assetId": "customs-and-dangerous-goods-data", "moduleIds": ["module-system-mapping"], "role": "own", "description": "Receives HS codes, origin, values and ADR data from product master data."}, {"assetId": "integration-connection-config", "moduleIds": ["module-erp-connectors", "module-wms-connectors"], "role": "read", "description": "Uses connection settings per system."}], "brickDependencies": [{"targetBrickId": "book", "moduleId": "module-booking-api", "sourceModuleId": "module-erp-wms-shipment-api", "type": "uses", "description": "Books the shipment once the ERP or WMS releases it."}], "externalSystemsThisBrickDependsOn": [{"system": "ERP systems (Exact, AFAS, Odoo, CloudSuite, Dynamics 365 Business Central)", "type": "system", "interface": "ERP APIs and connectors", "description": "Orders, articles and invoices.", "sourceModuleId": "module-erp-connectors"}, {"system": "WMS systems (Monta, Picqer and others)", "type": "system", "interface": "WMS APIs", "description": "Pick/pack status and shipment release.", "sourceModuleId": "module-wms-connectors"}], "externalSystemsDependingOnThisBrick": [], "domain": "Order Intake and System Integration", "group": "Sales Channel and Business System Connectors"}, {"id": "addr", "name": "Address Validation", "type": "full-stack", "status": "sustaining", "description": "Checks postcode and house number and recognises incorrect addresses before booking, so labels are not printed for undeliverable parcels.", "links": [], "layers": [{"layer": "interfaces", "description": "Address check API.", "modules": [{"id": "module-address-check-api", "name": "Address Check API", "type": "api", "description": "Validates and suggests corrections for an address.", "dependencies": {"modules": [{"moduleId": "module-address-normalizer", "type": "uses", "description": "Normalises input."}]}}]}, {"layer": "stateless-service", "description": "Normalisation.", "modules": [{"id": "module-address-normalizer", "name": "Address Normaliser", "type": "stateless-service", "description": "Parses street, number and suffix per country format.", "dependencies": {"modules": [{"moduleId": "module-address-data-connectors", "type": "uses", "description": "Looks up reference data."}]}}]}, {"layer": "integration", "description": "Reference data.", "modules": [{"id": "module-address-data-connectors", "name": "Address Reference Data Connectors", "type": "integration", "description": "Lookups against national postcode and address reference data."}]}], "dataDependencies": [{"assetId": "recipient-contact-and-address", "moduleIds": ["module-address-check-api"], "role": "read", "description": "Validates recipient addresses."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [{"system": "National postcode and address reference data", "type": "data", "interface": "Address lookup services", "description": "Validation of postcode and house number.", "sourceModuleId": "module-address-data-connectors"}], "externalSystemsDependingOnThisBrick": [], "domain": "Platform Foundation", "group": "Shared Services"}, {"id": "rule", "name": "Shipping Rules Engine", "type": "full-stack", "status": "sustaining", "description": "Lets merchants, 3PLs and brokers define their own shipping logic - by weight, dimensions, destination, cost, sales channel, client or product - instead of fixed shipping methods; rules decide carriers, services, prices to the shopper, discounts and pickup moments.", "links": [], "layers": [{"layer": "ui", "description": "Rule authoring.", "modules": [{"id": "module-rule-editor", "name": "Rule Editor", "type": "web-component", "description": "No-code editor for conditions and actions with test orders.", "dependencies": {"modules": [{"moduleId": "module-rule-store", "type": "uses", "description": "Saves rule versions."}, {"moduleId": "module-rule-simulator", "type": "uses", "description": "Simulates rules."}]}}]}, {"layer": "interfaces", "description": "Evaluation API.", "modules": [{"id": "module-rule-evaluation-api", "name": "Rule Evaluation API", "type": "api", "description": "Evaluates the active rule set for an order or basket.", "dependencies": {"modules": [{"moduleId": "module-rule-store", "type": "uses", "description": "Loads the active version."}]}}]}, {"layer": "stateless-service", "description": "Simulation.", "modules": [{"id": "module-rule-simulator", "name": "Rule Simulator", "type": "stateless-service", "description": "Replays historical orders against a draft rule set to show cost and service impact.", "dependencies": {"modules": [{"moduleId": "module-rule-store", "type": "uses", "description": "Reads drafts."}]}}]}, {"layer": "service", "description": "Versioned rules.", "modules": [{"id": "module-rule-store", "name": "Rule Store", "type": "stateful-service", "description": "Versioned rule sets per tenant, client and sales channel."}]}], "dataDependencies": [{"assetId": "shipping-rule-set", "moduleIds": ["module-rule-store", "module-rule-evaluation-api"], "role": "own", "description": "System of record for shipping rules."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Shipping Decisions and Execution", "group": "Decision Logic"}, {"id": "csel", "name": "Carrier and Service Selection", "type": "full-stack", "status": "invest", "description": "Chooses the best carrier and service for each shipment from the eligible options on price, service level, transit time, capacity, SLA and CO2 - automatic carrier selection is presented by DeliveryMatch as a core and advanced capability.", "links": [], "layers": [{"layer": "interfaces", "description": "Selection API.", "modules": [{"id": "module-selection-api", "name": "Carrier Selection API", "type": "api", "description": "Returns the selected carrier service with alternatives and reasons.", "dependencies": {"modules": [{"moduleId": "module-selection-engine", "type": "uses", "description": "Runs selection."}]}}]}, {"layer": "stateless-service", "description": "Selection logic.", "modules": [{"id": "module-selection-engine", "name": "Selection Engine", "type": "stateless-service", "description": "Scores eligible services against the tenant's objectives.", "dependencies": {"modules": [{"moduleId": "module-rule-evaluation-api", "type": "uses", "description": "Gets rule constraints.", "targetBrickId": "rule"}, {"moduleId": "module-rate-calculator", "type": "uses", "description": "Gets costs.", "targetBrickId": "rate"}, {"moduleId": "module-emission-calculator", "type": "uses", "description": "Gets CO2 per service.", "targetBrickId": "co2c"}, {"moduleId": "module-carrier-scorecard-api", "type": "uses", "description": "Gets carrier performance.", "targetBrickId": "excp"}, {"moduleId": "module-capacity-and-sla-service", "type": "uses", "description": "Checks capacity."}]}}]}, {"layer": "service", "description": "Capacity and SLA state.", "modules": [{"id": "module-capacity-and-sla-service", "name": "Capacity and SLA Service", "type": "stateful-service", "description": "Daily carrier capacity allocations, marketplace SLAs and customer-specific delivery agreements."}]}], "dataDependencies": [{"assetId": "carrier-service-catalogue", "moduleIds": ["module-selection-engine"], "role": "read", "description": "Eligible carriers and services."}, {"assetId": "carrier-performance-metrics", "moduleIds": ["module-selection-engine"], "role": "read", "description": "Uses on-time performance in scoring."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Shipping Decisions and Execution", "group": "Decision Logic"}, {"id": "book", "name": "Carrier Booking and Label Generation", "type": "full-stack", "status": "sustaining", "description": "Pre-announces shipments to the selected carrier, retrieves the tracking number and prints the label - per order, in batches or with one click - for parcels and pallets, nationally and internationally. The execution core of the platform.", "links": [], "layers": [{"layer": "ui", "description": "Manual shipping workbench.", "modules": [{"id": "module-shipping-workbench", "name": "Shipping Workbench", "type": "web-component", "description": "Overview of orders to ship with one-click booking, manual overrides and batch actions.", "dependencies": {"modules": [{"moduleId": "module-booking-api", "type": "uses", "description": "Books shipments."}]}}]}, {"layer": "interfaces", "description": "Booking API.", "modules": [{"id": "module-booking-api", "name": "Booking API", "type": "api", "description": "Creates, cancels and re-books shipments and returns labels and tracking numbers.", "dependencies": {"modules": [{"moduleId": "module-shipment-service", "type": "uses", "description": "Persists shipments."}]}}]}, {"layer": "worker", "description": "Batch and asynchronous booking.", "modules": [{"id": "module-batch-booking-worker", "name": "Batch Booking Worker", "type": "message-consumer", "description": "Processes end-of-day and peak batches with retries per carrier.", "dependencies": {"modules": [{"moduleId": "module-booking-api", "type": "uses", "description": "Books each shipment."}]}}]}, {"layer": "service", "description": "Shipment state.", "modules": [{"id": "module-shipment-service", "name": "Shipment Service", "type": "stateful-service", "description": "Shipment, parcels, carrier service, tracking number, booking state and costs.", "dependencies": {"modules": [{"moduleId": "module-carrier-adapter-gateway", "type": "uses", "description": "Pre-announces at the carrier.", "targetBrickId": "cnet"}, {"moduleId": "module-document-generator", "type": "uses", "description": "Generates documents.", "targetBrickId": "docs"}]}}]}], "dataDependencies": [{"assetId": "shipment-record", "moduleIds": ["module-shipment-service", "module-booking-api"], "role": "own", "description": "System of record for booked shipments."}, {"assetId": "shipping-order", "moduleIds": ["module-booking-api"], "role": "read", "description": "Books from the order to ship."}, {"assetId": "shipping-label-and-transport-document", "moduleIds": ["module-shipment-service"], "role": "write", "description": "Stores labels returned by carriers."}], "brickDependencies": [{"targetBrickId": "csel", "moduleId": "module-selection-api", "sourceModuleId": "module-booking-api", "type": "uses", "description": "Gets the carrier service when the order has none fixed."}, {"targetBrickId": "rate", "moduleId": "module-rate-calculator", "sourceModuleId": "module-shipment-service", "type": "uses", "description": "Stores expected purchase and sales cost at booking."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [{"system": "Warehouse staff and webshop back offices", "type": "user", "interface": "Shipping workbench", "description": "Book and print shipments.", "moduleId": "module-shipping-workbench"}], "domain": "Shipping Decisions and Execution", "group": "Execution"}, {"id": "docs", "name": "Transport and Customs Documents", "type": "full-stack", "status": "sustaining", "description": "Generates every document a shipment needs in line with the chosen service: shipping and return labels, packing slips, customs documents (commercial invoices), dangerous-goods/ADR labels and documents, consignment notes (CMR) and manifests.", "links": [], "layers": [{"layer": "interfaces", "description": "Document API.", "modules": [{"id": "module-document-api", "name": "Document API", "type": "api", "description": "Retrieves and reprints documents per shipment.", "dependencies": {"modules": [{"moduleId": "module-document-archive", "type": "uses", "description": "Reads archived documents."}]}}]}, {"layer": "stateless-service", "description": "Rendering.", "modules": [{"id": "module-document-generator", "name": "Document Generator", "type": "stateless-service", "description": "Renders carrier-compliant labels and transport documents in PDF and printer formats.", "dependencies": {"modules": [{"moduleId": "module-document-archive", "type": "uses", "description": "Stores output."}]}}]}, {"layer": "service", "description": "Archive.", "modules": [{"id": "module-document-archive", "name": "Document Archive", "type": "stateful-service", "description": "Stores generated documents for reprint, audit and customs evidence."}]}], "dataDependencies": [{"assetId": "shipping-label-and-transport-document", "moduleIds": ["module-document-archive", "module-document-generator"], "role": "own", "description": "System of record for generated documents."}, {"assetId": "customs-and-dangerous-goods-data", "moduleIds": ["module-document-generator"], "role": "read", "description": "Uses HS codes, values and ADR data."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Shipping Decisions and Execution", "group": "Execution"}, {"id": "prnt", "name": "Scan-to-Ship and Print Management", "type": "full-stack", "status": "sustaining", "description": "One scan pre-announces the shipment, prints the right label and documents on the right printer and sends track-and-trace, without keyboard or mouse; printer management software is supplied so labels print automatically per location or process line.", "links": [], "layers": [{"layer": "ui", "description": "Pack station.", "modules": [{"id": "module-scan-station", "name": "Scan Station", "type": "web-component", "description": "Scan-driven pack-station screen with weight and package-type capture.", "dependencies": {"modules": [{"moduleId": "module-print-job-api", "type": "uses", "description": "Submits print jobs."}]}}]}, {"layer": "interfaces", "description": "Print jobs.", "modules": [{"id": "module-print-job-api", "name": "Print Job API", "type": "api", "description": "Queues print jobs per printer and location.", "dependencies": {"modules": [{"moduleId": "module-printer-registry", "type": "uses", "description": "Resolves printers."}]}}]}, {"layer": "worker", "description": "On-site print client.", "modules": [{"id": "module-print-client", "name": "Local Print Client", "type": "daemon", "description": "Agent installed at the warehouse that pulls print jobs and drives label and document printers.", "dependencies": {"modules": [{"moduleId": "module-print-job-api", "type": "uses", "description": "Pulls jobs."}]}}]}, {"layer": "service", "description": "Printer registry.", "modules": [{"id": "module-printer-registry", "name": "Printer Registry", "type": "stateful-service", "description": "Printers, formats and routing per location and process line."}]}], "dataDependencies": [{"assetId": "shipping-label-and-transport-document", "moduleIds": ["module-print-job-api"], "role": "read", "description": "Prints stored documents."}], "brickDependencies": [{"targetBrickId": "book", "moduleId": "module-booking-api", "sourceModuleId": "module-scan-station", "type": "uses", "description": "Books the shipment on scan."}, {"targetBrickId": "docs", "moduleId": "module-document-api", "sourceModuleId": "module-print-job-api", "type": "uses", "description": "Fetches documents to print."}], "externalSystemsThisBrickDependsOn": [{"system": "Label printers and barcode scanners", "type": "device", "interface": "Printer drivers", "description": "Physical printing and scanning at pack stations.", "sourceModuleId": "module-print-client"}], "externalSystemsDependingOnThisBrick": [], "domain": "Shipping Decisions and Execution", "group": "Execution"}, {"id": "cnet", "name": "Carrier Connector Network", "type": "full-stack", "status": "invest", "description": "The network of 200+ carrier and broker integrations (DeliveryMatch's own figure; the Katapull page says 180+) for parcels, pallets and freight - e.g. PostNL, UPS, FedEx, TNT, bpost, Budbee, Trunkrs, Royal Mail, Deutsche Post, Swiss Post, PostNord, BRT, DSV, DB Schenker, Dachser, Rhenus, Raben, Mainfreight and Maersk - with carrier account credentials per tenant and an onboarding console for new carriers.", "links": [], "layers": [{"layer": "interfaces", "description": "Gateway and onboarding.", "modules": [{"id": "module-carrier-adapter-gateway", "name": "Carrier Adapter Gateway", "type": "api", "description": "Uniform internal API for booking, cancelling, labels, tracking and locations across carriers.", "dependencies": {"modules": [{"moduleId": "module-parcel-carrier-adapters", "type": "uses", "description": "Routes parcel calls."}, {"moduleId": "module-freight-carrier-adapters", "type": "uses", "description": "Routes freight calls."}, {"moduleId": "module-broker-adapters", "type": "uses", "description": "Routes broker calls."}, {"moduleId": "module-carrier-credential-vault", "type": "uses", "description": "Uses tenant carrier accounts."}]}}, {"id": "module-carrier-onboarding-console", "name": "Carrier Onboarding Console", "type": "backoffice-interface", "description": "Internal console to configure a new carrier's services, label specs and test cases."}]}, {"layer": "service", "description": "Carrier accounts.", "modules": [{"id": "module-carrier-credential-vault", "name": "Carrier Credential Vault", "type": "stateful-service", "description": "Encrypted carrier account numbers and API credentials per tenant."}]}, {"layer": "integration", "description": "Carrier adapters.", "modules": [{"id": "module-parcel-carrier-adapters", "name": "Parcel Carrier Adapters", "type": "integration", "description": "Adapters for parcel and same-day carriers."}, {"id": "module-freight-carrier-adapters", "name": "Pallet and Freight Carrier Adapters", "type": "integration", "description": "Adapters for pallet, groupage and freight forwarders."}, {"id": "module-broker-adapters", "name": "Broker Adapters", "type": "integration", "description": "Adapters for shipping brokers such as MyParcel, Boekuwzending and Cheapcargo listed by DeliveryMatch."}]}], "dataDependencies": [{"assetId": "carrier-service-catalogue", "moduleIds": ["module-carrier-onboarding-console", "module-carrier-adapter-gateway"], "role": "own", "description": "System of record for carriers, services and label specifications."}, {"assetId": "tenant-account-and-credentials", "moduleIds": ["module-carrier-credential-vault"], "role": "read", "description": "Uses the tenant's carrier contracts."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [{"system": "Parcel carriers (PostNL, UPS, FedEx, bpost, Budbee, Trunkrs, PostNord and others)", "type": "partner", "interface": "Carrier booking and tracking APIs", "description": "Pre-announcement, labels and tracking.", "sourceModuleId": "module-parcel-carrier-adapters"}, {"system": "Pallet and freight carriers (DSV, DB Schenker, Dachser, Rhenus, Raben, Mainfreight, Maersk)", "type": "partner", "interface": "Freight booking APIs and EDI", "description": "Pallet and freight bookings.", "sourceModuleId": "module-freight-carrier-adapters"}, {"system": "Shipping brokers", "type": "partner", "interface": "Broker APIs", "description": "Access to broker rates and services.", "sourceModuleId": "module-broker-adapters"}], "externalSystemsDependingOnThisBrick": [], "domain": "Carrier Network and Tracking", "group": "Carrier Connectivity"}, {"id": "tnnt", "name": "Tenants, Clients and Access", "type": "full-stack", "status": "sustaining", "description": "Accounts, users, roles and multi-client structures - a 3PL's clients or a broker's customers as sub-accounts with their own carriers, rates and branding - with the audit trail and access controls that support DeliveryMatch's ISO 27001 certification (June 2026).", "links": [], "layers": [{"layer": "ui", "description": "Administration.", "modules": [{"id": "module-account-admin", "name": "Account Administration", "type": "web-component", "description": "Manage users, roles, clients and sub-accounts.", "dependencies": {"modules": [{"moduleId": "module-tenant-api", "type": "uses", "description": "Updates accounts."}]}}]}, {"layer": "interfaces", "description": "Tenant API.", "modules": [{"id": "module-tenant-api", "name": "Tenant API", "type": "api", "description": "Tenant, client and user lookups for all bricks.", "dependencies": {"modules": [{"moduleId": "module-identity-service", "type": "uses", "description": "Reads identities."}]}}]}, {"layer": "service", "description": "Identity and audit.", "modules": [{"id": "module-identity-service", "name": "Identity and Role Service", "type": "stateful-service", "description": "Users, roles, tenants and client hierarchy."}, {"id": "module-audit-log", "name": "Audit Log", "type": "service", "description": "Immutable record of configuration and access changes."}]}], "dataDependencies": [{"assetId": "tenant-account-and-credentials", "moduleIds": ["module-identity-service", "module-tenant-api"], "role": "own", "description": "System of record for accounts and access."}], "brickDependencies": [], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Platform Foundation", "group": "Shared Services"}];
+    const linked_products = [{"id": "dm-shipping-platform", "name": "DeliveryMatch Shipping Platform", "icon": "product.png", "type": "B2B SaaS - multi-carrier shipping and transport management", "whyUsed": "Imports webshop and marketplace orders."}, {"id": "dm-shopify-app", "name": "DeliveryMatch Shopify App", "icon": "product.png", "type": "App marketplace listing", "whyUsed": "Shopify order import and write-back."}, {"id": "dm-carrier-broker-tms", "name": "DeliveryMatch for Carriers and Brokers", "icon": "product.png", "type": "B2B SaaS - transport management for carriers and brokers", "whyUsed": "Connects broker customers' ERP/WMS."}, {"id": "dm-dynamic-checkout", "name": "DeliveryMatch Dynamic Checkout", "icon": "product.png", "type": "B2B SaaS add-on - checkout delivery options", "whyUsed": "Checkout pricing rules."}, {"id": "dm-returns", "name": "DeliveryMatch Returns Management", "icon": "product.png", "type": "B2B SaaS feature - returns", "whyUsed": "Return bookings."}, {"id": "dm-api-and-partner-program", "name": "DeliveryMatch API and Integration Partner Programme", "icon": "product.png", "type": "Platform API / partner programme", "whyUsed": "Booking via API."}];
+    const supported_jobs = [{"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "ecom-promise", "jobName": "Promise and deliver every webshop order on time at the lowest sensible cost", "jobWhatItIs": "Make a delivery promise at checkout that the operation can keep, then ship and inform without manual work.", "jobOutcome": "Orders arrive when promised, cost per parcel stays under control and customers rarely need to ask.", "supportRationale": "Automated booking across 200+ carriers.", "usedInSteps": [{"step": "Book and label orders without manual work", "description": "Let rules choose the carrier and print labels by scan or batch.", "howItSupports": "Automated booking across 200+ carriers.", "media": []}]}, {"customerId": "whsl", "customerName": "Logistics Manager at a Manufacturer or Wholesaler", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-whsl-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "whsl-dispatch", "jobName": "Dispatch mixed B2B and B2C shipments, from parcels to pallets, without carrier portals", "jobWhatItIs": "Ship every order type from the ERP through the right carrier with the right documents.", "jobOutcome": "All shipments leave on the planned day with complete documents and agreements met.", "supportRationale": "ERP connectors and rules.", "usedInSteps": [{"step": "Bring ERP orders into one shipping flow", "description": "Orders and article data flow from the ERP without re-typing.", "howItSupports": "ERP connectors and rules.", "media": []}]}, {"customerId": "tpls", "customerName": "Fulfilment and 3PL Operations Lead", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-tpls-portrait.jpg", "productId": "dm-shipping-platform", "productName": "DeliveryMatch Shipping Platform", "productIcon": "product.png", "jobId": "tpls-ship", "jobName": "Ship for many clients through many carriers from one operation", "jobWhatItIs": "Process every client's orders at pack stations with the client's carriers, rules and branding.", "jobOutcome": "High throughput, no wrong-service labels and every client's promise kept.", "supportRationale": "Scan-to-ship.", "usedInSteps": [{"step": "Scan to ship at pack stations", "description": "One scan books, prints and notifies.", "howItSupports": "Scan-to-ship.", "media": []}, {"step": "Apply client-specific carrier rules", "description": "Each client's carriers, services and agreements.", "howItSupports": "Rules per client.", "media": []}]}, {"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-shopify-app", "productName": "DeliveryMatch Shopify App", "productIcon": "product.png", "jobId": "ecom-promise", "jobName": "Promise and deliver every webshop order on time at the lowest sensible cost", "jobWhatItIs": "Make a delivery promise at checkout that the operation can keep, then ship and inform without manual work.", "jobOutcome": "Orders arrive when promised, cost per parcel stays under control and customers rarely need to ask.", "supportRationale": "Automated booking across 200+ carriers.", "usedInSteps": [{"step": "Book and label orders without manual work", "description": "Let rules choose the carrier and print labels by scan or batch.", "howItSupports": "Automated booking across 200+ carriers.", "media": []}]}, {"customerId": "crbr", "customerName": "Carrier or Transport Broker Partner", "customerGroup": "Logistics Service Providers", "customerIcon": "customer-crbr-portrait.jpg", "productId": "dm-carrier-broker-tms", "productName": "DeliveryMatch for Carriers and Brokers", "productIcon": "product.png", "jobId": "crbr-connect", "jobName": "Receive clean, pre-announced shipments from many shippers' systems", "jobWhatItIs": "Be bookable from every shipper connected to DeliveryMatch and return tracking.", "jobOutcome": "Shipments arrive pre-announced with valid data; tracking reaches the shipper and recipient.", "supportRationale": "Booking and labels.", "usedInSteps": [{"step": "Receive bookings with complete data", "description": "Validated addresses, weights and documents.", "howItSupports": "Booking and labels.", "media": []}]}, {"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-dynamic-checkout", "productName": "DeliveryMatch Dynamic Checkout", "productIcon": "product.png", "jobId": "ecom-promise", "jobName": "Promise and deliver every webshop order on time at the lowest sensible cost", "jobWhatItIs": "Make a delivery promise at checkout that the operation can keep, then ship and inform without manual work.", "jobOutcome": "Orders arrive when promised, cost per parcel stays under control and customers rarely need to ask.", "supportRationale": "Automated booking across 200+ carriers.", "usedInSteps": [{"step": "Book and label orders without manual work", "description": "Let rules choose the carrier and print labels by scan or batch.", "howItSupports": "Automated booking across 200+ carriers.", "media": []}]}, {"customerId": "ecom", "customerName": "E-commerce Operations Manager", "customerGroup": "Merchants and Shippers", "customerIcon": "customer-ecom-portrait.jpg", "productId": "dm-returns", "productName": "DeliveryMatch Returns Management", "productIcon": "product.png", "jobId": "ecom-promise", "jobName": "Promise and deliver every webshop order on time at the lowest sensible cost", "jobWhatItIs": "Make a delivery promise at checkout that the operation can keep, then ship and inform without manual work.", "jobOutcome": "Orders arrive when promised, cost per parcel stays under control and customers rarely need to ask.", "supportRationale": "Automated booking across 200+ carriers.", "usedInSteps": [{"step": "Book and label orders without manual work", "description": "Let rules choose the carrier and print labels by scan or batch.", "howItSupports": "Automated booking across 200+ carriers.", "media": []}]}, {"customerId": "swpt", "customerName": "Software Integration Partner", "customerGroup": "Software and Ecosystem Partners", "customerIcon": "customer-swpt-portrait.jpg", "productId": "dm-api-and-partner-program", "productName": "DeliveryMatch API and Integration Partner Programme", "productIcon": "product.png", "jobId": "swpt-hub", "jobName": "Make Katapull Commerce Hub products work as one chain", "jobWhatItIs": "Connect ERP, POS, marketplace, EDI, WMS and returns products of the group with shipping.", "jobOutcome": "A customer of several Katapull brands runs one order-to-delivery-to-return chain.", "supportRationale": "Katapull bridges and booking.", "usedInSteps": [{"step": "Pass orders from sibling products to shipping", "description": "Logic4, Vendit, EffectConnect and Highbiza orders ship via DeliveryMatch.", "howItSupports": "Katapull bridges and booking.", "media": []}]}];
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        flowchart: {
+            htmlLabels: false
+        }
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function dedupe(items, keyFn) {
+        const seen = new Set();
+        const ordered = [];
+        items.forEach(item => {
+            const key = keyFn(item);
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            ordered.push(item);
+        });
+        return ordered;
+    }
+
+    function getFlows() {
+        return currentStream.flows || [];
+    }
+
+    function getFlowDependencies(flow) {
+        const dependencyIndex = new Map();
+        (flow.steps || []).forEach(step => {
+            (step.dependencies || []).forEach(dependency => {
+                if ((dependency.type || 'brick') !== 'brick') {
+                    return;
+                }
+                const key = [dependency.type || 'dependency', dependency.id || dependency.name || 'unknown'].join('::');
+                if (!dependencyIndex.has(key)) {
+                    dependencyIndex.set(key, dependency);
+                }
+            });
+        });
+        return Array.from(dependencyIndex.values());
+    }
+
+    function getStepDependency(step, dependency) {
+        return (step.dependencies || []).find(item => (item.type || '') === (dependency.type || '') && (item.id || '') === (dependency.id || '')) || null;
+    }
+
+    function getPrimaryActors() {
+        const streamJobs = currentStream.supportedCustomerJobs || [];
+        const allJobs = streamJobs.length ? streamJobs : supported_jobs;
+        return dedupe(allJobs.map(item => item.customerName || item.customerGroup || '').filter(Boolean), item => item);
+    }
+
+    function summarizeFlow(flow) {
+        const steps = flow.steps || [];
+        const firstStep = steps[0] || {};
+        const lastStep = steps[steps.length - 1] || {};
+        return {
+            actor: flow.primaryActor || firstStep.actor || '',
+            trigger: flow.trigger || firstStep.trigger || '',
+            result: flow.successSignal || flow.outcome || lastStep.successSignal || lastStep.output || ''
+        };
+    }
+
+    function renderStepMeta(label, value) {
+        if (!value) {
+            return '';
+        }
+        return '<div class="flow-step-meta-item"><div class="flow-step-meta-label">' + escapeHtml(label) + '</div><div class="flow-step-copy">' + escapeHtml(value) + '</div></div>';
+    }
+
+    function flowDependencyIconFile(dependency) {
+        const dependencyId = dependency.id || '';
+        const linkedBrick = related_bricks.find(brick => brick.id === dependencyId) || all_bricks.find(brick => brick.id === dependencyId) || {};
+        return dependency.icon || linkedBrick.icon || (dependencyId ? dependencyId + '.png' : 'brick.png');
+    }
+
+    function renderFlowDependencyIcon(dependency, className) {
+        return '<img class="' + escapeHtml(className) + '" src="../icons/' + escapeHtml(flowDependencyIconFile(dependency)) + '" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+    }
+
+    function renderStepDependencyPills(step) {
+        const dependencies = step.dependencies || [];
+        if (!dependencies.length) {
+            return '<div class="muted">No step-specific dependencies listed.</div>';
+        }
+
+        return '<div class="flow-step-dependencies">' + dependencies.map(dep => {
+            const label = dep.name || dep.id || 'Dependency';
+            const kind = 'Brick';
+            return '<span class="flow-cell-brick">' + renderFlowDependencyIcon(dep, 'flow-cell-brick-icon') + '<span>' + escapeHtml(kind + ': ' + label) + '</span></span>';
+        }).join('') + '</div>';
+    }
+
+    function simplifySupportCopy(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+            return '';
+        }
+        const simplified = text.replace(/^Supports .*? by helping users help /i, 'Facilitate ');
+        return simplified;
+    }
+</script>
+
+<div id="Header"></div>
+
+<div class="page">
+    <div class="tab" id="primary_tabs">
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
+    </div>
+
+    <div id="tab_content_home" class="tabcontent"></div>
+    <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_links" class="tabcontent"></div>
+
+
+</div>
+
+<script>
+    function streamMetaPath(stream) {
+        const parts = [];
+        if (stream.group) {
+            parts.push(stream.group);
+        }
+        if (stream.rootGroup && stream.rootGroup !== stream.group) {
+            parts.push(stream.rootGroup);
+        }
+        if (!parts.length) {
+            parts.push('Stream');
+        }
+        return parts.join(' / ');
+    }
+
+    let headerHtml = '<div class="nav-strip">';
+    allStreams.forEach(item => {
+        headerHtml += '<a class="nav-link" href="' + escapeHtml(item.id) + '.html">';
+        headerHtml += '<img src="../icons/' + escapeHtml(item.icon || 'stream.png') + '" class="' + (item.id === currentStream.id ? 'tab-image-selected' : 'tab-image') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+        headerHtml += '</a>';
+    });
+    headerHtml += '</div>';
+
+    headerHtml += '<div class="page">';
+    headerHtml += '<div class="header">';
+    headerHtml += '<img class="header-icon" src="../icons/' + escapeHtml(currentStream.icon || 'stream.png') + '" alt="" onerror="this.onerror=null;this.src=\'../icons/stream.png\'">';
+    headerHtml += '<div>';
+    headerHtml += '<div class="header-meta">';
+    headerHtml += '<div class="page-type-badge">Stream</div>';
+    headerHtml += escapeHtml(streamMetaPath(currentStream)) + ' / <span style="color:blue;font-weight:bold;">' + escapeHtml((currentStream.id || '').toUpperCase()) + '</span></div>';
+    headerHtml += '<div class="header-title">' + escapeHtml(currentStream.name || currentStream.id) + '</div>';
+    headerHtml += '<div class="header-copy">' + escapeHtml(currentStream.description || '') + '</div>';
+    headerHtml += '</div></div></div>';
+    document.getElementById('Header').innerHTML = headerHtml;
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const primaryActors = getPrimaryActors();
+        let html = '';
+
+        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
+        if (!flows.length) {
+            html += '<div class="muted">No flows listed for this stream.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            flows.forEach(flow => {
+                const summary = summarizeFlow(flow);
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
+                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
+                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Outcomes</div>';
+        if (!(currentStream.outcomes || []).length) {
+            html += '<div class="muted">No outcomes listed for this stream.</div>';
+        } else {
+            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
+        if (!related_bricks.length) {
+            html += '<div class="muted">No linked product bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            related_bricks.forEach(brick => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../landing_pages/' + escapeHtml(brick.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml((brick.group || brick.domain || 'Product Brick')) + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../icons/' + escapeHtml(brick.id) + '.png" alt="" onerror="this.onerror=null;this.src=\'../icons/brick.png\'">';
+                html += '<div class="card-title">' + escapeHtml(brick.name || brick.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(brick.description || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Linked Products</div>';
+        if (!linked_products.length) {
+            html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            linked_products.forEach(product => {
+                html += '<a class="card" target="_blank" rel="noopener noreferrer" href="../../product-deployments/landing_pages/' + escapeHtml(product.id) + '.html">';
+                html += '<div class="card-meta">' + escapeHtml(product.type || 'Product') + '</div>';
+                html += '<div class="card-header">';
+                html += '<img class="card-icon" src="../../product-deployments/icons/' + escapeHtml(product.icon) + '" alt="" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+                html += '<div class="card-title">' + escapeHtml(product.name || product.id) + '</div>';
+                html += '</div>';
+                html += '<div class="card-copy">' + escapeHtml(product.whyUsed || '') + '</div>';
+                html += '</a>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!supported_jobs.length) {
+            html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
+        } else {
+            html += '<div class="card-grid">';
+            supported_jobs.forEach(job => {
+                html += '<div class="card">';
+                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.supportRationale) {
+                    html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
+                }
+                if ((job.usedInSteps || []).length) {
+                    html += '<ul class="list">' + job.usedInSteps.map(step => '<li>' + escapeHtml(step.step || step.description || '') + '</li>').join('') + '</ul>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        html += '</div>';
+
+        document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function renderFlows() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        let html = '';
+
+        document.getElementById('tab_flows').innerHTML = 'Flow Narratives (' + flows.length + ')';
+
+        flows.forEach(flow => {
+            const dependenciesInFlow = getFlowDependencies(flow);
+            const summary = summarizeFlow(flow);
+            html += '<div class="group">';
+            html += '<div class="section-title">Flow</div>';
+            html += '<div class="flow-title">' + escapeHtml(flow.title || flow.id) + '</div>';
+            html += '<div class="flow-description">' + escapeHtml(flow.description || '') + '</div>';
+            if (summary.actor || summary.trigger || summary.result) {
+                html += '<div class="card" style="margin-bottom:16px;">';
+                if (summary.actor) {
+                    html += '<div class="card-copy"><strong>Primary actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
+                }
+                if (summary.trigger) {
+                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
+                }
+                if (summary.result) {
+                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '<div class="section-title">Dependency Traceability</div>';
+            html += '<div class="flow-matrix-wrap">';
+            html += '<table class="flow-matrix">';
+            html += '<thead>';
+            html += '<tr><th class="flow-dependency-col"></th>';
+            (flow.steps || []).forEach((step, index) => {
+                html += '<th class="flow-step-col"><div class="flow-step-label">Step ' + (index + 1) + '</div><div class="card-title">' + escapeHtml(step.title || step.id) + '</div></th>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right">Key Facts</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkblue">';
+                if ((step.keyFacts || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.keyFacts.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No key facts listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+
+            html += '<tr class="flow-insight-row"><th style="text-align: right; color: darkred">Pain Points</th>';
+            (flow.steps || []).forEach(step => {
+                html += '<td style="color: darkred">';
+                if ((step.painPoints || []).length) {
+                    html += '<ul class="flow-insight-list">' + step.painPoints.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+                } else {
+                    html += '<span class="muted">No pain points listed.</span>';
+                }
+                html += '</td>';
+            });
+            html += '</tr>';
+            html += '</thead><tbody>';
+
+            dependenciesInFlow.forEach(dependency => {
+                const dependencyTypeLabel = 'Product Brick';
+                html += '<tr>';
+                html += '<td>';
+                html += '<div class="flow-dependency-header">';
+                html += renderFlowDependencyIcon(dependency, 'flow-dependency-icon');
+                html += '<div>';
+                html += '<a class="flow-dependency-name" href="../landing_pages/' + escapeHtml(dependency.id) + '.html">' + escapeHtml(dependency.name || dependency.id) + '</a>';
+                if (dependency.interface) {
+                    html += '<div class="muted">' + escapeHtml(dependency.interface) + '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+                html += '</td>';
+                (flow.steps || []).forEach(step => {
+                    const stepDependency = getStepDependency(step, dependency);
+                    if (!stepDependency) {
+                        html += '<td class="flow-cell-empty">-</td>';
+                        return;
+                    }
+                    html += '<td class="flow-cell-active">';
+                    html += '<div class="flow-cell-copy">' + escapeHtml(simplifySupportCopy(stepDependency.how || stepDependency.description || 'Supports this step.')) + '</div>';
+                    html += '</td>';
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        document.getElementById('tab_content_flows').innerHTML = html;
+    }
+
+    function renderLinks() {
+        // Grouped links from config: [{group, description, links: [{label, link,
+        // description, embedLink?, embedHeight?}]}]. embedLink renders an iframe
+        // (default height 400px) while the label still opens `link` directly.
+        const groups = currentStream.links || [];
+        let html = '<div class="page">';
+        let count = 0;
+        if (!groups.length) {
+            html += '<div class="muted">No links are configured for this stream.</div>';
+        }
+        groups.forEach(group => {
+            html += '<div class="links-group">';
+            html += '<div class="links-group-title">' + escapeHtml(group.group || 'Links') + '</div>';
+            if (group.description) {
+                html += '<div class="links-group-description">' + escapeHtml(group.description) + '</div>';
+            }
+            (group.links || []).forEach(link => {
+                count++;
+                html += '<div class="link-entry">';
+                html += '<a class="link-entry-title" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(link.link || '#') + '">'
+                    + escapeHtml(link.label || link.link || 'Reference') + ' &#8599;</a>';
+                if (link.description) {
+                    html += '<div class="link-entry-copy">' + escapeHtml(link.description) + '</div>';
+                }
+                if (link.embedLink) {
+                    const embedHeight = Number(link.embedHeight) || 400;
+                    html += '<iframe class="link-embed" loading="lazy" src="' + escapeHtml(link.embedLink)
+                        + '" style="height: ' + embedHeight + 'px" title="' + escapeHtml(link.label || 'Embedded link') + '"></iframe>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('tab_content_links').innerHTML = html;
+        const linksTab = document.getElementById('tab_links');
+        if (linksTab) {
+            linksTab.textContent = 'Links (' + count + ')';
+        }
+    }
+
+    renderHome();
+    renderFlows();
+    renderLinks();
+</script>
+
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Shipping and Carrier Management Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Streams Index"
+    },
+    {
+      "label": "Automate Shipment Booking and Labels"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+
+
+</body>
+</html>

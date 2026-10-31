@@ -1,0 +1,1086 @@
+{
+  "metadata": {
+    "domainId": "retail-pos-and-store-management-platform",
+    "title": "Retail POS and Store Management Platform Data Assets",
+    "description": "Catalog of merchandise, inventory, sales and payment, customer, omnichannel and platform data in the Vendit System, with GDPR and Dutch fiscal retention governance.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Merchandise Data",
+      "description": "Articles, prices, formulas and supply.",
+      "subGroups": [
+        {
+          "name": "Assortment",
+          "description": "Assortment data.",
+          "assets": [
+            {
+              "id": "article-master",
+              "name": "Article and Assortment Master",
+              "kind": "master-data",
+              "description": "Articles, variants, barcodes, brands, revenue groups, images and online texts.",
+              "businessMeaning": "What the retailer can sell and how it is described in every channel.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "artm",
+              "derivedFromAssetIds": [
+                "supplier-catalogue"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "webshop-db",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "article and assortment master api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while the customer contract runs; exported on exit.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "price-and-promotion",
+              "name": "Prices and Promotions",
+              "kind": "master-data",
+              "description": "Selling prices, price lists, promotions and purchase-price formulas per branch and channel.",
+              "businessMeaning": "The retailer's margin decisions.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "prpr",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "prices and promotions api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Price history retained for margin analysis.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "branch-formula-rules",
+              "name": "Branch Formula Rules",
+              "kind": "master-data",
+              "description": "Which articles, prices and campaigns apply to which branch or franchisee.",
+              "businessMeaning": "How a chain or formula keeps its stores consistent.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "form",
+              "derivedFromAssetIds": [
+                "article-master",
+                "price-and-promotion"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "branch formula rules api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Kept while the formula is active.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Supply",
+          "description": "Supply data.",
+          "assets": [
+            {
+              "id": "supplier-catalogue",
+              "name": "Supplier Catalogue",
+              "kind": "reference-data",
+              "description": "Supplier article files, purchase prices and supplier stock.",
+              "businessMeaning": "What can be ordered from whom at what price.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "supi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "supplier catalogue api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Refreshed by supplier feeds.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "purchase-order",
+              "name": "Purchase Orders and Receipts",
+              "kind": "transaction",
+              "description": "Purchase orders, electronic order messages and goods receipts.",
+              "businessMeaning": "Commitments to suppliers and incoming stock.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "tax-record-retention"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "purc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "integration-queue",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "purchase orders and receipts api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years as part of the books (Dutch fiscal retention).",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Inventory Data",
+      "description": "Stock positions, movements and serialised items.",
+      "subGroups": [
+        {
+          "name": "Stock",
+          "description": "Stock data.",
+          "assets": [
+            {
+              "id": "stock-position",
+              "name": "Stock Position",
+              "kind": "state",
+              "description": "Current stock per article, variant and location including reservations.",
+              "businessMeaning": "Whether the retailer can say yes to a customer in store or online.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "stck",
+              "derivedFromAssetIds": [
+                "stock-movement"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "stock position api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Current state; history in stock movements.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "stock-movement",
+              "name": "Stock Movements",
+              "kind": "event-log",
+              "description": "Every stock mutation with reason: sale, return, receipt, transfer, count correction, write-off.",
+              "businessMeaning": "The audit trail behind stock value and shrinkage.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "tax-record-retention"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "stck",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "stock movements api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "serialised-item-register",
+              "name": "Serialised Item Register",
+              "kind": "master-data",
+              "description": "Frame numbers, DPC numbers, serial numbers and gemstone specifications of individual items.",
+              "businessMeaning": "Proof of ownership, warranty and theft registration for high-value items.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymous",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "stck",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "serialised item register api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for warranty period and traceability.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sales and Payment Data",
+      "description": "Receipts, tenders and day closings.",
+      "subGroups": [
+        {
+          "name": "Counter",
+          "description": "Counter data.",
+          "assets": [
+            {
+              "id": "sales-transaction",
+              "name": "Sales Transactions",
+              "kind": "transaction",
+              "description": "Receipts with lines, discounts, trade-ins, returns, staff and optional customer.",
+              "businessMeaning": "Turnover and the basis for margin, VAT and loyalty.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer",
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr",
+                "tax-record-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "posc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "pos-local-buffer",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sales transactions api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years (Dutch fiscal retention).",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "payment-record",
+              "name": "Payment Records",
+              "kind": "transaction",
+              "description": "Tender lines and terminal results (no full card numbers).",
+              "businessMeaning": "Proof of payment per receipt.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "pseudonymous",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "psd2",
+                "tax-record-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "paym",
+              "derivedFromAssetIds": [
+                "sales-transaction"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "payment records api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "cashbook-and-day-closing",
+              "name": "Cashbook and Day Closings",
+              "kind": "transaction",
+              "description": "Register openings, cash counts, tender totals and differences.",
+              "businessMeaning": "Whether the till balanced.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "tax-record-retention"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "rcpt",
+              "derivedFromAssetIds": [
+                "sales-transaction",
+                "payment-record"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "cashbook and day closings api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer Data",
+      "description": "Customers, loyalty, orders, invoices and repairs.",
+      "subGroups": [
+        {
+          "name": "Customers",
+          "description": "Customers data.",
+          "assets": [
+            {
+              "id": "customer-record",
+              "name": "Customer Records",
+              "kind": "master-data",
+              "description": "Name, contact, address, consent and history of retail and B2B customers.",
+              "businessMeaning": "The retailer's relationship with its regulars.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "crmc",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "customer records api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Until the customer asks for deletion or after a retailer-defined inactivity period.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "loyalty-account",
+              "name": "Loyalty Accounts and Vouchers",
+              "kind": "state",
+              "description": "Saving balances, issued value cheques, gift card balances and redemptions.",
+              "businessMeaning": "Liabilities to customers and the loyalty relationship.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "loya",
+              "derivedFromAssetIds": [
+                "sales-transaction"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "loyalty accounts and vouchers api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "While balance is open; history seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Orders and Service",
+          "description": "Orders and Service data.",
+          "assets": [
+            {
+              "id": "customer-order",
+              "name": "Quotes, Customer Orders and Reservations",
+              "kind": "transaction",
+              "description": "Quotes, orders, reservations and packing slips.",
+              "businessMeaning": "Promises made to customers.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "quot",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "quotes, customer orders and reservations api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years once invoiced.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "invoice-and-receivable",
+              "name": "Invoices and Receivables",
+              "kind": "transaction",
+              "description": "Invoices, credit notes and open items.",
+              "businessMeaning": "Money owed to the retailer.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "tax-record-retention",
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "bill",
+              "derivedFromAssetIds": [
+                "customer-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "invoices and receivables api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "repair-order",
+              "name": "Repair Orders",
+              "kind": "transaction",
+              "description": "Repair intake, diagnosis, planned work, parts, labour and status.",
+              "businessMeaning": "Service promises and workshop capacity.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "repr",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "repair orders api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Warranty period plus fiscal retention when billed.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Omnichannel Data",
+      "description": "Online orders, offers, shipments and returns.",
+      "subGroups": [
+        {
+          "name": "Online",
+          "description": "Online data.",
+          "assets": [
+            {
+              "id": "online-order",
+              "name": "Online Orders",
+              "kind": "transaction",
+              "description": "Orders from the Vendit webshop, connected shops and marketplaces with customer and payment data.",
+              "businessMeaning": "Online demand that must be fulfilled from shared stock.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "consumer-law"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "ordr",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "integration-queue",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "online orders api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "marketplace-offer",
+              "name": "Marketplace Offers",
+              "kind": "state",
+              "description": "Which articles are listed on which marketplace, with status and price.",
+              "businessMeaning": "Online reach beyond the own webshop.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "low",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "mrkt",
+              "derivedFromAssetIds": [
+                "article-master",
+                "stock-position"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "marketplace offers api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Current state.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "shipment-and-return",
+              "name": "Shipments and Returns",
+              "kind": "transaction",
+              "description": "Shipments, labels, track-and-trace and registered returns.",
+              "businessMeaning": "Delivery and return status per order.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "customer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "ship",
+              "derivedFromAssetIds": [
+                "online-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "integration-queue",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipments and returns api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Two years operational, longer when part of the books.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Insight and Platform Data",
+      "description": "KPIs, accounting exports, configuration and support.",
+      "subGroups": [
+        {
+          "name": "Insight",
+          "description": "Insight data.",
+          "assets": [
+            {
+              "id": "sales-kpi-aggregate",
+              "name": "Sales and Stock KPIs",
+              "kind": "aggregate",
+              "description": "Turnover, margin, discount, transactions, average ticket, items per ticket, stock value per period, branch and group.",
+              "businessMeaning": "The numbers retailers steer on daily.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "rprt",
+              "derivedFromAssetIds": [
+                "sales-transaction",
+                "stock-position"
+              ],
+              "stores": [
+                {
+                  "storeId": "reporting-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "sales and stock kpis api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Kept for multi-year comparison.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "accounting-journal",
+              "name": "Accounting Journal Export",
+              "kind": "export",
+              "description": "Journal batches of sales, cashbook and invoices for the accounting package.",
+              "businessMeaning": "The bridge to the retailer's books.",
+              "status": "active",
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "tax-record-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "acct",
+              "derivedFromAssetIds": [
+                "cashbook-and-day-closing",
+                "invoice-and-receivable"
+              ],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "accounting journal export api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Seven years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Platform",
+          "description": "Platform data.",
+          "assets": [
+            {
+              "id": "store-configuration",
+              "name": "Tenant and Store Configuration",
+              "kind": "configuration",
+              "description": "Tenant, branches, workstations, devices, modules and connectors.",
+              "businessMeaning": "How a retailer's Vendit environment is set up.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "tenu",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "pos-local-buffer",
+                  "role": "replica"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "tenant and store configuration api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "While contract runs.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "user-account",
+              "name": "Users and Roles",
+              "kind": "master-data",
+              "description": "Store staff users, roles and permissions.",
+              "businessMeaning": "Who may do what at the till and in the back office.",
+              "status": "active",
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "tenu",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "retail-core-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "users and roles api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Removed after employee leaves.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            },
+            {
+              "id": "support-ticket",
+              "name": "Support Tickets",
+              "kind": "transaction",
+              "description": "Support requests, remote sessions and resolutions.",
+              "businessMeaning": "Service quality and recurring product issues.",
+              "status": "active",
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "employee"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Users of the owning retailer tenant according to their role; Vendit support on request.",
+              "systemOfRecordBrickId": "supp",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "support-desk",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "support tickets api",
+                  "description": "Accessed through the bricks that use it."
+                }
+              ],
+              "governance": {
+                "retention": "Two years.",
+                "residency": "eu",
+                "sharingPolicy": "Shared with connected partners only when the retailer enables a connector."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "retail-core-db",
+      "name": "Retail Core Database",
+      "kind": "operational-database",
+      "description": "Per-customer operational database of the Vendit System in the cloud: articles, prices, stock, sales, customers, orders.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "pos-local-buffer",
+      "name": "POS Local Buffer",
+      "kind": "edge-cache",
+      "description": "Local buffer on the store workstation for device profiles and pending sales (assumed).",
+      "technology": "local-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "webshop-db",
+      "name": "Webshop Database",
+      "kind": "operational-database",
+      "description": "Online catalogue, content and checkout sessions of the Vendit webshop.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "reporting-store",
+      "name": "Reporting Store",
+      "kind": "analytics-warehouse",
+      "description": "Aggregated KPIs for the online dashboard and reports.",
+      "technology": "analytical-database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "integration-queue",
+      "name": "Integration Queue",
+      "kind": "message-broker",
+      "description": "Events and messages exchanged with partner and sibling platforms.",
+      "technology": "message-queue",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "support-desk",
+      "name": "Support Desk",
+      "kind": "saas-application",
+      "description": "Ticketing and customer success records.",
+      "technology": "saas",
+      "status": "active",
+      "classification": "internal"
+    }
+  ]
+}

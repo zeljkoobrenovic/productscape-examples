@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>B2B Wholesale E-commerce Platform</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+        :root {
+            --sidebar-width: 310px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+        }
+
+        .shell {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ---------- sidebar ---------- */
+
+        .sidebar {
+            flex: 0 0 var(--sidebar-width);
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            transition: margin-left 0.18s ease;
+        }
+
+        .shell.sidebar-hidden .sidebar {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 14px 10px;
+            border: 0;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 3px;
+            background: white;
+            flex: none;
+        }
+
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.25;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .sidebar-brand:hover span {
+            color: var(--accent-ink);
+        }
+
+        .sidebar-search {
+            padding: 2px 12px 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 34px;
+            padding: 0 54px 0 32px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            background: var(--surface);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            color: var(--muted);
+        }
+
+        .search-hint {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            font-size: 11px;
+            color: var(--muted);
+            border: 1px solid var(--line-strong);
+            border-radius: 4px;
+            padding: 1px 6px;
+            background: white;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            border: 0;
+            background: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+        }
+
+        .sidebar-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+            min-height: 18px;
+        }
+
+        .link-button {
+            border: 0;
+            background: none;
+            padding: 0 2px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .link-button:hover, .link-button:focus-visible {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .sidebar-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px 8px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nav-section {
+            margin-top: 6px;
+        }
+
+        .nav-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: 0;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 7px;
+        }
+
+        .nav-toggle:hover {
+            background: var(--surface-muted);
+        }
+
+        .nav-toggle:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .chevron {
+            flex: none;
+            width: 10px;
+            height: 10px;
+            color: var(--muted-strong);
+            transition: transform 0.12s ease;
+        }
+
+        [aria-expanded="true"] > .chevron {
+            transform: rotate(90deg);
+        }
+
+        .nav-category {
+            margin: 16px 6px 2px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-strong);
+        }
+
+        .nav-category:first-child {
+            margin-top: 10px;
+        }
+
+        .nav-item.nav-single {
+            margin-top: 6px;
+            padding: 7px 6px 7px 24px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .nav-item.nav-single img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-section-header {
+            padding: 7px 6px;
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        .nav-section-header img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex: none;
+        }
+
+
+        .nav-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .count {
+            flex: none;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--surface-muted);
+            border-radius: 999px;
+            padding: 1px 7px;
+        }
+
+        .nav-body[hidden] {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 34px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.3;
+        }
+
+
+        .nav-item img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            border-radius: 4px;
+            flex: none;
+            background: white;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-soft);
+            color: var(--accent-ink);
+        }
+
+        .nav-item.active {
+            background: var(--highlight-color);
+            color: var(--accent-ink);
+            font-weight: 500;
+        }
+
+        .nav-item.overview {
+            color: var(--muted);
+        }
+
+        .nav-item mark {
+            background: #fde68a;
+            color: inherit;
+            border-radius: 2px;
+        }
+
+        .nav-empty {
+            padding: 18px 10px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* ---------- main ---------- */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 12px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0 8px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: none;
+            color: var(--ink-soft);
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .icon-button:hover, .icon-button:focus-visible {
+            background: var(--surface-muted);
+            border-color: var(--line);
+            color: var(--accent-ink);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .topbar-title {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--muted);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar-title strong {
+            color: var(--ink);
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .view[hidden] {
+            display: none;
+        }
+
+        #frameView iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+
+        #homeView {
+            overflow-y: auto;
+            padding: 32px 36px 60px;
+        }
+
+        .home {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .hero-logo {
+            width: 132px;
+            height: 132px;
+            object-fit: contain;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 10px;
+            background: white;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 38px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .domain-description {
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            overflow-wrap: anywhere;
+        }
+
+        .domain-description.clamped #domain-description {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .domain-description a {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .app-tab-title {
+            margin: 0 0 12px;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .app-group {
+            margin-bottom: 26px;
+        }
+
+        .app-group-title {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            text-transform: capitalize;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 18px 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .app:hover, .app:focus-visible {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .app img {
+            width: 84px;
+            height: 84px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: grayscale(100%);
+            transition: filter 0.15s ease;
+        }
+
+        .app:hover img, .app:focus-visible img {
+            filter: none;
+        }
+
+        .app .name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #5009DC;
+        }
+
+        .app .source {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .app .description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+            margin-top: 6px;
+        }
+
+        .app-counts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .app-count {
+            font-size: 12px;
+            color: var(--accent-ink);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-line);
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+
+        .app-count strong {
+            font-weight: 700;
+        }
+
+        .backdrop {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                z-index: 20;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                max-width: 88vw;
+                box-shadow: var(--shadow-hover);
+                margin-left: 0;
+            }
+
+            .shell:not(.sidebar-open) .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width) - 20px);
+            }
+
+            .shell.sidebar-open .backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 10;
+                background: rgba(15, 23, 42, 0.3);
+            }
+
+            #homeView {
+                padding: 20px 16px 40px;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .hero-logo {
+                width: 84px;
+                height: 84px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .topbar .label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="shell" id="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Productscape navigation">
+        <button class="sidebar-brand" type="button" id="brand" title="Overview">
+            <img src="icons/logo.png" alt="">
+            <span>B2B Wholesale E-commerce Platform</span>
+        </button>
+        <div class="sidebar-search" id="search_container">
+            <div class="search-box">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"/>
+                    <path d="M11 11l4 4"/>
+                </svg>
+                <input id="filter_all" type="search" placeholder="Search pages..." autocomplete="off"
+                       aria-label="Search pages" aria-controls="sidebarTree">
+                <span class="search-hint" id="searchHint" aria-hidden="true">/</span>
+                <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>&times;</button>
+            </div>
+            <div class="sidebar-tools">
+                <span id="summary_all" aria-live="polite"></span>
+                <span>
+                    <button class="link-button" type="button" id="expandAll">expand all</button>
+                    &middot;
+                    <button class="link-button" type="button" id="collapseAll">collapse all</button>
+                </span>
+            </div>
+        </div>
+        <nav class="sidebar-tree" id="sidebarTree"></nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button class="icon-button" type="button" id="sidebarToggle" aria-controls="sidebar"
+                    aria-label="Toggle navigation" title="Toggle navigation">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 4h12M2 8h12M2 12h12"/>
+                </svg>
+            </button>
+            <div class="topbar-title" id="topbarTitle"></div>
+            <button class="icon-button" type="button" id="homeButton" hidden title="Back to overview">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 8l6-5 6 5M4 7v6h8V7"/>
+                </svg>
+                <span class="label">Overview</span>
+            </button>
+            <a class="icon-button" id="openExternal" href="#" target="_blank" hidden title="Open page in a new tab">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M9 2h5v5M14 2L7 9M12 10v4H2V4h4"/>
+                </svg>
+                <span class="label">New tab</span>
+            </a>
+        </header>
+
+        <section class="view" id="homeView">
+            <div class="home">
+                <div class="hero">
+                    <img class="hero-logo" src="icons/logo.png" alt="">
+                    <div>
+                        <h1>B2B Wholesale E-commerce Platform</h1>
+                        <div class="domain-description clamped" id="descriptionContainer">
+                            <span id="domain-description">Highbiza (Katapull group): Django/Wagtail-based webshop and website software from Hengelo for Dutch wholesalers, technical wholesalers, retailers and jewellers, with customer-specific B2B pricing, ERP and marketplace integrations and a managed hosting and QA service.</span>
+                            <button id="domain-description-toggle" class="link-button" type="button"
+                                    aria-expanded="false" aria-controls="domain-description" hidden>more</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="appGroups"></div>
+            </div>
+        </section>
+
+        <section class="view" id="frameView" hidden>
+            <iframe id="pageFrame" title="Selected page"></iframe>
+        </section>
+    </div>
+</div>
+
+<script>
+    const apps = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.apps;
+    const config = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.config || {};
+    const sidebarSections = [{"id": "customers", "title": "Customers", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "groups": [{"name": "Trading Company Leadership", "items": [{"name": "Wholesale Owner-Director", "link": "../customers/landing_pages/ownr.html", "icon": "../customers/icons/customer-ownr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Owner or managing director of a Dutch wholesaler, distributor or brand manufacturer (typically 10-250 staff) who decides on and pays for the webshop platform. S"}]}, {"name": "Webshop Operators", "items": [{"name": "E-commerce and Marketing Manager", "link": "../customers/landing_pages/ecom.html", "icon": "../customers/icons/customer-ecom-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Runs the webshop day to day at the trading company: content, campaigns, product pages, SEO and marketplace listings. Often a one- to three-person team without d"}, {"name": "ERP and Operations Lead", "link": "../customers/landing_pages/itop.html", "icon": "../customers/icons/customer-itop-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "The person responsible for the ERP, stock, logistics and integrations at the trading company: an operations manager, controller or IT coordinator. Owns data qua"}]}, {"name": "Online Buyers", "items": [{"name": "Professional Trade Buyer", "link": "../customers/landing_pages/pbuy.html", "icon": "../customers/icons/customer-pbuy-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Buys from the wholesaler for work: an installer, garage, caterer, retailer, office manager or purchasing clerk. Orders the same items repeatedly at agreed price"}, {"name": "Consumer Shopper", "link": "../customers/landing_pages/cons.html", "icon": "../customers/icons/customer-cons-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "A private person buying from a Highbiza-based retail, e-tail or jeweller webshop, or from the D2C side of a wholesaler (Loods28 and HR Premium Parts sell to bot"}]}], "category": "Business"}, {"id": "competition", "title": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "groups": [{"name": "global leader", "items": [{"name": "Shopify", "link": "../competition/landing_pages/shopify.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "SaaS commerce platform with B2B features in Shopify Plus; Highbiza describes it as user-friendly but limited in customisation and dependent on its app store."}, {"name": "Adobe Commerce (Magento)", "link": "../competition/landing_pages/adobe-commerce.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Open-source Magento and its commercial Adobe Commerce edition; the platform many Highbiza customers leave, described by Highbiza as powerful but heavy and maint"}, {"name": "WooCommerce", "link": "../competition/landing_pages/woocommerce.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "WordPress e-commerce plug-in; Highbiza argues dependence on many plug-ins creates risk and maintenance."}]}, {"name": "regional", "items": [{"name": "Sana Commerce", "link": "../competition/landing_pages/sana-commerce.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "ERP-integrated B2B e-commerce for manufacturers and distributors on SAP and Microsoft Dynamics; competes for ERP-centric wholesalers."}, {"name": "CCV Shop", "link": "../competition/landing_pages/ccv-shop.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Dutch SaaS webshop builder with templates, B2B and retail options and a free trial; competes at the Launch/Core end."}]}, {"name": "challenger", "items": [{"name": "Propeller", "link": "../competition/landing_pages/propeller.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Composable B2B commerce cloud with customer-specific catalogues and pricing, quotes and AI sales agents; targets mid-market wholesalers and manufacturers."}, {"name": "Lightspeed", "link": "../competition/landing_pages/lightspeed.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Retail POS with integrated eCom; competes for retailers and jewellers who want shop and store in one, where Katapull answers with Vendit plus Highbiza."}]}], "category": "Business"}, {"id": "bricks", "title": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "groups": [{"name": "Storefront and Content", "items": [{"name": "Storefront Experience and Theming", "link": "../product-bricks/landing_pages/stor.html", "icon": "../product-bricks/icons/stor.png", "fallback": "../product-bricks/icons/brick.png", "description": "Renders the responsive, SEO-friendly storefront from Highbiza's standard templates plus customer-specific visual custom work. Highbiza states page-speed scores "}, {"name": "Content Management and Page Builder", "link": "../product-bricks/landing_pages/cmsx.html", "icon": "../product-bricks/icons/cmsx.png", "fallback": "../product-bricks/icons/brick.png", "description": "Wagtail-based CMS in which merchant teams build pages from blocks, manage media and set SEO fields per page, in the same back office as products and promotions "}, {"name": "SEO and Search Engine Visibility", "link": "../product-bricks/landing_pages/seox.html", "icon": "../product-bricks/icons/seox.png", "fallback": "../product-bricks/icons/brick.png", "description": "SEO-friendly page structure, per-page metadata, sitemaps and a Google Shopping feed so shops are found in search engines; Katapull positions Highbiza on 'online"}, {"name": "Product Catalogue and Specifications", "link": "../product-bricks/landing_pages/catg.html", "icon": "../product-bricks/icons/catg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Products, variants, categories, technical specifications, datasheets and multilingual texts, built on Django Oscar. Designed for large wholesale catalogues ('1,"}, {"name": "Search, Filters and Suggestions", "link": "../product-bricks/landing_pages/srch.html", "icon": "../product-bricks/icons/srch.png", "fallback": "../product-bricks/icons/brick.png", "description": "Elasticsearch-based product search with specification filters and suggestions; packages differ in number of filters (3, 6, 10, unlimited) and search tier ('Elas"}]}, {"name": "B2B and B2C Commerce", "items": [{"name": "B2B Customer Accounts and Self-Service Portal", "link": "../product-bricks/landing_pages/acct.html", "icon": "../product-bricks/icons/acct.png", "fallback": "../product-bricks/icons/brick.png", "description": "Company accounts with multiple buyer logins, customer groups, addresses, order history and invoices in a customer portal - a building block Highbiza names expli"}, {"name": "Customer-Specific Pricing and Assortments", "link": "../product-bricks/landing_pages/prce.html", "icon": "../product-bricks/icons/prce.png", "fallback": "../product-bricks/icons/brick.png", "description": "Net price lists, tiered (staffel) discounts, contract prices and customer-specific assortments, plus special rules such as gold-price-based pricing for jeweller"}, {"name": "Quotes and Quick Reorder", "link": "../product-bricks/landing_pages/quot.html", "icon": "../product-bricks/icons/quot.png", "fallback": "../product-bricks/icons/brick.png", "description": "Quote requests, quote-to-order conversion, order repeat and quick order by article number - wholesale functions Highbiza lists for groothandel and technische gr"}, {"name": "Cart and Checkout", "link": "../product-bricks/landing_pages/cart.html", "icon": "../product-bricks/icons/cart.png", "fallback": "../product-bricks/icons/brick.png", "description": "Basket, addresses, shipping choice, payment and order placement for B2B and B2C flows in one platform; packages range from 'basic checkout' to fully customised "}, {"name": "Order Management", "link": "../product-bricks/landing_pages/ordr.html", "icon": "../product-bricks/icons/ordr.png", "fallback": "../product-bricks/icons/brick.png", "description": "Order records, statuses and the back-office order overview; publishes order events for ERP export, marketplaces, shipping and analytics. Package limits run from"}, {"name": "Payments", "link": "../product-bricks/landing_pages/paym.html", "icon": "../product-bricks/icons/paym.png", "fallback": "../product-bricks/icons/brick.png", "description": "Payment methods through the providers on Highbiza's integration list: Mollie, MultiSafepay, Pay., Worldpay, PayPal, CardGate and Rabo OmniKassa; plus payment on"}, {"name": "Shipping Options and Carrier Labels", "link": "../product-bricks/landing_pages/shpo.html", "icon": "../product-bricks/icons/shpo.png", "fallback": "../product-bricks/icons/brick.png", "description": "Delivery options in checkout and label/track-and-trace through carriers and shipping platforms on the integration list: DeliveryMatch (Katapull sibling), Sendcl"}, {"name": "Promotions and Loyalty Points", "link": "../product-bricks/landing_pages/loyl.html", "icon": "../product-bricks/icons/loyl.png", "fallback": "../product-bricks/icons/brick.png", "description": "Promotions, discount rules and the loyalty points system Highbiza introduced in 2026: customers earn points per order, merchants set earn and burn ratios in the"}, {"name": "Withdrawal and Return Requests", "link": "../product-bricks/landing_pages/wdrw.html", "icon": "../product-bricks/icons/wdrw.png", "fallback": "../product-bricks/icons/brick.png", "description": "Return Form Page in the CMS through which consumers exercise their 14-day withdrawal right with order number, products and reason; sends confirmation emails (Hi"}]}, {"name": "Integrations and Insight", "items": [{"name": "ERP and Back-Office Integration", "link": "../product-bricks/landing_pages/erpi.html", "icon": "../product-bricks/icons/erpi.png", "fallback": "../product-bricks/icons/brick.png", "description": "Standard connectors to ERP and business systems on Highbiza's integration list - Exact Online, Microsoft Dynamics 365 Business Central, Logic4 and Vendit (Katap"}, {"name": "Marketplace and Product Feed Integration", "link": "../product-bricks/landing_pages/mkti.html", "icon": "../product-bricks/icons/mkti.png", "fallback": "../product-bricks/icons/brick.png", "description": "Extends the shop's catalogue to marketplaces: eBay directly and bol, Amazon and others through EffectConnect (Katapull sibling, listed as 'Marketplace (integrat"}, {"name": "Stock Availability and Delivery Promise", "link": "../product-bricks/landing_pages/invs.html", "icon": "../product-bricks/icons/invs.png", "fallback": "../product-bricks/icons/brick.png", "description": "Real-time stock information on product and checkout pages - a feature Highbiza highlights for technical wholesalers - fed by ERP, POS or WMS."}, {"name": "Commerce Analytics and Reporting", "link": "../product-bricks/landing_pages/anly.html", "icon": "../product-bricks/icons/anly.png", "fallback": "../product-bricks/icons/brick.png", "description": "Sales, conversion, search and adoption reporting for merchants, combining shop events with web analytics tags."}]}, {"name": "Platform and Managed Service", "items": [{"name": "Building-Block Library and Shop Configuration", "link": "../product-bricks/landing_pages/blck.html", "icon": "../product-bricks/icons/blck.png", "fallback": "../product-bricks/icons/brick.png", "description": "Highbiza's library of more than 100 reusable building blocks (FAQ, customer portal, staffel prices, stock, filters ...) and the package entitlements (Launch, Co"}, {"name": "Multi-Shop, Multi-Language and Multi-Currency", "link": "../product-bricks/landing_pages/mltt.html", "icon": "../product-bricks/icons/mltt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Runs several shops or brands (multi-shop from Core) and languages from one back office - as Kroon-Oil runs Kroon-Oil, VatOil and Putoline on one technical base."}, {"name": "Identity and Access Management", "link": "../product-bricks/landing_pages/iamx.html", "icon": "../product-bricks/icons/iamx.png", "fallback": "../product-bricks/icons/brick.png", "description": "Logins and roles for merchant back-office users (3 to 15 users depending on package) and for B2B buyers and consumers."}, {"name": "Test Environments and Release Management", "link": "../product-bricks/landing_pages/tenv.html", "icon": "../product-bricks/icons/tenv.png", "fallback": "../product-bricks/icons/brick.png", "description": "Every customer gets a shielded test environment on a temporary URL that remains after go-live; custom work is accepted there first and released after four-eyes "}, {"name": "Automated Quality Assurance", "link": "../product-bricks/landing_pages/qaut.html", "icon": "../product-bricks/icons/qaut.png", "fallback": "../product-bricks/icons/brick.png", "description": "Nightly automated tests with Jenkins on functionality, a screenshot test comparing appearance with the previous day, and a security test against reported vulner"}, {"name": "Hosting, Backup and Security Operations", "link": "../product-bricks/landing_pages/host.html", "icon": "../product-bricks/icons/host.png", "fallback": "../product-bricks/icons/brick.png", "description": "Automated system management (OS and site updates), daily backups and ISO 27001-certified operations; Enterprise adds dedicated hosting."}, {"name": "Customer Support and Change Requests", "link": "../product-bricks/landing_pages/supp.html", "icon": "../product-bricks/icons/supp.png", "fallback": "../product-bricks/icons/brick.png", "description": "Support form with handling within one working day, a CMS manual, and a fixed contact person in Prestige and Enterprise; change requests become building blocks o"}]}], "category": "Product Architecture"}, {"id": "streams", "title": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "groups": [{"name": "Merchant Journeys", "items": [{"name": "Launch or Replatform a Webshop", "link": "../product-bricks/stream_pages/launch-or-replatform-a-webshop.html", "icon": "../product-bricks/icons/launch-or-replatform-a-webshop.png", "fallback": "../product-bricks/icons/stream.png", "description": "From a merchant's intake to a live shop: package choice, building-block selection, custom work, a test environment, content loading and go-live. Highbiza descri"}, {"name": "Manage Content, SEO and Campaigns", "link": "../product-bricks/stream_pages/manage-content-seo-and-campaigns.html", "icon": "../product-bricks/icons/manage-content-seo-and-campaigns.png", "fallback": "../product-bricks/icons/stream.png", "description": "Marketing self-service: pages, media, SEO, promotions and loyalty managed by the merchant in the CMS."}, {"name": "Keep the Webshop Fast, Safe and Current", "link": "../product-bricks/stream_pages/keep-the-webshop-fast-safe-and-current.html", "icon": "../product-bricks/icons/keep-the-webshop-fast-safe-and-current.png", "fallback": "../product-bricks/icons/stream.png", "description": "Highbiza's managed service: automated updates, daily backups, nightly functional, visual and security tests, release through test environments, ISO 27001 operat"}, {"name": "Steer Online Sales Performance", "link": "../product-bricks/stream_pages/steer-online-sales-performance.html", "icon": "../product-bricks/icons/steer-online-sales-performance.png", "fallback": "../product-bricks/icons/stream.png", "description": "Merchants and Highbiza see how the online channel performs: orders, online share, conversion, search terms and adoption."}]}, {"name": "Buyer Journeys", "items": [{"name": "Find and Order the Right Product", "link": "../product-bricks/stream_pages/find-and-order-the-right-product.html", "icon": "../product-bricks/icons/find-and-order-the-right-product.png", "fallback": "../product-bricks/icons/stream.png", "description": "A trade buyer or consumer finds the right product, sees their own price and stock, and places an order."}, {"name": "Reorder and Request Quotes", "link": "../product-bricks/stream_pages/reorder-and-request-quotes.html", "icon": "../product-bricks/icons/reorder-and-request-quotes.png", "fallback": "../product-bricks/icons/stream.png", "description": "Repeat buying for trade customers: reorder from history or lists, quick order by article number, and quotes for large or special orders."}, {"name": "Pay, Deliver and Handle After-Sales", "link": "../product-bricks/stream_pages/deliver-pay-and-handle-after-sales.html", "icon": "../product-bricks/icons/deliver-pay-and-handle-after-sales.png", "fallback": "../product-bricks/icons/stream.png", "description": "Payment, delivery choice, shipping labels, track-and-trace, loyalty points and withdrawal/returns after the order."}]}, {"name": "Integration Journeys", "items": [{"name": "Sync ERP Stock, Prices and Orders", "link": "../product-bricks/stream_pages/sync-erp-stock-prices-and-orders.html", "icon": "../product-bricks/icons/sync-erp-stock-prices-and-orders.png", "fallback": "../product-bricks/icons/stream.png", "description": "Keeps the shop consistent with the merchant's ERP or POS: products, customers, prices and stock in, orders out. Uses Katapull siblings Logic4 and Vendit where t"}, {"name": "Sell on Marketplaces and Product Feeds", "link": "../product-bricks/stream_pages/sell-on-marketplaces-and-feeds.html", "icon": "../product-bricks/icons/sell-on-marketplaces-and-feeds.png", "fallback": "../product-bricks/icons/stream.png", "description": "Extends the shop's range to Google Shopping, eBay and, through EffectConnect, to bol, Amazon and other marketplaces, and brings marketplace orders back."}]}], "category": "Product Architecture"}, {"id": "data", "title": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "groups": [{"name": "Commerce Transaction Data", "items": [{"name": "Sales Order", "link": "../product-bricks/data_pages/sales-order.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Web and marketplace orders with lines, prices, addresses and status."}, {"name": "Quote", "link": "../product-bricks/data_pages/quote.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Quote requests and offers with lines, validity and status; saved reorder lists."}, {"name": "Shopping Cart", "link": "../product-bricks/data_pages/shopping-cart.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Active baskets and checkout sessions."}, {"name": "Payment Transaction", "link": "../product-bricks/data_pages/payment-transaction.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Payment attempts, statuses, provider references and refunds; no card data."}, {"name": "Shipment", "link": "../product-bricks/data_pages/shipment.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Carrier, label, tracking code and delivery status per order."}, {"name": "Withdrawal Request", "link": "../product-bricks/data_pages/withdrawal-request.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Consumer withdrawal and return requests with order number, products and reason."}, {"name": "Loyalty Points Ledger", "link": "../product-bricks/data_pages/loyalty-points-ledger.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Points earned, redeemed and expired per customer."}]}, {"name": "Customer and Access Data", "items": [{"name": "Business Customer Account", "link": "../product-bricks/data_pages/business-customer-account.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Company account with customer group, addresses, payment terms and buyers."}, {"name": "Buyer Contact", "link": "../product-bricks/data_pages/buyer-contact.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Person-level buyer or consumer login with name, email and phone."}, {"name": "Back-Office User", "link": "../product-bricks/data_pages/backoffice-user.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Merchant staff accounts and roles in the CMS and dashboard."}, {"name": "Customer Price Agreement", "link": "../product-bricks/data_pages/customer-price-agreement.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Net price lists, staffels, contract prices and assortments per customer or group."}]}, {"name": "Catalogue, Content and Configuration Data", "items": [{"name": "Product Catalogue", "link": "../product-bricks/data_pages/product-catalog.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Products, variants, specifications, datasheets and texts per language."}, {"name": "Stock Availability", "link": "../product-bricks/data_pages/stock-availability.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Stock per product and location with expected delivery."}, {"name": "Web Content", "link": "../product-bricks/data_pages/web-content.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Pages, blocks, media, menus, SEO metadata and translations."}, {"name": "Shop Configuration", "link": "../product-bricks/data_pages/shop-configuration.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Package, enabled building blocks, limits, themes, domains and languages per shop."}, {"name": "Integration Mapping", "link": "../product-bricks/data_pages/integration-mapping.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Connector settings, credentials references and field mappings per ERP or channel."}]}, {"name": "Operations and Insight Data", "items": [{"name": "Release and Test Record", "link": "../product-bricks/data_pages/release-and-test-record.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Releases, test runs, screenshot diffs and security check results."}, {"name": "Platform Backup", "link": "../product-bricks/data_pages/platform-backup.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Daily backups of shop databases and media."}, {"name": "Support Request", "link": "../product-bricks/data_pages/support-request.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Support and change requests with status and response times."}, {"name": "Commerce Analytics", "link": "../product-bricks/data_pages/commerce-analytics.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Aggregated orders, online share, conversion, search terms and adoption per shop."}]}], "category": "Product Architecture"}, {"id": "products", "title": "Products", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "groups": [{"name": "B2B/B2C E-commerce SaaS", "items": [{"name": "Highbiza Webshop Software", "link": "../product-deployments/landing_pages/hbws.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "The Highbiza webshop platform on Django, Django Oscar and Wagtail, sold in four packages: Launch (from EUR 149/month + from EUR 1,490 one-off), Core (from EUR 2"}]}, {"name": "B2B Commerce Module", "items": [{"name": "Highbiza B2B Module", "link": "../product-deployments/landing_pages/hbb2b.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Customer-specific prices and assortments, staffels, quotes, reorder and customer portal; optional in Core, included from Prestige."}]}, {"name": "Website CMS SaaS", "items": [{"name": "Highbiza Website Software", "link": "../product-deployments/landing_pages/hbweb.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Wagtail-based websites and portals for trading companies and (semi-)public organisations, including WCAG 2.1 AA work for government."}]}, {"name": "Integration Connectors", "items": [{"name": "Highbiza Integrations", "link": "../product-deployments/landing_pages/hbint.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Connectors to ERP (Exact Online, Business Central, Logic4, Vendit, Gripp, Prima, MediaMagic), payment providers, carriers (incl. DeliveryMatch) and marketplaces"}]}, {"name": "Managed Service", "items": [{"name": "Highbiza Managed Platform Service", "link": "../product-deployments/landing_pages/hbsvc.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": "Hosting (dedicated in Enterprise), daily backups, automated updates and tests, test environments, support within one working day and quoted custom development."}]}], "category": "Product Architecture"}, {"id": "deployments", "title": "Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/deployment/deployment.png", "groups": [{"name": "Highbiza Managed Hosting", "items": [{"name": "Storefront Runtime", "link": "../product-deployments/deployment/managed-cloud-storefront.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Public shop and website front ends."}, {"name": "Merchant Back Office (Wagtail/Oscar dashboard)", "link": "../product-deployments/deployment/managed-cloud-backoffice.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "CMS and commerce dashboard used by merchant teams."}, {"name": "Integration Workers", "link": "../product-deployments/deployment/managed-cloud-integrations.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Scheduled and event-driven connector jobs."}]}, {"name": "Dedicated Hosting", "items": [{"name": "Enterprise Dedicated Environment", "link": "../product-deployments/deployment/dedicated-enterprise.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Isolated environment per enterprise customer."}]}, {"name": "Delivery and Operations", "items": [{"name": "Customer Test Environments", "link": "../product-deployments/deployment/test-environments.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Shielded test shops on temporary URLs."}, {"name": "QA and Support Tooling", "link": "../product-deployments/deployment/quality-and-support.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Jenkins, screenshot tests and the support desk."}]}], "category": "Product Architecture"}, {"id": "residuality", "title": "Stress Test", "link": "../residuality/index.html", "icon": "icons/residuality.png", "groups": [], "category": "More"}, {"id": "tutorial", "title": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "groups": [], "category": "More"}];
+    const DOMAIN_NAME = document.title;
+    const SIDEBAR_HIDDEN_KEY = 'productscape:start-sidebar-hidden';
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // App names in apps.json may carry <br> for the card layout; the sidebar needs plain text.
+    function plainText(value) {
+        return String(value || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function storageGet(key, fallback) {
+        try {
+            const value = window.localStorage.getItem(key);
+            return value === null ? fallback : JSON.parse(value);
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function storageSet(key, value) {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            // Storage can be unavailable (private windows, file:// in some browsers).
+        }
+    }
+
+    function isExternal(link) {
+        return /^[a-z][a-z0-9+.-]*:/i.test(link) || link.startsWith('//');
+    }
+
+    // Package launchers link to other domains' start pages, which carry their own
+    // sidebar; open those (and external sites) as full pages instead of inline.
+    function opensInline(link) {
+        return !isExternal(link) && !/(^|\/)start\/index\.html(#.*)?$/.test(link);
+    }
+
+    // ---------- build the navigation model ----------
+
+    // Two levels only: section -> pages. Source groups stay searchable and show
+    // in tooltips; each section's overview page presents the full grouping.
+    // Package launchers have no domain sections, so their app groups become sections.
+    const launcherSections = apps.flatMap(tab => (tab.apps || []).map((group, groupIndex) => ({
+        id: 'apps/' + tab.tab + '/' + groupIndex,
+        title: (apps.length > 1 ? tab.tab + ' · ' : '') + group.group,
+        groups: [{
+            name: group.group,
+            items: (group.apps || []).map(app => ({
+                name: plainText(app.name),
+                link: app.link,
+                icon: app.icon,
+                fallback: 'icons/logo.png',
+                description: plainText(app.description) + (app.source ? ' ' + app.source : ''),
+                newTab: config.openInNewTab !== false && app.openInNewTab !== false
+            }))
+        }]
+    })));
+
+    const sections = (sidebarSections.length ? sidebarSections : launcherSections).map(section => ({
+        ...section,
+        items: section.groups.flatMap(group => group.items.map(item => ({...item, groupName: group.name})))
+    })).filter(section => section.items.length || (section.link && !section.groups.length));
+    const allItems = [];
+    sections.forEach(section => {
+        section.items.forEach(item => {
+            item.section = section;
+            item.search = (item.name + ' ' + (item.description || '') + ' ' + item.groupName + ' ' + section.title).toLowerCase();
+            allItems.push(item);
+        });
+    });
+
+    // ---------- sidebar rendering ----------
+
+    const tree = document.getElementById('sidebarTree');
+    const filterInput = document.getElementById('filter_all');
+    // Sections start collapsed on every visit; only the open page's section is revealed.
+    const expanded = new Set();
+    const CHEVRON = '<svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5L7 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+    function highlight(text, query) {
+        if (!query) return escapeHtml(text);
+        const index = text.toLowerCase().indexOf(query);
+        if (index < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, index)) + '<mark>' + escapeHtml(text.slice(index, index + query.length)) +
+            '</mark>' + escapeHtml(text.slice(index + query.length));
+    }
+
+    function itemHtml(item, query, extraClass) {
+        const attrs = opensInline(item.link) ? '' : (item.newTab === false ? '' : ' target="_blank" rel="noopener"');
+        return '<a class="nav-item' + (extraClass || '') + '" href="' + escapeHtml(item.link) + '"' + attrs +
+            ' title="' + escapeHtml([item.groupName, item.description].filter(Boolean).join(' — ')) + '"' + '>' +
+            '<img src="' + escapeHtml(item.icon || item.fallback) + '" data-fallback="' + escapeHtml(item.fallback || '') + '" alt="" loading="lazy">' +
+            '<span class="nav-label">' + highlight(item.name, query) + '</span></a>';
+    }
+
+    function toggleHtml(className, id, label, count, isOpen, icon) {
+        return '<button class="nav-toggle ' + className + '" type="button" data-toggle="' + escapeHtml(id) +
+            '" aria-expanded="' + isOpen + '">' + CHEVRON +
+            (icon ? '<img src="' + escapeHtml(icon) + '" data-fallback="icons/logo.png" alt="">' : '') +
+            '<span class="nav-label">' + escapeHtml(label) + '</span><span class="count">' + count + '</span></button>';
+    }
+
+    // Category headings (Business, Product Architecture, More) above the first
+    // visible section of each category.
+    let lastCategory = '';
+
+    function categoryHtml(section) {
+        if (!section.category || section.category === lastCategory) return '';
+        lastCategory = section.category;
+        return '<div class="nav-category">' + escapeHtml(section.category) + '</div>';
+    }
+
+    function renderSidebar() {
+        lastCategory = '';
+        const query = filterInput.value.trim().toLowerCase();
+        let html = '';
+        let matches = 0;
+        sections.forEach(section => {
+            // A section without pages is a single link, e.g. Stress Test under More.
+            if (!section.items.length) {
+                if (query && !section.title.toLowerCase().includes(query)) return;
+                if (query) matches++;
+                html += categoryHtml(section) + itemHtml({name: section.title, link: section.link, icon: section.icon,
+                    fallback: 'icons/logo.png'}, query, ' nav-single');
+                return;
+            }
+            const items = section.items.filter(item => !query || item.search.includes(query));
+            if (!items.length) return;
+            matches += items.length;
+            html += categoryHtml(section);
+            // While searching every section with a match is open; the remembered
+            // state returns when the search is cleared.
+            const sectionOpen = !!query || expanded.has(section.id);
+            html += '<div class="nav-section">' +
+                toggleHtml('nav-section-header', section.id, section.title, items.length, sectionOpen, section.icon) +
+                '<div class="nav-body"' + (sectionOpen ? '' : ' hidden') + '>';
+            if (section.link && !query) {
+                html += itemHtml({name: 'Overview', link: section.link, icon: section.icon, fallback: 'icons/logo.png'}, '', ' overview');
+            }
+            items.forEach(item => html += itemHtml(item, query));
+            html += '</div></div>';
+        });
+        tree.innerHTML = html || '<div class="nav-empty">No pages match "' + escapeHtml(query) + '"</div>';
+        document.getElementById('summary_all').textContent = query
+            ? matches + ' match' + (matches === 1 ? '' : 'es')
+            : allItems.length + ' pages';
+        document.getElementById('searchClear').hidden = !query;
+        document.getElementById('searchHint').hidden = !!query;
+        markActive();
+    }
+
+    // The overview entries are built on the fly, so give them an index too.
+    const overviewItems = sections.filter(section => section.link).map(section => ({
+        name: section.title, link: section.link, section: section
+    }));
+
+    tree.addEventListener('click', event => {
+        const toggle = event.target.closest('[data-toggle]');
+        if (toggle) {
+            const id = toggle.dataset.toggle;
+            const open = toggle.getAttribute('aria-expanded') !== 'true';
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.nextElementSibling.hidden = !open;
+            if (!filterInput.value.trim()) {
+                open ? expanded.add(id) : expanded.delete(id);
+            }
+            // Opening a section also shows its overview page.
+            const section = sections.find(candidate => candidate.id === id);
+            if (open && section && section.link) followLink(event, section.link, true);
+            return;
+        }
+        const link = event.target.closest('a.nav-item');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // Arrow keys move through visible entries; Escape returns to the search box.
+    tree.addEventListener('keydown', event => {
+        const focusable = [...tree.querySelectorAll('.nav-toggle, .nav-item')].filter(el => el.offsetParent !== null);
+        const index = focusable.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            const next = focusable[index + (event.key === 'ArrowDown' ? 1 : -1)];
+            if (next) next.focus(); else if (event.key === 'ArrowUp') filterInput.focus();
+        } else if (event.key === 'Escape') {
+            filterInput.focus();
+        } else if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && document.activeElement.dataset.toggle) {
+            const isOpen = document.activeElement.getAttribute('aria-expanded') === 'true';
+            if (isOpen !== (event.key === 'ArrowRight')) document.activeElement.click();
+        }
+    });
+
+    function setAllExpanded(open) {
+        expanded.clear();
+        if (open) sections.forEach(section => expanded.add(section.id));
+        renderSidebar();
+    }
+
+    document.getElementById('expandAll').addEventListener('click', () => setAllExpanded(true));
+    document.getElementById('collapseAll').addEventListener('click', () => setAllExpanded(false));
+
+    filterInput.addEventListener('input', renderSidebar);
+    filterInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            filterInput.value = '';
+            renderSidebar();
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            const first = tree.querySelector('.nav-item');
+            if (first) first.focus();
+        } else if (event.key === 'Enter') {
+            const first = tree.querySelector('.nav-item:not(.overview)');
+            if (first) first.click();
+        }
+    });
+    document.getElementById('searchClear').addEventListener('click', () => {
+        filterInput.value = '';
+        renderSidebar();
+        filterInput.focus();
+    });
+    document.addEventListener('keydown', event => {
+        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+        if (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey) {
+            event.preventDefault();
+            showSidebar(true);
+            filterInput.focus();
+            filterInput.select();
+        }
+    });
+
+    if (config.enableSearch === false) {
+        document.getElementById('search_container').hidden = true;
+    }
+
+    // Broken or missing icons fall back to the section's generic icon.
+    document.addEventListener('error', event => {
+        const img = event.target;
+        if (img.tagName !== 'IMG' || !img.dataset.fallback) return;
+        const fallback = img.dataset.fallback;
+        img.removeAttribute('data-fallback');
+        img.src = fallback;
+    }, true);
+
+    // ---------- sidebar visibility ----------
+
+    const shell = document.getElementById('shell');
+    const isNarrow = () => window.matchMedia('(max-width: 900px)').matches;
+
+    function showSidebar(show) {
+        if (isNarrow()) {
+            shell.classList.toggle('sidebar-open', show);
+        } else {
+            shell.classList.toggle('sidebar-hidden', !show);
+            storageSet(SIDEBAR_HIDDEN_KEY, !show);
+        }
+    }
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        showSidebar(isNarrow() ? !shell.classList.contains('sidebar-open') : shell.classList.contains('sidebar-hidden'));
+    });
+    document.getElementById('backdrop').addEventListener('click', () => showSidebar(false));
+    if (storageGet(SIDEBAR_HIDDEN_KEY, false)) shell.classList.add('sidebar-hidden');
+
+    // ---------- routing: #page=<relative link> shows that page inline ----------
+
+    const homeView = document.getElementById('homeView');
+    const frameView = document.getElementById('frameView');
+    const frame = document.getElementById('pageFrame');
+    const openExternal = document.getElementById('openExternal');
+    const topbarTitle = document.getElementById('topbarTitle');
+    let currentPage = '';
+
+    function followLink(event, link, keepSidebar) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!opensInline(link)) return;
+        event.preventDefault();
+        location.hash = 'page=' + encodeURIComponent(link);
+        if (isNarrow() && !keepSidebar) showSidebar(false);
+    }
+
+    function pageFromHash() {
+        const match = location.hash.match(/^#page=(.+)$/);
+        if (!match) return '';
+        const link = decodeURIComponent(match[1]);
+        return opensInline(link) ? link : '';
+    }
+
+    function findItem(link) {
+        const base = link.split('#')[0];
+        return allItems.find(item => item.link === link) ||
+            overviewItems.find(item => item.link === link) ||
+            allItems.find(item => item.link.split('#')[0] === base) ||
+            overviewItems.find(item => item.link.split('#')[0] === base);
+    }
+
+    function setTitle(item, fallbackTitle) {
+        let html = '<button class="link-button" type="button" id="crumbHome">' + escapeHtml(DOMAIN_NAME) + '</button>';
+        if (item && item.section && item.section.title !== item.name) html += '<span>/</span><span>' + escapeHtml(item.section.title) + '</span>';
+        if (item || fallbackTitle) html += '<span>/</span><strong>' + escapeHtml(item ? item.name : fallbackTitle) + '</strong>';
+        topbarTitle.innerHTML = item || fallbackTitle ? html : '<strong>Overview</strong>';
+        const crumb = document.getElementById('crumbHome');
+        if (crumb) crumb.addEventListener('click', goHome);
+    }
+
+    function markActive() {
+        tree.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+        if (!currentPage) return;
+        const active = [...tree.querySelectorAll('.nav-item')].find(el => el.getAttribute('href') === currentPage);
+        if (active) active.classList.add('active');
+    }
+
+    function revealActive(item) {
+        if (!item || filterInput.value.trim()) return;
+        if (!expanded.has(item.section.id)) {
+            expanded.add(item.section.id);
+            renderSidebar();
+        }
+        const active = tree.querySelector('.nav-item.active');
+        if (active) active.scrollIntoView({block: 'nearest'});
+    }
+
+    function route() {
+        currentPage = pageFromHash();
+        const item = currentPage ? findItem(currentPage) : null;
+        homeView.hidden = !!currentPage;
+        frameView.hidden = !currentPage;
+        document.getElementById('homeButton').hidden = !currentPage;
+        openExternal.hidden = !currentPage;
+        if (currentPage) {
+            if (frame.getAttribute('src') !== currentPage) frame.setAttribute('src', currentPage);
+            openExternal.href = currentPage;
+            document.title = (item ? item.name : 'Page') + ' · ' + DOMAIN_NAME;
+        } else {
+            frame.removeAttribute('src');
+            document.title = DOMAIN_NAME;
+        }
+        setTitle(item);
+        markActive();
+        revealActive(item);
+    }
+
+    function goHome() {
+        if (location.hash) history.pushState(null, '', location.pathname + location.search);
+        route();
+    }
+
+    // Relative link from this page's folder to an absolute URL, or '' when it
+    // leaves the site (different origin).
+    function relativeLink(href) {
+        const from = new URL('.', location.href);
+        const to = new URL(href);
+        if (from.origin !== to.origin || from.protocol !== to.protocol) return '';
+        const fromParts = from.pathname.split('/').filter(Boolean);
+        const toParts = to.pathname.split('/');
+        const fileName = toParts.pop();
+        const toDirs = toParts.filter(Boolean);
+        let common = 0;
+        while (common < fromParts.length && common < toDirs.length && fromParts[common] === toDirs[common]) common++;
+        return '../'.repeat(fromParts.length - common) + toDirs.slice(common).concat(fileName).join('/') + to.hash;
+    }
+
+    // Keep the address bar, title and sidebar in step with navigation inside the
+    // frame. Browsers block this for file:// pages; the frame still works there.
+    frame.addEventListener('load', () => {
+        let location_;
+        try {
+            location_ = frame.contentWindow.location.href;
+        } catch (e) {
+            return;
+        }
+        if (!location_ || location_ === 'about:blank') return;
+        // Pages without the breadcrumbs import (the script-free tutorial) can't mark
+        // themselves as embedded; do it for them.
+        frame.contentDocument.documentElement.classList.add('embedded');
+        if (!frame.contentDocument.querySelector('style[data-embedded]')) {
+            const style = frame.contentDocument.createElement('style');
+            style.dataset.embedded = '';
+            style.textContent = 'html.embedded .site-nav, html.embedded #breadcrumbs { display: none !important; }';
+            frame.contentDocument.head.appendChild(style);
+        }
+        const link = relativeLink(location_);
+        if (!link) return;
+        if (link.split('#')[0] === 'index.html' || link.split('#')[0] === '../start/index.html') {
+            // A "Home" link inside the frame: show the overview instead of nesting the start page.
+            goHome();
+            return;
+        }
+        if (link !== currentPage) {
+            currentPage = link;
+            history.replaceState(null, '', '#page=' + encodeURIComponent(link));
+            openExternal.href = link;
+            const item = findItem(link);
+            let frameTitle = '';
+            try {
+                frameTitle = frame.contentDocument.title;
+            } catch (e) {
+                // ignore
+            }
+            setTitle(item, frameTitle);
+            document.title = (item ? item.name : frameTitle || 'Page') + ' · ' + DOMAIN_NAME;
+            markActive();
+            revealActive(item);
+        }
+    });
+
+    document.getElementById('brand').addEventListener('click', goHome);
+    document.getElementById('homeButton').addEventListener('click', goHome);
+    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
+
+    // ---------- overview (home) content ----------
+
+    // Cards show the page counts of the sidebar sections they lead to.
+    function appCountsHtml(app) {
+        const counts = sidebarSections
+            .filter(section => section.link === app.link && section.groups.length)
+            .map(section => '<span class="app-count"><strong>' +
+                section.groups.reduce((sum, group) => sum + group.items.length, 0) + '</strong> ' +
+                escapeHtml(section.title) + '</span>');
+        return counts.length ? '<div class="app-counts">' + counts.join('') + '</div>' : '';
+    }
+
+    function renderAppCard(app) {
+        const newTab = config.openInNewTab !== false && app.openInNewTab !== false;
+        const attrs = opensInline(app.link) || !newTab ? '' : ' target="_blank" rel="noopener"';
+        // App names are authored markup (they may contain <br>), as on the previous start page.
+        return '<a class="app" href="' + escapeHtml(app.link) + '"' + attrs + '>' +
+            '<img src="' + escapeHtml(app.icon) + '" data-fallback="icons/logo.png" alt="">' +
+            '<div class="name">' + app.name + '</div>' +
+            (app.source ? '<div class="source">source: ' + escapeHtml(app.source) + '</div>' : '') +
+            '<div class="description">' + escapeHtml(app.description) + '</div>' + appCountsHtml(app) + '</a>';
+    }
+
+    function renderApps() {
+        let html = '';
+        apps.forEach(tab => {
+            if (apps.length > 1) html += '<h2 class="app-tab-title">' + escapeHtml(tab.tab) + '</h2>';
+            (tab.apps || []).forEach(group => {
+                html += '<div class="app-group"><h3 class="app-group-title">' + escapeHtml(group.group) + '</h3>' +
+                    '<div class="app-grid">' + (group.apps || []).map(renderAppCard).join('') + '</div></div>';
+            });
+        });
+        document.getElementById('appGroups').innerHTML = html;
+    }
+
+    homeView.addEventListener('click', event => {
+        const link = event.target.closest('a.app');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // ---------- domain description: three lines with a "more" toggle ----------
+
+    const descriptionContainer = document.getElementById('descriptionContainer');
+    const descriptionText = document.getElementById('domain-description');
+    const descriptionToggle = document.getElementById('domain-description-toggle');
+
+    function updateDescriptionToggle() {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionContainer.classList.add('clamped');
+        const overflows = descriptionText.scrollHeight > descriptionText.clientHeight + 1;
+        descriptionContainer.classList.toggle('clamped', overflows && !isExpanded);
+        descriptionToggle.hidden = !overflows;
+        descriptionToggle.textContent = isExpanded ? 'less' : 'more';
+    }
+
+    descriptionToggle.addEventListener('click', () => {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionToggle.setAttribute('aria-expanded', String(!isExpanded));
+        updateDescriptionToggle();
+    });
+    window.addEventListener('resize', updateDescriptionToggle);
+
+    renderSidebar();
+    renderApps();
+    route();
+    updateDescriptionToggle();
+    if (document.fonts) document.fonts.ready.then(updateDescriptionToggle);
+</script>
+</body>
+</html>

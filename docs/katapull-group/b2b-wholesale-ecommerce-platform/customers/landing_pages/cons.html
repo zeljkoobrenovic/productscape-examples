@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Consumer Shopper</title>
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav {
+        display: none !important;
+    }
+</style>
+
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .review-image {
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+            width: 400px;
+            margin: 10px;
+            padding: 10px
+        }
+
+        .review-image-small {
+            width: 100%;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 40px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            vertical-align: top;
+        }
+
+        .kpi {
+            margin-top: -3px;
+            margin-bottom: -6px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            vertical-align: top;
+            display: block;
+            background-color: #f0f0f0;
+        }
+
+        .step {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            display: inline-block;
+            width: 280px;
+            vertical-align: top;
+        }
+
+        .outcome {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 3px solid blue;
+            vertical-align: top;
+            font-size: 130%;
+            display: inline-block;
+        }
+
+        .repo {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+        .aws {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+
+        .person {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        .docs {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            vertical-align: top;
+        }
+
+        .number {
+            display: inline-block;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            margin: 8px;
+            width: 100px;
+        }
+
+        .dependency-icon {
+            height: 32px;
+            margin-left: 8px;
+            margin-right: 8px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            padding: 4px;
+            border-radius: 5px;
+        }
+
+        .kpi-title {
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .kpi-icon {
+            height: 50px;
+            padding: 0;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 40px 0px 40px 80px;
+            border-color: transparent transparent transparent black;
+            transform: rotate(0deg);
+        }
+
+        .activity-summary {
+            margin: 14px 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th,
+        .activity-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .activity-table th {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-link {
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
+        .activity-muted {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .activity-block {
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 3px solid #d7dce1;
+        }
+
+        .activity-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            font-size: 12px;
+        }
+
+        .activity-pill-highlight {
+            background-color: #dbeafe;
+            border: 1px solid #60a5fa;
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #d7dce1;
+            background-color: white;
+        }
+
+        .activity-icon-round {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .jobs-view-toggle {
+            display: inline-flex;
+            gap: 8px;
+            margin: 0 0 18px 24px;
+            padding: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background-color: #f8fafc;
+        }
+
+        .jobs-view-button {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            background-color: transparent;
+            color: #475569;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .jobs-view-button-active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .job-summary-table {
+            margin: 24px;
+            font-size: 120%;
+        }
+
+        .job-detail-group {
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+
+        .job-detail-hero {
+            width: 900px;
+            object-fit: contain;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .job-step-image {
+            max-width: 240px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .comic-job {
+            margin: 20px 24px 36px 24px;
+            padding: 24px;
+            border: 1px solid #d1d5db;
+            border-radius: 16px;
+            background-color: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px;
+        }
+
+        .comic-job-title {
+            color: #2563eb;
+            font-size: 220%;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comic-job-media {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .comic-job-media img {
+            width: min(100%, 900px);
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 12px;
+            background: white;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 28px;
+        }
+
+        .comic-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .comic-step {
+            width: 500px;
+            max-width: 100%;
+            padding: 18px;
+            border: 1px solid #d7dce1;
+            border-radius: 14px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 6px 18px;
+        }
+
+        .comic-step-title {
+            color: #2563eb;
+            font-size: 135%;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comic-step-media {
+            text-align: center;
+        }
+
+        .comic-step-media img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+</head>
+<body onload="initTab('HomeTab')" onhashchange="initTab('HomeTab')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html" class="active" aria-current="page">Customers</a>
+    <a href="../../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs" style="margin-left: 18px"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+</script>
+
+
+<script>
+    const config = {"domains": [{"id": "b2b-wholesale-ecommerce-platform", "name": "B2B Wholesale E-commerce Platform", "description": "Highbiza (Katapull group): Django/Wagtail-based webshop and website software from Hengelo for Dutch wholesalers, technical wholesalers, retailers and jewellers, with customer-specific B2B pricing, ERP and marketplace integrations and a managed hosting and QA service."}]};
+    const all_customers = [{"id": "ownr", "name": "Wholesale Owner-Director", "description": "Owner or managing director of a Dutch wholesaler, distributor or brand manufacturer (typically 10-250 staff) who decides on and pays for the webshop platform. Sells mostly to trade customers by phone, email and reps, and wants the online channel to take over routine ordering. Examples in Highbiza's published cases: Loods28 (Neede) and HR Premium Parts (Twello).", "careAbout": ["More trade orders without more order-desk staff", "A platform that will not need rebuilding in three years", "Predictable monthly cost instead of open-ended agency projects", "One partner who answers the phone"], "winsThem": ["Fixed package pricing with a known one-off fee", "Reference wholesalers who escaped an overgrown Magento or WooCommerce shop", "Standard ERP connectors to the system they already run", "Being part of a larger group (Katapull) for continuity"], "theirFear": ["A failed migration that loses orders or SEO traffic", "Vendor lock-in to a small supplier that disappears", "Hidden custom-work costs", "Security incidents and downtime during peak season"], "jobsToBeDone": [{"id": "ownr-grow", "name": "Grow trade revenue online without growing the order desk", "whatItIs": "Move routine B2B reordering from phone and email to a self-service webshop with the customer's own prices.", "outcome": "A rising share of trade orders arrives online and order-desk effort per order falls.", "steps": [{"step": "Decide to replatform", "description": "Compare packages, references and migration risk before leaving the current shop.", "streamsNeeded": [{"id": "launch-or-replatform-a-webshop", "name": "Launch or Replatform a Webshop", "howItSupports": "Package choice, intake and migration plan."}], "media": []}, {"step": "Give trade customers their own prices and assortment", "description": "Every logged-in buyer sees net prices, staffels and the assortment agreed with sales.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Customer-specific catalog and checkout."}, {"id": "reorder-and-request-quotes", "name": "Reorder and Request Quotes", "howItSupports": "Reorder lists and quotes for repeat buyers."}], "media": []}, {"step": "Connect the shop to the ERP", "description": "Orders flow into the ERP and stock and prices flow back without retyping.", "streamsNeeded": [{"id": "sync-erp-stock-prices-and-orders", "name": "Sync ERP Stock, Prices and Orders", "howItSupports": "Standard connectors to Exact, Business Central, Logic4 and others."}], "media": []}, {"step": "Track whether the channel pays off", "description": "Monthly view of online share, active trade accounts and order-desk load.", "streamsNeeded": [{"id": "steer-online-sales-performance", "name": "Steer Online Sales Performance", "howItSupports": "Sales and adoption reporting."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-ownr-ownr-grow.png", "title": "Wholesale Owner-Director JTBD infographic: Grow trade revenue online without growing the order desk", "alt": "Enterprise infographic for the job \"Grow trade revenue online without growing the order desk\" for customer \"Wholesale Owner-Director\"."}]}, {"id": "ownr-safe", "name": "Keep the webshop secure, available and current without an in-house development team", "whatItIs": "Rely on the supplier for hosting, updates, backups and testing so the shop keeps working while it grows.", "outcome": "No lost orders from outages or broken updates and no security incident.", "steps": [{"step": "Delegate hosting and patching", "description": "Hosting, OS updates and daily backups run without the owner's involvement.", "streamsNeeded": [{"id": "keep-the-webshop-fast-safe-and-current", "name": "Keep the Webshop Fast, Safe and Current", "howItSupports": "Automated system management and backups."}], "media": []}, {"step": "Approve changes safely", "description": "Custom changes are tested in a separate environment before they reach the live shop.", "streamsNeeded": [{"id": "keep-the-webshop-fast-safe-and-current", "name": "Keep the Webshop Fast, Safe and Current", "howItSupports": "Test environment and four-eyes review."}, {"id": "launch-or-replatform-a-webshop", "name": "Launch or Replatform a Webshop", "howItSupports": "Change requests become scoped building blocks or custom work."}], "media": []}, {"step": "Show customers the shop is trustworthy", "description": "ISO 27001 certification and secure payments reassure large trade customers.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Trusted payment providers and secure checkout."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-ownr-ownr-safe.png", "title": "Wholesale Owner-Director JTBD infographic: Keep the webshop secure, available and current without an in-house development team", "alt": "Enterprise infographic for the job \"Keep the webshop secure, available and current without an in-house development team\" for customer \"Wholesale Owner-Director\"."}]}], "customerJourneyStories": [{"id": "journey-ownr-replatform", "name": "Leaving an overgrown webshop that blocks growth", "linkedJobIds": ["ownr-grow", "ownr-safe"], "summary": "Illustrative composite based on the published Loods28 case: a growing wholesaler moves from a Magento shop that 'could no longer cope' to Highbiza.", "stages": [{"stage": "Trigger", "narrative": "Order volume and the number of business customers grow quickly; the existing Magento shop becomes slow, extensions break on updates and every change needs an external agency.", "media": []}, {"stage": "Discovery", "narrative": "Hears about Highbiza through the regional network in Twente and the Achterhoek, and later through the Katapull group site and its ERP sibling Logic4.", "media": []}, {"stage": "Evaluation", "narrative": "Compares the Launch, Core, Prestige and Enterprise packages, asks for a 30-minute demo and checks references; weighs fixed monthly fees and ISO 27001 against the freedom of an open-source shop.", "media": []}, {"stage": "Trial", "narrative": "Starts with a test environment on a temporary URL, loads the catalogue and customer groups and runs parallel tests before switching domains over a few months.", "media": []}, {"stage": "Engagement", "narrative": "The team adds products and seasonal ranges itself in the CMS, trade customers log in for their prices, and new building blocks are switched on as the business grows.", "media": []}, {"stage": "Retention", "narrative": "Stays because the shop keeps up with peaks, upgrades package as order volumes rise, and becomes a reference customer quoted on Highbiza and Katapull sites.", "media": []}], "media": [{"type": "image", "src": "media/journey-ownr-ownr-replatform.png", "title": "Wholesale Owner-Director customer journey: Leaving an overgrown webshop that blocks growth", "alt": "Enterprise journey storyboard for \"Leaving an overgrown webshop that blocks growth\" for customer \"Wholesale Owner-Director\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-ownr-top", "name": "Online share of trade revenue", "description": "Share of the wholesaler's B2B revenue ordered through the webshop. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "28", "targetValue": "45", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ownr-co-ownr-top.png"}, "branches": [{"id": "co-ownr-b1", "name": "Order channel shift", "description": "How much routine trade ordering has moved online.", "unit": "%", "currentValue": "35", "targetValue": "55", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b1-c1", "name": "Share of B2B orders placed online", "description": "Trade orders placed in the webshop divided by all trade orders.", "unit": "%", "currentValue": "35", "targetValue": "55", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b1-c1-l1", "name": "Trade accounts with webshop login", "description": "Share of active trade customers with at least one buyer login. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "52", "targetValue": "75", "children": [], "icon": "kpi-ownr-co-ownr-b1-c1-l1.png"}, {"id": "co-ownr-b1-c1-l2", "name": "Phone and email orders per week", "description": "Orders still keyed in by the order desk. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "orders/week", "currentValue": "420", "targetValue": "260", "children": [], "icon": "kpi-ownr-co-ownr-b1-c1-l2.png"}], "icon": "kpi-ownr-co-ownr-b1-c1.png"}, {"id": "co-ownr-b1-c2", "name": "Active online trade accounts", "description": "Trade accounts that ordered online in the last 90 days.", "unit": "accounts", "currentValue": "640", "targetValue": "950", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b1-c2-l1", "name": "New trade accounts activated online", "description": "Accounts placing their first online order per month. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "accounts/month", "currentValue": "35", "targetValue": "60", "children": [], "icon": "kpi-ownr-co-ownr-b1-c2-l1.png"}, {"id": "co-ownr-b1-c2-l2", "name": "Dormant online accounts", "description": "Accounts with a login but no online order in 180 days. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "31", "targetValue": "18", "children": [], "icon": "kpi-ownr-co-ownr-b1-c2-l2.png"}], "icon": "kpi-ownr-co-ownr-b1-c2.png"}], "icon": "kpi-ownr-co-ownr-b1.png"}, {"id": "co-ownr-b2", "name": "Cost to serve", "description": "Effort and errors per order handled.", "unit": "EUR/order", "currentValue": "6.40", "targetValue": "4.20", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b2-c1", "name": "Order-desk handling time per order", "description": "Minutes of staff time per trade order including corrections.", "unit": "minutes", "currentValue": "7.5", "targetValue": "4.0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b2-c1-l1", "name": "Orders needing manual re-entry", "description": "Orders typed again into the ERP. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "18", "targetValue": "3", "children": [], "icon": "kpi-ownr-co-ownr-b2-c1-l1.png"}, {"id": "co-ownr-b2-c1-l2", "name": "Price queries per 100 orders", "description": "Calls or emails asking about price or stock. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "queries", "currentValue": "9", "targetValue": "4", "children": [], "icon": "kpi-ownr-co-ownr-b2-c1-l2.png"}], "icon": "kpi-ownr-co-ownr-b2-c1.png"}, {"id": "co-ownr-b2-c2", "name": "Order error rate", "description": "Orders with a wrong item, price or address.", "unit": "%", "currentValue": "2.1", "targetValue": "0.8", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/co-ownr-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ownr-b2-c2-l1", "name": "Price mismatches between shop and invoice", "description": "Invoices corrected because the shop showed a different price. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "1.2", "targetValue": "0.3", "children": [], "icon": "kpi-ownr-co-ownr-b2-c2-l1.png"}, {"id": "co-ownr-b2-c2-l2", "name": "Stock-out after order confirmation", "description": "Confirmed orders that could not be shipped from stock. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "3.0", "targetValue": "1.0", "children": [], "icon": "kpi-ownr-co-ownr-b2-c2-l2.png"}], "icon": "kpi-ownr-co-ownr-b2-c2.png"}], "icon": "kpi-ownr-co-ownr-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-ownr-top", "name": "Net revenue retention of webshop customers", "description": "Recurring Highbiza revenue from a customer cohort a year later, including package upgrades and paid building blocks. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "103", "targetValue": "110", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ownr-bo-ownr-top.png"}, "branches": [{"id": "bo-ownr-b1", "name": "Expansion", "description": "Revenue growth within existing customers.", "unit": "%", "currentValue": "7", "targetValue": "12", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b1-c1", "name": "Package upgrade rate", "description": "Customers moving to a higher package per year.", "unit": "%", "currentValue": "8", "targetValue": "14", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b1-c1-l1", "name": "Customers at package order limit", "description": "Customers using more than 80% of their package's monthly order allowance. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "15", "targetValue": "15", "children": [], "icon": "kpi-ownr-bo-ownr-b1-c1-l1.png"}, {"id": "bo-ownr-b1-c1-l2", "name": "Upgrade proposals accepted", "description": "Upgrade proposals accepted by customers. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "40", "targetValue": "55", "children": [], "icon": "kpi-ownr-bo-ownr-b1-c1-l2.png"}], "icon": "kpi-ownr-bo-ownr-b1-c1.png"}, {"id": "bo-ownr-b1-c2", "name": "Paid building-block attach rate", "description": "Customers with at least one paid extension block.", "unit": "%", "currentValue": "45", "targetValue": "60", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b1-c2-l1", "name": "Blocks activated per customer per year", "description": "New building blocks switched on. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "blocks", "currentValue": "1.6", "targetValue": "2.5", "children": [], "icon": "kpi-ownr-bo-ownr-b1-c2-l1.png"}, {"id": "bo-ownr-b1-c2-l2", "name": "Katapull sibling connectors per customer", "description": "Connectors to Logic4, Vendit, EffectConnect or DeliveryMatch in use. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "connectors", "currentValue": "0.4", "targetValue": "0.9", "children": [], "icon": "kpi-ownr-bo-ownr-b1-c2-l2.png"}], "icon": "kpi-ownr-bo-ownr-b1-c2.png"}], "icon": "kpi-ownr-bo-ownr-b1.png"}, {"id": "bo-ownr-b2", "name": "Retention", "description": "Customers that stay on the platform.", "unit": "%", "currentValue": "92", "targetValue": "95", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b2-c1", "name": "Logo churn rate", "description": "Customers leaving per year.", "unit": "%", "currentValue": "8", "targetValue": "5", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b2-c1-l1", "name": "Customers lost to SaaS suites", "description": "Churned customers moving to Shopify or similar. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "3", "targetValue": "2", "children": [], "icon": "kpi-ownr-bo-ownr-b2-c1-l1.png"}, {"id": "bo-ownr-b2-c1-l2", "name": "Customers lost to closure or merger", "description": "Churn caused by the customer's business ending. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "3", "targetValue": "3", "children": [], "icon": "kpi-ownr-bo-ownr-b2-c1-l2.png"}], "icon": "kpi-ownr-bo-ownr-b2-c1.png"}, {"id": "bo-ownr-b2-c2", "name": "Platform incident rate", "description": "Customer-visible incidents per 100 shops per month.", "unit": "incidents", "currentValue": "1.2", "targetValue": "0.5", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ownr/kpis/bo-ownr-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ownr-b2-c2-l1", "name": "Releases rolled back", "description": "Releases reverted after reaching production. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "2.0", "targetValue": "0.5", "children": [], "icon": "kpi-ownr-bo-ownr-b2-c2-l1.png"}, {"id": "bo-ownr-b2-c2-l2", "name": "Unplanned downtime minutes", "description": "Downtime per shop per month. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "minutes", "currentValue": "25", "targetValue": "10", "children": [], "icon": "kpi-ownr-bo-ownr-b2-c2-l2.png"}], "icon": "kpi-ownr-bo-ownr-b2-c2.png"}], "icon": "kpi-ownr-bo-ownr-b2.png"}]}}, "productStrategy": {"vision": "The wholesaler's trade customers order online at their own prices as naturally as they used to phone, the order desk handles exceptions only, and the owner never has to think about hosting, updates or security.", "timeHorizons": {"year1": {"focus": "Win replatforming wholesalers in the Netherlands with fixed packages, reference cases and standard ERP connectors, including Logic4 and Vendit from the group.", "productTheme": "Wholesale-ready packages", "customerKPI": {"northStar": "Online share of trade revenue", "supporting": ["Share of B2B orders placed online", "Order-desk handling time per order"]}, "businessKPI": {"northStar": "Net revenue retention of webshop customers", "revenueStreams": ["Monthly package subscriptions", "One-off setup fees", "Paid building blocks"], "supporting": ["Package upgrade rate", "Logo churn rate"]}, "milestones": ["B2B module standard in Prestige and above", "Migration playbook from Magento and WooCommerce", "Reference cases per branch"]}, "year3": {"focus": "Make the shop the default trade channel by joining it with Katapull's order, logistics and returns services so the owner buys one connected commerce stack.", "productTheme": "Connected Katapull commerce stack", "customerKPI": {"northStar": "Online share of trade revenue", "supporting": ["Active online trade accounts", "Order error rate"]}, "businessKPI": {"northStar": "Net revenue retention of webshop customers", "revenueStreams": ["Monthly package subscriptions", "Paid building blocks", "Cross-sold Katapull services"], "supporting": ["Paid building-block attach rate", "Katapull sibling connectors per customer"]}, "milestones": ["Pre-configured Logic4 and DeliveryMatch bundles", "Group-wide single sign-on for back offices", "German-language market entry for existing customers"]}, "year5": {"focus": "Let trade buying run largely without the order desk: assisted reordering, proactive quotes and stock promises that hold.", "productTheme": "Self-running trade channel", "customerKPI": {"northStar": "Online share of trade revenue", "supporting": ["Share of B2B orders placed online", "Order-desk handling time per order"]}, "businessKPI": {"northStar": "Net revenue retention of webshop customers", "revenueStreams": ["Monthly package subscriptions", "Usage-based enterprise tiers"], "supporting": ["Package upgrade rate", "Platform incident rate"]}, "milestones": ["Assistant-led reorder suggestions", "Stock promises from ERP and WMS data", "Enterprise tier for multi-country wholesalers"]}}}, "icon": "customer-ownr-portrait.jpg", "domain": "Trading Company Leadership"}, {"id": "ecom", "name": "E-commerce and Marketing Manager", "description": "Runs the webshop day to day at the trading company: content, campaigns, product pages, SEO and marketplace listings. Often a one- to three-person team without developers, such as the marketing team lead in the published Kroon-Oil case who previously needed a ticket for every homepage change.", "careAbout": ["Publishing pages and campaigns the same day without a ticket", "Fast pages and good Google rankings", "Clean product data across shop, feeds and marketplaces", "Seeing what converts"], "winsThem": ["An intuitive CMS (Wagtail) with SEO settings per page", "Page speed scores of 90+ out of the box", "Loyalty points and promotions they configure themselves", "Direct contact with the supplier's experts"], "theirFear": ["Losing rankings during a migration", "Plug-in updates that break the layout", "Being blamed for errors in data they cannot see", "Waiting weeks for small changes"], "jobsToBeDone": [{"id": "ecom-publish", "name": "Publish content, campaigns and product pages myself, the same day", "whatItIs": "Create landing pages, campaigns and product content in the CMS and push products to Google Shopping and marketplaces.", "outcome": "Changes go live within hours and organic and campaign traffic grows.", "steps": [{"step": "Create a campaign landing page", "description": "Build a page from blocks with SEO fields filled in.", "streamsNeeded": [{"id": "manage-content-seo-and-campaigns", "name": "Manage Content, SEO and Campaigns", "howItSupports": "Page builder and SEO settings."}], "media": []}, {"step": "Enrich product content", "description": "Add texts, images, specifications and datasheets for new ranges.", "streamsNeeded": [{"id": "manage-content-seo-and-campaigns", "name": "Manage Content, SEO and Campaigns", "howItSupports": "Content and media management."}, {"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Catalogue structure and filters."}], "media": []}, {"step": "Publish to feeds and marketplaces", "description": "Send the range to Google Shopping, eBay or via EffectConnect to bol and Amazon.", "streamsNeeded": [{"id": "sell-on-marketplaces-and-feeds", "name": "Sell on Marketplaces and Product Feeds", "howItSupports": "Product feeds and marketplace connectors."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-ecom-ecom-publish.png", "title": "E-commerce and Marketing Manager JTBD infographic: Publish content, campaigns and product pages myself, the same day", "alt": "Enterprise infographic for the job \"Publish content, campaigns and product pages myself, the same day\" for customer \"E-commerce and Marketing Manager\"."}]}, {"id": "ecom-convert", "name": "Turn visitors into repeat customers", "whatItIs": "Improve search, checkout and loyalty so that first-time buyers come back.", "outcome": "Conversion and repeat purchase rates rise without permanent discounting.", "steps": [{"step": "Help visitors find products", "description": "Tune filters, synonyms and suggestions.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Elastic search with filters and suggestions."}], "media": []}, {"step": "Reward repeat purchases", "description": "Set loyalty points and their value in the CMS.", "streamsNeeded": [{"id": "manage-content-seo-and-campaigns", "name": "Manage Content, SEO and Campaigns", "howItSupports": "Promotions and loyalty configuration."}], "media": []}, {"step": "See what works", "description": "Review conversion, search terms and campaign results.", "streamsNeeded": [{"id": "steer-online-sales-performance", "name": "Steer Online Sales Performance", "howItSupports": "Commerce analytics and reporting."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-ecom-ecom-convert.png", "title": "E-commerce and Marketing Manager JTBD infographic: Turn visitors into repeat customers", "alt": "Enterprise infographic for the job \"Turn visitors into repeat customers\" for customer \"E-commerce and Marketing Manager\"."}]}], "customerJourneyStories": [{"id": "journey-ecom-self-service", "name": "From a ticket queue to a self-service CMS", "linkedJobIds": ["ecom-publish", "ecom-convert"], "summary": "Illustrative journey inspired by the published Kroon-Oil case, where marketing ran a tender to replace a custom CMS.", "stages": [{"stage": "Trigger", "narrative": "Social campaigns cannot link to proper landing pages and every homepage change requires a ticket with the old supplier; the team feels neither flexible nor self-reliant.", "media": []}, {"stage": "Discovery", "narrative": "Marketing and its agency write a tender and invite three suppliers; Highbiza is on the list through its performance references.", "media": []}, {"stage": "Evaluation", "narrative": "Highbiza demonstrates technical performance and a CMS the team can run itself; the company chooses a hybrid of the agency's design and Highbiza's technology.", "media": []}, {"stage": "Trial", "narrative": "Several brand sites go live within months on the same technical base; the manager fills the content in the CMS and tests in the staging environment.", "media": []}, {"stage": "Engagement", "narrative": "Menu and page changes that took weeks now take days; the team publishes campaigns, tunes SEO and adds brands on the same platform.", "media": []}, {"stage": "Retention", "narrative": "Stays because further optimisations are cheap and quick, and recommends Highbiza in the published customer story.", "media": []}], "media": [{"type": "image", "src": "media/journey-ecom-ecom-self-service.png", "title": "E-commerce and Marketing Manager customer journey: From a ticket queue to a self-service CMS", "alt": "Enterprise journey storyboard for \"From a ticket queue to a self-service CMS\" for customer \"E-commerce and Marketing Manager\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-ecom-top", "name": "Webshop conversion rate", "description": "Sessions that end in an order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "2.1", "targetValue": "3.0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecom-co-ecom-top.png"}, "branches": [{"id": "co-ecom-b1", "name": "Findability", "description": "Visitors reaching the right product.", "unit": "index", "currentValue": "62", "targetValue": "80", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b1-c1", "name": "Organic search sessions", "description": "Monthly sessions from unpaid search.", "unit": "sessions/month", "currentValue": "18000", "targetValue": "26000", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b1-c1-l1", "name": "Mobile page speed score", "description": "Lighthouse performance score on key templates. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "score", "currentValue": "88", "targetValue": "95", "children": [], "icon": "kpi-ecom-co-ecom-b1-c1-l1.png"}, {"id": "co-ecom-b1-c1-l2", "name": "Indexed product pages", "description": "Product pages indexed by Google. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "81", "targetValue": "95", "children": [], "icon": "kpi-ecom-co-ecom-b1-c1-l2.png"}], "icon": "kpi-ecom-co-ecom-b1-c1.png"}, {"id": "co-ecom-b1-c2", "name": "Site search success rate", "description": "Searches followed by a product view.", "unit": "%", "currentValue": "64", "targetValue": "80", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b1-c2-l1", "name": "Zero-result searches", "description": "Searches returning nothing. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "7", "targetValue": "3", "children": [], "icon": "kpi-ecom-co-ecom-b1-c2-l1.png"}, {"id": "co-ecom-b1-c2-l2", "name": "Filter usage on category pages", "description": "Category visits using at least one filter. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "28", "targetValue": "40", "children": [], "icon": "kpi-ecom-co-ecom-b1-c2-l2.png"}], "icon": "kpi-ecom-co-ecom-b1-c2.png"}], "icon": "kpi-ecom-co-ecom-b1.png"}, {"id": "co-ecom-b2", "name": "Self-service speed", "description": "How fast the team can change the shop itself.", "unit": "days", "currentValue": "5", "targetValue": "1", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b2-c1", "name": "Lead time for content changes", "description": "Days from request to live content change.", "unit": "days", "currentValue": "5", "targetValue": "1", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b2-c1-l1", "name": "Pages published per month", "description": "New or updated pages published by the team. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "pages", "currentValue": "14", "targetValue": "30", "children": [], "icon": "kpi-ecom-co-ecom-b2-c1-l1.png"}, {"id": "co-ecom-b2-c1-l2", "name": "Content changes waiting on supplier", "description": "Open content changes blocked on the supplier. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "changes", "currentValue": "6", "targetValue": "1", "children": [], "icon": "kpi-ecom-co-ecom-b2-c1-l2.png"}], "icon": "kpi-ecom-co-ecom-b2-c1.png"}, {"id": "co-ecom-b2-c2", "name": "Share of changes done without supplier ticket", "description": "Changes the team makes itself in the CMS.", "unit": "%", "currentValue": "60", "targetValue": "85", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/co-ecom-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-ecom-b2-c2-l1", "name": "CMS editors trained", "description": "Team members able to publish. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "people", "currentValue": "2", "targetValue": "4", "children": [], "icon": "kpi-ecom-co-ecom-b2-c2-l1.png"}, {"id": "co-ecom-b2-c2-l2", "name": "Layout breakages after updates", "description": "Visual regressions found after an update. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "per quarter", "currentValue": "1", "targetValue": "0", "children": [], "icon": "kpi-ecom-co-ecom-b2-c2-l2.png"}], "icon": "kpi-ecom-co-ecom-b2-c2.png"}], "icon": "kpi-ecom-co-ecom-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-ecom-top", "name": "Monthly active webshop editors", "description": "CMS users who publish at least once a month across the customer base. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "users", "currentValue": "380", "targetValue": "600", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-ecom-bo-ecom-top.png"}, "branches": [{"id": "bo-ecom-b1", "name": "Adoption", "description": "How deeply teams use the CMS and modules.", "unit": "%", "currentValue": "55", "targetValue": "75", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b1-c1", "name": "Editors per customer", "description": "Average active editors per customer.", "unit": "users", "currentValue": "1.4", "targetValue": "2.2", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b1-c1-l1", "name": "Manual (handleiding) page views", "description": "Monthly views of the Wagtail manual. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "views", "currentValue": "900", "targetValue": "1200", "children": [], "icon": "kpi-ecom-bo-ecom-b1-c1-l1.png"}, {"id": "bo-ecom-b1-c1-l2", "name": "Editors onboarded in first 30 days", "description": "New customers with an editor publishing within 30 days of go-live. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "70", "targetValue": "90", "children": [], "icon": "kpi-ecom-bo-ecom-b1-c1-l2.png"}], "icon": "kpi-ecom-bo-ecom-b1-c1.png"}, {"id": "bo-ecom-b1-c2", "name": "Content publications per month", "description": "Pages and products published per customer.", "unit": "items", "currentValue": "35", "targetValue": "60", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b1-c2-l1", "name": "Promotions configured per month", "description": "Promotions and loyalty rules set by customers. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "rules", "currentValue": "2", "targetValue": "4", "children": [], "icon": "kpi-ecom-bo-ecom-b1-c2-l1.png"}, {"id": "bo-ecom-b1-c2-l2", "name": "Feeds published per customer", "description": "Active product feeds to Google Shopping or marketplaces. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "feeds", "currentValue": "0.6", "targetValue": "1.2", "children": [], "icon": "kpi-ecom-bo-ecom-b1-c2-l2.png"}], "icon": "kpi-ecom-bo-ecom-b1-c2.png"}], "icon": "kpi-ecom-bo-ecom-b1.png"}, {"id": "bo-ecom-b2", "name": "Support load", "description": "Support effort per customer.", "unit": "requests", "currentValue": "3.0", "targetValue": "2.0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b2-c1", "name": "Support requests per customer per month", "description": "How-to and incident requests.", "unit": "requests", "currentValue": "3.0", "targetValue": "2.0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b2-c1-l1", "name": "How-to requests", "description": "Requests answerable from the manual. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "45", "targetValue": "25", "children": [], "icon": "kpi-ecom-bo-ecom-b2-c1-l1.png"}, {"id": "bo-ecom-b2-c1-l2", "name": "Bug reports", "description": "Requests caused by defects. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "15", "targetValue": "8", "children": [], "icon": "kpi-ecom-bo-ecom-b2-c1-l2.png"}], "icon": "kpi-ecom-bo-ecom-b2-c1.png"}, {"id": "bo-ecom-b2-c2", "name": "Requests resolved within one working day", "description": "Support requests handled within the promised working day.", "unit": "%", "currentValue": "85", "targetValue": "95", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/ecom/kpis/bo-ecom-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-ecom-b2-c2-l1", "name": "First-contact resolution", "description": "Requests solved without follow-up. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "60", "targetValue": "75", "children": [], "icon": "kpi-ecom-bo-ecom-b2-c2-l1.png"}, {"id": "bo-ecom-b2-c2-l2", "name": "Escalations to development", "description": "Requests needing a developer. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "20", "targetValue": "12", "children": [], "icon": "kpi-ecom-bo-ecom-b2-c2-l2.png"}], "icon": "kpi-ecom-bo-ecom-b2-c2.png"}], "icon": "kpi-ecom-bo-ecom-b2.png"}]}}, "productStrategy": {"vision": "The e-commerce manager runs content, campaigns, SEO and channels without developers, and every change reaches the shop, Google and marketplaces the same day.", "timeHorizons": {"year1": {"focus": "Make the CMS and SEO tooling the reason marketing teams choose Highbiza over plug-in-based shops.", "productTheme": "Marketing self-service", "customerKPI": {"northStar": "Webshop conversion rate", "supporting": ["Lead time for content changes", "Organic search sessions"]}, "businessKPI": {"northStar": "Monthly active webshop editors", "revenueStreams": ["Monthly package subscriptions", "Paid building blocks"], "supporting": ["Editors per customer", "Requests resolved within one working day"]}, "milestones": ["Loyalty points module generally available", "Return form page enabled for all consumer shops", "Updated Wagtail manual"]}, "year3": {"focus": "Extend self-service to channels: one product content source for the shop, feeds and EffectConnect marketplaces.", "productTheme": "Content once, everywhere", "customerKPI": {"northStar": "Webshop conversion rate", "supporting": ["Site search success rate", "Share of changes done without supplier ticket"]}, "businessKPI": {"northStar": "Monthly active webshop editors", "revenueStreams": ["Paid building blocks", "Cross-sold Katapull services"], "supporting": ["Content publications per month", "Feeds published per customer"]}, "milestones": ["Marketplace publishing from the CMS via EffectConnect", "Search analytics in the dashboard", "Multilingual content workflow NL/EN/DE"]}, "year5": {"focus": "Assist teams with AI-generated content drafts and search tuning while they stay in control of brand and claims.", "productTheme": "Assisted merchandising", "customerKPI": {"northStar": "Webshop conversion rate", "supporting": ["Site search success rate", "Organic search sessions"]}, "businessKPI": {"northStar": "Monthly active webshop editors", "revenueStreams": ["Paid building blocks", "Usage-based enterprise tiers"], "supporting": ["Editors per customer", "Support requests per customer per month"]}, "milestones": ["Draft product texts from ERP specifications", "Automatic synonym suggestions", "Visibility in AI shopping assistants"]}}}, "icon": "customer-ecom-portrait.jpg", "domain": "Webshop Operators"}, {"id": "itop", "name": "ERP and Operations Lead", "description": "The person responsible for the ERP, stock, logistics and integrations at the trading company: an operations manager, controller or IT coordinator. Owns data quality between ERP (Exact Online, Business Central, Logic4 and others) and the webshop, and signs off custom work. In the HR Premium Parts case this role restructured product data, customer groups and stock while moving to Logic4 with the Highbiza shop.", "careAbout": ["Stock and prices identical in ERP and shop", "Orders arriving in the ERP without retyping", "Changes tested before they go live", "Clear ownership when an integration fails"], "winsThem": ["Standard connectors to the ERP already in use", "A permanent test environment that survives go-live", "Four-eyes review and nightly automated tests", "Group siblings (Logic4, Vendit) integrating natively"], "theirFear": ["Silent sync failures discovered by customers", "Custom integrations nobody can maintain", "Double data entry and spreadsheets", "Upgrades that break integrations"], "jobsToBeDone": [{"id": "itop-sync", "name": "Keep stock, prices and orders identical between ERP and webshop", "whatItIs": "Make the ERP the single source for products, stock and agreed prices and make every web order land in the ERP.", "outcome": "Near-zero mismatches and no manual order entry.", "steps": [{"step": "Map ERP data to the shop", "description": "Map articles, customer groups, price lists and stock locations once.", "streamsNeeded": [{"id": "sync-erp-stock-prices-and-orders", "name": "Sync ERP Stock, Prices and Orders", "howItSupports": "Connector mapping and sync schedules."}], "media": []}, {"step": "Process web and marketplace orders", "description": "Orders from the shop and marketplaces flow into the ERP and on to shipping.", "streamsNeeded": [{"id": "sync-erp-stock-prices-and-orders", "name": "Sync ERP Stock, Prices and Orders", "howItSupports": "Order export to ERP."}, {"id": "sell-on-marketplaces-and-feeds", "name": "Sell on Marketplaces and Product Feeds", "howItSupports": "Marketplace orders via EffectConnect."}, {"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Carrier labels and track-and-trace."}], "media": []}, {"step": "Handle sync exceptions", "description": "See failed records and fix them before customers notice.", "streamsNeeded": [{"id": "keep-the-webshop-fast-safe-and-current", "name": "Keep the Webshop Fast, Safe and Current", "howItSupports": "Monitoring and support on integration incidents."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-itop-itop-sync.png", "title": "ERP and Operations Lead JTBD infographic: Keep stock, prices and orders identical between ERP and webshop", "alt": "Enterprise infographic for the job \"Keep stock, prices and orders identical between ERP and webshop\" for customer \"ERP and Operations Lead\"."}]}, {"id": "itop-change", "name": "Ship custom changes without breaking the live shop", "whatItIs": "Specify, test and accept functional or visual custom work safely.", "outcome": "Custom features arrive on schedule with no production incident.", "steps": [{"step": "Specify the change", "description": "Translate a business wish into building blocks or custom work with agreed cost and date.", "streamsNeeded": [{"id": "launch-or-replatform-a-webshop", "name": "Launch or Replatform a Webshop", "howItSupports": "Intake and building-block selection."}], "media": []}, {"step": "Test in the staging environment", "description": "Accept the change on a temporary URL before release.", "streamsNeeded": [{"id": "keep-the-webshop-fast-safe-and-current", "name": "Keep the Webshop Fast, Safe and Current", "howItSupports": "Test environment, four-eyes review and nightly tests."}], "media": []}, {"step": "Release and verify", "description": "Release and confirm integrations still run.", "streamsNeeded": [{"id": "keep-the-webshop-fast-safe-and-current", "name": "Keep the Webshop Fast, Safe and Current", "howItSupports": "Release and automated regression tests."}, {"id": "sync-erp-stock-prices-and-orders", "name": "Sync ERP Stock, Prices and Orders", "howItSupports": "Integration health after release."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-itop-itop-change.png", "title": "ERP and Operations Lead JTBD infographic: Ship custom changes without breaking the live shop", "alt": "Enterprise infographic for the job \"Ship custom changes without breaking the live shop\" for customer \"ERP and Operations Lead\"."}]}], "customerJourneyStories": [{"id": "journey-itop-erp-launch", "name": "Joining the webshop and a new ERP as launch customer", "linkedJobIds": ["itop-sync", "itop-change"], "summary": "Illustrative journey based on the published HR Premium Parts case, which became a launch customer for Highbiza together with Logic4 in 2023.", "stages": [{"stage": "Trigger", "narrative": "The business runs on one laptop, spreadsheets and email; the long-running webshop works at the front but nothing is automated at the back.", "media": []}, {"stage": "Discovery", "narrative": "A conversation with Highbiza's founder introduces the idea of becoming a launch customer for both the Highbiza shop and the Logic4 ERP.", "media": []}, {"stage": "Evaluation", "narrative": "Weighs the effort of cleaning data against one system for stock, purchasing, customers and invoicing; checks that the long-standing shop can stay.", "media": []}, {"stage": "Trial", "narrative": "A finance and control intern inventories data, links product data, customer groups and stock, and configures Logic4 while the shop is reconnected in test.", "media": []}, {"stage": "Engagement", "narrative": "Dashboards show turnover, product rotation and customer behaviour in real time; orders flow from shop into Logic4 without retyping.", "media": []}, {"stage": "Retention", "narrative": "Stays because the shop and ERP grow together within one group and the company now has a structured, scalable base.", "media": []}], "media": [{"type": "image", "src": "media/journey-itop-itop-erp-launch.png", "title": "ERP and Operations Lead customer journey: Joining the webshop and a new ERP as launch customer", "alt": "Enterprise journey storyboard for \"Joining the webshop and a new ERP as launch customer\" for customer \"ERP and Operations Lead\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-itop-top", "name": "Order-to-ERP straight-through rate", "description": "Web and marketplace orders that reach the ERP without manual touch. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "82", "targetValue": "98", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-itop-co-itop-top.png"}, "branches": [{"id": "co-itop-b1", "name": "Data sync quality", "description": "Agreement between ERP and shop data.", "unit": "%", "currentValue": "94", "targetValue": "99.5", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b1-c1", "name": "Stock accuracy", "description": "Products whose shop stock matches ERP stock at check time.", "unit": "%", "currentValue": "95", "targetValue": "99.5", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b1-c1-l1", "name": "Stock sync interval", "description": "Minutes between stock updates. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "minutes", "currentValue": "60", "targetValue": "5", "children": [], "icon": "kpi-itop-co-itop-b1-c1-l1.png"}, {"id": "co-itop-b1-c1-l2", "name": "Oversold orders", "description": "Orders for items without stock. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "1.8", "targetValue": "0.3", "children": [], "icon": "kpi-itop-co-itop-b1-c1-l2.png"}], "icon": "kpi-itop-co-itop-b1-c1.png"}, {"id": "co-itop-b1-c2", "name": "Price sync latency", "description": "Time for an ERP price change to appear in the shop.", "unit": "hours", "currentValue": "24", "targetValue": "1", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b1-c2-l1", "name": "Price lists synced automatically", "description": "Customer price lists maintained only in the ERP. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "70", "targetValue": "100", "children": [], "icon": "kpi-itop-co-itop-b1-c2-l1.png"}, {"id": "co-itop-b1-c2-l2", "name": "Failed sync records per day", "description": "Records rejected by the connector. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "records", "currentValue": "40", "targetValue": "5", "children": [], "icon": "kpi-itop-co-itop-b1-c2-l2.png"}], "icon": "kpi-itop-co-itop-b1-c2.png"}], "icon": "kpi-itop-co-itop-b1.png"}, {"id": "co-itop-b2", "name": "Change safety", "description": "Custom changes delivered without incidents.", "unit": "%", "currentValue": "90", "targetValue": "98", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b2-c1", "name": "Production incidents after release", "description": "Incidents within 7 days of a release.", "unit": "per quarter", "currentValue": "2", "targetValue": "0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b2-c1-l1", "name": "Changes accepted in test first", "description": "Releases accepted by the customer in staging. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "85", "targetValue": "100", "children": [], "icon": "kpi-itop-co-itop-b2-c1-l1.png"}, {"id": "co-itop-b2-c1-l2", "name": "Automated test coverage of building blocks", "description": "Building blocks covered by nightly tests. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "80", "targetValue": "95", "children": [], "icon": "kpi-itop-co-itop-b2-c1-l2.png"}], "icon": "kpi-itop-co-itop-b2-c1.png"}, {"id": "co-itop-b2-c2", "name": "Custom change lead time", "description": "Days from approved specification to release.", "unit": "days", "currentValue": "20", "targetValue": "10", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/co-itop-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-itop-b2-c2-l1", "name": "Changes solved with existing building blocks", "description": "Requests met without custom code. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "55", "targetValue": "70", "children": [], "icon": "kpi-itop-co-itop-b2-c2-l1.png"}, {"id": "co-itop-b2-c2-l2", "name": "Specification rework rounds", "description": "Iterations before a change is approved. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "rounds", "currentValue": "2.0", "targetValue": "1.2", "children": [], "icon": "kpi-itop-co-itop-b2-c2-l2.png"}], "icon": "kpi-itop-co-itop-b2-c2.png"}], "icon": "kpi-itop-co-itop-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-itop-top", "name": "Integration-attached customers share", "description": "Customers with at least one live ERP or marketplace connector. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "55", "targetValue": "75", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-itop-bo-itop-top.png"}, "branches": [{"id": "bo-itop-b1", "name": "Connector reach", "description": "Coverage of the ERPs customers use.", "unit": "%", "currentValue": "60", "targetValue": "80", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b1-c1", "name": "Customers on a standard ERP connector", "description": "Customers using a listed connector rather than custom code.", "unit": "%", "currentValue": "48", "targetValue": "70", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b1-c1-l1", "name": "ERP systems with a standard connector", "description": "ERP products on the integrations page. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "systems", "currentValue": "7", "targetValue": "10", "children": [], "icon": "kpi-itop-bo-itop-b1-c1-l1.png"}, {"id": "bo-itop-b1-c1-l2", "name": "Custom integrations in maintenance", "description": "Bespoke integrations still maintained. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "integrations", "currentValue": "30", "targetValue": "15", "children": [], "icon": "kpi-itop-bo-itop-b1-c1-l2.png"}], "icon": "kpi-itop-bo-itop-b1-c1.png"}, {"id": "bo-itop-b1-c2", "name": "Customers using a Katapull sibling connector", "description": "Customers linked to Logic4, Vendit, EffectConnect or DeliveryMatch.", "unit": "%", "currentValue": "20", "targetValue": "40", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b1-c2-l1", "name": "Joint Highbiza and Logic4 go-lives", "description": "Customers live on both per year. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "customers", "currentValue": "8", "targetValue": "25", "children": [], "icon": "kpi-itop-bo-itop-b1-c2-l1.png"}, {"id": "bo-itop-b1-c2-l2", "name": "Sibling referrals received", "description": "Leads referred by other Katapull brands. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "leads/quarter", "currentValue": "6", "targetValue": "20", "children": [], "icon": "kpi-itop-bo-itop-b1-c2-l2.png"}], "icon": "kpi-itop-bo-itop-b1-c2.png"}], "icon": "kpi-itop-bo-itop-b1.png"}, {"id": "bo-itop-b2", "name": "Integration reliability", "description": "How well connectors run.", "unit": "%", "currentValue": "98.5", "targetValue": "99.7", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b2-c1", "name": "Sync failure rate", "description": "Sync jobs that fail.", "unit": "%", "currentValue": "1.5", "targetValue": "0.3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b2-c1-l1", "name": "Connector breakages after third-party API changes", "description": "Incidents caused by ERP or marketplace API changes. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "per year", "currentValue": "4", "targetValue": "1", "children": [], "icon": "kpi-itop-bo-itop-b2-c1-l1.png"}, {"id": "bo-itop-b2-c1-l2", "name": "Retries succeeding automatically", "description": "Failed jobs recovered without staff. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "70", "targetValue": "90", "children": [], "icon": "kpi-itop-bo-itop-b2-c1-l2.png"}], "icon": "kpi-itop-bo-itop-b2-c1.png"}, {"id": "bo-itop-b2-c2", "name": "Mean time to resolve integration incidents", "description": "Hours from detection to resolution.", "unit": "hours", "currentValue": "10", "targetValue": "4", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/itop/kpis/bo-itop-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-itop-b2-c2-l1", "name": "Incidents detected by monitoring before the customer", "description": "Share of incidents found internally first. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "50", "targetValue": "85", "children": [], "icon": "kpi-itop-bo-itop-b2-c2-l1.png"}, {"id": "bo-itop-b2-c2-l2", "name": "Incidents resolved within one working day", "description": "Integration incidents closed in a day. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "75", "targetValue": "95", "children": [], "icon": "kpi-itop-bo-itop-b2-c2-l2.png"}], "icon": "kpi-itop-bo-itop-b2-c2.png"}], "icon": "kpi-itop-bo-itop-b2.png"}]}}, "productStrategy": {"vision": "The operations lead treats the ERP as the only place to change data, trusts that the shop and marketplaces follow within minutes, and accepts custom changes in test with confidence.", "timeHorizons": {"year1": {"focus": "Harden the standard connectors (Exact Online, Business Central, Logic4, Vendit) and make sync failures visible.", "productTheme": "Reliable standard integrations", "customerKPI": {"northStar": "Order-to-ERP straight-through rate", "supporting": ["Stock accuracy", "Price sync latency"]}, "businessKPI": {"northStar": "Integration-attached customers share", "revenueStreams": ["Integration set-up fees", "Monthly package subscriptions"], "supporting": ["Customers on a standard ERP connector", "Sync failure rate"]}, "milestones": ["Integration status page per shop", "Retry and alerting for failed records", "Logic4 connector bundled for joint customers"]}, "year3": {"focus": "Use group siblings as the default back office: Logic4 or Vendit for ERP and POS, DeliveryMatch for shipping, EffectConnect for marketplaces, Transus for EDI orders.", "productTheme": "Katapull Commerce Hub integration", "customerKPI": {"northStar": "Order-to-ERP straight-through rate", "supporting": ["Stock accuracy", "Production incidents after release"]}, "businessKPI": {"northStar": "Integration-attached customers share", "revenueStreams": ["Cross-sold Katapull services", "Paid building blocks"], "supporting": ["Customers using a Katapull sibling connector", "Mean time to resolve integration incidents"]}, "milestones": ["Shared product and order events between Katapull brands", "EDI order intake via Transus for large trade buyers", "Picqer WMS stock as a shop source"]}, "year5": {"focus": "Event-driven integration where every system publishes changes once and the shop subscribes, ending nightly batch syncs.", "productTheme": "Event-driven commerce data", "customerKPI": {"northStar": "Order-to-ERP straight-through rate", "supporting": ["Price sync latency", "Custom change lead time"]}, "businessKPI": {"northStar": "Integration-attached customers share", "revenueStreams": ["Usage-based enterprise tiers", "Cross-sold Katapull services"], "supporting": ["Customers on a standard ERP connector", "Sync failure rate"]}, "milestones": ["Group event bus adopted by all brands", "Self-service connector configuration", "Custom integrations below 15"]}}}, "icon": "customer-itop-portrait.jpg", "domain": "Webshop Operators"}, {"id": "pbuy", "name": "Professional Trade Buyer", "description": "Buys from the wholesaler for work: an installer, garage, caterer, retailer, office manager or purchasing clerk. Orders the same items repeatedly at agreed prices, often on a phone in a van or between jobs, and needs stock and delivery certainty. In the Loods28 case these range from restaurants and hotels to factories and vending operators.", "careAbout": ["My prices and my assortment, not list prices", "Fast reordering of the usual items", "Knowing it is in stock and when it arrives", "Invoices that match what I saw"], "winsThem": ["A quick-order or reorder list", "Specification filters and datasheets for technical parts", "Quotes for large or unusual orders", "Same-day or next-day delivery options"], "theirFear": ["Ordering the wrong technical part", "Discovering a stock-out after ordering", "Having to call anyway to confirm price", "Losing time at checkout"], "jobsToBeDone": [{"id": "pbuy-reorder", "name": "Reorder the usual items at my agreed price in minutes", "whatItIs": "Place a routine order from order history or a saved list and get a quote for anything unusual.", "outcome": "Routine orders take minutes and need no phone call.", "steps": [{"step": "Log in to my company account", "description": "See company-specific prices, staffels and assortment.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Customer-specific prices in the catalogue."}], "media": []}, {"step": "Repeat a previous order", "description": "Start from history or a favourites list and adjust quantities.", "streamsNeeded": [{"id": "reorder-and-request-quotes", "name": "Reorder and Request Quotes", "howItSupports": "Order history, reorder and quick order."}], "media": []}, {"step": "Ask for a quote for a large order", "description": "Request a price for volume or special items.", "streamsNeeded": [{"id": "reorder-and-request-quotes", "name": "Reorder and Request Quotes", "howItSupports": "Quote request and conversion to order."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-pbuy-pbuy-reorder.png", "title": "Professional Trade Buyer JTBD infographic: Reorder the usual items at my agreed price in minutes", "alt": "Enterprise infographic for the job \"Reorder the usual items at my agreed price in minutes\" for customer \"Professional Trade Buyer\"."}]}, {"id": "pbuy-find", "name": "Find the right technical part with stock and delivery certainty", "whatItIs": "Search by specification, compare variants, and confirm stock and delivery before ordering.", "outcome": "The right part arrives on time the first time.", "steps": [{"step": "Search by specification", "description": "Use filters on dimensions, brand and type and read datasheets.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Search, filters and product specifications."}], "media": []}, {"step": "Check stock and delivery", "description": "See real-time stock and delivery options.", "streamsNeeded": [{"id": "sync-erp-stock-prices-and-orders", "name": "Sync ERP Stock, Prices and Orders", "howItSupports": "Real-time stock from the ERP."}, {"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Delivery options and carrier choice."}], "media": []}, {"step": "Pay on account and track", "description": "Order on invoice and follow the shipment.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Payment on account, track-and-trace."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-pbuy-pbuy-find.png", "title": "Professional Trade Buyer JTBD infographic: Find the right technical part with stock and delivery certainty", "alt": "Enterprise infographic for the job \"Find the right technical part with stock and delivery certainty\" for customer \"Professional Trade Buyer\"."}]}], "customerJourneyStories": [{"id": "journey-pbuy-from-phone-to-shop", "name": "Switching from phoning the order desk to the trade webshop", "linkedJobIds": ["pbuy-reorder", "pbuy-find"], "summary": "Illustrative journey of a trade customer adopting the wholesaler's Highbiza-based B2B shop.", "stages": [{"stage": "Trigger", "narrative": "Waiting on hold to order the usual items and to ask whether a part is in stock costs time on every job.", "media": []}, {"stage": "Discovery", "narrative": "The wholesaler's rep or an invoice footer announces the new webshop with personal prices and sends a login.", "media": []}, {"stage": "Evaluation", "narrative": "Logs in once to check that the prices match the agreement and that the familiar items are there; compares with ordering by phone.", "media": []}, {"stage": "Trial", "narrative": "Places a first small order from the phone; the order confirmation and invoice match what the shop showed.", "media": []}, {"stage": "Engagement", "narrative": "Uses reorder lists weekly, filters by specification for unfamiliar parts and requests quotes for big jobs online.", "media": []}, {"stage": "Retention", "narrative": "Keeps ordering online because it is faster than calling and stock information proves reliable; colleagues in the company get their own logins.", "media": []}], "media": [{"type": "image", "src": "media/journey-pbuy-pbuy-from-phone-to-shop.png", "title": "Professional Trade Buyer customer journey: Switching from phoning the order desk to the trade webshop", "alt": "Enterprise journey storyboard for \"Switching from phoning the order desk to the trade webshop\" for customer \"Professional Trade Buyer\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-pbuy-top", "name": "Time to place a trade order", "description": "Minutes from login to confirmed order for a routine order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "minutes", "currentValue": "9", "targetValue": "4", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-pbuy-co-pbuy-top.png"}, "branches": [{"id": "co-pbuy-b1", "name": "Ordering effort", "description": "Effort to assemble the basket.", "unit": "minutes", "currentValue": "7", "targetValue": "3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b1-c1", "name": "Search-to-cart time", "description": "Minutes from first search to item in cart.", "unit": "minutes", "currentValue": "2.5", "targetValue": "1.0", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b1-c1-l1", "name": "Searches per added item", "description": "Searches needed before adding an item. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "searches", "currentValue": "2.4", "targetValue": "1.4", "children": [], "icon": "kpi-pbuy-co-pbuy-b1-c1-l1.png"}, {"id": "co-pbuy-b1-c1-l2", "name": "Product pages with datasheets", "description": "Technical products with specifications and documents. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "60", "targetValue": "90", "children": [], "icon": "kpi-pbuy-co-pbuy-b1-c1-l2.png"}], "icon": "kpi-pbuy-co-pbuy-b1-c1.png"}, {"id": "co-pbuy-b1-c2", "name": "Reorder usage share", "description": "Orders started from history, lists or quick order.", "unit": "%", "currentValue": "30", "targetValue": "55", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b1-c2-l1", "name": "Buyers with saved lists", "description": "Buyer logins with at least one saved list. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "50", "children": [], "icon": "kpi-pbuy-co-pbuy-b1-c2-l1.png"}, {"id": "co-pbuy-b1-c2-l2", "name": "Quick-order lines per order", "description": "Lines entered by article number. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "lines", "currentValue": "1.5", "targetValue": "4", "children": [], "icon": "kpi-pbuy-co-pbuy-b1-c2-l2.png"}], "icon": "kpi-pbuy-co-pbuy-b1-c2.png"}], "icon": "kpi-pbuy-co-pbuy-b1.png"}, {"id": "co-pbuy-b2", "name": "Delivery certainty", "description": "Confidence that what is ordered arrives as promised.", "unit": "%", "currentValue": "90", "targetValue": "97", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b2-c1", "name": "Stock shown vs. shipped match", "description": "Order lines shipped complete as shown at order time.", "unit": "%", "currentValue": "94", "targetValue": "99", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b2-c1-l1", "name": "Backorders per 100 orders", "description": "Orders with at least one backordered line. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "orders", "currentValue": "6", "targetValue": "2", "children": [], "icon": "kpi-pbuy-co-pbuy-b2-c1-l1.png"}, {"id": "co-pbuy-b2-c1-l2", "name": "Stock data age at order time", "description": "Minutes since last stock update when ordering. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "minutes", "currentValue": "60", "targetValue": "5", "children": [], "icon": "kpi-pbuy-co-pbuy-b2-c1-l2.png"}], "icon": "kpi-pbuy-co-pbuy-b2-c1.png"}, {"id": "co-pbuy-b2-c2", "name": "On-time delivery rate", "description": "Orders delivered within the promised window.", "unit": "%", "currentValue": "91", "targetValue": "97", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/co-pbuy-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-pbuy-b2-c2-l1", "name": "Orders with chosen delivery option", "description": "Orders where the buyer selected a delivery moment. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "20", "targetValue": "50", "children": [], "icon": "kpi-pbuy-co-pbuy-b2-c2-l1.png"}, {"id": "co-pbuy-b2-c2-l2", "name": "Track-and-trace notifications sent", "description": "Shipments with tracking information sent. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "80", "targetValue": "100", "children": [], "icon": "kpi-pbuy-co-pbuy-b2-c2-l2.png"}], "icon": "kpi-pbuy-co-pbuy-b2-c2.png"}], "icon": "kpi-pbuy-co-pbuy-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-pbuy-top", "name": "Online order frequency per trade account", "description": "Online orders per active trade account per month. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "orders/month", "currentValue": "2.2", "targetValue": "3.5", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-pbuy-bo-pbuy-top.png"}, "branches": [{"id": "bo-pbuy-b1", "name": "Habit", "description": "Online ordering as routine.", "unit": "%", "currentValue": "50", "targetValue": "70", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b1-c1", "name": "Monthly active trade accounts", "description": "Accounts ordering online in a month.", "unit": "accounts", "currentValue": "420", "targetValue": "700", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b1-c1-l1", "name": "Buyer logins per account", "description": "Active logins per trade account. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "logins", "currentValue": "1.3", "targetValue": "2.0", "children": [], "icon": "kpi-pbuy-bo-pbuy-b1-c1-l1.png"}, {"id": "bo-pbuy-b1-c1-l2", "name": "Mobile share of trade orders", "description": "Trade orders placed from a phone. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "40", "children": [], "icon": "kpi-pbuy-bo-pbuy-b1-c1-l2.png"}], "icon": "kpi-pbuy-bo-pbuy-b1-c1.png"}, {"id": "bo-pbuy-b1-c2", "name": "Repeat order interval", "description": "Median days between online orders.", "unit": "days", "currentValue": "16", "targetValue": "9", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b1-c2-l1", "name": "Accounts ordering at least weekly", "description": "Accounts with four or more orders a month. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "18", "targetValue": "30", "children": [], "icon": "kpi-pbuy-bo-pbuy-b1-c2-l1.png"}, {"id": "bo-pbuy-b1-c2-l2", "name": "Reorder reminder responses", "description": "Reminders that lead to an order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "8", "targetValue": "15", "children": [], "icon": "kpi-pbuy-bo-pbuy-b1-c2-l2.png"}], "icon": "kpi-pbuy-bo-pbuy-b1-c2.png"}], "icon": "kpi-pbuy-bo-pbuy-b1.png"}, {"id": "bo-pbuy-b2", "name": "Basket", "description": "Value per online trade order.", "unit": "EUR", "currentValue": "310", "targetValue": "380", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b2-c1", "name": "Average B2B order value", "description": "Net value per trade order.", "unit": "EUR", "currentValue": "310", "targetValue": "380", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b2-c1-l1", "name": "Lines per order", "description": "Order lines per trade order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "lines", "currentValue": "6", "targetValue": "8", "children": [], "icon": "kpi-pbuy-bo-pbuy-b2-c1-l1.png"}, {"id": "bo-pbuy-b2-c1-l2", "name": "Cross-sell lines per order", "description": "Lines added from recommendations. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "lines", "currentValue": "0.3", "targetValue": "0.8", "children": [], "icon": "kpi-pbuy-bo-pbuy-b2-c1-l2.png"}], "icon": "kpi-pbuy-bo-pbuy-b2-c1.png"}, {"id": "bo-pbuy-b2-c2", "name": "Quote-to-order conversion", "description": "Online quotes converted into orders.", "unit": "%", "currentValue": "35", "targetValue": "50", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/pbuy/kpis/bo-pbuy-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-pbuy-b2-c2-l1", "name": "Quote turnaround time", "description": "Hours to answer a quote request. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "hours", "currentValue": "24", "targetValue": "6", "children": [], "icon": "kpi-pbuy-bo-pbuy-b2-c2-l1.png"}, {"id": "bo-pbuy-b2-c2-l2", "name": "Quotes requested online", "description": "Share of quotes requested through the shop. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "30", "targetValue": "60", "children": [], "icon": "kpi-pbuy-bo-pbuy-b2-c2-l2.png"}], "icon": "kpi-pbuy-bo-pbuy-b2-c2.png"}], "icon": "kpi-pbuy-bo-pbuy-b2.png"}]}}, "productStrategy": {"vision": "Trade buyers order the usual items in minutes at their own prices, trust stock and delivery information, and only call the wholesaler for advice.", "timeHorizons": {"year1": {"focus": "Make personal prices, reorder lists and quick order flawless for every B2B shop.", "productTheme": "Effortless reordering", "customerKPI": {"northStar": "Time to place a trade order", "supporting": ["Reorder usage share", "Search-to-cart time"]}, "businessKPI": {"northStar": "Online order frequency per trade account", "revenueStreams": ["Wholesaler package subscriptions", "B2B module"], "supporting": ["Monthly active trade accounts", "Average B2B order value"]}, "milestones": ["Quick order by article number on mobile", "Saved lists shared within a company account", "Online quote requests"]}, "year3": {"focus": "Make stock and delivery promises dependable by using ERP, WMS and DeliveryMatch data at order time.", "productTheme": "Delivery certainty", "customerKPI": {"northStar": "Time to place a trade order", "supporting": ["Stock shown vs. shipped match", "On-time delivery rate"]}, "businessKPI": {"northStar": "Online order frequency per trade account", "revenueStreams": ["B2B module", "Cross-sold Katapull services"], "supporting": ["Repeat order interval", "Quote-to-order conversion"]}, "milestones": ["Delivery-moment choice at checkout via DeliveryMatch", "Stock by warehouse location", "Approval flows for company buyers"]}, "year5": {"focus": "Let buyers delegate routine replenishment to suggested orders and EDI or punch-out where large accounts require it.", "productTheme": "Assisted replenishment", "customerKPI": {"northStar": "Time to place a trade order", "supporting": ["Reorder usage share", "Stock shown vs. shipped match"]}, "businessKPI": {"northStar": "Online order frequency per trade account", "revenueStreams": ["B2B module", "Usage-based enterprise tiers"], "supporting": ["Monthly active trade accounts", "Average B2B order value"]}, "milestones": ["Suggested reorders from purchase patterns", "EDI order intake via Transus", "Punch-out for procurement systems"]}}}, "icon": "customer-pbuy-portrait.jpg", "domain": "Online Buyers"}, {"id": "cons", "name": "Consumer Shopper", "description": "A private person buying from a Highbiza-based retail, e-tail or jeweller webshop, or from the D2C side of a wholesaler (Loods28 and HR Premium Parts sell to both businesses and consumers). Expects a fast mobile shop, familiar payment methods, flexible delivery and an easy way to withdraw from a purchase.", "careAbout": ["Trustworthy shop and payment", "Clear stock and delivery time", "Easy returns within the legal 14 days", "Being rewarded for coming back"], "winsThem": ["iDEAL and other familiar payment methods", "Choice of delivery moment or pick-up point", "Loyalty points without codes", "A simple online withdrawal form"], "theirFear": ["Paying and not receiving the item", "A complicated return", "Hidden shipping costs", "Personal data misuse"], "jobsToBeDone": [{"id": "cons-buy", "name": "Buy with confidence and get it delivered when it suits me", "whatItIs": "Find a product, pay with a trusted method and choose a delivery option.", "outcome": "The order arrives when promised, with no surprises in cost.", "steps": [{"step": "Find and compare", "description": "Search, filter and compare variants on mobile.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Search, filters and variants."}], "media": []}, {"step": "Pay safely", "description": "Pay with iDEAL, card or wallet through a known provider.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Payment providers in checkout."}], "media": []}, {"step": "Choose delivery", "description": "Pick a delivery moment or pick-up point and follow the parcel.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Carrier options and track-and-trace."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-cons-cons-buy.png", "title": "Consumer Shopper JTBD infographic: Buy with confidence and get it delivered when it suits me", "alt": "Enterprise infographic for the job \"Buy with confidence and get it delivered when it suits me\" for customer \"Consumer Shopper\"."}]}, {"id": "cons-return", "name": "Withdraw from a purchase easily if it is not right", "whatItIs": "Use the 14-day withdrawal right through a form on the shop instead of emailing.", "outcome": "The return is registered immediately and the refund follows quickly.", "steps": [{"step": "Register the withdrawal", "description": "Fill in the withdrawal form with order number and products.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Return form page and confirmation emails."}], "media": []}, {"step": "Receive the refund", "description": "Get the money back after the item is returned.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Refund through the payment provider."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-cons-cons-return.png", "title": "Consumer Shopper JTBD infographic: Withdraw from a purchase easily if it is not right", "alt": "Enterprise infographic for the job \"Withdraw from a purchase easily if it is not right\" for customer \"Consumer Shopper\"."}]}], "customerJourneyStories": [{"id": "journey-cons-first-purchase", "name": "First purchase from a family jeweller's webshop", "linkedJobIds": ["cons-buy", "cons-return"], "summary": "Illustrative journey of a consumer at a jeweller's webshop running on Highbiza (published jeweller cases include Juwelier Bijland on the Launch package).", "stages": [{"stage": "Trigger", "narrative": "Looking for a gift and wanting to buy from a trusted local jeweller rather than a marketplace.", "media": []}, {"stage": "Discovery", "narrative": "Finds the jeweller's webshop through Google search and a social post linking to a collection page.", "media": []}, {"stage": "Evaluation", "narrative": "Checks stock, engraving options, delivery time and payment methods; reassured by the secure checkout and a clear return form.", "media": []}, {"stage": "Trial", "narrative": "Places a first order with iDEAL and chooses delivery to a pick-up point.", "media": []}, {"stage": "Engagement", "narrative": "Comes back for later occasions, collects loyalty points automatically and uses them as a discount.", "media": []}, {"stage": "Retention", "narrative": "Keeps buying from the jeweller because the shop is reliable and the points add up; uses the online return form once without friction.", "media": []}], "media": [{"type": "image", "src": "media/journey-cons-cons-first-purchase.png", "title": "Consumer Shopper customer journey: First purchase from a family jeweller's webshop", "alt": "Enterprise journey storyboard for \"First purchase from a family jeweller's webshop\" for customer \"Consumer Shopper\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cons-top", "name": "Checkout completion rate", "description": "Started checkouts that end in a paid order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "62", "targetValue": "75", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cons-co-cons-top.png"}, "branches": [{"id": "co-cons-b1", "name": "Confidence", "description": "Trust in payment and delivery.", "unit": "%", "currentValue": "80", "targetValue": "90", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c1", "name": "Payment success rate", "description": "Payment attempts that succeed.", "unit": "%", "currentValue": "93", "targetValue": "97", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c1-l1", "name": "Payment methods offered", "description": "Methods available in checkout. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "methods", "currentValue": "5", "targetValue": "7", "children": [], "icon": "kpi-cons-co-cons-b1-c1-l1.png"}, {"id": "co-cons-b1-c1-l2", "name": "Payment errors returned by provider", "description": "Failed attempts caused by technical errors. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "1.5", "targetValue": "0.5", "children": [], "icon": "kpi-cons-co-cons-b1-c1-l2.png"}], "icon": "kpi-cons-co-cons-b1-c1.png"}, {"id": "co-cons-b1-c2", "name": "Delivery option fit", "description": "Shoppers finding an acceptable delivery option.", "unit": "%", "currentValue": "85", "targetValue": "95", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c2-l1", "name": "Checkouts showing delivery moments", "description": "Checkouts offering a choice of delivery moment or pick-up. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "30", "targetValue": "80", "children": [], "icon": "kpi-cons-co-cons-b1-c2-l1.png"}, {"id": "co-cons-b1-c2-l2", "name": "Shipping cost surprises", "description": "Checkouts abandoned at the shipping step. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "9", "targetValue": "4", "children": [], "icon": "kpi-cons-co-cons-b1-c2-l2.png"}], "icon": "kpi-cons-co-cons-b1-c2.png"}], "icon": "kpi-cons-co-cons-b1.png"}, {"id": "co-cons-b2", "name": "After-sales ease", "description": "Effort after the purchase.", "unit": "minutes", "currentValue": "15", "targetValue": "3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c1", "name": "Withdrawal request time", "description": "Minutes to register a withdrawal.", "unit": "minutes", "currentValue": "10", "targetValue": "2", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c1-l1", "name": "Withdrawals via online form", "description": "Withdrawals submitted through the form rather than email. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "40", "targetValue": "90", "children": [], "icon": "kpi-cons-co-cons-b2-c1-l1.png"}, {"id": "co-cons-b2-c1-l2", "name": "Form submissions needing follow-up", "description": "Submissions requiring extra contact. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "10", "children": [], "icon": "kpi-cons-co-cons-b2-c1-l2.png"}], "icon": "kpi-cons-co-cons-b2-c1.png"}, {"id": "co-cons-b2-c2", "name": "Refund lead time", "description": "Days from received return to refund.", "unit": "days", "currentValue": "7", "targetValue": "3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c2-l1", "name": "Returns matched to orders automatically", "description": "Returns linked to the order without manual search. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [], "icon": "kpi-cons-co-cons-b2-c2-l1.png"}, {"id": "co-cons-b2-c2-l2", "name": "Refunds issued through the original payment method", "description": "Refunds paid back automatically. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [], "icon": "kpi-cons-co-cons-b2-c2-l2.png"}], "icon": "kpi-cons-co-cons-b2-c2.png"}], "icon": "kpi-cons-co-cons-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-cons-top", "name": "Repeat purchase rate", "description": "Consumers placing a second order within 12 months. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "24", "targetValue": "32", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cons-bo-cons-top.png"}, "branches": [{"id": "bo-cons-b1", "name": "Loyalty", "description": "Reasons to come back.", "unit": "%", "currentValue": "20", "targetValue": "30", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c1", "name": "Loyalty points redemption rate", "description": "Points issued that are redeemed.", "unit": "%", "currentValue": "35", "targetValue": "50", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c1-l1", "name": "Shops with loyalty points enabled", "description": "Consumer shops using the module. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "10", "targetValue": "35", "children": [], "icon": "kpi-cons-bo-cons-b1-c1-l1.png"}, {"id": "bo-cons-b1-c1-l2", "name": "Points balance shown at checkout", "description": "Checkouts where the points balance is shown. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "50", "targetValue": "100", "children": [], "icon": "kpi-cons-bo-cons-b1-c1-l2.png"}], "icon": "kpi-cons-bo-cons-b1-c1.png"}, {"id": "bo-cons-b1-c2", "name": "Members share of orders", "description": "Orders from logged-in or loyalty customers.", "unit": "%", "currentValue": "30", "targetValue": "45", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c2-l1", "name": "Account creations at checkout", "description": "Checkouts creating an account. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "20", "targetValue": "30", "children": [], "icon": "kpi-cons-bo-cons-b1-c2-l1.png"}, {"id": "bo-cons-b1-c2-l2", "name": "Newsletter-driven orders", "description": "Orders from email campaigns. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "6", "targetValue": "10", "children": [], "icon": "kpi-cons-bo-cons-b1-c2-l2.png"}], "icon": "kpi-cons-bo-cons-b1-c2.png"}], "icon": "kpi-cons-bo-cons-b1.png"}, {"id": "bo-cons-b2", "name": "Cost", "description": "After-sales cost per order.", "unit": "EUR", "currentValue": "2.80", "targetValue": "1.80", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c1", "name": "Return rate", "description": "Orders with at least one returned item.", "unit": "%", "currentValue": "9", "targetValue": "7", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c1-l1", "name": "Returns for wrong product information", "description": "Returns citing description mismatch. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "12", "children": [], "icon": "kpi-cons-bo-cons-b2-c1-l1.png"}, {"id": "bo-cons-b2-c1-l2", "name": "Returns for late delivery", "description": "Returns citing late arrival. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "10", "targetValue": "5", "children": [], "icon": "kpi-cons-bo-cons-b2-c1-l2.png"}], "icon": "kpi-cons-bo-cons-b2-c1.png"}, {"id": "bo-cons-b2-c2", "name": "Customer service contacts per order", "description": "Contacts per 100 orders.", "unit": "contacts", "currentValue": "12", "targetValue": "6", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c2-l1", "name": "Where-is-my-order contacts", "description": "Contacts asking for order status. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "40", "targetValue": "20", "children": [], "icon": "kpi-cons-bo-cons-b2-c2-l1.png"}, {"id": "bo-cons-b2-c2-l2", "name": "Return-related contacts", "description": "Contacts about returns. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "30", "targetValue": "15", "children": [], "icon": "kpi-cons-bo-cons-b2-c2-l2.png"}], "icon": "kpi-cons-bo-cons-b2-c2.png"}], "icon": "kpi-cons-bo-cons-b2.png"}]}}, "productStrategy": {"vision": "Consumers buy from independent retailers and wholesalers' D2C shops with the same confidence, delivery choice and easy returns as on the big platforms.", "timeHorizons": {"year1": {"focus": "Comply with consumer law out of the box and make checkout trustworthy on every package.", "productTheme": "Trusted checkout and returns", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Payment success rate", "Withdrawal request time"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Monthly package subscriptions", "Paid building blocks"], "supporting": ["Return rate", "Loyalty points redemption rate"]}, "milestones": ["Return form page for all consumer shops", "Loyalty points module", "Payment provider choice per shop"]}, "year3": {"focus": "Use DeliveryMatch and Returnista from the group to offer delivery moments and branded returns.", "productTheme": "Delivery and returns as a service", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Delivery option fit", "Refund lead time"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Cross-sold Katapull services", "Paid building blocks"], "supporting": ["Customer service contacts per order", "Members share of orders"]}, "milestones": ["DeliveryMatch dynamic checkout as standard option", "Returnista returns portal connector", "Order status page for consumers"]}, "year5": {"focus": "Personal, omnichannel experiences that tie the webshop to the physical store through Vendit POS.", "productTheme": "Omnichannel loyalty", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Payment success rate", "Delivery option fit"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Paid building blocks", "Cross-sold Katapull services"], "supporting": ["Loyalty points redemption rate", "Members share of orders"]}, "milestones": ["Shared loyalty between Vendit store and webshop", "Click-and-collect from store stock", "Personalised recommendations"]}}}, "icon": "customer-cons-portrait.jpg", "domain": "Online Buyers"}];
+    const customer = {"id": "cons", "name": "Consumer Shopper", "description": "A private person buying from a Highbiza-based retail, e-tail or jeweller webshop, or from the D2C side of a wholesaler (Loods28 and HR Premium Parts sell to both businesses and consumers). Expects a fast mobile shop, familiar payment methods, flexible delivery and an easy way to withdraw from a purchase.", "careAbout": ["Trustworthy shop and payment", "Clear stock and delivery time", "Easy returns within the legal 14 days", "Being rewarded for coming back"], "winsThem": ["iDEAL and other familiar payment methods", "Choice of delivery moment or pick-up point", "Loyalty points without codes", "A simple online withdrawal form"], "theirFear": ["Paying and not receiving the item", "A complicated return", "Hidden shipping costs", "Personal data misuse"], "jobsToBeDone": [{"id": "cons-buy", "name": "Buy with confidence and get it delivered when it suits me", "whatItIs": "Find a product, pay with a trusted method and choose a delivery option.", "outcome": "The order arrives when promised, with no surprises in cost.", "steps": [{"step": "Find and compare", "description": "Search, filter and compare variants on mobile.", "streamsNeeded": [{"id": "find-and-order-the-right-product", "name": "Find and Order the Right Product", "howItSupports": "Search, filters and variants."}], "media": []}, {"step": "Pay safely", "description": "Pay with iDEAL, card or wallet through a known provider.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Payment providers in checkout."}], "media": []}, {"step": "Choose delivery", "description": "Pick a delivery moment or pick-up point and follow the parcel.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Carrier options and track-and-trace."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-cons-cons-buy.png", "title": "Consumer Shopper JTBD infographic: Buy with confidence and get it delivered when it suits me", "alt": "Enterprise infographic for the job \"Buy with confidence and get it delivered when it suits me\" for customer \"Consumer Shopper\"."}]}, {"id": "cons-return", "name": "Withdraw from a purchase easily if it is not right", "whatItIs": "Use the 14-day withdrawal right through a form on the shop instead of emailing.", "outcome": "The return is registered immediately and the refund follows quickly.", "steps": [{"step": "Register the withdrawal", "description": "Fill in the withdrawal form with order number and products.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Return form page and confirmation emails."}], "media": []}, {"step": "Receive the refund", "description": "Get the money back after the item is returned.", "streamsNeeded": [{"id": "deliver-pay-and-handle-after-sales", "name": "Pay, Deliver and Handle After-Sales", "howItSupports": "Refund through the payment provider."}], "media": []}], "media": [{"type": "image", "src": "media/jbtd-cons-cons-return.png", "title": "Consumer Shopper JTBD infographic: Withdraw from a purchase easily if it is not right", "alt": "Enterprise infographic for the job \"Withdraw from a purchase easily if it is not right\" for customer \"Consumer Shopper\"."}]}], "customerJourneyStories": [{"id": "journey-cons-first-purchase", "name": "First purchase from a family jeweller's webshop", "linkedJobIds": ["cons-buy", "cons-return"], "summary": "Illustrative journey of a consumer at a jeweller's webshop running on Highbiza (published jeweller cases include Juwelier Bijland on the Launch package).", "stages": [{"stage": "Trigger", "narrative": "Looking for a gift and wanting to buy from a trusted local jeweller rather than a marketplace.", "media": []}, {"stage": "Discovery", "narrative": "Finds the jeweller's webshop through Google search and a social post linking to a collection page.", "media": []}, {"stage": "Evaluation", "narrative": "Checks stock, engraving options, delivery time and payment methods; reassured by the secure checkout and a clear return form.", "media": []}, {"stage": "Trial", "narrative": "Places a first order with iDEAL and chooses delivery to a pick-up point.", "media": []}, {"stage": "Engagement", "narrative": "Comes back for later occasions, collects loyalty points automatically and uses them as a discount.", "media": []}, {"stage": "Retention", "narrative": "Keeps buying from the jeweller because the shop is reliable and the points add up; uses the online return form once without friction.", "media": []}], "media": [{"type": "image", "src": "media/journey-cons-cons-first-purchase.png", "title": "Consumer Shopper customer journey: First purchase from a family jeweller's webshop", "alt": "Enterprise journey storyboard for \"First purchase from a family jeweller's webshop\" for customer \"Consumer Shopper\"."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cons-top", "name": "Checkout completion rate", "description": "Started checkouts that end in a paid order. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "62", "targetValue": "75", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cons-co-cons-top.png"}, "branches": [{"id": "co-cons-b1", "name": "Confidence", "description": "Trust in payment and delivery.", "unit": "%", "currentValue": "80", "targetValue": "90", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c1", "name": "Payment success rate", "description": "Payment attempts that succeed.", "unit": "%", "currentValue": "93", "targetValue": "97", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c1-l1", "name": "Payment methods offered", "description": "Methods available in checkout. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "methods", "currentValue": "5", "targetValue": "7", "children": [], "icon": "kpi-cons-co-cons-b1-c1-l1.png"}, {"id": "co-cons-b1-c1-l2", "name": "Payment errors returned by provider", "description": "Failed attempts caused by technical errors. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "1.5", "targetValue": "0.5", "children": [], "icon": "kpi-cons-co-cons-b1-c1-l2.png"}], "icon": "kpi-cons-co-cons-b1-c1.png"}, {"id": "co-cons-b1-c2", "name": "Delivery option fit", "description": "Shoppers finding an acceptable delivery option.", "unit": "%", "currentValue": "85", "targetValue": "95", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b1-c2-l1", "name": "Checkouts showing delivery moments", "description": "Checkouts offering a choice of delivery moment or pick-up. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "30", "targetValue": "80", "children": [], "icon": "kpi-cons-co-cons-b1-c2-l1.png"}, {"id": "co-cons-b1-c2-l2", "name": "Shipping cost surprises", "description": "Checkouts abandoned at the shipping step. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "9", "targetValue": "4", "children": [], "icon": "kpi-cons-co-cons-b1-c2-l2.png"}], "icon": "kpi-cons-co-cons-b1-c2.png"}], "icon": "kpi-cons-co-cons-b1.png"}, {"id": "co-cons-b2", "name": "After-sales ease", "description": "Effort after the purchase.", "unit": "minutes", "currentValue": "15", "targetValue": "3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c1", "name": "Withdrawal request time", "description": "Minutes to register a withdrawal.", "unit": "minutes", "currentValue": "10", "targetValue": "2", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c1-l1", "name": "Withdrawals via online form", "description": "Withdrawals submitted through the form rather than email. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "40", "targetValue": "90", "children": [], "icon": "kpi-cons-co-cons-b2-c1-l1.png"}, {"id": "co-cons-b2-c1-l2", "name": "Form submissions needing follow-up", "description": "Submissions requiring extra contact. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "10", "children": [], "icon": "kpi-cons-co-cons-b2-c1-l2.png"}], "icon": "kpi-cons-co-cons-b2-c1.png"}, {"id": "co-cons-b2-c2", "name": "Refund lead time", "description": "Days from received return to refund.", "unit": "days", "currentValue": "7", "targetValue": "3", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/co-cons-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "co-cons-b2-c2-l1", "name": "Returns matched to orders automatically", "description": "Returns linked to the order without manual search. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "60", "targetValue": "95", "children": [], "icon": "kpi-cons-co-cons-b2-c2-l1.png"}, {"id": "co-cons-b2-c2-l2", "name": "Refunds issued through the original payment method", "description": "Refunds paid back automatically. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "70", "targetValue": "95", "children": [], "icon": "kpi-cons-co-cons-b2-c2-l2.png"}], "icon": "kpi-cons-co-cons-b2-c2.png"}], "icon": "kpi-cons-co-cons-b2.png"}]}, "businessOutcomes": {"top": {"id": "bo-cons-top", "name": "Repeat purchase rate", "description": "Consumers placing a second order within 12 months. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "24", "targetValue": "32", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-top", "linkLabel": "Open KPI dashboard", "icon": "kpi-cons-bo-cons-top.png"}, "branches": [{"id": "bo-cons-b1", "name": "Loyalty", "description": "Reasons to come back.", "unit": "%", "currentValue": "20", "targetValue": "30", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c1", "name": "Loyalty points redemption rate", "description": "Points issued that are redeemed.", "unit": "%", "currentValue": "35", "targetValue": "50", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c1-l1", "name": "Shops with loyalty points enabled", "description": "Consumer shops using the module. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "10", "targetValue": "35", "children": [], "icon": "kpi-cons-bo-cons-b1-c1-l1.png"}, {"id": "bo-cons-b1-c1-l2", "name": "Points balance shown at checkout", "description": "Checkouts where the points balance is shown. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "50", "targetValue": "100", "children": [], "icon": "kpi-cons-bo-cons-b1-c1-l2.png"}], "icon": "kpi-cons-bo-cons-b1-c1.png"}, {"id": "bo-cons-b1-c2", "name": "Members share of orders", "description": "Orders from logged-in or loyalty customers.", "unit": "%", "currentValue": "30", "targetValue": "45", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b1-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b1-c2-l1", "name": "Account creations at checkout", "description": "Checkouts creating an account. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "20", "targetValue": "30", "children": [], "icon": "kpi-cons-bo-cons-b1-c2-l1.png"}, {"id": "bo-cons-b1-c2-l2", "name": "Newsletter-driven orders", "description": "Orders from email campaigns. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "6", "targetValue": "10", "children": [], "icon": "kpi-cons-bo-cons-b1-c2-l2.png"}], "icon": "kpi-cons-bo-cons-b1-c2.png"}], "icon": "kpi-cons-bo-cons-b1.png"}, {"id": "bo-cons-b2", "name": "Cost", "description": "After-sales cost per order.", "unit": "EUR", "currentValue": "2.80", "targetValue": "1.80", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c1", "name": "Return rate", "description": "Orders with at least one returned item.", "unit": "%", "currentValue": "9", "targetValue": "7", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2-c1", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c1-l1", "name": "Returns for wrong product information", "description": "Returns citing description mismatch. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "25", "targetValue": "12", "children": [], "icon": "kpi-cons-bo-cons-b2-c1-l1.png"}, {"id": "bo-cons-b2-c1-l2", "name": "Returns for late delivery", "description": "Returns citing late arrival. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "10", "targetValue": "5", "children": [], "icon": "kpi-cons-bo-cons-b2-c1-l2.png"}], "icon": "kpi-cons-bo-cons-b2-c1.png"}, {"id": "bo-cons-b2-c2", "name": "Customer service contacts per order", "description": "Contacts per 100 orders.", "unit": "contacts", "currentValue": "12", "targetValue": "6", "link": "https://dashboard.example.com/b2b-wholesale-ecommerce-platform/customers/cons/kpis/bo-cons-b2-c2", "linkLabel": "Open KPI dashboard", "children": [{"id": "bo-cons-b2-c2-l1", "name": "Where-is-my-order contacts", "description": "Contacts asking for order status. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "40", "targetValue": "20", "children": [], "icon": "kpi-cons-bo-cons-b2-c2-l1.png"}, {"id": "bo-cons-b2-c2-l2", "name": "Return-related contacts", "description": "Contacts about returns. Modeled seed value for a representative customer, not a figure reported by Highbiza.", "unit": "%", "currentValue": "30", "targetValue": "15", "children": [], "icon": "kpi-cons-bo-cons-b2-c2-l2.png"}], "icon": "kpi-cons-bo-cons-b2-c2.png"}], "icon": "kpi-cons-bo-cons-b2.png"}]}}, "productStrategy": {"vision": "Consumers buy from independent retailers and wholesalers' D2C shops with the same confidence, delivery choice and easy returns as on the big platforms.", "timeHorizons": {"year1": {"focus": "Comply with consumer law out of the box and make checkout trustworthy on every package.", "productTheme": "Trusted checkout and returns", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Payment success rate", "Withdrawal request time"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Monthly package subscriptions", "Paid building blocks"], "supporting": ["Return rate", "Loyalty points redemption rate"]}, "milestones": ["Return form page for all consumer shops", "Loyalty points module", "Payment provider choice per shop"]}, "year3": {"focus": "Use DeliveryMatch and Returnista from the group to offer delivery moments and branded returns.", "productTheme": "Delivery and returns as a service", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Delivery option fit", "Refund lead time"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Cross-sold Katapull services", "Paid building blocks"], "supporting": ["Customer service contacts per order", "Members share of orders"]}, "milestones": ["DeliveryMatch dynamic checkout as standard option", "Returnista returns portal connector", "Order status page for consumers"]}, "year5": {"focus": "Personal, omnichannel experiences that tie the webshop to the physical store through Vendit POS.", "productTheme": "Omnichannel loyalty", "customerKPI": {"northStar": "Checkout completion rate", "supporting": ["Payment success rate", "Delivery option fit"]}, "businessKPI": {"northStar": "Repeat purchase rate", "revenueStreams": ["Paid building blocks", "Cross-sold Katapull services"], "supporting": ["Loyalty points redemption rate", "Members share of orders"]}, "milestones": ["Shared loyalty between Vendit store and webshop", "Click-and-collect from store stock", "Personalised recommendations"]}}}, "icon": "customer-cons-portrait.jpg", "domain": "Online Buyers"};
+    // id -> 'stream' | 'brick'; lets JTBD tiles link to the owning page.
+    const streamBrickKinds = {"stor": "brick", "cmsx": "brick", "seox": "brick", "catg": "brick", "srch": "brick", "acct": "brick", "prce": "brick", "quot": "brick", "cart": "brick", "ordr": "brick", "paym": "brick", "shpo": "brick", "loyl": "brick", "wdrw": "brick", "erpi": "brick", "mkti": "brick", "invs": "brick", "anly": "brick", "blck": "brick", "mltt": "brick", "iamx": "brick", "tenv": "brick", "qaut": "brick", "host": "brick", "supp": "brick", "launch-or-replatform-a-webshop": "stream", "manage-content-seo-and-campaigns": "stream", "keep-the-webshop-fast-safe-and-current": "stream", "steer-online-sales-performance": "stream", "find-and-order-the-right-product": "stream", "reorder-and-request-quotes": "stream", "deliver-pay-and-handle-after-sales": "stream", "sync-erp-stock-prices-and-orders": "stream", "sell-on-marketplaces-and-feeds": "stream"};
+    function streamBrickHref(id) {
+        const kind = streamBrickKinds[id];
+        if (kind === 'stream') return '../../product-bricks/stream_pages/' + id + '.html';
+        if (kind === 'brick') return '../../product-bricks/landing_pages/' + id + '.html';
+        return null;
+    }
+    const customerInsights = [{"id": "hb-13", "title": "Consumer features added in 2026: loyalty points and a withdrawal form", "summary": "In February 2026 Highbiza described a loyalty points system with merchant-set earn and burn ratios; in July 2026 it published how to create a Return Form Page so consumers can use their 14-day withdrawal right online.", "implication": "The platform serves D2C and retail too; consumer-law compliance and retention features matter for those shops.", "priority": "medium", "tags": ["b2c", "compliance"], "sources": [{"id": "hb-news-loyalty", "title": "Zo beloon je klanten met spaarpunten in je webshop", "url": "https://highbiza.nl/nieuws/zo-beloont-u-klanten-met-spaarpunten-in-uw-webshop/", "publisher": "Highbiza", "date": "2026-02-23"}, {"id": "hb-news-withdrawal", "title": "Herroepingsformulier aanmaken voor je webshop", "url": "https://highbiza.nl/nieuws/herroepingsformulier-aanmaken-voor-je-webshop/", "publisher": "Highbiza", "date": "2026-07-10"}], "link": {"customerId": "cons", "jobIds": ["cons-return", "cons-buy"], "kpiIds": ["co-cons-b2-c1", "bo-cons-b1-c1"]}}];
+</script>
+<div id="Navigation"></div>
+<div style="margin: 20px">
+    <div id="Header"></div>
+
+    <div style="margin: 0; margin-top: 12px">
+        <div class="tab">
+            <button class="tablinks active" id="tab_HomeTab" onclick="openTab('HomeTab')">Home</button>
+            <button class="tablinks" id="tab_JobsTab" onclick="openTab('JobsTab')">Jobs To Be Done</button>
+            <button class="tablinks" id="tab_JourneysTab" onclick="openTab('JourneysTab')">Journeys</button>
+            <button class="tablinks" id="tab_KPITab" onclick="openTab('KPITab')">KPIs</button>
+            <button class="tablinks" id="tab_RoadmapTab" onclick="openTab('RoadmapTab')">Product Vision</button>
+            <button class="tablinks" id="tab_InsightsTab" onclick="openTab('InsightsTab')">Insights</button>
+        </div>
+
+        <div id="tab_content_HomeTab" class="tabcontent" style="padding: 10px">
+            <div id="Home"></div>
+        </div>
+        <div id="tab_content_JobsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Jobs"></div>
+        </div>
+        <div id="tab_content_JourneysTab" class="tabcontent" style="padding: 10px;">
+            <div id="Journeys"></div>
+        </div>
+        <div id="tab_content_KPITab" class="tabcontent" style="padding: 10px;">
+            <div id="KPI"></div>
+        </div>
+        <div id="tab_content_RoadmapTab" class="tabcontent" style="padding: 10px;">
+            <div id="Roadmap"></div>
+        </div>
+        <div id="tab_content_InsightsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Insights"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addNavigation() {
+        let html = '';
+        html += '<div class="image-tabs" style="margin: 4px 20px 10px 20px; font-size: 85%; color: black">';
+        let prev_domain = all_customers[0].domain;
+        all_customers.forEach(per => {
+            if (prev_domain.toLowerCase() !== per.domain.toLowerCase()) {
+                prev_domain = per.domain;
+                html += '<div style="margin-top: 5px; margin-left: 4px; vertical-align: top; display: inline-block; border-left: 2px solid lightgrey; height: 30px;">&nbsp;</div>';
+            }
+            html += '<a href="' + per.id + '.html">';
+            const tabClass = per.id === customer.id ? 'tab-image-selected' : 'tab-image';
+            html += '<img src="../icons/' + per.icon + '" style="" class="' + tabClass + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '</a>';
+        });
+        html += '</div>';
+
+        document.getElementById('Navigation').innerHTML = html;
+    }
+
+    addNavigation();
+
+    function addHeader() {
+        let html = '';
+
+        html += '<table>';
+        html += '<tr>';
+        html += '<td>';
+        html += '<div>';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 200px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="vertical-align: top">';
+        html += '<div style="margin-left: 20px; font-size: 90%; color: grey; vertical-align: top">';
+        html += '<div class="page-type-badge" style="">Customer</div>';
+        html += '</div>';
+        html += '<div style="font-size: 50px; margin-left: 20px">';
+        html += customer.name;
+        html += '</div>';
+        html += '<div style="font-size: 16px; margin-left: 20px; color: grey; margin-top: 3px">';
+        html += customer.description ? customer.description : '';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        document.getElementById('Header').innerHTML = html;
+    }
+
+    function addHome() {
+        let html = '';
+
+        html += '<div class="doc" style="text-align: center; margin-bottom: 22px; margin-left: 24px">';
+        html += '<table>';
+        html += '<tr>';
+        html += '<td style="width: 48px; vertical-align: top">';
+        html += '<img src="../icons/care.png" style="height: 64px; margin: 8px">';
+        html += '<div style="color: darkgreen; font-size: 90%">care about</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.careAbout.forEach(item => {
+            html += '<div style="background-color: rgba(0, 100, 0, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+
+        html += '<td style="width: 22px"></td>';
+
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/win.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: blue; font-size: 90%">wins them</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.winsThem.forEach(item => {
+            html += '<div style="background-color: rgba(0, 0, 100, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="width: 22px"></td>';
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/fear.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: crimson; font-size: 90%">their fear</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.theirFear.forEach(item => {
+            html += '<div style="background-color: rgba(100, 0, 0, 0.1); margin-top: 4px; margin-bottom: 4px; padding: 6px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        html += '</div>';
+
+        document.getElementById('Home').innerHTML = html;
+    }
+
+    function jobNamesForCustomer(jobIds) {
+        const jobs = (customer.jobsToBeDone || []);
+        const jobLookup = {};
+        jobs.forEach(job => {
+            if (job.id) {
+                jobLookup[job.id] = job.name || job.id;
+            }
+        });
+        return (jobIds || []).map(jobId => jobLookup[jobId] || jobId);
+    }
+
+    function kpiNamesForLink(link) {
+        // Prefer stable KPI IDs resolved against this customer's KPI pyramid; fall back to legacy display-name kpis.
+        if (link && link.kpiIds && link.kpiIds.length) {
+            const lookup = {};
+            function walk(node) {
+                if (!node) return;
+                if (node.id) {
+                    lookup[node.id] = node.name || node.id;
+                }
+                (node.branches || []).forEach(walk);
+                (node.children || []).forEach(walk);
+            }
+            const pyramids = (customer || {}).kpiPyramids || {};
+            ['customerOutcomes', 'businessOutcomes'].forEach(key => {
+                const pyramid = pyramids[key];
+                if (!pyramid) return;
+                walk(pyramid.top);
+                (pyramid.branches || []).forEach(walk);
+            });
+            return link.kpiIds.map(kpiId => lookup[kpiId] || kpiId);
+        }
+        return (link && link.kpis) || [];
+    }
+
+    function addInsights() {
+        let html = '';
+
+        html += '<div style="margin: 24px">';
+
+        if (!customerInsights || customerInsights.length === 0) {
+            html += '<div class="group">No customer-linked insights defined for this domain yet.</div>';
+        } else {
+            customerInsights.forEach(insight => {
+                html += '<div class="group" style="width: 250px; display: inline-block; margin: 8px; padding: 16px; background: white">';
+                html += '<div style="font-size: 150%; color: #1d4ed8; margin-bottom: 8px">' + escapeHtml(insight.title) + '</div>';
+                html += '<div style="margin-bottom: 10px">' + escapeHtml(insight.summary) + '</div>';
+                if (insight.implication) {
+                    html += '<div style="margin-bottom: 10px"><b>Product implication:</b> ' + escapeHtml(insight.implication) + '</div>';
+                }
+                if (insight.link) {
+                    if (insight.link.jobIds && insight.link.jobIds.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>Jobs:</b> ' + escapeHtml(jobNamesForCustomer(insight.link.jobIds).join(', ')) + '</div>';
+                    }
+                    const kpiNames = kpiNamesForLink(insight.link);
+                    if (kpiNames.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>KPIs:</b> ' + escapeHtml(kpiNames.join(', ')) + '</div>';
+                    }
+                }
+                if (insight.tags && insight.tags.length) {
+                    html += '<div style="margin-top: 8px; margin-bottom: 10px">';
+                    insight.tags.forEach(tag => {
+                        html += '<span style="display:inline-block; margin:0 8px 6px 0; padding:4px 10px; border-radius:999px; background:#eef2f6; font-size:12px">' + escapeHtml(tag) + '</span>';
+                    });
+                    html += '</div>';
+                }
+                if (insight.sources && insight.sources.length) {
+                    html += '<div style="margin-top: 8px">';
+                    html += '<div style="font-size: 13px; color: #6b7280; margin-bottom: 4px">Sources</div>';
+                    insight.sources.forEach(source => {
+                        html += '<div style="font-size: 13px; margin-bottom: 4px">';
+                        html += '<a class="activity-link" target="_blank" href="' + escapeHtml(source.url) + '">' + escapeHtml(source.title) + '</a>';
+                        html += '<span class="activity-muted"> (' + escapeHtml(source.publisher || '') + (source.date ? ', ' + escapeHtml(source.date) : '') + ')</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        document.getElementById('Insights').innerHTML = html;
+    }
+
+    function addJBTD() {
+        let html = '';
+
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="jobs-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJobsView(\'default\')">Default View</button>';
+        html += '<button id="jobs-view-comic" class="jobs-view-button" onclick="setJobsView(\'comic\')">Comic View</button>';
+        html += '</div>';
+
+        html += '<div id="jobs-default-view">';
+        html += '<table class="job-summary-table">';
+        html += '<tr style="font-size: 80%; color: grey">';
+        html += '<td>Job</td>';
+        html += '<td></td>';
+        html += '<td>Outcome</td>';
+        html += '</tr>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<tr>';
+            html += '<td>';
+            html += '<div style="text-align: left">';
+            html += '<div style="font-size: 100%; color: blue;">' + job.name + '</div>';
+            html += '</div>';
+            html += '<ul style="font-size: 70%">';
+            job.steps.forEach(step => {
+                html += '<li>';
+                html += step.step;
+                html += '</li>';
+            });
+            html += '</ul>';
+            html += '</td>';
+            html += '<td style="width: 20px">';
+            html += '</td>';
+            html += '<td style="vertical-align: top">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">(' + job.whatItIs + ')</div>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+
+        html += '<div style="height: 50px"></div>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="group job-detail-group">';
+            if (job.media) {
+                html += '<div style="margin-top: 10px">';
+                job.media.forEach(item => {
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + job.name + '</div>';
+            html += '<div style="">' + job.whatItIs + '</div>';
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            html += '<div  class="outcome">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '</div>';
+            html += '<div style=""><img src="../icons/up.png" style="width: 60px"></div>';
+            job.steps.forEach(step => {
+                html += '<div style="" class="step">';
+                html += '<div style="color: blue; font-size: 140%; margin-bottom: 20px">' + step.step + '</div>';
+                html += '<div style="">' + step.description + '</div>';
+                html += '<div style="margin-top: 14px">';
+                html += '<table>';
+                (step.streamsNeeded || []).forEach(stream => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px; border: 1px dashed lightgrey; padding: 6px; ">';
+                    html += '<div style="color: blue; font-size: 80%; white-space: nowrap; overflow: hidden; ">';
+                    const streamHref = streamBrickHref(stream.id);
+                    html += streamHref
+                        ? '<a href="' + streamHref + '" style="color: blue; text-decoration: none;">' + stream.name + '</a>'
+                        : stream.name;
+                    html += '</div>';
+                    html += '<div style="font-size: 70%;">';
+                    html += stream.howItSupports;
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                (step.bricksNeeded || []).forEach(brick => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px 6px 6px 24px; border-left: 2px solid #eee; padding: 2px 6px; ">';
+                    html += '<div style="color: #888; font-size: 70%; white-space: nowrap; overflow: hidden; ">';
+                    const brickHref = streamBrickHref(brick.id);
+                    html += '&#8627; ' + (brickHref
+                        ? '<a href="' + brickHref + '" style="color: #888; text-decoration: none;">' + brick.name + '</a>'
+                        : brick.name);
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                html += '</table>';
+                html += '</div>';
+                if (step.media) {
+                    html += '<div style="margin-top: 10px">';
+                    step.media.forEach(item => {
+                        html += '<div style="display: inline-block">';
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="job-step-image">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<div id="jobs-comic-view" style="display: none">';
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + job.name + '</div>';
+            if (job.media) {
+                html += '<div class="comic-job-media">';
+                job.media.forEach(item => {
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            job.steps.forEach(step => {
+                html += '<div class="comic-step">';
+                html += '<div class="comic-step-title">' + step.step + '</div>';
+                if (step.media) {
+                    html += '<div class="comic-step-media">';
+                    step.media.forEach(item => {
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Jobs').innerHTML = html;
+        setJobsView('default');
+    }
+
+    function addJourneys() {
+        const journeys = customer.customerJourneyStories || [];
+        if (!journeys.length) {
+            document.getElementById('Journeys').innerHTML = '<div class="group">No customer journeys defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="journeys-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJourneysView(\'default\')">Default View</button>';
+        html += '<button id="journeys-view-comic" class="jobs-view-button" onclick="setJourneysView(\'comic\')">Comics View</button>';
+        html += '</div>';
+
+        html += '<div id="journeys-default-view">';
+        html += '<div style="height: 50px"></div>';
+
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="group job-detail-group">';
+            if (journey.media && journey.media.length) {
+                html += '<div style="margin-top: 10px">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="margin-bottom: 12px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.linkedJobIds && journey.linkedJobIds.length) {
+                html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">Linked jobs: ' + escapeHtml(journey.linkedJobIds.join(', ')) + '</div>';
+            }
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            stages.forEach((stage, index) => {
+                html += '<div class="step">';
+                html += '<div style="font-size: 70%; color: grey; margin-bottom: 8px">Stage ' + (index + 1) + '</div>';
+                html += '<div style="font-size: 130%; color: blue; margin-bottom: 12px">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<div style="margin-bottom: 12px">';
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="review-image-small">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                }
+                if (stage.narrative) {
+                    html += '<div style="font-size: 90%; margin-top: 8px">' + escapeHtml(stage.narrative) + '</div>';
+                }
+                html += '</div>';
+                if (index < stages.length - 1) {
+                    html += '<div style="display: inline-block; vertical-align: top; margin-top: 120px;">';
+                    html += '<img src="../icons/right.png" style="width: 32px; margin-left: 8px; margin-right: 8px">';
+                    html += '</div>';
+                }
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+
+        html += '<div id="journeys-comic-view" style="display: none">';
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="text-align: center; margin-bottom: 16px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.media && journey.media.length) {
+                html += '<div class="comic-job-media">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            stages.forEach((stage, index) => {
+                html += '<div class="comic-step">';
+                html += '<div style="font-size: 75%; color: grey; margin-bottom: 8px; text-align: center">Stage ' + (index + 1) + '</div>';
+                html += '<div class="comic-step-title">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    html += '<div class="comic-step-media">';
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Journeys').innerHTML = html;
+        setJourneysView('default');
+    }
+
+    function setJobsView(view) {
+        const defaultView = document.getElementById('jobs-default-view');
+        const comicView = document.getElementById('jobs-comic-view');
+        const defaultButton = document.getElementById('jobs-view-default');
+        const comicButton = document.getElementById('jobs-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function setJourneysView(view) {
+        const defaultView = document.getElementById('journeys-default-view');
+        const comicView = document.getElementById('journeys-comic-view');
+        const defaultButton = document.getElementById('journeys-view-default');
+        const comicButton = document.getElementById('journeys-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function kpiIconFile(node) {
+        return (node && node.icon) ? node.icon : 'kpi.png';
+    }
+
+    function kpiCurrentValue(node) {
+        if (!node || !node.currentValue) {
+            return '';
+        }
+        return String(node.currentValue) + (node.unit ? ' (' + String(node.unit) + ')' : '');
+    }
+
+    function kpiValueStatusLabel(node) {
+        if (!node || !node.valueStatus) {
+            return '';
+        }
+        const labels = {
+            example: 'illustrative example',
+            baseline: 'measured baseline',
+            target: 'target',
+            placeholder: 'placeholder'
+        };
+        return labels[node.valueStatus] || String(node.valueStatus);
+    }
+
+    function renderKpiMeta(node) {
+        let html = '';
+        if (node && node.currentValue) {
+            const statusLabel = kpiValueStatusLabel(node);
+            const valueLabel = (node.valueStatus === 'target') ? 'Target:' : 'Current:';
+            html += '<div style="font-size: 80%; color: #1d4ed8; margin-top: 4px"><b>' + valueLabel + '</b> ' + escapeHtml(kpiCurrentValue(node));
+            if (statusLabel) {
+                html += ' <span style="color:#888; font-style: italic;">(' + escapeHtml(statusLabel) + ')</span>';
+            }
+            html += '</div>';
+        }
+        if (node && node.target) {
+            html += '<div style="font-size: 80%; color: #047857; margin-top: 2px"><b>Target:</b> ' + escapeHtml(String(node.target)) + '</div>';
+        }
+        if (node && node.guardrailRole) {
+            html += '<div style="font-size: 78%; color: #b91c1c; margin-top: 2px"><b>Guardrail:</b> ' + escapeHtml(String(node.guardrailRole)) + '</div>';
+        }
+        if (node && (node.period || node.calculationMethod || node.valueSource)) {
+            html += '<div style="font-size: 76%; color: #6b7280; margin-top: 3px">';
+            if (node.period) { html += '<div><b>Period:</b> ' + escapeHtml(String(node.period)) + '</div>'; }
+            if (node.calculationMethod) { html += '<div><b>How measured:</b> ' + escapeHtml(String(node.calculationMethod)) + '</div>'; }
+            if (node.valueSource) { html += '<div><b>Value source:</b> ' + escapeHtml(String(node.valueSource)) + '</div>'; }
+            html += '</div>';
+        }
+        if (node && node.guardrail) {
+            html += '<div style="font-size: 76%; color: #7c3aed; margin-top: 3px"><b>Composite guardrail:</b> ' + escapeHtml(String(node.guardrail)) + '</div>';
+        }
+        if (node && node.link) {
+            html += '<div style="font-size: 80%; margin-top: 4px"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(node.link) + '">' + escapeHtml(node.linkLabel || 'Open link') + '</a></div>';
+        }
+        return html;
+    }
+
+    function renderKpiTitle(node) {
+        let html = '';
+        html += '<div class="kpi-title">';
+        html += '<div><img class="kpi-icon" src="../icons/' + escapeHtml(kpiIconFile(node)) + '" onerror="this.onerror=null;this.src=\'../icons/kpi.png\'"></div>';
+        html += '<div><div>' + escapeHtml(node.name || '') + '</div>' + renderKpiMeta(node) + '</div>';
+        html += '</div>';
+        return html;
+    }
+
+    function addKPIChild(child, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '|';
+        html += '<table style="vertical-align: top; width: 100%; max-width:800px">';
+        html += '<tr>';
+        html += '<td colspan="' + (child.children ? child.children.length : 1) + '" style="vertical-align: top">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 100%; padding: 4px">';
+        html += renderKpiTitle(child);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px">';
+        html += child.description ? child.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        if (child.children) {
+            child.children.forEach(c => {
+                html += '<td style="vertical-align: top">';
+                html += addKPIChild(c, color);
+                html += '</td>';
+            });
+        }
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIPyramid(pyramid, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '<table style="vertical-align: top">';
+        html += '<tr>';
+        html += '<td colspan="' + pyramid.branches.length + '">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 120%; padding: 4px">';
+        html += renderKpiTitle(pyramid.top);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px">';
+        html += pyramid.top.description ? pyramid.top.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        pyramid.branches.forEach(c => {
+            html += '<td style="vertical-align: top;">';
+            html += addKPIChild(c, color);
+            html += '</td>';
+        });
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIs() {
+        if (!customer.kpiPyramids || !customer.kpiPyramids.customerOutcomes || !customer.kpiPyramids.businessOutcomes) {
+            document.getElementById('KPI').innerHTML = '<div class="group">No KPI pyramid defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Customer Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.customerOutcomes, '#C0F3EA');
+        html += '</div>'
+
+        html += '<div class="group">'
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Business Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.businessOutcomes, '#B7BDF7');
+        html += '</div>'
+
+        document.getElementById('KPI').innerHTML = html;
+    }
+
+    function normalizeRoadmapKpi(value, supportingKey) {
+        if (!value) {
+            return {northStar: '', [supportingKey]: []};
+        }
+        if (typeof value === 'string') {
+            return {northStar: value, [supportingKey]: []};
+        }
+        const normalized = Object.assign({}, value);
+        normalized.northStar = normalized.northStar || normalized.name || '';
+        normalized[supportingKey] = normalized[supportingKey] || [];
+        return normalized;
+    }
+
+    function renderCategoryGate(horizon) {
+        if (!horizon || !horizon.categoryGate) {
+            return '';
+        }
+        return '<div style="padding: 8px 10px; margin: 4px 6px; font-size: 72%; background:#fff8e1; border-left: 3px solid #f0b429; color:#5c4400">'
+            + '<b>Category gate:</b> ' + horizon.categoryGate + '</div>';
+    }
+
+    function addProductVision() {
+        if (!customer.productStrategy || !customer.productStrategy.timeHorizons) {
+            document.getElementById('Roadmap').innerHTML = '<div class="group">No product vision defined for this customer yet.</div>';
+            return;
+        }
+
+        let strategy = customer.productStrategy;
+        const timeHorizon1 = strategy.timeHorizons['year1'];
+        const timeHorizon2 = strategy.timeHorizons['year3'];
+        const timeHorizon3 = strategy.timeHorizons['year5'];
+        const businessKpi1 = normalizeRoadmapKpi(timeHorizon1.businessKPI, 'revenueStreams');
+        const businessKpi2 = normalizeRoadmapKpi(timeHorizon2.businessKPI, 'revenueStreams');
+        const businessKpi3 = normalizeRoadmapKpi(timeHorizon3.businessKPI, 'revenueStreams');
+        const customerKpi1 = normalizeRoadmapKpi(timeHorizon1.customerKPI, 'supporting');
+        const customerKpi2 = normalizeRoadmapKpi(timeHorizon2.customerKPI, 'supporting');
+        const customerKpi3 = normalizeRoadmapKpi(timeHorizon3.customerKPI, 'supporting');
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<table>';
+        html += '<tr style="font-size: 80%; color: #a0a0a0">';
+        html += '<td></td>';
+        html += '<td style="padding-left: 16px">Year 1</td>';
+        html += '<td style="padding-left: 16px">Year 3</td>';
+        html += '<td style="padding-left: 16px">Year 5</td>';
+        html += '<td style="padding-left: 16px"></td>';
+        html += '<td rowspan="10" style="width: 280px; vertical-align: top; padding: 20px">';
+        html += '<div style="font-size: 120%; margin-bottom: 24px">';
+        html += 'VISION';
+        html += '</div>';
+        html += '<div style="font-size: 120%">';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 100px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '<div style="font-size: 140%">';
+        html += strategy.vision;
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon1.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon1.focus + '</div>';
+        html += renderCategoryGate(timeHorizon1);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon2.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon2.focus + '</div>';
+        html += renderCategoryGate(timeHorizon2);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon3.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon3.focus + '</div>';
+        html += renderCategoryGate(timeHorizon3);
+        html += '</td>';
+        html += '<td style="padding: 10px"></td>';
+        html += '<td>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 1 (Year 1)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 2 (Year 3)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 3 (Year 5)</td>';
+        html += '<td><div class="triangle"></div></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Business<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi1.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi2.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi3.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Customer<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi1.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi2.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi3.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td>';
+        html += '';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>'
+
+
+        document.getElementById('Roadmap').innerHTML = html;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function formatDate(dateValue) {
+        if (!dateValue) return 'No date';
+        const date = new Date(dateValue + 'T00:00:00');
+        if (isNaN(date.getTime())) return dateValue;
+        return date.toLocaleDateString('en-GB', {year: 'numeric', month: 'short', day: 'numeric'});
+    }
+
+    function renderKpis(items) {
+        let html = '';
+        items.forEach(item => {
+            html += '<div><b>' + escapeHtml(item.kpi) + '</b>';
+            if (item.unit) {
+                html += ' <span class="activity-muted">(' + escapeHtml(item.unit) + ')</span>';
+            }
+            if (item.expectedImpact) {
+                html += ': ' + escapeHtml(item.expectedImpact);
+            }
+            if (item.currentValue) {
+                html += '<div class="activity-muted"><b>Current:</b> ' + escapeHtml(String(item.currentValue)) + '</div>';
+            }
+            if (item.description) {
+                html += '<div class="activity-muted">' + escapeHtml(item.description) + '</div>';
+            }
+            if (item.link) {
+                html += '<div class="activity-muted"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(item.link) + '">' + escapeHtml(item.linkLabel || 'Open link') + '</a></div>';
+            }
+            html += '</div>';
+        });
+        return html;
+    }
+
+    function renderImpactCell(item, currentCustomerId) {
+        let html = '';
+        (item.customerImpact || []).forEach(impact => {
+            const isCurrent = impact.customerId === currentCustomerId;
+            html += '<div class="activity-block' + (isCurrent ? ' activity-pill-highlight' : '') + '">';
+            html += '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">';
+            html += '<img class="activity-icon activity-icon-round" src="../icons/' + escapeHtml(impact.customer.icon) + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '<div><div style="font-weight:bold; color:' + (isCurrent ? '#1d4ed8' : '#111827') + '">' + escapeHtml(impact.customer.name) + ' <span class="activity-muted">(' + escapeHtml(impact.customerId) + ')</span></div></div>';
+            html += '</div>';
+            html += renderKpis(impact.customerKPIs || []);
+            html += renderKpis(impact.businessKPIs || []);
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No customer impact listed</span>';
+    }
+
+    function renderBrickCell(item) {
+        let html = '';
+        (item.productBricks || []).forEach(brick => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-bricks/icons/' + escapeHtml(brick.brick.icon) + '" onerror="this.onerror=null;this.src=\'../../product-bricks/icons/logo.png\'">';
+            html += '<div><div><b>' + escapeHtml(brick.brick.name) + '</b> <span class="activity-muted">(#' + escapeHtml(brick.brickId) + ')</span></div><div class="activity-muted">' + escapeHtml(brick.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No product bricks listed</span>';
+    }
+
+    function renderChannelCell(item) {
+        let html = '';
+        (item.deliveryChannels || []).forEach(channel => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-deployments/icons/' + escapeHtml(channel.channel.icon) + '" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+            html += '<div><div><b>' + escapeHtml(channel.channel.name) + '</b> <span class="activity-muted">(' + escapeHtml(channel.channelId) + ')</span></div><div class="activity-muted">' + escapeHtml(channel.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No delivery channels listed</span>';
+    }
+
+    function renderActivityTable(data, kind, currentCustomerId) {
+        const items = (data && data.items) ? data.items : [];
+        let html = '';
+        html += '<div class="activity-summary">';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.length + '</div><div class="activity-stat-label">' + kind + '</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.customerImpact || []).length > 0).length + '</div><div class="activity-stat-label">With customer impact</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.productBricks || []).length > 0).length + '</div><div class="activity-stat-label">With bricks</div></div>';
+        html += '</div>';
+
+        if (!items.length) {
+            html += '<div class="group" style="margin-top:0">No related ' + kind.toLowerCase() + ' found for this customer.</div>';
+            return html;
+        }
+
+        html += '<table class="activity-table">';
+        html += '<tr><th>Date</th><th>Description</th><th>Customer Impact</th><th>Product Bricks</th><th>Delivery Channels</th></tr>';
+        items.forEach(item => {
+            html += '<tr>';
+            html += '<td style="white-space:nowrap">' + escapeHtml(formatDate(item.date)) + '</td>';
+            html += '<td><a class="activity-link" target="_blank" rel="noopener noreferrer" href="../../' + kind.toLowerCase() + '/landing_pages/' + item.landingPageIndex + '.html">' + escapeHtml(item.description || item.name || kind) + '</a></td>';
+            html += '<td>' + renderImpactCell(item, currentCustomerId) + '</td>';
+            html += '<td>' + renderBrickCell(item) + '</td>';
+            html += '<td>' + renderChannelCell(item) + '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+        return html;
+    }
+
+    addHeader();
+    addHome();
+    addJBTD();
+    addJourneys();
+    addKPIs();
+    addProductVision();
+    addInsights();
+
+
+</script>
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "B2B Wholesale E-commerce Platform Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Customers"
+    },
+    {
+      "label": "Consumer Shopper"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2034 @@
+{
+  "metadata": {
+    "domainId": "edi-and-b2b-document-exchange-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of the Transus EDI and e-invoicing platform: trading network and onboarding (directory of 100,000+ partners, retailer profiles, Traci AI), the document exchange core (transport, translation, validation, routing, orders, despatch/SSCC, e-invoicing, archive, VMI), the customer workspace and integrations (Transus Online, monitoring, reporting, ERP/WMS API, Katapull Commerce Hub connectors) and the platform foundation (plans, identity, ISO 27001 security, expert support).",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Trading Network and Partner Onboarding",
+            "Document Exchange Core"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Customer Workspace and Integration",
+            "Platform Foundation"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Trading Network and Partner Onboarding",
+      "description": "The network effect at the heart of Transus: a directory of 100,000+ connected trading partners, the retailer requirement library and the onboarding path that takes a new partner live, increasingly with Traci AI.",
+      "subGroups": [
+        {
+          "name": "Network and Directory",
+          "description": "Who is on the network and what each partner can send or receive.",
+          "bricks": [
+            {
+              "id": "tpdr",
+              "name": "Trading Partner Directory and Network Registry",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Searchable registry of every organisation reachable through Transus (stated 100,000+ trading partners in 40+ countries) with the documents each can send or receive (ORDERS, DESADV, INVOIC and more). Powers the public \"find your trading partner\" search and tells sales whether a requested partner is already live.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tpdr-search",
+                      "name": "Trading Partner Search",
+                      "type": "web-component",
+                      "description": "Public and in-portal search by company name, GLN or sector showing supported message types.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tpdr-api",
+                            "type": "uses",
+                            "description": "Uses api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tpdr-api",
+                      "name": "Partner Directory API",
+                      "type": "api",
+                      "description": "Lookup of partners, identifiers and capabilities for onboarding and sales."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-tpdr-registry",
+                      "name": "Network Registry Service",
+                      "type": "stateful-service",
+                      "description": "Holds partner identities (GLN, VAT, Peppol ID), capabilities and connection status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-tpdr-gs1",
+                      "name": "Identifier Reference Sync",
+                      "type": "integration",
+                      "description": "Checks GLNs and Peppol participant identifiers against external registries."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "trading-partner-profile",
+                  "moduleIds": [
+                    "module-tpdr-registry",
+                    "module-tpdr-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for partners on the network and their capabilities."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "GS1 identifier services (GLN)",
+                  "type": "data",
+                  "interface": "GLN lookup",
+                  "description": "Validates location and party identifiers used in EDI envelopes.",
+                  "sourceModuleId": "module-tpdr-gs1"
+                },
+                {
+                  "system": "Peppol SML/SMP directory",
+                  "type": "data",
+                  "interface": "Participant lookup",
+                  "description": "Resolves whether a partner can receive Peppol documents.",
+                  "sourceModuleId": "module-tpdr-gs1"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Prospects on transus.com",
+                  "type": "channel-consumer",
+                  "interface": "Partner search page",
+                  "description": "Prospects check whether their retailer is already connected.",
+                  "moduleId": "module-tpdr-search"
+                }
+              ]
+            },
+            {
+              "id": "rprf",
+              "name": "Retailer Requirement Profiles and Format Library",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Library of partner-specific message guidelines (Transus claims 100+ available report formats): which EDIFACT subset, mandatory segments, SSCC rules and invoice conditions each retailer such as Albert Heijn, bol.com or Hornbach expects. Lets a supplier deliver \"our standard\" while Transus meets each retailer's requirement.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-rprf-admin",
+                      "name": "Requirement Profile Admin",
+                      "type": "backoffice-interface",
+                      "description": "Back office where EDI specialists maintain retailer specifications and versions.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rprf-store",
+                            "type": "uses",
+                            "description": "Uses store."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-rprf-store",
+                      "name": "Profile and Specification Store",
+                      "type": "stateful-service",
+                      "description": "Versioned message implementation guidelines per partner and document type."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tpdr",
+                  "moduleId": "module-tpdr-registry",
+                  "sourceModuleId": "module-rprf-store",
+                  "type": "context",
+                  "description": "Profiles are attached to registered partners."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "partner-message-specification",
+                  "moduleIds": [
+                    "module-rprf-store",
+                    "module-rprf-admin"
+                  ],
+                  "role": "own",
+                  "description": "Authoritative partner-specific message guidelines."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Retailer EDI implementation guides",
+                  "type": "data",
+                  "interface": "Published specifications",
+                  "description": "Source of retailer-specific rules maintained by Transus specialists.",
+                  "sourceModuleId": "module-rprf-admin"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Onboarding and AI Mapping",
+          "description": "Turning a request to trade into a tested, live connection.",
+          "bricks": [
+            {
+              "id": "ponb",
+              "name": "Partner Onboarding and Connection Testing",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Workflow from \"I want to connect with\" to a live connection: request intake, partner contact, test interchanges, parallel run when switching from another provider and go-live. Transus states simple connections often go live within 24 hours and that switches run in parallel without downtime.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-ponb-request",
+                      "name": "Connection Request Wizard",
+                      "type": "web-component",
+                      "description": "Customer selects a partner and documents and starts a connection request.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ponb-api",
+                            "type": "uses",
+                            "description": "Uses api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-ponb-api",
+                      "name": "Onboarding API",
+                      "type": "api",
+                      "description": "Creates and tracks connection requests and test status."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-ponb-test",
+                      "name": "Test Interchange Runner",
+                      "type": "daemon",
+                      "description": "Sends and validates test messages in a sandbox route before go-live.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-ponb-flow",
+                            "type": "uses",
+                            "description": "Uses flow."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-ponb-flow",
+                      "name": "Onboarding Workflow Service",
+                      "type": "stateful-service",
+                      "description": "Tracks the state of each connection: requested, mapped, tested, parallel run, live."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tpdr",
+                  "moduleId": "module-tpdr-api",
+                  "sourceModuleId": "module-ponb-flow",
+                  "type": "context",
+                  "description": "Checks whether the partner is already on the network."
+                },
+                {
+                  "targetBrickId": "trai",
+                  "moduleId": "module-trai-api",
+                  "sourceModuleId": "module-ponb-flow",
+                  "type": "uses",
+                  "description": "Requests an AI-proposed mapping for unknown formats."
+                },
+                {
+                  "targetBrickId": "vald",
+                  "moduleId": "module-vald-engine",
+                  "sourceModuleId": "module-ponb-test",
+                  "type": "uses",
+                  "description": "Validates test messages against the partner profile."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "partner-connection",
+                  "moduleIds": [
+                    "module-ponb-flow",
+                    "module-ponb-api"
+                  ],
+                  "role": "own",
+                  "description": "Connection configuration and lifecycle state."
+                },
+                {
+                  "assetId": "trading-partner-profile",
+                  "moduleIds": [
+                    "module-ponb-flow"
+                  ],
+                  "role": "read",
+                  "description": "Partner capabilities used to plan the connection."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Trading partner EDI teams",
+                  "type": "operational",
+                  "interface": "Email and test exchange",
+                  "description": "Partner confirms test results before go-live.",
+                  "sourceModuleId": "module-ponb-test"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "trai",
+              "name": "Traci AI Document Recognition and Auto-Mapping",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Traci AI recognises, interprets and links trading documents in unfamiliar formats and proposes mappings automatically, aiming to connect new trading partners \"in seconds\" instead of days of manual mapping, and to remove data entry from PDF, e-mail and Excel documents.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-trai-api",
+                      "name": "Traci Mapping API",
+                      "type": "api",
+                      "description": "Accepts a sample document and returns a proposed mapping with confidence."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-trai-orch",
+                      "name": "Mapping Proposal Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Combines document recognition with known profiles to propose a mapping.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-trai-model",
+                            "type": "uses",
+                            "description": "Uses model."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-trai-model",
+                      "name": "Document Understanding Service",
+                      "type": "service",
+                      "description": "Classifies document type and extracts fields from EDI, XML, CSV, PDF and e-mail inputs."
+                    },
+                    {
+                      "id": "module-trai-review",
+                      "name": "Mapping Review Queue",
+                      "type": "stateful-service",
+                      "description": "Low-confidence proposals routed to an EDI specialist for approval."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-trai-llm",
+                      "name": "AI Model Provider Adapter",
+                      "type": "integration",
+                      "description": "Calls the underlying AI models under EU data-processing terms."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprf",
+                  "moduleId": "module-rprf-store",
+                  "sourceModuleId": "module-trai-orch",
+                  "type": "context",
+                  "description": "Uses known retailer profiles as mapping targets."
+                },
+                {
+                  "targetBrickId": "tran",
+                  "moduleId": "module-tran-maps",
+                  "sourceModuleId": "module-trai-orch",
+                  "type": "publishes",
+                  "description": "Publishes approved mappings to the translation engine."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "mapping-definition",
+                  "moduleIds": [
+                    "module-trai-orch",
+                    "module-trai-review"
+                  ],
+                  "role": "write",
+                  "description": "Creates mapping proposals for approval."
+                },
+                {
+                  "assetId": "ai-mapping-training-sample",
+                  "moduleIds": [
+                    "module-trai-model"
+                  ],
+                  "role": "own",
+                  "description": "Samples and feedback used to improve recognition."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "AI model provider (role)",
+                  "type": "service",
+                  "interface": "Model inference API",
+                  "description": "Underlying AI models; provider not publicly named by Transus.",
+                  "sourceModuleId": "module-trai-llm"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Document Exchange Core",
+      "description": "The message engine: secure transport, translation between in-house formats and partner standards, validation, routing and the business documents (orders, despatch advice, invoices, inventory) flowing through it.",
+      "subGroups": [
+        {
+          "name": "Transport, Translation and Validation",
+          "description": "Moving, converting and checking every interchange.",
+          "bricks": [
+            {
+              "id": "cnct",
+              "name": "Communication Gateway and Secure Transport",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Receives and sends interchanges over the protocols partners use, encrypted in transport (Transus names TLS, AS2 and SFTP), plus Peppol access-point traffic via its e-invoicing partner. The single network connection that replaces point-to-point links.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-cnct-ingest",
+                      "name": "Interchange Ingest Endpoints",
+                      "type": "api",
+                      "description": "AS2, SFTP and HTTPS endpoints per customer and partner.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-cnct-session",
+                            "type": "uses",
+                            "description": "Uses session."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-cnct-queue",
+                      "name": "Inbound and Outbound Message Queue",
+                      "type": "message-queue",
+                      "description": "Durable buffer between transport and processing."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-cnct-session",
+                      "name": "Protocol Session and Certificate Service",
+                      "type": "stateful-service",
+                      "description": "Manages AS2 certificates, SFTP keys, MDN receipts and retries."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-cnct-van",
+                      "name": "Network Interconnect Adapters",
+                      "type": "integration",
+                      "description": "Interconnects with other EDI networks and VANs used by large retailers."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "secu",
+                  "moduleId": "module-secu-keys",
+                  "sourceModuleId": "module-cnct-session",
+                  "type": "uses",
+                  "description": "Keys and certificates from the security vault."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "edi-interchange",
+                  "moduleIds": [
+                    "module-cnct-queue",
+                    "module-cnct-ingest"
+                  ],
+                  "role": "write",
+                  "description": "Stores raw interchanges as received and sent."
+                },
+                {
+                  "assetId": "transport-credential",
+                  "moduleIds": [
+                    "module-cnct-session"
+                  ],
+                  "role": "read",
+                  "description": "Uses certificates and keys for partner sessions."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Other EDI networks / VANs",
+                  "type": "network",
+                  "interface": "Interconnect",
+                  "description": "Reaching partners that use another provider.",
+                  "sourceModuleId": "module-cnct-van"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Retailer and supplier EDI systems",
+                  "type": "channel-consumer",
+                  "interface": "AS2 / SFTP / HTTPS",
+                  "description": "Partners send and receive interchanges.",
+                  "moduleId": "module-cnct-ingest"
+                }
+              ]
+            },
+            {
+              "id": "tran",
+              "name": "Format Translation and Mapping Engine",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Translates between each customer's in-house format (ERP export, XML, CSV, WMS format) and the partner's standard such as EDIFACT or UBL, so \"we deliver our data according to our standard and Transus makes it match the retailer\" (Anova Seafood case).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-tran-exec",
+                      "name": "Translation Worker",
+                      "type": "message-consumer",
+                      "description": "Applies mappings to queued interchanges.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tran-maps",
+                            "type": "uses",
+                            "description": "Uses maps."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-tran-conv",
+                      "name": "Syntax Converters",
+                      "type": "stateless-service",
+                      "description": "Parsers and serializers for EDIFACT, UBL, XML, CSV and fixed formats."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-tran-maps",
+                      "name": "Mapping Repository",
+                      "type": "stateful-service",
+                      "description": "Versioned mappings per customer, partner and document type."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cnct",
+                  "moduleId": "module-cnct-queue",
+                  "sourceModuleId": "module-tran-exec",
+                  "type": "consumes",
+                  "description": "Consumes interchanges from the transport queue."
+                },
+                {
+                  "targetBrickId": "rprf",
+                  "moduleId": "module-rprf-store",
+                  "sourceModuleId": "module-tran-maps",
+                  "type": "context",
+                  "description": "Target structures come from partner profiles."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "mapping-definition",
+                  "moduleIds": [
+                    "module-tran-maps"
+                  ],
+                  "role": "own",
+                  "description": "System of record for mappings."
+                },
+                {
+                  "assetId": "edi-interchange",
+                  "moduleIds": [
+                    "module-tran-exec"
+                  ],
+                  "role": "read-write",
+                  "description": "Reads source and writes translated interchanges."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "vald",
+              "name": "Message Validation and Business Rules",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Automatically blocks messages with errors before they reach the partner and raises an alert explained \"in understandable language\" (Hornbach news item). Checks syntax, partner profile rules and business rules such as mandatory GLNs, totals and SSCC presence.",
+              "layers": [
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-vald-engine",
+                      "name": "Validation Engine",
+                      "type": "stateless-service",
+                      "description": "Runs syntax, profile and business-rule checks on each message."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-vald-rules",
+                      "name": "Rule Set Service",
+                      "type": "stateful-service",
+                      "description": "Versioned validation rules per partner and document type."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprf",
+                  "moduleId": "module-rprf-store",
+                  "sourceModuleId": "module-vald-rules",
+                  "type": "context",
+                  "description": "Partner requirements drive rules."
+                },
+                {
+                  "targetBrickId": "mntr",
+                  "moduleId": "module-mntr-alerts",
+                  "sourceModuleId": "module-vald-engine",
+                  "type": "publishes",
+                  "description": "Failed validations raise alerts."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "message-exception",
+                  "moduleIds": [
+                    "module-vald-engine"
+                  ],
+                  "role": "write",
+                  "description": "Records validation failures with a plain-language reason."
+                },
+                {
+                  "assetId": "partner-message-specification",
+                  "moduleIds": [
+                    "module-vald-rules"
+                  ],
+                  "role": "read",
+                  "description": "Uses partner guidelines."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rout",
+              "name": "Message Routing and Delivery Tracking",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Routes each validated message to the right partner endpoint and records every status change, so both the customer and its trading partner can log in and see the current status of every message (Transus states partners get access even if they are not customers).",
+              "layers": [
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-rout-router",
+                      "name": "Routing Worker",
+                      "type": "message-consumer",
+                      "description": "Determines destination route and dispatches.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rout-status",
+                            "type": "uses",
+                            "description": "Uses status."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-rout-status",
+                      "name": "Message Status Ledger",
+                      "type": "stateful-service",
+                      "description": "Event history per message: received, translated, validated, delivered, acknowledged."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "cnct",
+                  "moduleId": "module-cnct-queue",
+                  "sourceModuleId": "module-rout-router",
+                  "type": "publishes",
+                  "description": "Hands messages back to transport for delivery."
+                },
+                {
+                  "targetBrickId": "vald",
+                  "moduleId": "module-vald-engine",
+                  "sourceModuleId": "module-rout-router",
+                  "type": "uses",
+                  "description": "Only validated messages are routed."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "message-status-event",
+                  "moduleIds": [
+                    "module-rout-status"
+                  ],
+                  "role": "own",
+                  "description": "System of record for message lifecycle events."
+                },
+                {
+                  "assetId": "partner-connection",
+                  "moduleIds": [
+                    "module-rout-router"
+                  ],
+                  "role": "read",
+                  "description": "Routes per configured connection."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Business Documents",
+          "description": "Document-specific logic for the order-to-cash and replenishment cycle.",
+          "bricks": [
+            {
+              "id": "ordr",
+              "name": "Order and Order Response Processing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Document logic for purchase orders (ORDERS), order changes and order responses (ORDRSP): normalising retailer orders into one structure for the supplier ERP and returning confirmations within the retailer's window.",
+              "layers": [
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-ordr-norm",
+                      "name": "Order Normaliser",
+                      "type": "stateless-service",
+                      "description": "Normalises retailer-specific orders to one canonical order."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-ordr-ord",
+                      "name": "Order Document Service",
+                      "type": "service",
+                      "description": "Keeps order, change and response linkage per partner."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tran",
+                  "moduleId": "module-tran-maps",
+                  "sourceModuleId": "module-ordr-norm",
+                  "type": "uses",
+                  "description": "Uses translation mappings."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "purchase-order-document",
+                  "moduleIds": [
+                    "module-ordr-ord",
+                    "module-ordr-norm"
+                  ],
+                  "role": "own",
+                  "description": "Orders, changes and responses as exchanged."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "desp",
+              "name": "Despatch Advice and SSCC Labelling",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Creates despatch advice (DESADV) and GS1-compliant SSCC pallet labels from order and packing data, including automatic transport configuration in EDI Plus. Hornbach confirmed the Transus SSCC label meets its mandatory label requirement.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-desp-pack",
+                      "name": "Packing and Label Screen",
+                      "type": "web-component",
+                      "description": "Supplier builds pallets from an order and prints SSCC labels.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-desp-api",
+                            "type": "uses",
+                            "description": "Uses api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-desp-api",
+                      "name": "Despatch API",
+                      "type": "api",
+                      "description": "Creates DESADV and labels from portal or ERP data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-desp-sscc",
+                      "name": "SSCC Numbering and Label Service",
+                      "type": "stateful-service",
+                      "description": "Allocates serial shipping container codes under the supplier GS1 prefix and renders labels."
+                    },
+                    {
+                      "id": "module-desp-desadv",
+                      "name": "Despatch Advice Builder",
+                      "type": "service",
+                      "description": "Builds DESADV with packing hierarchy, batches and best-before dates.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-desp-sscc",
+                            "type": "uses",
+                            "description": "Uses sscc."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-ordr-ord",
+                  "sourceModuleId": "module-desp-desadv",
+                  "type": "context",
+                  "description": "Despatch is built from the confirmed order."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "despatch-advice-document",
+                  "moduleIds": [
+                    "module-desp-desadv"
+                  ],
+                  "role": "own",
+                  "description": "DESADV messages and packing hierarchy."
+                },
+                {
+                  "assetId": "sscc-label-record",
+                  "moduleIds": [
+                    "module-desp-sscc"
+                  ],
+                  "role": "own",
+                  "description": "Allocated SSCCs and label content."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "GS1 company prefix of the supplier",
+                  "type": "data",
+                  "interface": "GS1 numbering rules",
+                  "description": "SSCCs are built from the supplier's GS1 prefix.",
+                  "sourceModuleId": "module-desp-sscc"
+                },
+                {
+                  "system": "Label printers",
+                  "type": "device",
+                  "interface": "PDF/ZPL print",
+                  "description": "Prints pallet labels at the supplier warehouse.",
+                  "sourceModuleId": "module-desp-pack"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "einv",
+              "name": "E-Invoicing and Mandate Compliance",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Turns ERP invoices into the format each customer or authority requires: EDIFACT INVOIC for retailers and EN 16931 e-invoices in XRechnung, ZUGFeRD and Peppol, with technical handling in partnership with Tickstar. Prepares customers for German send obligations from 2027 (turnover above EUR 800,000) and 2028.",
+              "layers": [
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-einv-fmt",
+                      "name": "E-Invoice Format Builder",
+                      "type": "stateless-service",
+                      "description": "Builds EN 16931 compliant XRechnung, ZUGFeRD and Peppol BIS documents."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-einv-inv",
+                      "name": "Invoice Document Service",
+                      "type": "service",
+                      "description": "Links invoices to orders and despatch, tracks acceptance and rejection."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-einv-peppol",
+                      "name": "Peppol Access Point Adapter",
+                      "type": "integration",
+                      "description": "Sends and receives via the Tickstar Peppol access point."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "desp",
+                  "moduleId": "module-desp-desadv",
+                  "sourceModuleId": "module-einv-inv",
+                  "type": "context",
+                  "description": "Invoices reference delivered quantities."
+                },
+                {
+                  "targetBrickId": "vald",
+                  "moduleId": "module-vald-engine",
+                  "sourceModuleId": "module-einv-fmt",
+                  "type": "uses",
+                  "description": "EN 16931 and partner rules checked before sending."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "invoice-document",
+                  "moduleIds": [
+                    "module-einv-inv",
+                    "module-einv-fmt"
+                  ],
+                  "role": "own",
+                  "description": "Invoices and credit notes as exchanged."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Tickstar (Peppol and e-invoicing partner)",
+                  "type": "service",
+                  "interface": "Peppol access point",
+                  "description": "Technical handling of e-invoice formats and transmission.",
+                  "sourceModuleId": "module-einv-peppol"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "German business customers and public buyers",
+                  "type": "channel-consumer",
+                  "interface": "XRechnung / ZUGFeRD / Peppol",
+                  "description": "Receive structured e-invoices.",
+                  "moduleId": "module-einv-peppol"
+                }
+              ]
+            },
+            {
+              "id": "arch",
+              "name": "Document Archive",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Retains exchanged invoices and documents for audit and retrieval; listed as \"archive your invoices\" in the Premium plan.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-arch-api",
+                      "name": "Archive Retrieval API",
+                      "type": "api",
+                      "description": "Search and download archived documents."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-arch-store",
+                      "name": "Archive Store Service",
+                      "type": "stateful-service",
+                      "description": "Immutable, retention-managed document storage."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "einv",
+                  "moduleId": "module-einv-inv",
+                  "sourceModuleId": "module-arch-store",
+                  "type": "consumes",
+                  "description": "Archives every sent and received invoice."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "document-archive-record",
+                  "moduleIds": [
+                    "module-arch-store",
+                    "module-arch-api"
+                  ],
+                  "role": "own",
+                  "description": "Archived documents and retention metadata."
+                },
+                {
+                  "assetId": "invoice-document",
+                  "moduleIds": [
+                    "module-arch-store"
+                  ],
+                  "role": "read",
+                  "description": "Source invoices to archive."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Auditors and tax authorities (via customer)",
+                  "type": "channel-consumer",
+                  "interface": "Archive export",
+                  "description": "Retrieval during audits.",
+                  "moduleId": "module-arch-api"
+                }
+              ]
+            },
+            {
+              "id": "vmi",
+              "name": "Vendor Managed Inventory",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Uses retailer sales, stock and forecast messages so a supplier replenishes proactively instead of waiting for orders, as Henri van de Bilt does for Albert Heijn; results in a replenishment order and despatch advice to the retailer and its logistics provider.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-vmi-dash",
+                      "name": "VMI Forecast Dashboard",
+                      "type": "web-component",
+                      "description": "Shows retailer stock, forecast and proposed replenishment.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-vmi-plan",
+                            "type": "uses",
+                            "description": "Uses plan."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-vmi-plan",
+                      "name": "Replenishment Planner",
+                      "type": "stateful-service",
+                      "description": "Calculates replenishment quantities against agreed stock levels."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "desp",
+                  "moduleId": "module-desp-desadv",
+                  "sourceModuleId": "module-vmi-plan",
+                  "type": "publishes",
+                  "description": "Replenishment results in a despatch advice."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "inventory-and-forecast-report",
+                  "moduleIds": [
+                    "module-vmi-plan",
+                    "module-vmi-dash"
+                  ],
+                  "role": "own",
+                  "description": "Retailer stock, sales and forecast data."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Retailer forecasting and stock systems",
+                  "type": "data",
+                  "interface": "INVRPT / SLSRPT / forecast messages",
+                  "description": "Source of stock and forecast data.",
+                  "sourceModuleId": "module-vmi-plan"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer Workspace and Integration",
+      "description": "Where customers and their IT partners meet the platform: the Transus Online portal, monitoring and alerts, reporting, ERP/WMS APIs and the connectors to Katapull Commerce Hub siblings and certified partners.",
+      "subGroups": [
+        {
+          "name": "Portal and Visibility",
+          "description": "Web EDI, monitoring and reporting for business users without IT knowledge.",
+          "bricks": [
+            {
+              "id": "webp",
+              "name": "Transus Online Web EDI Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "The online.transus.com portal for suppliers without an ERP link (Basic plan): view and process incoming orders, create confirmations, despatch advice and invoices by hand, and see message status, with validation errors explained for non-IT users.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-webp-inbox",
+                      "name": "Document Inbox and Editor",
+                      "type": "web-component",
+                      "description": "Lists incoming documents and lets users create responses.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-webp-bff",
+                            "type": "uses",
+                            "description": "Uses bff."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-webp-bff",
+                      "name": "Portal Backend for Frontend",
+                      "type": "bff",
+                      "description": "Aggregates documents, status and alerts for the portal."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordr",
+                  "moduleId": "module-ordr-ord",
+                  "sourceModuleId": "module-webp-bff",
+                  "type": "uses",
+                  "description": "Reads orders and creates responses."
+                },
+                {
+                  "targetBrickId": "rout",
+                  "moduleId": "module-rout-status",
+                  "sourceModuleId": "module-webp-bff",
+                  "type": "uses",
+                  "description": "Shows message status."
+                },
+                {
+                  "targetBrickId": "iden",
+                  "moduleId": "module-iden-auth",
+                  "sourceModuleId": "module-webp-bff",
+                  "type": "uses",
+                  "description": "Authenticates portal users."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "purchase-order-document",
+                  "moduleIds": [
+                    "module-webp-bff"
+                  ],
+                  "role": "read",
+                  "description": "Displays orders."
+                },
+                {
+                  "assetId": "message-status-event",
+                  "moduleIds": [
+                    "module-webp-bff"
+                  ],
+                  "role": "read",
+                  "description": "Displays status."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Supplier users without ERP",
+                  "type": "channel-consumer",
+                  "interface": "Web browser",
+                  "description": "Exchange documents manually through the portal.",
+                  "moduleId": "module-webp-inbox"
+                }
+              ]
+            },
+            {
+              "id": "mntr",
+              "name": "Monitoring, Alerts and Exception Resolution",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Tracks every connection and message flow so issues are caught and resolved \"before a supplier or department notices\" (retailer page); alerts customers and Transus support, and gives a resolution queue.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-mntr-console",
+                      "name": "Exception Console",
+                      "type": "web-component",
+                      "description": "Lists blocked or late messages with reason and next action.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-mntr-alerts",
+                            "type": "uses",
+                            "description": "Uses alerts."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-mntr-watch",
+                      "name": "Flow Watchdog",
+                      "type": "daemon",
+                      "description": "Detects missing, late or stuck messages against expected patterns.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-mntr-alerts",
+                            "type": "uses",
+                            "description": "Uses alerts."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-mntr-alerts",
+                      "name": "Alerting and Case Service",
+                      "type": "stateful-service",
+                      "description": "Creates alerts and exception cases, notifies users by e-mail."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rout",
+                  "moduleId": "module-rout-status",
+                  "sourceModuleId": "module-mntr-watch",
+                  "type": "consumes",
+                  "description": "Reads message status events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "message-exception",
+                  "moduleIds": [
+                    "module-mntr-alerts",
+                    "module-mntr-console"
+                  ],
+                  "role": "own",
+                  "description": "Exception cases and their resolution."
+                },
+                {
+                  "assetId": "message-status-event",
+                  "moduleIds": [
+                    "module-mntr-watch"
+                  ],
+                  "role": "read",
+                  "description": "Detects anomalies from status events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "E-mail service",
+                  "type": "service",
+                  "interface": "SMTP",
+                  "description": "Alert delivery.",
+                  "sourceModuleId": "module-mntr-alerts"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "rept",
+              "name": "Message Analytics and Reporting",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Real-time insight into messages (Basic plan feature) and reporting on volumes, error rates and partner performance for customers, retailers and Transus account managers.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-rept-dash",
+                      "name": "Message Insight Dashboard",
+                      "type": "web-component",
+                      "description": "Volumes, errors and lead times per partner.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rept-agg",
+                            "type": "uses",
+                            "description": "Uses agg."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-rept-agg",
+                      "name": "Metrics Aggregation Service",
+                      "type": "stateful-service",
+                      "description": "Aggregates status events into metrics."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rout",
+                  "moduleId": "module-rout-status",
+                  "sourceModuleId": "module-rept-agg",
+                  "type": "consumes",
+                  "description": "Uses message status events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "message-volume-metric",
+                  "moduleIds": [
+                    "module-rept-agg",
+                    "module-rept-dash"
+                  ],
+                  "role": "own",
+                  "description": "Aggregated message metrics."
+                },
+                {
+                  "assetId": "message-status-event",
+                  "moduleIds": [
+                    "module-rept-agg"
+                  ],
+                  "role": "read",
+                  "description": "Source events."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Systems Integration",
+          "description": "APIs and connectors to ERP, WMS, accounting and commerce systems.",
+          "bricks": [
+            {
+              "id": "erpi",
+              "name": "ERP and WMS API and Connector Framework",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "API-first integration with virtually any ERP or WMS, on premise or cloud (Premium plan \"API connection with ERP and WMS\"), plus file-based exchange (XML, CSV) for older systems. Used by certified partners such as Ecobit (AFAS), NAS conception (Microsoft Business Central app NC365) and integrators for Exact, KING, Odoo, SAP and Unit4.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-erpi-api",
+                      "name": "Customer Integration API",
+                      "type": "api",
+                      "description": "REST API for posting and fetching business documents."
+                    },
+                    {
+                      "id": "module-erpi-files",
+                      "name": "File Drop Interface",
+                      "type": "api",
+                      "description": "SFTP drop folders for XML/CSV exports from legacy ERPs."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-erpi-conn",
+                      "name": "ERP Connector Adapters",
+                      "type": "integration",
+                      "description": "Reusable adapters and templates used by certified partners."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tran",
+                  "moduleId": "module-tran-maps",
+                  "sourceModuleId": "module-erpi-api",
+                  "type": "uses",
+                  "description": "In-house formats are mapped on entry."
+                },
+                {
+                  "targetBrickId": "iden",
+                  "moduleId": "module-iden-auth",
+                  "sourceModuleId": "module-erpi-api",
+                  "type": "uses",
+                  "description": "API credentials and scopes."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "erp-integration-config",
+                  "moduleIds": [
+                    "module-erpi-api",
+                    "module-erpi-conn"
+                  ],
+                  "role": "own",
+                  "description": "Integration endpoints and settings per customer."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "ERP systems (AFAS, Exact, KING, Odoo, SAP, Unit4, Business Central, NetSuite)",
+                  "type": "system",
+                  "interface": "ERP APIs / file exports",
+                  "description": "Source and target of business documents.",
+                  "sourceModuleId": "module-erpi-conn"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Certified integration partners",
+                  "type": "channel-consumer",
+                  "interface": "Customer Integration API",
+                  "description": "Build and run customer connections.",
+                  "moduleId": "module-erpi-api"
+                }
+              ]
+            },
+            {
+              "id": "kpch",
+              "name": "Katapull Commerce Hub Connectors",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Ready links between Transus and sibling Katapull brands (Logic4, Vendit, Highbiza, EffectConnect, DeliveryMatch, Returnista, Picqer). Transus lists each as a Commerce Hub partner and states \"each company can be connected with Transus\"; connector depth per brand is not publicly documented.",
+              "layers": [
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and stateless processing.",
+                  "modules": [
+                    {
+                      "id": "module-kpch-hub",
+                      "name": "Commerce Hub Event Bridge",
+                      "type": "stateless-service",
+                      "description": "Translates sibling events to Transus documents and back."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-kpch-logic4",
+                      "name": "Logic4 and Vendit ERP Connector",
+                      "type": "integration",
+                      "description": "Exchanges orders, despatch and invoices with Logic4 and Vendit back offices."
+                    },
+                    {
+                      "id": "module-kpch-logistics",
+                      "name": "DeliveryMatch, Picqer and Returnista Connector",
+                      "type": "integration",
+                      "description": "Shares shipment, warehouse and return data with logistics siblings."
+                    },
+                    {
+                      "id": "module-kpch-channels",
+                      "name": "Highbiza and EffectConnect Connector",
+                      "type": "integration",
+                      "description": "Links B2B webshop and marketplace order flows to EDI."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "erpi",
+                  "moduleId": "module-erpi-api",
+                  "sourceModuleId": "module-kpch-hub",
+                  "type": "uses",
+                  "description": "Built on the customer integration API."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "erp-integration-config",
+                  "moduleIds": [
+                    "module-kpch-hub"
+                  ],
+                  "role": "read",
+                  "description": "Uses customer integration settings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Logic4",
+                  "type": "sibling",
+                  "interface": "Logic4 API",
+                  "description": "Omnichannel ERP (sibling domain omnichannel-commerce-erp-platform).",
+                  "sourceModuleId": "module-kpch-logic4"
+                },
+                {
+                  "system": "Vendit",
+                  "type": "sibling",
+                  "interface": "Vendit API",
+                  "description": "Retail POS and back office (sibling domain retail-pos-and-store-management-platform).",
+                  "sourceModuleId": "module-kpch-logic4"
+                },
+                {
+                  "system": "DeliveryMatch",
+                  "type": "sibling",
+                  "interface": "DeliveryMatch API",
+                  "description": "Shipping and carrier management (sibling domain shipping-and-carrier-management-platform).",
+                  "sourceModuleId": "module-kpch-logistics"
+                },
+                {
+                  "system": "Returnista",
+                  "type": "sibling",
+                  "interface": "Returnista API",
+                  "description": "Returns management (sibling domain ecommerce-returns-management-platform).",
+                  "sourceModuleId": "module-kpch-logistics"
+                },
+                {
+                  "system": "Highbiza",
+                  "type": "sibling",
+                  "interface": "Highbiza API",
+                  "description": "B2B webshops (sibling domain b2b-wholesale-ecommerce-platform).",
+                  "sourceModuleId": "module-kpch-channels"
+                },
+                {
+                  "system": "EffectConnect",
+                  "type": "sibling",
+                  "interface": "EffectConnect API",
+                  "description": "Marketplace integration (sibling domain marketplace-channel-integration-platform).",
+                  "sourceModuleId": "module-kpch-channels"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform Foundation",
+      "description": "Subscriptions, identity, security and continuity, and the expert support that customers repeatedly cite as the reason they stay.",
+      "subGroups": [
+        {
+          "name": "Commercial and Identity",
+          "description": "Plans, tenants, users and access.",
+          "bricks": [
+            {
+              "id": "tnnt",
+              "name": "Tenant, Subscription and Plan Management",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Customer accounts and the fixed-price plans (Basic from EUR 79, Plus from EUR 149 per month on annual terms, Premium on request; unlimited messages and partners), monthly or annual terms, online purchase and entitlements per plan.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-tnnt-buy",
+                      "name": "Plan Selection and Checkout",
+                      "type": "web-component",
+                      "description": "Buy-now flow from the pricing page.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-tnnt-sub",
+                            "type": "uses",
+                            "description": "Uses sub."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-tnnt-sub",
+                      "name": "Subscription and Entitlement Service",
+                      "type": "stateful-service",
+                      "description": "Plans, terms and feature entitlements (SSCC, API, archive, premium support)."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "External system adapters.",
+                  "modules": [
+                    {
+                      "id": "module-tnnt-bill",
+                      "name": "Billing System Adapter",
+                      "type": "integration",
+                      "description": "Passes subscriptions to finance for invoicing."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-subscription",
+                  "moduleIds": [
+                    "module-tnnt-sub",
+                    "module-tnnt-buy"
+                  ],
+                  "role": "own",
+                  "description": "Customer accounts, plans and entitlements."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment and finance systems",
+                  "type": "service",
+                  "interface": "Billing integration",
+                  "description": "Recurring subscription invoicing.",
+                  "sourceModuleId": "module-tnnt-bill"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": []
+            },
+            {
+              "id": "iden",
+              "name": "Identity and Access Management",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "User accounts for customers, partner users and their trading partners, with least-privilege access (stated in Transus NIS2 FAQ) and API credentials.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-iden-auth",
+                      "name": "Authentication API",
+                      "type": "api",
+                      "description": "Login, tokens and API keys.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-iden-dir",
+                            "type": "uses",
+                            "description": "Uses dir."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-iden-dir",
+                      "name": "User and Role Directory",
+                      "type": "stateful-service",
+                      "description": "Users, roles and partner-scoped access."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tnnt",
+                  "moduleId": "module-tnnt-sub",
+                  "sourceModuleId": "module-iden-dir",
+                  "type": "context",
+                  "description": "Access follows the tenant and plan."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "user-account",
+                  "moduleIds": [
+                    "module-iden-dir",
+                    "module-iden-auth"
+                  ],
+                  "role": "own",
+                  "description": "Users, roles and credentials."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        },
+        {
+          "name": "Trust and Service",
+          "description": "ISO 27001 controls, NIS2 assurance, continuity and the service desk.",
+          "bricks": [
+            {
+              "id": "secu",
+              "name": "Security, Compliance and Continuity",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "ISO/IEC 27001:2022 ISMS, encryption in transport, annual pentests, incident response with three emergency levels, data centres in Frankfurt with disaster recovery in Amsterdam, and a NIS2 information pack for customers' supplier assessments.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "APIs and back-office interfaces.",
+                  "modules": [
+                    {
+                      "id": "module-secu-trust",
+                      "name": "Trust and Assurance Pack Portal",
+                      "type": "backoffice-interface",
+                      "description": "Provides NIS2 FAQ, ISO certificate and questionnaires to customers."
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Asynchronous processing.",
+                  "modules": [
+                    {
+                      "id": "module-secu-dr",
+                      "name": "Replication and Failover Daemon",
+                      "type": "daemon",
+                      "description": "Replicates data to the Amsterdam disaster-recovery site."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-secu-keys",
+                      "name": "Key and Certificate Vault",
+                      "type": "stateful-service",
+                      "description": "Stores transport certificates, keys and secrets."
+                    },
+                    {
+                      "id": "module-secu-audit",
+                      "name": "Security Audit Log Service",
+                      "type": "stateful-service",
+                      "description": "Tamper-evident log of access and configuration changes."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [],
+              "dataDependencies": [
+                {
+                  "assetId": "transport-credential",
+                  "moduleIds": [
+                    "module-secu-keys"
+                  ],
+                  "role": "own",
+                  "description": "System of record for transport credentials."
+                },
+                {
+                  "assetId": "security-audit-log",
+                  "moduleIds": [
+                    "module-secu-audit"
+                  ],
+                  "role": "own",
+                  "description": "Audit trail."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "EU data centres (Frankfurt primary, Amsterdam DR)",
+                  "type": "infrastructure",
+                  "interface": "Hosting",
+                  "description": "Processing and storage location.",
+                  "sourceModuleId": "module-secu-dr"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Customer security and procurement teams",
+                  "type": "channel-consumer",
+                  "interface": "Assurance pack",
+                  "description": "Use it in NIS2 supplier assessments.",
+                  "moduleId": "module-secu-trust"
+                }
+              ]
+            },
+            {
+              "id": "supp",
+              "name": "EDI Expert Support and Service Desk",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "EDI specialists in Amersfoort, Antwerp and Dusseldorf supporting customers and partners in Dutch, German and English; Premium plan includes premium support. Customer cases repeatedly cite fast fixes (\"Transus just picks it up and fixes it\").",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-supp-desk",
+                      "name": "Support Desk Console",
+                      "type": "web-component",
+                      "description": "Tickets linked to messages, connections and exceptions.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-supp-tickets",
+                            "type": "uses",
+                            "description": "Uses tickets."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-supp-tickets",
+                      "name": "Ticket and Knowledge Service",
+                      "type": "stateful-service",
+                      "description": "Tickets, SLAs per plan and known-issue knowledge base."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "mntr",
+                  "moduleId": "module-mntr-alerts",
+                  "sourceModuleId": "module-supp-tickets",
+                  "type": "consumes",
+                  "description": "Exceptions can open support tickets."
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "moduleId": "module-tnnt-sub",
+                  "sourceModuleId": "module-supp-tickets",
+                  "type": "context",
+                  "description": "Support level depends on plan."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "support-ticket",
+                  "moduleIds": [
+                    "module-supp-tickets",
+                    "module-supp-desk"
+                  ],
+                  "role": "own",
+                  "description": "Support tickets and resolutions."
+                },
+                {
+                  "assetId": "message-exception",
+                  "moduleIds": [
+                    "module-supp-tickets"
+                  ],
+                  "role": "read",
+                  "description": "Context for tickets."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsDependingOnThisBrick": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

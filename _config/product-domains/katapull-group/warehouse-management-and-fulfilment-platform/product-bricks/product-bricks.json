@@ -1,0 +1,2703 @@
+{
+  "metadata": {
+    "domainId": "warehouse-management-and-fulfilment-platform",
+    "title": "Product Bricks & Streams",
+    "description": "Brick map of Picqer, the Katapull group's cloud warehouse management system for online stores and fulfilment companies: store and marketplace intake, order allocation, inventory ledger, locations, counting and batch traceability, purchasing and receiving, batch picking, packing, shipping integrations, printing and hardware, returns, rules, mobile app, collaboration and reports, multi-client fulfilment with portal and invoicing. Module-level architecture is inferred from published features, not documented by Picqer.",
+    "rendering": {
+      "rows": [
+        {
+          "row": 1,
+          "rootGroupNames": [
+            "Order and Channel Intake",
+            "Inventory and Purchasing"
+          ]
+        },
+        {
+          "row": 2,
+          "rootGroupNames": [
+            "Picking, Packing and Shipping",
+            "Automation, Mobile and Insight"
+          ]
+        },
+        {
+          "row": 3,
+          "rootGroupNames": [
+            "Fulfilment Services",
+            "Platform Foundation"
+          ]
+        }
+      ]
+    }
+  },
+  "rootGroups": [
+    {
+      "name": "Order and Channel Intake",
+      "description": "Getting orders, products and partner data into the warehouse.",
+      "subGroups": [
+        {
+          "name": "Channels and Orders",
+          "description": "Store connectors and order management.",
+          "bricks": [
+            {
+              "id": "chan",
+              "name": "Webshop and Marketplace Store Connectors",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Turn-key connections that import products and orders from webshop platforms and marketplaces and push stock levels, order status and track-and-trace back. Picqer builds Magento 1/2, Shopify, WooCommerce, Lightspeed, Shopware 5/6, CCV Shop and bol Retailer itself; others (e.g. Craft Commerce) are partner-built.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Self-service store setup.",
+                  "modules": [
+                    {
+                      "id": "module-store-setup-wizard",
+                      "name": "Store Setup Wizard",
+                      "type": "web-component",
+                      "description": "Connects a store in minutes, maps statuses and shipping methods, runs a first import.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-store-connection-api",
+                            "type": "uses",
+                            "description": "Uses store connection api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Connection management.",
+                  "modules": [
+                    {
+                      "id": "module-store-connection-api",
+                      "name": "Store Connection API",
+                      "type": "api",
+                      "description": "Stores credentials and mappings per store and triggers imports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-store-connection-service",
+                            "type": "uses",
+                            "description": "Uses store connection service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Import and write-back jobs.",
+                  "modules": [
+                    {
+                      "id": "module-order-import-worker",
+                      "name": "Order Import Worker",
+                      "type": "daemon",
+                      "description": "Polls or receives orders from each connected store and marketplace.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-store-adapters",
+                            "type": "uses",
+                            "description": "Uses store adapters."
+                          },
+                          {
+                            "moduleId": "module-store-connection-service",
+                            "type": "uses",
+                            "description": "Uses store connection service."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-stock-push-consumer",
+                      "name": "Stock Push Consumer",
+                      "type": "message-consumer",
+                      "description": "Pushes free stock to every connected channel when stock changes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-store-adapters",
+                            "type": "uses",
+                            "description": "Uses store adapters."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-status-writeback-consumer",
+                      "name": "Status and Tracking Write-back",
+                      "type": "message-consumer",
+                      "description": "Marks orders shipped and writes the tracking code to the channel.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-store-adapters",
+                            "type": "uses",
+                            "description": "Uses store adapters."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Connection state.",
+                  "modules": [
+                    {
+                      "id": "module-store-connection-service",
+                      "name": "Store Connection Service",
+                      "type": "stateful-service",
+                      "description": "Holds connection settings, sync cursors and health per store."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Platform adapters.",
+                  "modules": [
+                    {
+                      "id": "module-store-adapters",
+                      "name": "Store and Marketplace Adapters",
+                      "type": "integration",
+                      "description": "Adapters for Shopify, Magento, WooCommerce, Lightspeed, Shopware, CCV Shop and bol Retailer APIs."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordm",
+                  "moduleId": "module-order-service",
+                  "sourceModuleId": "module-order-import-worker",
+                  "type": "uses",
+                  "description": "Creates normalised orders."
+                },
+                {
+                  "targetBrickId": "prod",
+                  "moduleId": "module-product-service",
+                  "sourceModuleId": "module-order-import-worker",
+                  "type": "uses",
+                  "description": "Imports and matches products."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-event-stream",
+                  "sourceModuleId": "module-stock-push-consumer",
+                  "type": "uses",
+                  "description": "Listens to stock changes."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "integration-connection-config",
+                  "moduleIds": [
+                    "module-store-connection-service",
+                    "module-store-setup-wizard"
+                  ],
+                  "role": "own",
+                  "description": "Store credentials, mappings and sync cursors."
+                },
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-order-import-worker"
+                  ],
+                  "role": "write",
+                  "description": "Creates orders from channels."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Webshop platforms (Shopify, Magento, WooCommerce, Lightspeed, Shopware, CCV Shop)",
+                  "type": "channel",
+                  "interface": "Platform APIs and apps",
+                  "description": "Source of products and orders; target of stock and status.",
+                  "sourceModuleId": "module-store-adapters"
+                },
+                {
+                  "system": "bol Retailer API",
+                  "type": "marketplace",
+                  "interface": "Marketplace seller API",
+                  "description": "Marketplace orders and shipment confirmation, including Shipping via bol.",
+                  "sourceModuleId": "module-store-adapters"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Shopify merchants",
+                  "type": "channel-consumer",
+                  "interface": "Shopify app",
+                  "description": "Install Picqer from the Shopify app store (assumed listing).",
+                  "moduleId": "module-store-setup-wizard"
+                }
+              ]
+            },
+            {
+              "id": "ordm",
+              "name": "Multi-Channel Order Management and Allocation",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "One overview of all orders from every channel, manual entry and the API; allocates stock, creates picklists per warehouse, manages backorders and partial deliveries, and lets staff pause orders with a reason.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Order screens.",
+                  "modules": [
+                    {
+                      "id": "module-order-overview-ui",
+                      "name": "Order Overview",
+                      "type": "web-component",
+                      "description": "Lists orders by status, channel and priority; manual order entry.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-api",
+                            "type": "uses",
+                            "description": "Uses order api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Order API.",
+                  "modules": [
+                    {
+                      "id": "module-order-api",
+                      "name": "Order API",
+                      "type": "api",
+                      "description": "Create, update, pause and cancel orders.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-service",
+                            "type": "uses",
+                            "description": "Uses order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Allocation.",
+                  "modules": [
+                    {
+                      "id": "module-allocation-worker",
+                      "name": "Allocation and Backorder Worker",
+                      "type": "message-consumer",
+                      "description": "Allocates stock when orders or receipts arrive and releases backorders in sequence.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-service",
+                            "type": "uses",
+                            "description": "Uses order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Order state.",
+                  "modules": [
+                    {
+                      "id": "module-order-service",
+                      "name": "Order Service",
+                      "type": "stateful-service",
+                      "description": "Holds orders, lines, priorities, pause reasons and partial deliveries."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-allocation-worker",
+                  "type": "uses",
+                  "description": "Reserves stock per order."
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-service",
+                  "sourceModuleId": "module-allocation-worker",
+                  "type": "uses",
+                  "description": "Creates picklists for allocated orders."
+                },
+                {
+                  "targetBrickId": "rule",
+                  "moduleId": "module-rule-evaluator",
+                  "sourceModuleId": "module-order-service",
+                  "type": "uses",
+                  "description": "Evaluates rules on new orders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "sales-order",
+                  "moduleIds": [
+                    "module-order-service",
+                    "module-order-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for orders in the warehouse."
+                },
+                {
+                  "assetId": "customer-and-address",
+                  "moduleIds": [
+                    "module-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Customer and delivery address of each order."
+                }
+              ]
+            },
+            {
+              "id": "b2bp",
+              "name": "B2B Customer Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "A mini online store on live warehouse stock for wholesalers: business customers log in, see stock and their prices, place orders and follow history and status.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Portal.",
+                  "modules": [
+                    {
+                      "id": "module-b2b-portal-ui",
+                      "name": "B2B Portal Web App",
+                      "type": "web-component",
+                      "description": "Catalogue with stock, price lists, ordering and order history.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-b2b-portal-bff",
+                            "type": "uses",
+                            "description": "Uses b2b portal bff."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Portal backend.",
+                  "modules": [
+                    {
+                      "id": "module-b2b-portal-bff",
+                      "name": "B2B Portal BFF",
+                      "type": "bff",
+                      "description": "Serves catalogue, prices and orders for one business customer.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-price-list-service",
+                            "type": "uses",
+                            "description": "Uses price list service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Prices.",
+                  "modules": [
+                    {
+                      "id": "module-price-list-service",
+                      "name": "Price List Service",
+                      "type": "stateful-service",
+                      "description": "Customer-specific price lists."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordm",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-b2b-portal-bff",
+                  "type": "uses",
+                  "description": "Places B2B orders."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-query-api",
+                  "sourceModuleId": "module-b2b-portal-bff",
+                  "type": "uses",
+                  "description": "Shows live stock."
+                },
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-identity-service",
+                  "sourceModuleId": "module-b2b-portal-bff",
+                  "type": "uses",
+                  "description": "Authenticates portal customers."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "customer-and-address",
+                  "moduleIds": [
+                    "module-b2b-portal-bff"
+                  ],
+                  "role": "read",
+                  "description": "Business customer data."
+                },
+                {
+                  "assetId": "product-master",
+                  "moduleIds": [
+                    "module-b2b-portal-bff"
+                  ],
+                  "role": "read",
+                  "description": "Catalogue data."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Open API and Commerce Hub",
+          "description": "Partner and sibling connections.",
+          "bricks": [
+            {
+              "id": "papi",
+              "name": "Picqer Public API and Webhooks",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Public REST/JSON API with public documentation and webhooks for real-time events such as picklist status and stock changes, used by partners, custom shops, POS systems and reports.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "API surface.",
+                  "modules": [
+                    {
+                      "id": "module-public-rest-api",
+                      "name": "Public REST API",
+                      "type": "api",
+                      "description": "Versioned JSON endpoints for orders, products, stock, picklists, purchase orders, returns and more.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-api-auth-and-rate-limit",
+                            "type": "uses",
+                            "description": "Uses api auth and rate limit."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Event delivery.",
+                  "modules": [
+                    {
+                      "id": "module-webhook-dispatcher",
+                      "name": "Webhook Dispatcher",
+                      "type": "message-consumer",
+                      "description": "Delivers subscribed events with retries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-webhook-subscription-service",
+                            "type": "uses",
+                            "description": "Uses webhook subscription service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Security.",
+                  "modules": [
+                    {
+                      "id": "module-api-auth-and-rate-limit",
+                      "name": "API Auth and Rate Limiting",
+                      "type": "stateless-service",
+                      "description": "Validates API keys and enforces limits per account."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Subscriptions.",
+                  "modules": [
+                    {
+                      "id": "module-webhook-subscription-service",
+                      "name": "Webhook Subscription Service",
+                      "type": "stateful-service",
+                      "description": "Stores webhook endpoints and event types per account."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ordm",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-public-rest-api",
+                  "type": "uses",
+                  "description": "Exposes orders."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-event-stream",
+                  "sourceModuleId": "module-webhook-dispatcher",
+                  "type": "uses",
+                  "description": "Stock change events."
+                },
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-event-stream",
+                  "sourceModuleId": "module-webhook-dispatcher",
+                  "type": "uses",
+                  "description": "Picklist events."
+                },
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-identity-service",
+                  "sourceModuleId": "module-api-auth-and-rate-limit",
+                  "type": "uses",
+                  "description": "Resolves account and rights."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "api-key-and-webhook-subscription",
+                  "moduleIds": [
+                    "module-webhook-subscription-service",
+                    "module-api-auth-and-rate-limit"
+                  ],
+                  "role": "own",
+                  "description": "API keys and webhook endpoints."
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Partner integrations (Optiply, Rewize, Trengo, Belco, xCore/Exact Online, Itsperfect, App4Sales, Order2Flow and others)",
+                  "type": "partner",
+                  "interface": "REST API and webhooks",
+                  "description": "Partner-built integrations listed on picqer.com.",
+                  "moduleId": "module-public-rest-api"
+                },
+                {
+                  "system": "Custom shops, POS and reporting tools",
+                  "type": "customer-system",
+                  "interface": "REST API",
+                  "description": "Customer-built integrations.",
+                  "moduleId": "module-public-rest-api"
+                }
+              ]
+            },
+            {
+              "id": "ktpl",
+              "name": "Katapull Commerce Hub Bridges",
+              "type": "integration",
+              "status": "invest",
+              "description": "Productised connections between Picqer and Katapull sibling products. Evidenced today: DeliveryMatch (integration listed on both sites), Returnista (native returns integration); Transus and Vendit list Picqer as a partner. A Logic4 bridge is an inference from Katapull positioning Picqer as the WMS step-up for Logic4 customers.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Activation.",
+                  "modules": [
+                    {
+                      "id": "module-hub-connection-ui",
+                      "name": "Hub Connection Settings",
+                      "type": "web-component",
+                      "description": "Activates sibling connections with shared credentials.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-hub-bridge-service",
+                            "type": "uses",
+                            "description": "Uses hub bridge service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Bridge state.",
+                  "modules": [
+                    {
+                      "id": "module-hub-bridge-service",
+                      "name": "Hub Bridge Service",
+                      "type": "service",
+                      "description": "Maps accounts and objects between Picqer and sibling products.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-hub-adapters",
+                            "type": "uses",
+                            "description": "Uses hub adapters."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Sibling adapters.",
+                  "modules": [
+                    {
+                      "id": "module-hub-adapters",
+                      "name": "Sibling Product Adapters",
+                      "type": "integration",
+                      "description": "Adapters for DeliveryMatch, Returnista, Logic4 (assumed), Transus (assumed) and Vendit (assumed)."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "papi",
+                  "moduleId": "module-public-rest-api",
+                  "sourceModuleId": "module-hub-adapters",
+                  "type": "uses",
+                  "description": "Uses the public API like other partners."
+                },
+                {
+                  "targetBrickId": "ship",
+                  "moduleId": "module-shipment-service",
+                  "sourceModuleId": "module-hub-bridge-service",
+                  "type": "uses",
+                  "description": "Hands shipments to DeliveryMatch."
+                },
+                {
+                  "targetBrickId": "retu",
+                  "moduleId": "module-return-service",
+                  "sourceModuleId": "module-hub-bridge-service",
+                  "type": "uses",
+                  "description": "Receives Returnista pre-registrations."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "integration-connection-config",
+                  "moduleIds": [
+                    "module-hub-bridge-service"
+                  ],
+                  "role": "read-write",
+                  "description": "Sibling connection settings."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "DeliveryMatch",
+                  "type": "sibling",
+                  "interface": "API",
+                  "description": "Carrier selection and labels for 200+ carriers.",
+                  "sourceModuleId": "module-hub-adapters"
+                },
+                {
+                  "system": "Returnista",
+                  "type": "sibling",
+                  "interface": "API",
+                  "description": "Return portal; pre-registers returns in Picqer.",
+                  "sourceModuleId": "module-hub-adapters"
+                },
+                {
+                  "system": "Logic4 ERP",
+                  "type": "sibling",
+                  "interface": "API (assumed)",
+                  "description": "Orders, products and stock for Logic4 customers.",
+                  "sourceModuleId": "module-hub-adapters"
+                },
+                {
+                  "system": "Transus EDI",
+                  "type": "sibling",
+                  "interface": "EDI service (assumed)",
+                  "description": "Retailer orders and dispatch advice.",
+                  "sourceModuleId": "module-hub-adapters"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Inventory and Purchasing",
+      "description": "Knowing what is where and buying in time.",
+      "subGroups": [
+        {
+          "name": "Stock and Locations",
+          "description": "Ledger, layout, counts and traceability.",
+          "bricks": [
+            {
+              "id": "prod",
+              "name": "Product Catalogue and Barcodes",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Product master with images, supplier, weight, dimensions, barcodes (including GS1 with lot or expiry details) and stock settings; imported from stores or edited in bulk via Excel.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Product screens.",
+                  "modules": [
+                    {
+                      "id": "module-product-ui",
+                      "name": "Product Management UI",
+                      "type": "web-component",
+                      "description": "Product pages and bulk edit.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-product-api",
+                            "type": "uses",
+                            "description": "Uses product api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Product API.",
+                  "modules": [
+                    {
+                      "id": "module-product-api",
+                      "name": "Product API",
+                      "type": "api",
+                      "description": "CRUD on products and barcodes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-product-service",
+                            "type": "uses",
+                            "description": "Uses product service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Imports.",
+                  "modules": [
+                    {
+                      "id": "module-excel-import-worker",
+                      "name": "Excel Import Worker",
+                      "type": "daemon",
+                      "description": "Bulk product updates from spreadsheets.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-product-service",
+                            "type": "uses",
+                            "description": "Uses product service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Barcodes.",
+                  "modules": [
+                    {
+                      "id": "module-barcode-parser",
+                      "name": "Barcode Parser",
+                      "type": "stateless-service",
+                      "description": "Recognises EAN, GS1-128, DataMatrix and QR including lot and expiry data."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Product state.",
+                  "modules": [
+                    {
+                      "id": "module-product-service",
+                      "name": "Product Service",
+                      "type": "stateful-service",
+                      "description": "Holds product master data."
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "product-master",
+                  "moduleIds": [
+                    "module-product-service",
+                    "module-product-api"
+                  ],
+                  "role": "own",
+                  "description": "System of record for warehouse product data."
+                }
+              ]
+            },
+            {
+              "id": "invt",
+              "name": "Inventory Ledger and Stock Sync",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Records every stock change from zero with user and reason, tracks physical, reserved and free stock per warehouse and location, and publishes stock changes to channels and partners in real time.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Stock views.",
+                  "modules": [
+                    {
+                      "id": "module-stock-ui",
+                      "name": "Stock and History UI",
+                      "type": "web-component",
+                      "description": "Stock per location and full change history.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-query-api",
+                            "type": "uses",
+                            "description": "Uses stock query api."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Stock API.",
+                  "modules": [
+                    {
+                      "id": "module-stock-query-api",
+                      "name": "Stock Query API",
+                      "type": "api",
+                      "description": "Physical, reserved and free stock queries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-ledger-service",
+                            "type": "uses",
+                            "description": "Uses stock ledger service."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "module-stock-event-stream",
+                      "name": "Stock Event Stream",
+                      "type": "message-queue",
+                      "description": "Publishes stock change events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Ledger.",
+                  "modules": [
+                    {
+                      "id": "module-stock-ledger-service",
+                      "name": "Stock Ledger Service",
+                      "type": "stateful-service",
+                      "description": "Append-only stock mutations and balances.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-stock-event-stream",
+                            "type": "uses",
+                            "description": "Uses stock event stream."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "locn",
+                  "moduleId": "module-location-service",
+                  "sourceModuleId": "module-stock-ledger-service",
+                  "type": "uses",
+                  "description": "Stock is held per location."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "stock-ledger",
+                  "moduleIds": [
+                    "module-stock-ledger-service"
+                  ],
+                  "role": "own",
+                  "description": "Every stock mutation with user and reason."
+                },
+                {
+                  "assetId": "product-master",
+                  "moduleIds": [
+                    "module-stock-query-api"
+                  ],
+                  "role": "read",
+                  "description": "Product references."
+                }
+              ]
+            },
+            {
+              "id": "locn",
+              "name": "Warehouses, Locations and Replenishment",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Multiple warehouses in one account, pick and bulk locations, containers such as crates and carts, weekly A/B fast-mover classification, and replenishment of pick locations from bulk.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Layout.",
+                  "modules": [
+                    {
+                      "id": "module-location-ui",
+                      "name": "Location Management UI",
+                      "type": "web-component",
+                      "description": "Define warehouses, locations and location types.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-location-service",
+                            "type": "uses",
+                            "description": "Uses location service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Classification.",
+                  "modules": [
+                    {
+                      "id": "module-abc-classification-job",
+                      "name": "Fast-Mover Classification Job",
+                      "type": "daemon",
+                      "description": "Weekly A/B classification of products by picks.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-location-service",
+                            "type": "uses",
+                            "description": "Uses location service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Replenishment.",
+                  "modules": [
+                    {
+                      "id": "module-replenishment-planner",
+                      "name": "Replenishment Planner",
+                      "type": "stateless-service",
+                      "description": "Suggests moves from bulk to pick locations."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Locations.",
+                  "modules": [
+                    {
+                      "id": "module-location-service",
+                      "name": "Location Service",
+                      "type": "stateful-service",
+                      "description": "Warehouses, locations, containers and routes order."
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "location-and-warehouse",
+                  "moduleIds": [
+                    "module-location-service"
+                  ],
+                  "role": "own",
+                  "description": "Warehouse layout and locations."
+                }
+              ]
+            },
+            {
+              "id": "cycl",
+              "name": "Cycle Counting",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Counting all year round in small rounds: count everything, a risk-based selection, or only locations where something happened; differences corrected on confirmation.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Count planning.",
+                  "modules": [
+                    {
+                      "id": "module-count-planning-ui",
+                      "name": "Count Planning UI",
+                      "type": "web-component",
+                      "description": "Plan count rounds by strategy.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-count-service",
+                            "type": "uses",
+                            "description": "Uses count service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Selection.",
+                  "modules": [
+                    {
+                      "id": "module-count-selection-engine",
+                      "name": "Count Selection Engine",
+                      "type": "stateless-service",
+                      "description": "Selects locations by risk or activity."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Counts.",
+                  "modules": [
+                    {
+                      "id": "module-count-service",
+                      "name": "Count Service",
+                      "type": "stateful-service",
+                      "description": "Count rounds, results and corrections.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-count-selection-engine",
+                            "type": "uses",
+                            "description": "Uses count selection engine."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-count-service",
+                  "type": "uses",
+                  "description": "Books count corrections."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "stock-count",
+                  "moduleIds": [
+                    "module-count-service"
+                  ],
+                  "role": "own",
+                  "description": "Count rounds and differences."
+                }
+              ]
+            },
+            {
+              "id": "lotb",
+              "name": "Batch and Best-Before Traceability",
+              "type": "service",
+              "status": "invest",
+              "description": "Records batch numbers and best-before dates at receipt and tracks them through stock, moves, picks, counts and returns; shows batches in the fulfilment portal (released 2026 according to Picqer).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Batch views.",
+                  "modules": [
+                    {
+                      "id": "module-batch-ui",
+                      "name": "Batch and Expiry Views",
+                      "type": "web-component",
+                      "description": "Stock and shipments per batch and expiry.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-lot-service",
+                            "type": "uses",
+                            "description": "Uses lot service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Picking policy.",
+                  "modules": [
+                    {
+                      "id": "module-fefo-allocator",
+                      "name": "FEFO Allocator",
+                      "type": "stateless-service",
+                      "description": "Chooses batches first-expiry-first-out (assumed policy)."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Lots.",
+                  "modules": [
+                    {
+                      "id": "module-lot-service",
+                      "name": "Lot Service",
+                      "type": "stateful-service",
+                      "description": "Batches with expiry per location and shipment."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-lot-service",
+                  "type": "uses",
+                  "description": "Lot-level stock mutations."
+                },
+                {
+                  "targetBrickId": "prod",
+                  "moduleId": "module-barcode-parser",
+                  "sourceModuleId": "module-lot-service",
+                  "type": "uses",
+                  "description": "Reads lot and expiry from GS1 barcodes."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "batch-and-expiry-lot",
+                  "moduleIds": [
+                    "module-lot-service"
+                  ],
+                  "role": "own",
+                  "description": "Batch and best-before data and genealogy."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Inbound",
+          "description": "Purchasing and receiving.",
+          "bricks": [
+            {
+              "id": "purc",
+              "name": "Purchase Advice and Purchase Orders",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Advice per supplier on what to buy based on stock, sales and waiting customers; converts advice to purchase orders e-mailed as PDF and Excel; tracks expected deliveries. Partners such as Optiply and Rewize add forecast-based advice.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Purchasing.",
+                  "modules": [
+                    {
+                      "id": "module-purchasing-ui",
+                      "name": "Purchasing UI",
+                      "type": "web-component",
+                      "description": "Advice, purchase orders and expected deliveries.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-purchase-order-service",
+                            "type": "uses",
+                            "description": "Uses purchase order service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Mail.",
+                  "modules": [
+                    {
+                      "id": "module-po-mailer",
+                      "name": "Purchase Order Mailer",
+                      "type": "daemon",
+                      "description": "Sends purchase orders with PDF and Excel."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Advice.",
+                  "modules": [
+                    {
+                      "id": "module-purchase-advice-engine",
+                      "name": "Purchase Advice Engine",
+                      "type": "stateless-service",
+                      "description": "Calculates reorder quantities per supplier."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Orders.",
+                  "modules": [
+                    {
+                      "id": "module-purchase-order-service",
+                      "name": "Purchase Order Service",
+                      "type": "stateful-service",
+                      "description": "Suppliers, purchase orders and expected dates.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-purchase-advice-engine",
+                            "type": "uses",
+                            "description": "Uses purchase advice engine."
+                          },
+                          {
+                            "moduleId": "module-po-mailer",
+                            "type": "uses",
+                            "description": "Uses po mailer."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-query-api",
+                  "sourceModuleId": "module-purchase-advice-engine",
+                  "type": "uses",
+                  "description": "Reads stock and reservations."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "purchase-order",
+                  "moduleIds": [
+                    "module-purchase-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Purchase orders and lines."
+                },
+                {
+                  "assetId": "supplier",
+                  "moduleIds": [
+                    "module-purchase-order-service"
+                  ],
+                  "role": "own",
+                  "description": "Supplier master."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Optiply, Rewize",
+                  "type": "partner",
+                  "interface": "API",
+                  "description": "Advanced purchasing and forecast advice.",
+                  "sourceModuleId": "module-purchase-advice-engine"
+                }
+              ]
+            },
+            {
+              "id": "rcvg",
+              "name": "Goods Receipt and Put-away",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Receipt of purchase orders by scanning, into a location or a container, with several people on one receipt, product label printing and A/B hints for put-away; shows which backorders can ship.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Receiving.",
+                  "modules": [
+                    {
+                      "id": "module-receiving-ui",
+                      "name": "Receiving UI",
+                      "type": "web-component",
+                      "description": "Scan-based receipt.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-receipt-service",
+                            "type": "uses",
+                            "description": "Uses receipt service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Receipts.",
+                  "modules": [
+                    {
+                      "id": "module-receipt-service",
+                      "name": "Receipt Service",
+                      "type": "stateful-service",
+                      "description": "Receipts, quantities and put-away targets."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "purc",
+                  "moduleId": "module-purchase-order-service",
+                  "sourceModuleId": "module-receipt-service",
+                  "type": "uses",
+                  "description": "Matches receipts to purchase orders."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-receipt-service",
+                  "type": "uses",
+                  "description": "Books received stock."
+                },
+                {
+                  "targetBrickId": "ordm",
+                  "moduleId": "module-allocation-worker",
+                  "sourceModuleId": "module-receipt-service",
+                  "type": "uses",
+                  "description": "Releases backorders."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "goods-receipt",
+                  "moduleIds": [
+                    "module-receipt-service"
+                  ],
+                  "role": "own",
+                  "description": "Receipts and put-away."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Picking, Packing and Shipping",
+      "description": "Turning orders into correct parcels.",
+      "subGroups": [
+        {
+          "name": "Outbound Execution",
+          "description": "Picking, packing, shipping and returns.",
+          "bricks": [
+            {
+              "id": "pkls",
+              "name": "Picklist and Batch Picking Engine",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Creates picklists and batches on the optimal route, singles picking for single-line orders, bulk processing of identical orders, urgent and snoozed picklists, pausing with reasons and picklist splitting.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Picking screens.",
+                  "modules": [
+                    {
+                      "id": "module-picking-ui",
+                      "name": "Picking UI",
+                      "type": "web-component",
+                      "description": "Picklists and batches in the browser.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-picklist-service",
+                            "type": "uses",
+                            "description": "Uses picklist service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Events.",
+                  "modules": [
+                    {
+                      "id": "module-picklist-event-stream",
+                      "name": "Picklist Event Stream",
+                      "type": "message-queue",
+                      "description": "Picklist status events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Routing.",
+                  "modules": [
+                    {
+                      "id": "module-route-optimiser",
+                      "name": "Route Optimiser",
+                      "type": "stateless-service",
+                      "description": "Orders picks by location sequence."
+                    },
+                    {
+                      "id": "module-batch-builder",
+                      "name": "Batch Builder",
+                      "type": "stateless-service",
+                      "description": "Builds batches, singles lists and bulk groups.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-route-optimiser",
+                            "type": "uses",
+                            "description": "Uses route optimiser."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Picklists.",
+                  "modules": [
+                    {
+                      "id": "module-picklist-service",
+                      "name": "Picklist Service",
+                      "type": "stateful-service",
+                      "description": "Picklists, batches, pauses and splits.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-batch-builder",
+                            "type": "uses",
+                            "description": "Uses batch builder."
+                          },
+                          {
+                            "moduleId": "module-picklist-event-stream",
+                            "type": "uses",
+                            "description": "Uses picklist event stream."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "locn",
+                  "moduleId": "module-location-service",
+                  "sourceModuleId": "module-route-optimiser",
+                  "type": "uses",
+                  "description": "Location sequence."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-picklist-service",
+                  "type": "uses",
+                  "description": "Books picked stock."
+                },
+                {
+                  "targetBrickId": "rule",
+                  "moduleId": "module-rule-evaluator",
+                  "sourceModuleId": "module-picklist-service",
+                  "type": "uses",
+                  "description": "Rules on picklists."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "picklist-and-batch",
+                  "moduleIds": [
+                    "module-picklist-service"
+                  ],
+                  "role": "own",
+                  "description": "Picklists and batches."
+                }
+              ]
+            },
+            {
+              "id": "pack",
+              "name": "Packing Station and Packaging Advice",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Packing table workflow with barcode verification, packaging advice based on dimensions or rules, and recording of the packaging used per shipment for cost pass-through.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Packing.",
+                  "modules": [
+                    {
+                      "id": "module-packing-station-ui",
+                      "name": "Packing Station UI",
+                      "type": "web-component",
+                      "description": "Scan, verify and close shipments.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-packing-service",
+                            "type": "uses",
+                            "description": "Uses packing service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Advice.",
+                  "modules": [
+                    {
+                      "id": "module-packaging-advisor",
+                      "name": "Packaging Advisor",
+                      "type": "stateless-service",
+                      "description": "Recommends box or envelope from dimensions or rules."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Packing.",
+                  "modules": [
+                    {
+                      "id": "module-packing-service",
+                      "name": "Packing Service",
+                      "type": "stateful-service",
+                      "description": "Packed parcels and packaging used.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-packaging-advisor",
+                            "type": "uses",
+                            "description": "Uses packaging advisor."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-service",
+                  "sourceModuleId": "module-packing-service",
+                  "type": "uses",
+                  "description": "Closes picklists."
+                },
+                {
+                  "targetBrickId": "ship",
+                  "moduleId": "module-shipment-service",
+                  "sourceModuleId": "module-packing-service",
+                  "type": "uses",
+                  "description": "Creates shipments."
+                },
+                {
+                  "targetBrickId": "prnt",
+                  "moduleId": "module-print-job-service",
+                  "sourceModuleId": "module-packing-service",
+                  "type": "uses",
+                  "description": "Prints labels and packing slips."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "packaging-usage",
+                  "moduleIds": [
+                    "module-packing-service"
+                  ],
+                  "role": "own",
+                  "description": "Packaging used per shipment."
+                }
+              ]
+            },
+            {
+              "id": "ship",
+              "name": "Shipping Provider Integrations and Labels",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Creates shipments and labels with carriers and shipping platforms (Picqer lists PostNL, DHL eCommerce, GLS, DPD, Sendcloud, MyParcel, Shippo, DeliveryMatch, Wuunder, MontaShip and more), stores tracking codes and e-mails customers with track-and-trace.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "Shipping API.",
+                  "modules": [
+                    {
+                      "id": "module-shipment-api",
+                      "name": "Shipment API",
+                      "type": "api",
+                      "description": "Create and cancel shipments.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-shipment-service",
+                            "type": "uses",
+                            "description": "Uses shipment service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Notifications.",
+                  "modules": [
+                    {
+                      "id": "module-shipped-notifier",
+                      "name": "Shipped Notification Consumer",
+                      "type": "message-consumer",
+                      "description": "Sends shipment e-mails and triggers channel write-back."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Shipments.",
+                  "modules": [
+                    {
+                      "id": "module-shipment-service",
+                      "name": "Shipment Service",
+                      "type": "stateful-service",
+                      "description": "Shipments, labels and tracking codes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-carrier-adapters",
+                            "type": "uses",
+                            "description": "Uses carrier adapters."
+                          },
+                          {
+                            "moduleId": "module-shipped-notifier",
+                            "type": "uses",
+                            "description": "Uses shipped notifier."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Carriers.",
+                  "modules": [
+                    {
+                      "id": "module-carrier-adapters",
+                      "name": "Carrier and Shipping Platform Adapters",
+                      "type": "integration",
+                      "description": "Picqer-built and partner-built shipping integrations."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "chan",
+                  "moduleId": "module-status-writeback-consumer",
+                  "sourceModuleId": "module-shipped-notifier",
+                  "type": "uses",
+                  "description": "Writes tracking to the channel."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "shipment-record",
+                  "moduleIds": [
+                    "module-shipment-service"
+                  ],
+                  "role": "own",
+                  "description": "Shipments and tracking."
+                },
+                {
+                  "assetId": "shipping-label-document",
+                  "moduleIds": [
+                    "module-shipment-service"
+                  ],
+                  "role": "own",
+                  "description": "Label files."
+                },
+                {
+                  "assetId": "customer-and-address",
+                  "moduleIds": [
+                    "module-shipment-service"
+                  ],
+                  "role": "read",
+                  "description": "Delivery address."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Carriers (PostNL, DHL eCommerce, GLS, DPD, Budbee, Cycloon and others)",
+                  "type": "carrier",
+                  "interface": "Carrier APIs",
+                  "description": "Labels and tracking.",
+                  "sourceModuleId": "module-carrier-adapters"
+                },
+                {
+                  "system": "Shipping platforms (Sendcloud, MyParcel, Shippo, DeliveryMatch, Wuunder, QLS, MontaShip and others)",
+                  "type": "shipping-platform",
+                  "interface": "Platform APIs",
+                  "description": "Multi-carrier booking.",
+                  "sourceModuleId": "module-carrier-adapters"
+                }
+              ]
+            },
+            {
+              "id": "prnt",
+              "name": "Automatic Printing and Warehouse Hardware Connectivity",
+              "type": "integration",
+              "status": "sustaining",
+              "description": "Sends labels and packing slips straight to printers without print dialogs and connects scanners, carton sealers and label applicators, conveyors and goods-to-person systems (Kardex, AutoStore) with hardware partners.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Devices.",
+                  "modules": [
+                    {
+                      "id": "module-device-settings-ui",
+                      "name": "Printer and Device Settings",
+                      "type": "web-component",
+                      "description": "Register printers and devices per station.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-print-job-service",
+                            "type": "uses",
+                            "description": "Uses print job service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Local agent.",
+                  "modules": [
+                    {
+                      "id": "module-print-agent",
+                      "name": "Print Agent (assumed local client)",
+                      "type": "daemon",
+                      "description": "Receives print jobs at the warehouse and prints silently."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Print jobs.",
+                  "modules": [
+                    {
+                      "id": "module-print-job-service",
+                      "name": "Print Job Service",
+                      "type": "service",
+                      "description": "Queues label and document print jobs per station.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-print-agent",
+                            "type": "uses",
+                            "description": "Uses print agent."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Mechanisation.",
+                  "modules": [
+                    {
+                      "id": "module-mechanisation-adapters",
+                      "name": "Mechanisation Adapters",
+                      "type": "integration",
+                      "description": "Interfaces with conveyors, carton machines and goods-to-person systems via partners."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-event-stream",
+                  "sourceModuleId": "module-mechanisation-adapters",
+                  "type": "uses",
+                  "description": "Sends picks to goods-to-person systems."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "hardware-device-registry",
+                  "moduleIds": [
+                    "module-print-job-service",
+                    "module-device-settings-ui"
+                  ],
+                  "role": "own",
+                  "description": "Printers and devices per station."
+                },
+                {
+                  "assetId": "shipping-label-document",
+                  "moduleIds": [
+                    "module-print-job-service"
+                  ],
+                  "role": "read",
+                  "description": "Labels to print."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Goods-to-person and conveyor systems (Kardex, AutoStore) via intralogistics partners",
+                  "type": "hardware",
+                  "interface": "Partner interfaces",
+                  "description": "Mechanised picking and transport.",
+                  "sourceModuleId": "module-mechanisation-adapters"
+                }
+              ]
+            },
+            {
+              "id": "retu",
+              "name": "Returns Processing",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Registers returns manually or pre-registered by return tools (Returnista, Returnless, ReturnGO), scans returned parcels, records inspection and restocks sellable items.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Returns.",
+                  "modules": [
+                    {
+                      "id": "module-returns-ui",
+                      "name": "Returns UI",
+                      "type": "web-component",
+                      "description": "Register, receive and inspect returns.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-return-service",
+                            "type": "uses",
+                            "description": "Uses return service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Pre-registration.",
+                  "modules": [
+                    {
+                      "id": "module-return-intake-api",
+                      "name": "Return Intake API",
+                      "type": "api",
+                      "description": "Accepts pre-registered returns from partners.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-return-service",
+                            "type": "uses",
+                            "description": "Uses return service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Returns.",
+                  "modules": [
+                    {
+                      "id": "module-return-service",
+                      "name": "Return Service",
+                      "type": "stateful-service",
+                      "description": "Returns, reasons and inspection outcomes."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-ledger-service",
+                  "sourceModuleId": "module-return-service",
+                  "type": "uses",
+                  "description": "Restocks sellable items."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "return-record",
+                  "moduleIds": [
+                    "module-return-service"
+                  ],
+                  "role": "own",
+                  "description": "Returns and outcomes."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Returnista, Returnless, ReturnGO",
+                  "type": "partner",
+                  "interface": "API",
+                  "description": "Return portals that pre-register returns.",
+                  "sourceModuleId": "module-return-intake-api"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Automation, Mobile and Insight",
+      "description": "Making the team faster and informed.",
+      "subGroups": [
+        {
+          "name": "Work Automation and Collaboration",
+          "description": "Rules, app, comments and reports.",
+          "bricks": [
+            {
+              "id": "rule",
+              "name": "Rules Automation Engine",
+              "type": "service",
+              "status": "sustaining",
+              "description": "If-this-then-that rules evaluated on every new order and picklist: choose a shipping method, mark urgent, snooze until a date, assign to a user or zone, add packaging or notes, per product, destination, weight or fulfilment client.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Rule editor.",
+                  "modules": [
+                    {
+                      "id": "module-rule-editor-ui",
+                      "name": "Rule Editor",
+                      "type": "web-component",
+                      "description": "Conditions and actions.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rule-store",
+                            "type": "uses",
+                            "description": "Uses rule store."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Evaluation.",
+                  "modules": [
+                    {
+                      "id": "module-rule-evaluator",
+                      "name": "Rule Evaluator",
+                      "type": "stateless-service",
+                      "description": "Evaluates rules and returns actions.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-rule-store",
+                            "type": "uses",
+                            "description": "Uses rule store."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Rules.",
+                  "modules": [
+                    {
+                      "id": "module-rule-store",
+                      "name": "Rule Store",
+                      "type": "stateful-service",
+                      "description": "Rules per account and client."
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "automation-rule-set",
+                  "moduleIds": [
+                    "module-rule-store"
+                  ],
+                  "role": "own",
+                  "description": "Rules per account."
+                }
+              ]
+            },
+            {
+              "id": "mapp",
+              "name": "Picqer Mobile App",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "iOS and Android app for handheld scanners and phones: batch picking, receiving, counting, moving and replenishing stock, tasks and comments, included in all plans.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "App.",
+                  "modules": [
+                    {
+                      "id": "module-mobile-app",
+                      "name": "Picqer App",
+                      "type": "mobile-component",
+                      "description": "Native app for handhelds (e.g. Zebra TC22).",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-mobile-bff",
+                            "type": "uses",
+                            "description": "Uses mobile bff."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Backend for app.",
+                  "modules": [
+                    {
+                      "id": "module-mobile-bff",
+                      "name": "Mobile BFF",
+                      "type": "bff",
+                      "description": "Aggregates picking, stock and task endpoints for the app."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-service",
+                  "sourceModuleId": "module-mobile-bff",
+                  "type": "uses",
+                  "description": "Batches and picks."
+                },
+                {
+                  "targetBrickId": "rcvg",
+                  "moduleId": "module-receipt-service",
+                  "sourceModuleId": "module-mobile-bff",
+                  "type": "uses",
+                  "description": "Receipts."
+                },
+                {
+                  "targetBrickId": "cycl",
+                  "moduleId": "module-count-service",
+                  "sourceModuleId": "module-mobile-bff",
+                  "type": "uses",
+                  "description": "Counts."
+                },
+                {
+                  "targetBrickId": "coll",
+                  "moduleId": "module-collaboration-service",
+                  "sourceModuleId": "module-mobile-bff",
+                  "type": "uses",
+                  "description": "Tasks and comments."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Apple App Store and Google Play",
+                  "type": "distribution",
+                  "interface": "App stores",
+                  "description": "App distribution.",
+                  "sourceModuleId": "module-mobile-app"
+                }
+              ]
+            },
+            {
+              "id": "coll",
+              "name": "Comments, Tasks and Notifications",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Comments with @mentions, reactions and up to five photos on picklists, orders and purchase orders, warehouse tasks, a \"For you\" inbox and e-mail notifications, shared with fulfilment clients.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Inbox.",
+                  "modules": [
+                    {
+                      "id": "module-for-you-inbox",
+                      "name": "For You Inbox",
+                      "type": "web-component",
+                      "description": "Mentions and reactions.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-collaboration-service",
+                            "type": "uses",
+                            "description": "Uses collaboration service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Notifications.",
+                  "modules": [
+                    {
+                      "id": "module-notification-mailer",
+                      "name": "Notification Mailer",
+                      "type": "daemon",
+                      "description": "E-mail notifications."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Collaboration.",
+                  "modules": [
+                    {
+                      "id": "module-collaboration-service",
+                      "name": "Collaboration Service",
+                      "type": "stateful-service",
+                      "description": "Comments, photos, tasks.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-notification-mailer",
+                            "type": "uses",
+                            "description": "Uses notification mailer."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "comment-and-task",
+                  "moduleIds": [
+                    "module-collaboration-service"
+                  ],
+                  "role": "own",
+                  "description": "Comments, photos and tasks."
+                }
+              ]
+            },
+            {
+              "id": "rprt",
+              "name": "Reports and Warehouse Analytics",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Warehouse status at a glance and reports on team performance, stock levels, bestsellers and slow movers, also available to fulfilment clients.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Dashboards.",
+                  "modules": [
+                    {
+                      "id": "module-dashboard-ui",
+                      "name": "Dashboard and Reports UI",
+                      "type": "web-component",
+                      "description": "Warehouse status and reports.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-report-query-service",
+                            "type": "uses",
+                            "description": "Uses report query service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Aggregation.",
+                  "modules": [
+                    {
+                      "id": "module-activity-aggregator",
+                      "name": "Activity Aggregator",
+                      "type": "message-consumer",
+                      "description": "Builds report aggregates from events."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Queries.",
+                  "modules": [
+                    {
+                      "id": "module-report-query-service",
+                      "name": "Report Query Service",
+                      "type": "service",
+                      "description": "Serves report data.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-activity-aggregator",
+                            "type": "uses",
+                            "description": "Uses activity aggregator."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "pkls",
+                  "moduleId": "module-picklist-event-stream",
+                  "sourceModuleId": "module-activity-aggregator",
+                  "type": "uses",
+                  "description": "Pick events."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-event-stream",
+                  "sourceModuleId": "module-activity-aggregator",
+                  "type": "uses",
+                  "description": "Stock events."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "warehouse-activity-log",
+                  "moduleIds": [
+                    "module-activity-aggregator",
+                    "module-report-query-service"
+                  ],
+                  "role": "own",
+                  "description": "Aggregated activity."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fulfilment Services",
+      "description": "Running a 3PL business on Picqer.",
+      "subGroups": [
+        {
+          "name": "Multi-Client Fulfilment",
+          "description": "Separation, portal and invoicing.",
+          "bricks": [
+            {
+              "id": "ften",
+              "name": "Fulfilment Client Separation",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Keeps every fulfilment client's products, stock and orders separate inside one account, while the floor processes all clients through one workflow with client-specific settings and rules.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Clients.",
+                  "modules": [
+                    {
+                      "id": "module-client-admin-ui",
+                      "name": "Client Administration",
+                      "type": "web-component",
+                      "description": "Create clients, settings and rights.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-client-service",
+                            "type": "uses",
+                            "description": "Uses client service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Clients.",
+                  "modules": [
+                    {
+                      "id": "module-client-service",
+                      "name": "Fulfilment Client Service",
+                      "type": "stateful-service",
+                      "description": "Client accounts and scoping of data."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-identity-service",
+                  "sourceModuleId": "module-client-service",
+                  "type": "uses",
+                  "description": "Client users."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "fulfilment-client-account",
+                  "moduleIds": [
+                    "module-client-service"
+                  ],
+                  "role": "own",
+                  "description": "Fulfilment clients and settings."
+                }
+              ]
+            },
+            {
+              "id": "fpor",
+              "name": "Fulfilment Client Portal",
+              "type": "full-stack",
+              "status": "sustaining",
+              "description": "Portal in the 3PL's branding where clients see stock and orders in real time, import products, push stock, create (concept) orders, cancel unpicked items, release partial deliveries, use purchase advice and pull reports, with rights per client.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Portal.",
+                  "modules": [
+                    {
+                      "id": "module-fulfilment-portal-ui",
+                      "name": "Fulfilment Portal Web App",
+                      "type": "web-component",
+                      "description": "Client-facing portal.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-fulfilment-portal-bff",
+                            "type": "uses",
+                            "description": "Uses fulfilment portal bff."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "interfaces",
+                  "description": "Backend.",
+                  "modules": [
+                    {
+                      "id": "module-fulfilment-portal-bff",
+                      "name": "Fulfilment Portal BFF",
+                      "type": "bff",
+                      "description": "Client-scoped views and actions."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "ften",
+                  "moduleId": "module-client-service",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Client scoping and rights."
+                },
+                {
+                  "targetBrickId": "ordm",
+                  "moduleId": "module-order-api",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Order actions."
+                },
+                {
+                  "targetBrickId": "invt",
+                  "moduleId": "module-stock-query-api",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Stock views."
+                },
+                {
+                  "targetBrickId": "purc",
+                  "moduleId": "module-purchase-order-service",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Purchase advice."
+                },
+                {
+                  "targetBrickId": "coll",
+                  "moduleId": "module-collaboration-service",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Comments with the 3PL."
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-report-query-service",
+                  "sourceModuleId": "module-fulfilment-portal-bff",
+                  "type": "uses",
+                  "description": "Client reports."
+                }
+              ]
+            },
+            {
+              "id": "finv",
+              "name": "Fulfilment Client Invoicing",
+              "type": "service",
+              "status": "invest",
+              "description": "Connects each client's rates to picklists, shipments, receipts, returns, packaging and storage to build invoice lines by category; announced by Picqer as in development (October 2026).",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Rates.",
+                  "modules": [
+                    {
+                      "id": "module-rate-card-ui",
+                      "name": "Rate Card Editor",
+                      "type": "web-component",
+                      "description": "Rates per client and activity.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-invoice-line-builder",
+                            "type": "uses",
+                            "description": "Uses invoice line builder."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Billing run.",
+                  "modules": [
+                    {
+                      "id": "module-invoice-line-builder",
+                      "name": "Invoice Line Builder",
+                      "type": "daemon",
+                      "description": "Builds monthly invoice lines per client."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-report-query-service",
+                  "sourceModuleId": "module-invoice-line-builder",
+                  "type": "uses",
+                  "description": "Activity totals."
+                },
+                {
+                  "targetBrickId": "ften",
+                  "moduleId": "module-client-service",
+                  "sourceModuleId": "module-invoice-line-builder",
+                  "type": "uses",
+                  "description": "Client list."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "fulfilment-rate-card-and-invoice-line",
+                  "moduleIds": [
+                    "module-invoice-line-builder"
+                  ],
+                  "role": "own",
+                  "description": "Rates and invoice lines."
+                },
+                {
+                  "assetId": "packaging-usage",
+                  "moduleIds": [
+                    "module-invoice-line-builder"
+                  ],
+                  "role": "read",
+                  "description": "Packaging to charge."
+                },
+                {
+                  "assetId": "warehouse-activity-log",
+                  "moduleIds": [
+                    "module-invoice-line-builder"
+                  ],
+                  "role": "read",
+                  "description": "Billable activity."
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [
+                {
+                  "system": "Accounting software (e.g. Exact Online)",
+                  "type": "accounting",
+                  "interface": "Export or partner connector (assumed)",
+                  "description": "Receives invoice lines.",
+                  "moduleId": "module-invoice-line-builder"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform Foundation",
+      "description": "Accounts and commercial plumbing.",
+      "subGroups": [
+        {
+          "name": "Shared Services",
+          "description": "Users, rights, plans.",
+          "bricks": [
+            {
+              "id": "acct",
+              "name": "Accounts, Users and Rights",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Multi-tenant accounts with unlimited users, per-user rights, copying users, a rights overview and logins for portal users.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Users.",
+                  "modules": [
+                    {
+                      "id": "module-user-admin-ui",
+                      "name": "User and Rights Admin",
+                      "type": "web-component",
+                      "description": "Users, copy user, rights overview.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-identity-service",
+                            "type": "uses",
+                            "description": "Uses identity service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Identity.",
+                  "modules": [
+                    {
+                      "id": "module-identity-service",
+                      "name": "Identity and Rights Service",
+                      "type": "stateful-service",
+                      "description": "Authentication and authorisation."
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "user-account-and-rights",
+                  "moduleIds": [
+                    "module-identity-service"
+                  ],
+                  "role": "own",
+                  "description": "Users and rights."
+                }
+              ]
+            },
+            {
+              "id": "subs",
+              "name": "Plans, Trials and Order-Volume Billing",
+              "type": "service",
+              "status": "sustaining",
+              "description": "Self-service 14-day trial, plan selection (Team, Business, Premium, Premium+, Enterprise; Fulfilment, Plus, Next, Max), order counting against included volume and per-order fees, payment by card or SEPA direct debit.",
+              "layers": [
+                {
+                  "layer": "ui",
+                  "description": "Billing.",
+                  "modules": [
+                    {
+                      "id": "module-plan-ui",
+                      "name": "Plan and Trial UI",
+                      "type": "web-component",
+                      "description": "Signup, trial and plan changes.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-subscription-service",
+                            "type": "uses",
+                            "description": "Uses subscription service."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Metering.",
+                  "modules": [
+                    {
+                      "id": "module-order-meter",
+                      "name": "Order Volume Meter",
+                      "type": "message-consumer",
+                      "description": "Counts processed orders per month."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Subscriptions.",
+                  "modules": [
+                    {
+                      "id": "module-subscription-service",
+                      "name": "Subscription Service",
+                      "type": "stateful-service",
+                      "description": "Plans, invoices and payment status.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-order-meter",
+                            "type": "uses",
+                            "description": "Uses order meter."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "subscription-and-order-usage",
+                  "moduleIds": [
+                    "module-subscription-service"
+                  ],
+                  "role": "own",
+                  "description": "Plans and usage."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Payment provider (card and SEPA direct debit)",
+                  "type": "payment",
+                  "interface": "Payment API (provider not published)",
+                  "description": "Collects subscription payments.",
+                  "sourceModuleId": "module-subscription-service"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

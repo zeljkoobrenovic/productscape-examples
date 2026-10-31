@@ -1,0 +1,982 @@
+{
+  "metadata": {
+    "domainId": "b2b-wholesale-ecommerce-platform",
+    "title": "B2B Wholesale E-commerce Platform Data Assets",
+    "description": "Logical data of Highbiza webshops: transactions, accounts and price agreements, catalogue and content, configuration and operations, governed by GDPR, Dutch fiscal retention, EU consumer rules and Highbiza's ISO 27001 certification. Retention periods marked as assumptions are not published by Highbiza.",
+    "modelVersion": "1.0"
+  },
+  "rootGroups": [
+    {
+      "name": "Commerce Transaction Data",
+      "description": "Commerce Transaction Data.",
+      "subGroups": [
+        {
+          "name": "Orders and Quotes",
+          "description": "Orders and Quotes.",
+          "assets": [
+            {
+              "id": "sales-order",
+              "name": "Sales Order",
+              "kind": "transaction",
+              "description": "Web and marketplace orders with lines, prices, addresses and status.",
+              "businessMeaning": "The revenue record before the ERP takes over.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer",
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "nl-fiscal-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Merchant staff of the owning shop; Highbiza support",
+              "systemOfRecordBrickId": "ordr",
+              "derivedFromAssetIds": [
+                "shopping-cart"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "analytics-store",
+                  "role": "analytics-copy"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "order api",
+                  "description": "Order CRUD."
+                },
+                {
+                  "type": "event",
+                  "name": "order events",
+                  "description": "Order created and status changed."
+                }
+              ],
+              "governance": {
+                "retention": "Kept 7 years for Dutch fiscal retention once invoiced; personal data minimised after",
+                "residency": "eu",
+                "sharingPolicy": "Shared with ERP, carriers and payment providers for fulfilment"
+              }
+            },
+            {
+              "id": "quote",
+              "name": "Quote",
+              "kind": "transaction",
+              "description": "Quote requests and offers with lines, validity and status; saved reorder lists.",
+              "businessMeaning": "Pipeline of large trade orders.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant sales staff and the requesting company",
+              "systemOfRecordBrickId": "quot",
+              "derivedFromAssetIds": [
+                "customer-price-agreement"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "quote api",
+                  "description": "Quote lifecycle."
+                }
+              ],
+              "governance": {
+                "retention": "Kept 2 years after expiry (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Not shared outside merchant"
+              }
+            },
+            {
+              "id": "shopping-cart",
+              "name": "Shopping Cart",
+              "kind": "transaction",
+              "description": "Active baskets and checkout sessions.",
+              "businessMeaning": "Intent before purchase; source for abandonment analysis.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer",
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Shop runtime",
+              "systemOfRecordBrickId": "cart",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "checkout api",
+                  "description": "Basket operations."
+                }
+              ],
+              "governance": {
+                "retention": "Expires after inactivity (assumption: 30 days)",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment, Delivery and Returns",
+          "description": "Payment, Delivery and Returns.",
+          "assets": [
+            {
+              "id": "payment-transaction",
+              "name": "Payment Transaction",
+              "kind": "transaction",
+              "description": "Payment attempts, statuses, provider references and refunds; no card data.",
+              "businessMeaning": "Proof of payment and refund.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "psd2",
+                "nl-fiscal-retention"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Shop runtime and finance staff",
+              "systemOfRecordBrickId": "paym",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "webhook",
+                  "name": "psp callbacks",
+                  "description": "Status updates from providers."
+                }
+              ],
+              "governance": {
+                "retention": "7 years with the order",
+                "residency": "eu",
+                "sharingPolicy": "Shared with the payment provider"
+              }
+            },
+            {
+              "id": "shipment",
+              "name": "Shipment",
+              "kind": "transaction",
+              "description": "Carrier, label, tracking code and delivery status per order.",
+              "businessMeaning": "Delivery promise and evidence.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant logistics staff",
+              "systemOfRecordBrickId": "shpo",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "shipping api",
+                  "description": "Options and labels."
+                }
+              ],
+              "governance": {
+                "retention": "2 years (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Shared with carriers and DeliveryMatch"
+              }
+            },
+            {
+              "id": "withdrawal-request",
+              "name": "Withdrawal Request",
+              "kind": "transaction",
+              "description": "Consumer withdrawal and return requests with order number, products and reason.",
+              "businessMeaning": "Evidence of exercising the 14-day withdrawal right.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "eu-consumer-rights"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant customer service",
+              "systemOfRecordBrickId": "wdrw",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "form",
+                  "name": "return form page",
+                  "description": "Consumer submission."
+                }
+              ],
+              "governance": {
+                "retention": "Kept with the order record",
+                "residency": "eu",
+                "sharingPolicy": "Shared with a returns platform only if connected"
+              }
+            },
+            {
+              "id": "loyalty-points-ledger",
+              "name": "Loyalty Points Ledger",
+              "kind": "ledger",
+              "description": "Points earned, redeemed and expired per customer.",
+              "businessMeaning": "A liability-like balance that drives repeat purchases.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "consumer",
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Shop runtime and merchant admins",
+              "systemOfRecordBrickId": "loyl",
+              "derivedFromAssetIds": [
+                "sales-order"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "promotion api",
+                  "description": "Balance and redemption."
+                }
+              ],
+              "governance": {
+                "retention": "While the account exists",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer and Access Data",
+      "description": "Customer and Access Data.",
+      "subGroups": [
+        {
+          "name": "Accounts",
+          "description": "Accounts.",
+          "assets": [
+            {
+              "id": "business-customer-account",
+              "name": "Business Customer Account",
+              "kind": "master-data",
+              "description": "Company account with customer group, addresses, payment terms and buyers.",
+              "businessMeaning": "Who a trade customer is and which terms apply.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Merchant staff; mastered in ERP",
+              "systemOfRecordBrickId": "acct",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "account api",
+                  "description": "Accounts and groups."
+                }
+              ],
+              "governance": {
+                "retention": "While the trade relationship exists",
+                "residency": "eu",
+                "sharingPolicy": "Synced with the ERP"
+              }
+            },
+            {
+              "id": "buyer-contact",
+              "name": "Buyer Contact",
+              "kind": "master-data",
+              "description": "Person-level buyer or consumer login with name, email and phone.",
+              "businessMeaning": "The person placing orders.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer",
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Shop runtime; merchant admins",
+              "systemOfRecordBrickId": "acct",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "account api",
+                  "description": "Contacts."
+                }
+              ],
+              "governance": {
+                "retention": "Deleted on request or after inactivity per merchant policy",
+                "residency": "eu",
+                "sharingPolicy": "Not shared beyond fulfilment"
+              }
+            },
+            {
+              "id": "backoffice-user",
+              "name": "Back-Office User",
+              "kind": "master-data",
+              "description": "Merchant staff accounts and roles in the CMS and dashboard.",
+              "businessMeaning": "Who may change the shop.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "merchant-staff"
+              ],
+              "legalTags": [
+                "gdpr",
+                "iso-27001"
+              ],
+              "securityCriticality": "high",
+              "accessScope": "Merchant admins and Highbiza support",
+              "systemOfRecordBrickId": "iamx",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "auth api",
+                  "description": "Authentication."
+                }
+              ],
+              "governance": {
+                "retention": "Removed when staff leave",
+                "residency": "eu",
+                "sharingPolicy": "Not shared"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pricing",
+          "description": "Pricing.",
+          "assets": [
+            {
+              "id": "customer-price-agreement",
+              "name": "Customer Price Agreement",
+              "kind": "master-data",
+              "description": "Net price lists, staffels, contract prices and assortments per customer or group.",
+              "businessMeaning": "Commercial terms that make B2B ordering possible.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Merchant sales and the buyer's own prices only",
+              "systemOfRecordBrickId": "prce",
+              "derivedFromAssetIds": [
+                "business-customer-account"
+              ],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "search-index",
+                  "role": "derived-index"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "price api",
+                  "description": "Net price per buyer."
+                }
+              ],
+              "governance": {
+                "retention": "Superseded versions kept 2 years (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Each buyer sees only own prices"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catalogue, Content and Configuration Data",
+      "description": "Catalogue, Content and Configuration Data.",
+      "subGroups": [
+        {
+          "name": "Catalogue and Stock",
+          "description": "Catalogue and Stock.",
+          "assets": [
+            {
+              "id": "product-catalog",
+              "name": "Product Catalogue",
+              "kind": "master-data",
+              "description": "Products, variants, specifications, datasheets and texts per language.",
+              "businessMeaning": "What the merchant sells.",
+              "status": "active",
+              "tags": [],
+              "classification": "public",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Public for published products",
+              "systemOfRecordBrickId": "catg",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "search-index",
+                  "role": "derived-index"
+                },
+                {
+                  "storeId": "media-store",
+                  "role": "attachments"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "catalog api",
+                  "description": "Products."
+                },
+                {
+                  "type": "feed",
+                  "name": "product feeds",
+                  "description": "Google Shopping and marketplaces."
+                }
+              ],
+              "governance": {
+                "retention": "While active plus archive",
+                "residency": "eu",
+                "sharingPolicy": "Published to feeds and marketplaces"
+              }
+            },
+            {
+              "id": "stock-availability",
+              "name": "Stock Availability",
+              "kind": "reference-data",
+              "description": "Stock per product and location with expected delivery.",
+              "businessMeaning": "The delivery promise.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "medium",
+              "accessScope": "Shop runtime; aggregated to buyers",
+              "systemOfRecordBrickId": "invs",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "stock api",
+                  "description": "Stock."
+                }
+              ],
+              "governance": {
+                "retention": "Current state only",
+                "residency": "eu",
+                "sharingPolicy": "Shared to marketplaces as offer stock"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Content and Configuration",
+          "description": "Content and Configuration.",
+          "assets": [
+            {
+              "id": "web-content",
+              "name": "Web Content",
+              "kind": "content",
+              "description": "Pages, blocks, media, menus, SEO metadata and translations.",
+              "businessMeaning": "The merchant's brand and marketing presence.",
+              "status": "active",
+              "tags": [],
+              "classification": "public",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "copyright"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Public once published",
+              "systemOfRecordBrickId": "cmsx",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                },
+                {
+                  "storeId": "media-store",
+                  "role": "media"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "content api",
+                  "description": "Pages."
+                }
+              ],
+              "governance": {
+                "retention": "Revisions kept per Wagtail settings",
+                "residency": "eu",
+                "sharingPolicy": "Public"
+              }
+            },
+            {
+              "id": "shop-configuration",
+              "name": "Shop Configuration",
+              "kind": "configuration",
+              "description": "Package, enabled building blocks, limits, themes, domains and languages per shop.",
+              "businessMeaning": "What each customer has bought and runs.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [],
+              "securityCriticality": "high",
+              "accessScope": "Highbiza staff",
+              "systemOfRecordBrickId": "blck",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "commerce-db",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "backoffice",
+                  "name": "shop config console",
+                  "description": "Configuration."
+                }
+              ],
+              "governance": {
+                "retention": "Life of contract",
+                "residency": "eu",
+                "sharingPolicy": "Internal"
+              }
+            },
+            {
+              "id": "integration-mapping",
+              "name": "Integration Mapping",
+              "kind": "configuration",
+              "description": "Connector settings, credentials references and field mappings per ERP or channel.",
+              "businessMeaning": "How the shop talks to the merchant's systems.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "iso-27001"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Highbiza integration staff",
+              "systemOfRecordBrickId": "erpi",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "integration-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "api",
+                  "name": "integration api",
+                  "description": "Connector configuration."
+                }
+              ],
+              "governance": {
+                "retention": "Life of connector",
+                "residency": "eu",
+                "sharingPolicy": "Internal; secrets in a vault"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Operations and Insight Data",
+      "description": "Operations and Insight Data.",
+      "subGroups": [
+        {
+          "name": "Operations",
+          "description": "Operations.",
+          "assets": [
+            {
+              "id": "release-and-test-record",
+              "name": "Release and Test Record",
+              "kind": "operational-log",
+              "description": "Releases, test runs, screenshot diffs and security check results.",
+              "businessMeaning": "Evidence that changes are safe.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "none",
+              "dataSubjects": [],
+              "legalTags": [
+                "iso-27001"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Highbiza engineering and QA",
+              "systemOfRecordBrickId": "qaut",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "qa-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ci",
+                  "name": "jenkins",
+                  "description": "Test runs."
+                }
+              ],
+              "governance": {
+                "retention": "1 year (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Internal; summaries to customers"
+              }
+            },
+            {
+              "id": "platform-backup",
+              "name": "Platform Backup",
+              "kind": "backup",
+              "description": "Daily backups of shop databases and media.",
+              "businessMeaning": "Recovery after incidents.",
+              "status": "active",
+              "tags": [],
+              "classification": "restricted",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "buyer",
+                "consumer",
+                "merchant-staff"
+              ],
+              "legalTags": [
+                "gdpr",
+                "iso-27001"
+              ],
+              "securityCriticality": "critical",
+              "accessScope": "Highbiza operations only",
+              "systemOfRecordBrickId": "host",
+              "derivedFromAssetIds": [
+                "sales-order",
+                "buyer-contact",
+                "web-content",
+                "product-catalog"
+              ],
+              "stores": [
+                {
+                  "storeId": "backup-vault",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "ops",
+                  "name": "restore",
+                  "description": "Restore procedure."
+                }
+              ],
+              "governance": {
+                "retention": "Rolling retention (period not published)",
+                "residency": "eu",
+                "sharingPolicy": "Never shared"
+              }
+            },
+            {
+              "id": "support-request",
+              "name": "Support Request",
+              "kind": "operational-log",
+              "description": "Support and change requests with status and response times.",
+              "businessMeaning": "Service quality and change pipeline.",
+              "status": "active",
+              "tags": [],
+              "classification": "internal",
+              "personalDataLevel": "personal",
+              "dataSubjects": [
+                "merchant-staff"
+              ],
+              "legalTags": [
+                "gdpr"
+              ],
+              "securityCriticality": "low",
+              "accessScope": "Highbiza support",
+              "systemOfRecordBrickId": "supp",
+              "derivedFromAssetIds": [],
+              "stores": [
+                {
+                  "storeId": "support-crm",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "form",
+                  "name": "support form",
+                  "description": "Requests."
+                }
+              ],
+              "governance": {
+                "retention": "2 years (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Internal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Insight",
+          "description": "Insight.",
+          "assets": [
+            {
+              "id": "commerce-analytics",
+              "name": "Commerce Analytics",
+              "kind": "aggregate",
+              "description": "Aggregated orders, online share, conversion, search terms and adoption per shop.",
+              "businessMeaning": "How the online channel performs.",
+              "status": "active",
+              "tags": [],
+              "classification": "confidential",
+              "personalDataLevel": "pseudonymous",
+              "dataSubjects": [
+                "buyer",
+                "consumer"
+              ],
+              "legalTags": [
+                "gdpr",
+                "eprivacy-cookies"
+              ],
+              "securityCriticality": "medium",
+              "accessScope": "Merchant management and Highbiza account managers",
+              "systemOfRecordBrickId": "anly",
+              "derivedFromAssetIds": [
+                "sales-order",
+                "shopping-cart"
+              ],
+              "stores": [
+                {
+                  "storeId": "analytics-store",
+                  "role": "system-of-record"
+                }
+              ],
+              "interfaces": [
+                {
+                  "type": "dashboard",
+                  "name": "sales dashboard",
+                  "description": "Reports."
+                }
+              ],
+              "governance": {
+                "retention": "Aggregates 3 years (assumption)",
+                "residency": "eu",
+                "sharingPolicy": "Merchant-only"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "commerce-db",
+      "name": "Commerce Database",
+      "kind": "operational-database",
+      "description": "Django/Oscar/Wagtail database per shop: catalogue, accounts, orders, content, configuration.",
+      "technology": "relational-database (engine not published)",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "search-index",
+      "name": "Search Index",
+      "kind": "search-index",
+      "description": "Elasticsearch indices per shop and language.",
+      "technology": "Elasticsearch",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
+      "id": "media-store",
+      "name": "Media Store",
+      "kind": "object-storage",
+      "description": "Images and documents.",
+      "technology": "object storage",
+      "status": "active",
+      "classification": "public"
+    },
+    {
+      "id": "integration-store",
+      "name": "Integration Store",
+      "kind": "operational-database",
+      "description": "Connector settings, mappings and sync logs.",
+      "technology": "relational-database",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "qa-store",
+      "name": "QA Results Store",
+      "kind": "operational-database",
+      "description": "Jenkins runs, screenshots and security checks.",
+      "technology": "Jenkins and file storage",
+      "status": "active",
+      "classification": "internal"
+    },
+    {
+      "id": "backup-vault",
+      "name": "Backup Vault",
+      "kind": "backup-storage",
+      "description": "Daily backups.",
+      "technology": "backup storage",
+      "status": "active",
+      "classification": "restricted"
+    },
+    {
+      "id": "analytics-store",
+      "name": "Analytics Store",
+      "kind": "analytics-warehouse",
+      "description": "Aggregated commerce metrics.",
+      "technology": "reporting database",
+      "status": "active",
+      "classification": "confidential"
+    },
+    {
+      "id": "support-crm",
+      "name": "Support and CRM",
+      "kind": "saas",
+      "description": "Tickets and customer contacts.",
+      "technology": "CRM / ticketing (HubSpot seen on highbiza.nl)",
+      "status": "active",
+      "classification": "internal"
+    }
+  ]
+}

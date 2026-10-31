@@ -82,7 +82,8 @@ revenue and grows the network effect.
   acquisition announcement was found.
 - Brick decomposition, modules, data stores and retention values marked "(assumption)" are architectural
   inferences, not Transus disclosures. AI model provider is unknown.
-- KPI pyramids carry no `currentValue`: no measured baselines are public, so none were invented.
+- KPI `currentValue`s and `targetValue`s in customer pyramids are **illustrative baselines**, not measured or
+  published figures (top nodes are labelled "Modeled seed value for a representative account").
 - Personas are inferred from Transus audience pages (retailers, suppliers, partners) and cases.
 - Transus E-Invoicing and VMI are modelled as separate products for clarity; Transus sells them inside its plans.
 

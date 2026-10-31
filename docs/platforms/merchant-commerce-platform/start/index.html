@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Merchant Commerce Platform</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+        :root {
+            --sidebar-width: 310px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            color: var(--ink);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+        }
+
+        .shell {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ---------- sidebar ---------- */
+
+        .sidebar {
+            flex: 0 0 var(--sidebar-width);
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            transition: margin-left 0.18s ease;
+        }
+
+        .shell.sidebar-hidden .sidebar {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 14px 10px;
+            border: 0;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 3px;
+            background: white;
+            flex: none;
+        }
+
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.25;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .sidebar-brand:hover span {
+            color: var(--accent-ink);
+        }
+
+        .sidebar-search {
+            padding: 2px 12px 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 34px;
+            padding: 0 54px 0 32px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            background: var(--surface);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            color: var(--muted);
+        }
+
+        .search-hint {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            font-size: 11px;
+            color: var(--muted);
+            border: 1px solid var(--line-strong);
+            border-radius: 4px;
+            padding: 1px 6px;
+            background: white;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            border: 0;
+            background: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+        }
+
+        .sidebar-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+            min-height: 18px;
+        }
+
+        .link-button {
+            border: 0;
+            background: none;
+            padding: 0 2px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .link-button:hover, .link-button:focus-visible {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .sidebar-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px 8px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nav-section {
+            margin-top: 6px;
+        }
+
+        .nav-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: 0;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 7px;
+        }
+
+        .nav-toggle:hover {
+            background: var(--surface-muted);
+        }
+
+        .nav-toggle:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .chevron {
+            flex: none;
+            width: 10px;
+            height: 10px;
+            color: var(--muted-strong);
+            transition: transform 0.12s ease;
+        }
+
+        [aria-expanded="true"] > .chevron {
+            transform: rotate(90deg);
+        }
+
+        .nav-category {
+            margin: 16px 6px 2px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-strong);
+        }
+
+        .nav-category:first-child {
+            margin-top: 10px;
+        }
+
+        .nav-item.nav-single {
+            margin-top: 6px;
+            padding: 7px 6px 7px 24px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .nav-item.nav-single img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-section-header {
+            padding: 7px 6px;
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        .nav-section-header img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex: none;
+        }
+
+
+        .nav-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .count {
+            flex: none;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--surface-muted);
+            border-radius: 999px;
+            padding: 1px 7px;
+        }
+
+        .nav-body[hidden] {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 34px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.3;
+        }
+
+
+        .nav-item img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            border-radius: 4px;
+            flex: none;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-soft);
+            color: var(--accent-ink);
+        }
+
+        .nav-item.active {
+            background: var(--highlight-color);
+            color: var(--accent-ink);
+            font-weight: 500;
+        }
+
+        .nav-item.overview {
+            color: var(--muted);
+        }
+
+        /* A thin rule separates a section's overview pages from its item pages. */
+        .nav-item.overview + .nav-item:not(.overview) {
+            margin-top: 4px;
+            box-shadow: inset 0 1px 0 var(--line);
+        }
+
+        .nav-item mark {
+            background: #fde68a;
+            color: inherit;
+            border-radius: 2px;
+        }
+
+        .nav-empty {
+            padding: 18px 10px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* ---------- main ---------- */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 12px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0 8px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: none;
+            color: var(--ink-soft);
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .icon-button:hover, .icon-button:focus-visible {
+            background: var(--surface-muted);
+            border-color: var(--line);
+            color: var(--accent-ink);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .topbar-title {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--muted);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar-title strong {
+            color: var(--ink);
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view {
+            flex: 1;
+            min-height: 0;
+            padding-top: 12px;
+        }
+
+        .view[hidden] {
+            display: none;
+        }
+
+        #frameView iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+
+        #homeView {
+            overflow-y: auto;
+            padding: 32px 36px 60px;
+        }
+
+        .home {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-logo {
+            width: 202px;
+            height: 202px;
+            object-fit: contain;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 10px;
+            background: white;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 52px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .domain-description {
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            overflow-wrap: anywhere;
+        }
+
+        .domain-description.clamped #domain-description {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .domain-description a {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .app-tab-title {
+            margin: 0 0 12px;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .app-group {
+            margin-bottom: 26px;
+        }
+
+        .app-group-title {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            text-transform: capitalize;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 18px 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .app:hover, .app:focus-visible {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .app img {
+            width: 84px;
+            height: 84px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: grayscale(100%);
+            transition: filter 0.15s ease;
+        }
+
+        .app:hover img, .app:focus-visible img {
+            filter: none;
+        }
+
+        .app .name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #5009DC;
+        }
+
+        .app .source {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .app .description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+            margin-top: 6px;
+        }
+
+        .app-counts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .app-count {
+            font-size: 12px;
+            color: var(--accent-ink);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-line);
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+
+        .app-count strong {
+            font-weight: 700;
+        }
+
+        .backdrop {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                z-index: 20;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                max-width: 88vw;
+                box-shadow: var(--shadow-hover);
+                margin-left: 0;
+            }
+
+            .shell:not(.sidebar-open) .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width) - 20px);
+            }
+
+            .shell.sidebar-open .backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 10;
+                background: rgba(15, 23, 42, 0.3);
+            }
+
+            #homeView {
+                padding: 20px 16px 40px;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .hero-logo {
+                width: 84px;
+                height: 84px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .topbar .label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="shell" id="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Productscape navigation">
+        <button class="sidebar-brand" type="button" id="brand" title="Overview">
+            <img src="icons/logo.png" alt="">
+            <span>Merchant Commerce Platform</span>
+        </button>
+        <div class="sidebar-search" id="search_container">
+            <div class="search-box">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"/>
+                    <path d="M11 11l4 4"/>
+                </svg>
+                <input id="filter_all" type="search" placeholder="Search pages..." autocomplete="off"
+                       aria-label="Search pages" aria-controls="sidebarTree">
+                <span class="search-hint" id="searchHint" aria-hidden="true">/</span>
+                <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>&times;</button>
+            </div>
+            <div class="sidebar-tools">
+                <span id="summary_all" aria-live="polite"></span>
+                <span>
+                    <button class="link-button" type="button" id="expandAll">expand all</button>
+                    &middot;
+                    <button class="link-button" type="button" id="collapseAll">collapse all</button>
+                </span>
+            </div>
+        </div>
+        <nav class="sidebar-tree" id="sidebarTree"></nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button class="icon-button" type="button" id="sidebarToggle" aria-controls="sidebar"
+                    aria-label="Toggle navigation" title="Toggle navigation">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 4h12M2 8h12M2 12h12"/>
+                </svg>
+            </button>
+            <div class="topbar-title" id="topbarTitle"></div>
+            <button class="icon-button" type="button" id="homeButton" hidden title="Back to overview">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 8l6-5 6 5M4 7v6h8V7"/>
+                </svg>
+                <span class="label">Overview</span>
+            </button>
+            <a class="icon-button" id="openExternal" href="#" target="_blank" hidden title="Open page in a new tab">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M9 2h5v5M14 2L7 9M12 10v4H2V4h4"/>
+                </svg>
+                <span class="label">New tab</span>
+            </a>
+        </header>
+
+        <section class="view" id="homeView">
+            <div class="home">
+                <div class="hero">
+                    <img class="hero-logo" src="icons/logo.png" alt="">
+                    <div>
+                        <h1>Merchant Commerce Platform</h1>
+                        <div class="domain-description clamped" id="descriptionContainer">
+                            <span id="domain-description">The Merchant Commerce Platform domain covers the merchant, shopper and partner workflows required to launch and run branded commerce across online stores, checkout, point of sale, wholesale, payments, marketing and AI-assistant channels on one shared commerce core, modeled on Shopify.</span>
+                            <button id="domain-description-toggle" class="link-button" type="button"
+                                    aria-expanded="false" aria-controls="domain-description" hidden>more</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="appGroups"></div>
+            </div>
+        </section>
+
+        <section class="view" id="frameView" hidden>
+            <iframe id="pageFrame" title="Selected page"></iframe>
+        </section>
+    </div>
+</div>
+
+<script>
+    const apps = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.apps;
+    const config = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.config || {};
+    const sidebarSections = [{"id": "customers", "title": "Customers", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "groups": [{"name": "Merchants", "items": [{"name": "Independent Brand Founder", "link": "../customers/landing_pages/fndr.html", "icon": "../customers/icons/customer-fndr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "A founder or two-person team selling their own products online, often starting from social media, marketplaces or markets. They run design, merchandising, fulfi"}, {"name": "Scaling DTC Brand Ecommerce Lead", "link": "../customers/landing_pages/dtcg.html", "icon": "../customers/icons/customer-dtcg-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Head of ecommerce at a direct-to-consumer brand doing tens to hundreds of millions in annual sales, typically on a premium plan. Owns conversion, site performan"}, {"name": "Enterprise Omnichannel Retail Director", "link": "../customers/landing_pages/entc.html", "icon": "../customers/icons/customer-entc-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "VP of digital and store technology at an established retailer or brand with hundreds of stores and a wholesale business. Accountable for unifying point of sale,"}]}, {"name": "Shoppers", "items": [{"name": "Repeat Mobile Shopper", "link": "../customers/landing_pages/shpr.html", "icon": "../customers/icons/customer-shpr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "A consumer who buys regularly from independent and DTC brands on phone, increasingly starting in social feeds or AI assistants. They never think about the platf"}]}, {"name": "Ecosystem Partners", "items": [{"name": "Commerce App Developer and Agency Partner", "link": "../customers/landing_pages/devp.html", "icon": "../customers/icons/customer-devp-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "An independent software vendor building apps for merchants, or an agency delivering store builds, migrations and custom checkout and headless projects. Their bu"}]}], "views": [{"name": "Visual Overview", "link": "../customers/index.html#visual-overview", "icon": "../customers/icons/customer.png", "fallback": "../customers/icons/customer.png"}, {"name": "Relations", "link": "../customers/index.html#relations", "icon": "../customers/icons/care.png", "fallback": "../customers/icons/care.png"}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "fallback": "../customers/icons/insights.png", "count": 10}, {"name": "Links", "link": "../customers/index.html#links", "icon": "../customers/icons/link.png", "fallback": "../customers/icons/link.png"}], "category": "Business"}, {"id": "competition", "title": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "groups": [{"name": "global leader", "items": [{"name": "Shopify", "link": "../competition/landing_pages/shopify.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "The reference merchant commerce platform this domain is modeled on: SMB to enterprise plans, integrated payments and the Shop Pay wallet, POS, B2B, a large app "}, {"name": "Wix", "link": "../competition/landing_pages/wix.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Website and online business builder serving very small businesses and creators, with ecommerce, payments and scheduling as Business Solutions alongside creative"}, {"name": "WooCommerce (Automattic)", "link": "../competition/landing_pages/woocommerce.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Open-source commerce plugin for WordPress; the main self-hosted alternative for merchants who want ownership of code and hosting, assembled from plugins and pay"}, {"name": "Salesforce Commerce Cloud", "link": "../competition/landing_pages/salesforce-commerce-cloud.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Licensed enterprise B2C and B2B commerce suite integrated with Salesforce CRM and marketing; a common source platform for enterprise replatforming decisions."}, {"name": "Adobe Commerce (Magento)", "link": "../competition/landing_pages/adobe-commerce.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Enterprise commerce platform derived from Magento, offered as cloud or self-hosted with the Adobe Experience Cloud; strong in complex B2B and customized deploym"}, {"name": "Square (Block)", "link": "../competition/landing_pages/square.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Payments-first seller ecosystem with POS, online store, banking and lending for small sellers; competes strongly for in-person-first merchants."}]}, {"name": "challenger", "items": [{"name": "Commerce.com (formerly BigCommerce)", "link": "../competition/landing_pages/commerce-com.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Open SaaS commerce platform for mid-market and enterprise brands and B2B, positioned on API openness and multi-storefront; growth has slowed relative to the lea"}, {"name": "Squarespace", "link": "../competition/landing_pages/squarespace.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Design-led website and commerce builder for small businesses and creators; taken private by Permira in 2024 and no longer reports public results."}]}, {"name": "niche", "items": [{"name": "commercetools", "link": "../competition/landing_pages/commercetools.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "API-first composable commerce platform used by large enterprises building custom frontends and composable stacks."}]}, {"name": "regional", "items": [{"name": "VTEX", "link": "../competition/landing_pages/vtex.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Enterprise commerce platform with marketplace and order management capabilities, strongest in Latin America."}, {"name": "Lightspeed Commerce", "link": "../competition/landing_pages/lightspeed.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "Point-of-sale and commerce platform focused on North American retail and European hospitality, with embedded payments; competes for unified retail merchants."}]}, {"name": "substitute", "items": [{"name": "Amazon Marketplace", "link": "../competition/landing_pages/amazon.html", "icon": "../competition/icons/logo.png", "fallback": "../competition/icons/logo.png", "description": "The largest substitute for an owned store: merchants sell inside the marketplace and its fulfillment network, trading customer ownership for demand; also offers"}]}], "category": "Business"}, {"id": "bricks", "title": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "groups": [{"name": "Storefront and Buyer Experience", "items": [{"name": "Online Store and Theme Engine", "link": "../product-bricks/landing_pages/stfr.html", "icon": "../product-bricks/icons/stfr.png", "fallback": "../product-bricks/icons/brick.png", "description": "Hosted online store with a theme system, editor and content pages that lets merchants launch and restyle a branded storefront without code, and renders it at gl"}, {"name": "Headless Storefront Framework and Hosting", "link": "../product-bricks/landing_pages/hdrg.html", "icon": "../product-bricks/icons/hdrg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Developer framework, Storefront API access and edge hosting for brands and agencies building custom storefronts on the platform's commerce core."}, {"name": "Storefront Search and Discovery", "link": "../product-bricks/landing_pages/srch.html", "icon": "../product-bricks/icons/srch.png", "fallback": "../product-bricks/icons/brick.png", "description": "Search, filtering and product recommendations on storefronts and the shopping app, combining keyword and semantic retrieval with merchandising rules."}, {"name": "Checkout and Checkout Extensibility", "link": "../product-bricks/landing_pages/chkt.html", "icon": "../product-bricks/icons/chkt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Hosted one-page checkout that turns carts into paid orders, with upgrade-safe UI extensions and server functions for discounts, delivery and payment customizati"}, {"name": "Shop Pay Accelerated Checkout and Buyer Identity", "link": "../product-bricks/landing_pages/shpy.html", "icon": "../product-bricks/icons/shpy.png", "fallback": "../product-bricks/icons/brick.png", "description": "Network-wide saved-buyer identity and wallet that recognizes shoppers across merchants and surfaces, prefills details, verifies with one-time codes and offers i"}, {"name": "Shop App Consumer Experience", "link": "../product-bricks/landing_pages/shop.html", "icon": "../product-bricks/icons/shop.png", "fallback": "../product-bricks/icons/brick.png", "description": "Consumer shopping app that aggregates order tracking, brand following, AI-assisted search and checkout across merchants into one shopper relationship."}]}, {"name": "Commerce Core and Operations", "items": [{"name": "Product Catalog and Merchandising", "link": "../product-bricks/landing_pages/ctlg.html", "icon": "../product-bricks/icons/ctlg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Products, variants, media, collections and structured attributes that every channel sells from, with bulk import and AI-assisted content."}, {"name": "Multi-Location Inventory", "link": "../product-bricks/landing_pages/invt.html", "icon": "../product-bricks/icons/invt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Inventory quantities and states by location for stores, warehouses and third-party logistics, with transfers, reservations and availability for every channel."}, {"name": "Markets and Cross-Border Localization", "link": "../product-bricks/landing_pages/mkts.html", "icon": "../product-bricks/icons/mkts.png", "fallback": "../product-bricks/icons/brick.png", "description": "Market configuration that localizes currency, pricing, language, domains, duties and payment methods per country or region from one store."}, {"name": "B2B Wholesale Commerce", "link": "../product-bricks/landing_pages/b2bc.html", "icon": "../product-bricks/icons/b2bc.png", "fallback": "../product-bricks/icons/brick.png", "description": "Company accounts, buyer permissions, catalogs, price lists, quantity rules and payment terms so wholesale runs on the same store and checkout as consumer commer"}, {"name": "Order Management", "link": "../product-bricks/landing_pages/ordr.html", "icon": "../product-bricks/icons/ordr.png", "fallback": "../product-bricks/icons/brick.png", "description": "The order system of record across online, POS, B2B and agent channels: edits, payments state, fulfillment orders, refunds and customer records."}, {"name": "Shipping Labels and Delivery Promise", "link": "../product-bricks/landing_pages/ship.html", "icon": "../product-bricks/icons/ship.png", "fallback": "../product-bricks/icons/brick.png", "description": "Shipping profiles, carrier rates, discounted labels, delivery date promises and tracking events across carriers."}, {"name": "Returns and Exchanges", "link": "../product-bricks/landing_pages/rtrn.html", "icon": "../product-bricks/icons/rtrn.png", "fallback": "../product-bricks/icons/brick.png", "description": "Self-serve returns and exchanges with rules, return labels, in-store returns and refunds tied to the original order."}, {"name": "POS and Retail Store Operations", "link": "../product-bricks/landing_pages/posr.html", "icon": "../product-bricks/icons/posr.png", "fallback": "../product-bricks/icons/brick.png", "description": "Point-of-sale app, hardware and store operations (staff, cash, local inventory, pickup and in-store returns) on the same commerce core as online."}]}, {"name": "Money and Merchant Financial Services", "items": [{"name": "Integrated Payments Processing", "link": "../product-bricks/landing_pages/paym.html", "icon": "../product-bricks/icons/paym.png", "fallback": "../product-bricks/icons/brick.png", "description": "Merchant payments acceptance for online, in-person and agent channels: onboarding, card and wallet methods, local payment methods, authorization, capture and re"}, {"name": "Fraud, Chargeback and Risk Protection", "link": "../product-bricks/landing_pages/risk.html", "icon": "../product-bricks/icons/risk.png", "fallback": "../product-bricks/icons/brick.png", "description": "Order and payment fraud analysis, bot protection, chargeback evidence and merchant risk monitoring using signals across the merchant network."}, {"name": "Merchant Balance, Payouts and Ledger", "link": "../product-bricks/landing_pages/ledg.html", "icon": "../product-bricks/icons/ledg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Double-entry ledger of merchant funds, fees and reserves, payout scheduling, and a merchant money account with cards for spending."}, {"name": "Merchant Capital Lending", "link": "../product-bricks/landing_pages/capl.html", "icon": "../product-bricks/icons/capl.png", "fallback": "../product-bricks/icons/brick.png", "description": "Pre-qualified merchant cash advances and loans sized from sales history and repaid automatically as a share of daily sales."}, {"name": "Tax and Duties Calculation", "link": "../product-bricks/landing_pages/taxc.html", "icon": "../product-bricks/icons/taxc.png", "fallback": "../product-bricks/icons/brick.png", "description": "Sales tax, VAT, GST and import duty calculation at checkout, liability tracking and filing support."}, {"name": "Platform Subscription and App Billing", "link": "../product-bricks/landing_pages/blng.html", "icon": "../product-bricks/icons/blng.png", "fallback": "../product-bricks/icons/brick.png", "description": "Billing of merchants for plans, apps, themes, labels and other platform charges, with trials, usage charges and partner revenue share payouts."}]}, {"name": "Growth, Channels and AI", "items": [{"name": "Customer Segmentation and Marketing Automation", "link": "../product-bricks/landing_pages/mktg.html", "icon": "../product-bricks/icons/mktg.png", "fallback": "../product-bricks/icons/brick.png", "description": "Customer segments, email and messaging campaigns, and marketing automations built on the merchant's order and customer data."}, {"name": "Shop Campaigns and Audience Ads", "link": "../product-bricks/landing_pages/adsn.html", "icon": "../product-bricks/icons/adsn.png", "fallback": "../product-bricks/icons/brick.png", "description": "Pay-per-conversion ad campaigns on the shopping app and partner surfaces, plus audience lists for social ad platforms built from network purchase signals."}, {"name": "Commerce Analytics and Reporting", "link": "../product-bricks/landing_pages/anly.html", "icon": "../product-bricks/icons/anly.png", "fallback": "../product-bricks/icons/brick.png", "description": "Reports, dashboards and a query layer over sales, sessions, products, customers and finance for merchants and internal models."}, {"name": "Sidekick AI Commerce Assistant", "link": "../product-bricks/landing_pages/sdkk.html", "icon": "../product-bricks/icons/sdkk.png", "fallback": "../product-bricks/icons/brick.png", "description": "AI assistant in the admin and mobile app that answers questions over store data, generates content, and takes approved actions across core features and app exte"}, {"name": "Agentic Commerce and Global Catalog", "link": "../product-bricks/landing_pages/agnt.html", "icon": "../product-bricks/icons/agnt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Structured global product catalog and an open commerce protocol that let AI assistants discover, recommend and check out merchant products with the merchant's r"}, {"name": "Social and Marketplace Channel Sync", "link": "../product-bricks/landing_pages/chnl.html", "icon": "../product-bricks/icons/chnl.png", "fallback": "../product-bricks/icons/brick.png", "description": "Sales channel connections that publish products to social commerce and marketplaces and import their orders into one order system."}]}, {"name": "Platform and Ecosystem", "items": [{"name": "Admin APIs, Webhooks and Identity", "link": "../product-bricks/landing_pages/apis.html", "icon": "../product-bricks/icons/apis.png", "fallback": "../product-bricks/icons/brick.png", "description": "Versioned GraphQL Admin API, webhooks, OAuth app authorization and merchant staff accounts and permissions shared by all bricks and partners."}, {"name": "Extensions, Functions and Workflow Automation", "link": "../product-bricks/landing_pages/extn.html", "icon": "../product-bricks/icons/extn.png", "fallback": "../product-bricks/icons/brick.png", "description": "Runtime for UI extensions and sandboxed server functions in checkout, admin and POS, plus no-code workflow automation triggered by commerce events."}, {"name": "App Store and Partner Program", "link": "../product-bricks/landing_pages/apst.html", "icon": "../product-bricks/icons/apst.png", "fallback": "../product-bricks/icons/brick.png", "description": "App and theme marketplace, app review, partner dashboard, development stores and partner tiers that connect merchants with developers and agencies."}]}], "views": [{"name": "Dependencies", "link": "../product-bricks/index.html#dependencies", "icon": "../product-bricks/icons/integration.png", "fallback": "../product-bricks/icons/integration.png"}], "category": "Product Architecture"}, {"id": "streams", "title": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "groups": [{"name": "Merchant Launch and Growth", "items": [{"name": "Launch a Store and Make the First Sale", "link": "../product-bricks/stream_pages/launch-store-and-make-first-sale.html", "icon": "../product-bricks/icons/launch-store-and-make-first-sale.png", "fallback": "../product-bricks/icons/stream.png", "description": "A new merchant goes from sign-up to a live, branded store with payments, shipping and tax configured and a first paid order."}, {"name": "Sell Across AI Agents, Social and Marketplace Channels", "link": "../product-bricks/stream_pages/sell-across-ai-and-social-channels.html", "icon": "../product-bricks/icons/sell-across-ai-and-social-channels.png", "fallback": "../product-bricks/icons/stream.png", "description": "Merchant products become discoverable and purchasable in AI assistants, social feeds and marketplaces using one catalog, one checkout rule set and one order sys"}, {"name": "Grow Repeat Customers with Marketing", "link": "../product-bricks/stream_pages/grow-repeat-customers-with-marketing.html", "icon": "../product-bricks/icons/grow-repeat-customers-with-marketing.png", "fallback": "../product-bricks/icons/stream.png", "description": "Merchants turn store data into segments, campaigns and paid acquisition that bring buyers back and find new ones profitably."}, {"name": "Expand into International Markets", "link": "../product-bricks/stream_pages/expand-into-international-markets.html", "icon": "../product-bricks/icons/expand-into-international-markets.png", "fallback": "../product-bricks/icons/stream.png", "description": "A merchant sells in new countries from one store with localized prices, currency, language, duties and payment methods."}]}, {"name": "Buyer Conversion", "items": [{"name": "Convert Demand at Checkout", "link": "../product-bricks/stream_pages/convert-demand-at-checkout.html", "icon": "../product-bricks/icons/convert-demand-at-checkout.png", "fallback": "../product-bricks/icons/stream.png", "description": "A shopper's cart, from any surface, becomes a paid, fraud-checked order through a fast checkout that the merchant can customize safely."}, {"name": "Discover and Buy with a Trusted Shopper Identity", "link": "../product-bricks/stream_pages/discover-and-buy-with-trusted-identity.html", "icon": "../product-bricks/icons/discover-and-buy-with-trusted-identity.png", "fallback": "../product-bricks/icons/stream.png", "description": "Shoppers discover products, sign in with one identity, buy and follow orders across many brands in one consumer experience."}, {"name": "Prevent Fraud and Resolve Chargebacks", "link": "../product-bricks/stream_pages/prevent-fraud-and-resolve-chargebacks.html", "icon": "../product-bricks/icons/prevent-fraud-and-resolve-chargebacks.png", "fallback": "../product-bricks/icons/stream.png", "description": "Fraudulent orders are stopped without blocking good buyers, and chargebacks are fought with assembled evidence."}]}, {"name": "Operations and Money", "items": [{"name": "Fulfill, Deliver and Return Orders", "link": "../product-bricks/stream_pages/fulfill-deliver-and-return-orders.html", "icon": "../product-bricks/icons/fulfill-deliver-and-return-orders.png", "fallback": "../product-bricks/icons/stream.png", "description": "Orders are routed, shipped, tracked and, if needed, returned or exchanged with clear promises to the shopper."}, {"name": "Unify Online and In-Store Retail", "link": "../product-bricks/stream_pages/unify-online-and-store-retail.html", "icon": "../product-bricks/icons/unify-online-and-store-retail.png", "fallback": "../product-bricks/icons/stream.png", "description": "Stores and online share one catalog, inventory, customer and order model so staff can sell, fulfill and serve across channels."}, {"name": "Run B2B Wholesale on One Platform", "link": "../product-bricks/stream_pages/run-b2b-wholesale-on-one-platform.html", "icon": "../product-bricks/icons/run-b2b-wholesale-on-one-platform.png", "fallback": "../product-bricks/icons/stream.png", "description": "Wholesale buyers order online with company-specific catalogs, prices and payment terms on the same store and checkout used for consumers."}, {"name": "Get Paid and Fund Growth", "link": "../product-bricks/stream_pages/get-paid-and-fund-growth.html", "icon": "../product-bricks/icons/get-paid-and-fund-growth.png", "fallback": "../product-bricks/icons/stream.png", "description": "Merchants see sales turn into payouts quickly and transparently and can access working capital based on their sales."}]}, {"name": "Ecosystem and AI", "items": [{"name": "Build and Monetize Merchant Apps", "link": "../product-bricks/stream_pages/build-and-monetize-merchant-apps.html", "icon": "../product-bricks/icons/build-and-monetize-merchant-apps.png", "fallback": "../product-bricks/icons/stream.png", "description": "Developers and agencies build, review, distribute and get paid for apps and integrations that extend merchant stores."}, {"name": "Operate the Store with AI Assistance", "link": "../product-bricks/stream_pages/operate-the-store-with-ai-assistance.html", "icon": "../product-bricks/icons/operate-the-store-with-ai-assistance.png", "fallback": "../product-bricks/icons/stream.png", "description": "Merchants delegate analysis, content and routine operations to an AI assistant that acts through core features and app extensions with their approval."}]}], "category": "Product Architecture"}, {"id": "data", "title": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "groups": [{"name": "Merchant, Account and Ecosystem Data", "items": [{"name": "Merchant Account", "link": "../product-bricks/data_pages/merchant-account.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Shop and organization record: plan, settings, owner, legal entity and status."}, {"name": "Staff and Permissions", "link": "../product-bricks/data_pages/staff-and-permissions.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Staff accounts, roles, POS PINs and permission grants per shop."}, {"name": "App Installations and Grants", "link": "../product-bricks/data_pages/app-installations-and-grants.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Which apps are installed on which shops with which access scopes and protected-data approvals."}, {"name": "Merchant KYC Profile", "link": "../product-bricks/data_pages/merchant-kyc-profile.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Identity, business and bank verification data collected to activate payments."}]}, {"name": "Catalog, Content and Market Data", "items": [{"name": "Product Catalog", "link": "../product-bricks/data_pages/product-catalog.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Products, variants, options, metafields, media references and collections per shop."}, {"name": "Inventory Levels", "link": "../product-bricks/data_pages/inventory-levels.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Quantities by item, location and state including committed and incoming stock."}, {"name": "Theme and Storefront Content", "link": "../product-bricks/data_pages/theme-and-storefront-content.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Theme code, templates, pages, navigation and files."}, {"name": "Global Product Catalog Index", "link": "../product-bricks/data_pages/global-product-catalog-index.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Cross-merchant structured product index with enriched attributes and embeddings for agent search."}, {"name": "Price Lists and Markets", "link": "../product-bricks/data_pages/price-lists-and-markets.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Market definitions, currencies, languages, price adjustments and B2B price lists."}, {"name": "B2B Company Accounts", "link": "../product-bricks/data_pages/b2b-company-accounts.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Companies, locations, buyer contacts, roles, credit and payment terms."}]}, {"name": "Orders, Customers and Shopper Data", "items": [{"name": "Order Ledger", "link": "../product-bricks/data_pages/order-ledger.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Orders, line items, discounts, taxes, transactions summary and timeline across all channels."}, {"name": "Merchant Customer Records", "link": "../product-bricks/data_pages/customer-records.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "The merchant's customer profiles, addresses, tags and marketing consent."}, {"name": "Fulfillment and Tracking Events", "link": "../product-bricks/data_pages/fulfillment-and-tracking-events.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Shipments, labels, carrier tracking and delivery promises."}, {"name": "Return Records", "link": "../product-bricks/data_pages/return-records.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Return requests, reasons, dispositions and exchange outcomes."}, {"name": "Shopper Identity", "link": "../product-bricks/data_pages/shopper-identity.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Network buyer identity: contact details, addresses, verified devices, linked orders and preferences."}, {"name": "Storefront Behavioral Events", "link": "../product-bricks/data_pages/storefront-events.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Sessions, page views, searches, cart and checkout events."}]}, {"name": "Money, Risk and Compliance Data", "items": [{"name": "Payment Transactions", "link": "../product-bricks/data_pages/payment-transactions.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Payment intents, authorizations, captures, refunds and processor references."}, {"name": "Card Vault Tokens", "link": "../product-bricks/data_pages/card-vault-tokens.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Tokenized card data and network tokens for saved and recurring payments."}, {"name": "Merchant Balance and Payouts", "link": "../product-bricks/data_pages/merchant-balance-and-payouts.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Ledger entries, reserves, payouts and money-account balances per merchant."}, {"name": "Platform Invoices", "link": "../product-bricks/data_pages/platform-invoices.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Merchant bills for plans, apps, labels and campaigns, plus partner revenue share."}, {"name": "Risk Signals and Scores", "link": "../product-bricks/data_pages/risk-signals.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Network-wide fraud features, device signals and model scores for checkouts, accounts and merchants."}, {"name": "Disputes and Chargebacks", "link": "../product-bricks/data_pages/disputes-and-chargebacks.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Dispute cases, evidence, deadlines and outcomes."}, {"name": "Capital Offers and Repayments", "link": "../product-bricks/data_pages/capital-offers-and-repayments.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Offers, accepted advances and loans, repayment schedules and losses."}, {"name": "Tax Liabilities", "link": "../product-bricks/data_pages/tax-liabilities.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Tax collected by jurisdiction, registrations and thresholds."}]}, {"name": "Intelligence and AI Data", "items": [{"name": "Commerce Analytics Models", "link": "../product-bricks/data_pages/commerce-analytics-models.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Aggregated sales, session, product and attribution models per shop."}, {"name": "Marketing Audiences and Campaigns", "link": "../product-bricks/data_pages/marketing-audiences-and-campaigns.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Segments, audiences, campaign definitions, sends and results."}, {"name": "Assistant Conversations", "link": "../product-bricks/data_pages/assistant-conversations.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Merchant prompts, assistant responses, tool calls and approved actions."}]}], "category": "Product Architecture"}, {"id": "products", "title": "Products", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "groups": [{"name": "B2B SaaS (SMB)", "items": [{"name": "Online Store Plans", "link": "../product-deployments/landing_pages/onst.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B SaaS (Enterprise)", "items": [{"name": "Plus and Enterprise Commerce", "link": "../product-deployments/landing_pages/plus.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B SaaS and Hardware", "items": [{"name": "Point of Sale", "link": "../product-deployments/landing_pages/spos.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B2C Payments", "items": [{"name": "Payments and Accelerated Checkout", "link": "../product-deployments/landing_pages/spay.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2C App", "items": [{"name": "Shop App", "link": "../product-deployments/landing_pages/shap.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B Financial Services", "items": [{"name": "Merchant Financial Services", "link": "../product-deployments/landing_pages/fins.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B Marketing", "items": [{"name": "Marketing and Ads", "link": "../product-deployments/landing_pages/mkta.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "B2B2C Channels", "items": [{"name": "Agentic Commerce and Channels", "link": "../product-deployments/landing_pages/agcm.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}, {"name": "Developer Platform", "items": [{"name": "Developer Platform and App Store", "link": "../product-deployments/landing_pages/devx.html", "icon": "../product-deployments/icons/product.png", "fallback": "../product-deployments/icons/product.png", "description": ""}]}], "views": [{"name": "Dependencies", "link": "../product-deployments/index.html#dependencies", "icon": "../product-bricks/icons/integration.png", "fallback": "../product-bricks/icons/integration.png"}, {"name": "Matrix", "link": "../product-deployments/index.html#matrix", "icon": "../product-deployments/icons/dashboard.png", "fallback": "../product-deployments/icons/dashboard.png"}], "category": "Product Architecture"}, {"id": "deployments", "title": "Deployments", "link": "../product-deployments/index.html#deployment", "card": "../product-deployments/index.html", "icon": "../product-deployments/icons/deployment/deployment.png", "groups": [{"name": "Commerce Cloud Runtime", "items": [{"name": "Storefront and Checkout Services", "link": "../product-deployments/deployment/cloud-storefront-and-checkout.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Latency-critical storefront, search, checkout and identity services."}, {"name": "Commerce Core Services", "link": "../product-deployments/deployment/cloud-commerce-core.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Catalog, inventory, order, wholesale, shipping and return services."}, {"name": "Money and Risk Services", "link": "../product-deployments/deployment/cloud-money.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "PCI-scoped and regulated payment, risk, ledger, lending and billing services."}, {"name": "Growth and AI Services", "link": "../product-deployments/deployment/cloud-growth-and-ai.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Marketing, ads, analytics, assistant and channel services."}, {"name": "Platform Services", "link": "../product-deployments/deployment/cloud-platform.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "API gateway, identity, extension runtime and partner services."}]}, {"name": "Edge Network", "items": [{"name": "Edge Storefront Hosting", "link": "../product-deployments/deployment/edge-storefront-hosting.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Cached hosted storefronts and headless storefront workers."}]}, {"name": "Merchant Surfaces", "items": [{"name": "Admin Web", "link": "../product-deployments/deployment/admin-web.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Browser admin for all merchant functions."}, {"name": "Admin Mobile App (iOS and Android)", "link": "../product-deployments/deployment/admin-mobile.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Mobile admin distributed through app stores."}, {"name": "POS App and Hardware", "link": "../product-deployments/deployment/pos-app.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "POS app on app stores plus readers and terminals."}]}, {"name": "Consumer Surfaces", "items": [{"name": "Shop App (iOS, Android and Web)", "link": "../product-deployments/deployment/shop-app.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Consumer shopping app and web experience."}]}, {"name": "External Channels", "items": [{"name": "AI Agent Surfaces", "link": "../product-deployments/deployment/ai-agent-surfaces.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "AI assistants that search the catalog and check out through the open commerce protocol."}, {"name": "Social and Marketplace Channels", "link": "../product-deployments/deployment/social-and-marketplaces.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Social commerce and marketplaces connected as sales channels."}]}, {"name": "Partner and Developer Surface", "items": [{"name": "Developer APIs and CLI", "link": "../product-deployments/deployment/developer-apis.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Admin and Storefront APIs, webhooks, extensions and CLI."}]}], "category": "Product Architecture"}, {"id": "residuality", "title": "Stress Test", "link": "../residuality/index.html", "icon": "icons/residuality.png", "groups": [], "category": "More"}, {"id": "tutorial", "title": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "groups": [], "category": "More"}];
+    const DOMAIN_NAME = document.title;
+    const SIDEBAR_HIDDEN_KEY = 'productscape:start-sidebar-hidden';
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // App names in apps.json may carry <br> for the card layout; the sidebar needs plain text.
+    function plainText(value) {
+        return String(value || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function storageGet(key, fallback) {
+        try {
+            const value = window.localStorage.getItem(key);
+            return value === null ? fallback : JSON.parse(value);
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function storageSet(key, value) {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            // Storage can be unavailable (private windows, file:// in some browsers).
+        }
+    }
+
+    function isExternal(link) {
+        return /^[a-z][a-z0-9+.-]*:/i.test(link) || link.startsWith('//');
+    }
+
+    // Package launchers link to other domains' start pages, which carry their own
+    // sidebar; open those (and external sites) as full pages instead of inline.
+    function opensInline(link) {
+        return !isExternal(link) && !/(^|\/)start\/index\.html(#.*)?$/.test(link);
+    }
+
+    // ---------- build the navigation model ----------
+
+    // Two levels only: section -> pages. Source groups stay searchable and show
+    // in tooltips; each section's overview page presents the full grouping.
+    // Package launchers have no domain sections, so their app groups become sections.
+    const launcherSections = apps.flatMap(tab => (tab.apps || []).map((group, groupIndex) => ({
+        id: 'apps/' + tab.tab + '/' + groupIndex,
+        title: (apps.length > 1 ? tab.tab + ' · ' : '') + group.group,
+        groups: [{
+            name: group.group,
+            items: (group.apps || []).map(app => ({
+                name: plainText(app.name),
+                link: app.link,
+                icon: app.icon,
+                fallback: 'icons/logo.png',
+                description: plainText(app.description) + (app.source ? ' ' + app.source : ''),
+                newTab: config.openInNewTab !== false && app.openInNewTab !== false
+            }))
+        }]
+    })));
+
+    const sections = (sidebarSections.length ? sidebarSections : launcherSections).map(section => ({
+        ...section,
+        items: section.groups.flatMap(group => group.items.map(item => ({...item, groupName: group.name})))
+    })).filter(section => section.items.length || (section.link && !section.groups.length));
+    const allItems = [];
+    sections.forEach(section => {
+        section.items.forEach(item => {
+            item.section = section;
+            item.search = (item.name + ' ' + (item.description || '') + ' ' + item.groupName + ' ' + section.title).toLowerCase();
+            allItems.push(item);
+        });
+    });
+
+    // ---------- sidebar rendering ----------
+
+    const tree = document.getElementById('sidebarTree');
+    const filterInput = document.getElementById('filter_all');
+    // Sections start collapsed on every visit; only the open page's section is revealed.
+    const expanded = new Set();
+    const CHEVRON = '<svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5L7 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+    function highlight(text, query) {
+        if (!query) return escapeHtml(text);
+        const index = text.toLowerCase().indexOf(query);
+        if (index < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, index)) + '<mark>' + escapeHtml(text.slice(index, index + query.length)) +
+            '</mark>' + escapeHtml(text.slice(index + query.length));
+    }
+
+    function itemHtml(item, query, extraClass) {
+        const attrs = opensInline(item.link) ? '' : (item.newTab === false ? '' : ' target="_blank" rel="noopener"');
+        return '<a class="nav-item' + (extraClass || '') + '" href="' + escapeHtml(item.link) + '"' + attrs +
+            ' title="' + escapeHtml([item.groupName, item.description].filter(Boolean).join(' — ')) + '"' + '>' +
+            '<img src="' + escapeHtml(item.icon || item.fallback) + '" data-fallback="' + escapeHtml(item.fallback || '') + '" alt="" loading="lazy">' +
+            '<span class="nav-label">' + highlight(item.name, query) + '</span></a>';
+    }
+
+    function toggleHtml(className, id, label, count, isOpen, icon) {
+        return '<button class="nav-toggle ' + className + '" type="button" data-toggle="' + escapeHtml(id) +
+            '" aria-expanded="' + isOpen + '">' + CHEVRON +
+            (icon ? '<img src="' + escapeHtml(icon) + '" data-fallback="icons/logo.png" alt="">' : '') +
+            '<span class="nav-label">' + escapeHtml(label) + '</span><span class="count">' + count + '</span></button>';
+    }
+
+    // Category headings (Business, Product Architecture, More) above the first
+    // visible section of each category.
+    let lastCategory = '';
+
+    function categoryHtml(section) {
+        if (!section.category || section.category === lastCategory) return '';
+        lastCategory = section.category;
+        return '<div class="nav-category">' + escapeHtml(section.category) + '</div>';
+    }
+
+    function renderSidebar() {
+        lastCategory = '';
+        const query = filterInput.value.trim().toLowerCase();
+        let html = '';
+        let matches = 0;
+        sections.forEach(section => {
+            // A section without pages is a single link, e.g. Stress Test under More.
+            if (!section.items.length) {
+                if (query && !section.title.toLowerCase().includes(query)) return;
+                if (query) matches++;
+                html += categoryHtml(section) + itemHtml({name: section.title, link: section.link, icon: section.icon,
+                    fallback: 'icons/logo.png'}, query, ' nav-single');
+                return;
+            }
+            const items = section.items.filter(item => !query || item.search.includes(query));
+            if (!items.length) return;
+            matches += items.length;
+            html += categoryHtml(section);
+            // While searching every section with a match is open; the remembered
+            // state returns when the search is cleared.
+            const sectionOpen = !!query || expanded.has(section.id);
+            html += '<div class="nav-section">' +
+                toggleHtml('nav-section-header', section.id, section.title, items.length, sectionOpen, section.icon) +
+                '<div class="nav-body"' + (sectionOpen ? '' : ' hidden') + '>';
+            if (section.link && !query) {
+                html += itemHtml({name: 'Overview', link: section.link, icon: section.icon, fallback: 'icons/logo.png'}, '', ' overview');
+                (section.views || []).forEach(view => html += itemHtml(view, '', ' overview'));
+            }
+            items.forEach(item => html += itemHtml(item, query));
+            html += '</div></div>';
+        });
+        tree.innerHTML = html || '<div class="nav-empty">No pages match "' + escapeHtml(query) + '"</div>';
+        document.getElementById('summary_all').textContent = query
+            ? matches + ' match' + (matches === 1 ? '' : 'es')
+            : allItems.length + ' pages';
+        document.getElementById('searchClear').hidden = !query;
+        document.getElementById('searchHint').hidden = !!query;
+        markActive();
+    }
+
+    // The overview entries are built on the fly, so give them an index too.
+    // Views are the other tabs of a section's overview page.
+    const overviewItems = sections.filter(section => section.link).flatMap(section => [
+        {name: section.title, link: section.link, section: section},
+        ...(section.views || []).map(view => ({name: view.name, link: view.link, section: section}))
+    ]);
+
+    tree.addEventListener('click', event => {
+        const toggle = event.target.closest('[data-toggle]');
+        if (toggle) {
+            const id = toggle.dataset.toggle;
+            const open = toggle.getAttribute('aria-expanded') !== 'true';
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.nextElementSibling.hidden = !open;
+            if (!filterInput.value.trim()) {
+                open ? expanded.add(id) : expanded.delete(id);
+            }
+            // Opening a section also shows its overview page.
+            const section = sections.find(candidate => candidate.id === id);
+            if (open && section && section.link) followLink(event, section.link, true);
+            return;
+        }
+        const link = event.target.closest('a.nav-item');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // Arrow keys move through visible entries; Escape returns to the search box.
+    tree.addEventListener('keydown', event => {
+        const focusable = [...tree.querySelectorAll('.nav-toggle, .nav-item')].filter(el => el.offsetParent !== null);
+        const index = focusable.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            const next = focusable[index + (event.key === 'ArrowDown' ? 1 : -1)];
+            if (next) next.focus(); else if (event.key === 'ArrowUp') filterInput.focus();
+        } else if (event.key === 'Escape') {
+            filterInput.focus();
+        } else if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && document.activeElement.dataset.toggle) {
+            const isOpen = document.activeElement.getAttribute('aria-expanded') === 'true';
+            if (isOpen !== (event.key === 'ArrowRight')) document.activeElement.click();
+        }
+    });
+
+    function setAllExpanded(open) {
+        expanded.clear();
+        if (open) sections.forEach(section => expanded.add(section.id));
+        renderSidebar();
+    }
+
+    document.getElementById('expandAll').addEventListener('click', () => setAllExpanded(true));
+    document.getElementById('collapseAll').addEventListener('click', () => setAllExpanded(false));
+
+    filterInput.addEventListener('input', renderSidebar);
+    filterInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            filterInput.value = '';
+            renderSidebar();
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            const first = tree.querySelector('.nav-item');
+            if (first) first.focus();
+        } else if (event.key === 'Enter') {
+            const first = tree.querySelector('.nav-item:not(.overview)');
+            if (first) first.click();
+        }
+    });
+    document.getElementById('searchClear').addEventListener('click', () => {
+        filterInput.value = '';
+        renderSidebar();
+        filterInput.focus();
+    });
+    document.addEventListener('keydown', event => {
+        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+        if (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey) {
+            event.preventDefault();
+            showSidebar(true);
+            filterInput.focus();
+            filterInput.select();
+        }
+    });
+
+    if (config.enableSearch === false) {
+        document.getElementById('search_container').hidden = true;
+    }
+
+    // Broken or missing icons fall back to the section's generic icon.
+    document.addEventListener('error', event => {
+        const img = event.target;
+        if (img.tagName !== 'IMG' || !img.dataset.fallback) return;
+        const fallback = img.dataset.fallback;
+        img.removeAttribute('data-fallback');
+        img.src = fallback;
+    }, true);
+
+    // ---------- sidebar visibility ----------
+
+    const shell = document.getElementById('shell');
+    const isNarrow = () => window.matchMedia('(max-width: 900px)').matches;
+
+    function showSidebar(show) {
+        if (isNarrow()) {
+            shell.classList.toggle('sidebar-open', show);
+        } else {
+            shell.classList.toggle('sidebar-hidden', !show);
+            storageSet(SIDEBAR_HIDDEN_KEY, !show);
+        }
+    }
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        showSidebar(isNarrow() ? !shell.classList.contains('sidebar-open') : shell.classList.contains('sidebar-hidden'));
+    });
+    document.getElementById('backdrop').addEventListener('click', () => showSidebar(false));
+    if (storageGet(SIDEBAR_HIDDEN_KEY, false)) shell.classList.add('sidebar-hidden');
+
+    // ---------- routing: #page=<relative link> shows that page inline ----------
+
+    const homeView = document.getElementById('homeView');
+    const frameView = document.getElementById('frameView');
+    const frame = document.getElementById('pageFrame');
+    const openExternal = document.getElementById('openExternal');
+    const topbarTitle = document.getElementById('topbarTitle');
+    let currentPage = '';
+    // The page the frame shows; it differs from its src after navigation inside the frame.
+    let framePage = '';
+
+    function followLink(event, link, keepSidebar) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!opensInline(link)) return;
+        event.preventDefault();
+        location.hash = 'page=' + encodeURIComponent(link);
+        if (isNarrow() && !keepSidebar) showSidebar(false);
+    }
+
+    function pageFromHash() {
+        const match = location.hash.match(/^#page=(.+)$/);
+        if (!match) return '';
+        const link = decodeURIComponent(match[1]);
+        return opensInline(link) ? link : '';
+    }
+
+    function findItem(link) {
+        const base = link.split('#')[0];
+        return allItems.find(item => item.link === link) ||
+            overviewItems.find(item => item.link === link) ||
+            allItems.find(item => item.link.split('#')[0] === base) ||
+            overviewItems.find(item => item.link.split('#')[0] === base);
+    }
+
+    function setTitle(item, fallbackTitle) {
+        let html = '<button class="link-button" type="button" id="crumbHome">' + escapeHtml(DOMAIN_NAME) + '</button>';
+        if (item && item.section && item.section.title !== item.name) html += '<span>/</span><span>' + escapeHtml(item.section.title) + '</span>';
+        if (item || fallbackTitle) html += '<span>/</span><strong>' + escapeHtml(item ? item.name : fallbackTitle) + '</strong>';
+        topbarTitle.innerHTML = item || fallbackTitle ? html : '<strong>Overview</strong>';
+        const crumb = document.getElementById('crumbHome');
+        if (crumb) crumb.addEventListener('click', goHome);
+    }
+
+    function markActive() {
+        tree.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+        if (!currentPage) return;
+        const active = [...tree.querySelectorAll('.nav-item')].find(el => el.getAttribute('href') === currentPage);
+        if (active) active.classList.add('active');
+    }
+
+    function revealActive(item) {
+        if (!item || filterInput.value.trim()) return;
+        if (!expanded.has(item.section.id)) {
+            expanded.add(item.section.id);
+            renderSidebar();
+        }
+        const active = tree.querySelector('.nav-item.active');
+        if (active) active.scrollIntoView({block: 'nearest'});
+    }
+
+    function route() {
+        currentPage = pageFromHash();
+        const item = currentPage ? findItem(currentPage) : null;
+        homeView.hidden = !!currentPage;
+        frameView.hidden = !currentPage;
+        document.getElementById('homeButton').hidden = !currentPage;
+        openExternal.hidden = !currentPage;
+        if (currentPage) {
+            // A change of #tab only scrolls the frame to that tab, without reloading it.
+            if (framePage !== currentPage) frame.setAttribute('src', currentPage);
+            framePage = currentPage;
+            openExternal.href = currentPage;
+            document.title = (item ? item.name : 'Page') + ' · ' + DOMAIN_NAME;
+        } else {
+            frame.removeAttribute('src');
+            framePage = '';
+            document.title = DOMAIN_NAME;
+        }
+        setTitle(item);
+        markActive();
+        revealActive(item);
+    }
+
+    function goHome() {
+        if (location.hash) history.pushState(null, '', location.pathname + location.search);
+        route();
+    }
+
+    // Relative link from this page's folder to an absolute URL, or '' when it
+    // leaves the site (different origin).
+    function relativeLink(href) {
+        const from = new URL('.', location.href);
+        const to = new URL(href);
+        if (from.origin !== to.origin || from.protocol !== to.protocol) return '';
+        const fromParts = from.pathname.split('/').filter(Boolean);
+        const toParts = to.pathname.split('/');
+        const fileName = toParts.pop();
+        const toDirs = toParts.filter(Boolean);
+        let common = 0;
+        while (common < fromParts.length && common < toDirs.length && fromParts[common] === toDirs[common]) common++;
+        return '../'.repeat(fromParts.length - common) + toDirs.slice(common).concat(fileName).join('/') + to.hash;
+    }
+
+    // Keep the address bar, title and sidebar in step with navigation inside the
+    // frame. Browsers block this for file:// pages; the frame still works there.
+    frame.addEventListener('load', () => {
+        let location_;
+        try {
+            location_ = frame.contentWindow.location.href;
+        } catch (e) {
+            return;
+        }
+        if (!location_ || location_ === 'about:blank') return;
+        // Pages without the breadcrumbs import (the script-free tutorial) can't mark
+        // themselves as embedded; do it for them.
+        frame.contentDocument.documentElement.classList.add('embedded');
+        if (!frame.contentDocument.querySelector('style[data-embedded]')) {
+            const style = frame.contentDocument.createElement('style');
+            style.dataset.embedded = '';
+            style.textContent = 'html.embedded .site-nav, html.embedded #breadcrumbs { display: none !important; }';
+            frame.contentDocument.head.appendChild(style);
+        }
+        const link = relativeLink(location_);
+        if (!link) return;
+        if (link.split('#')[0] === 'index.html' || link.split('#')[0] === '../start/index.html') {
+            // A "Home" link inside the frame: show the overview instead of nesting the start page.
+            goHome();
+            return;
+        }
+        framePage = link;
+        if (link !== currentPage) {
+            currentPage = link;
+            history.replaceState(null, '', '#page=' + encodeURIComponent(link));
+            openExternal.href = link;
+            const item = findItem(link);
+            let frameTitle = '';
+            try {
+                frameTitle = frame.contentDocument.title;
+            } catch (e) {
+                // ignore
+            }
+            setTitle(item, frameTitle);
+            document.title = (item ? item.name : frameTitle || 'Page') + ' · ' + DOMAIN_NAME;
+            markActive();
+            revealActive(item);
+        }
+    });
+
+    document.getElementById('brand').addEventListener('click', goHome);
+    document.getElementById('homeButton').addEventListener('click', goHome);
+    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
+
+    // ---------- overview (home) content ----------
+
+    // Cards show the page counts of the sidebar sections they lead to.
+    function appCountsHtml(app) {
+        const counts = sidebarSections
+            .filter(section => (section.card || section.link) === app.link && section.groups.length)
+            .map(section => '<span class="app-count"><strong>' +
+                section.groups.reduce((sum, group) => sum + group.items.length, 0) + '</strong> ' +
+                escapeHtml(section.title) + '</span>')
+            .concat(sidebarSections.flatMap(section => section.views || [])
+                .filter(view => view.link === app.link && view.count > 0)
+                .map(view => '<span class="app-count"><strong>' + view.count + '</strong> ' +
+                    escapeHtml(view.name) + '</span>'));
+        return counts.length ? '<div class="app-counts">' + counts.join('') + '</div>' : '';
+    }
+
+    function renderAppCard(app) {
+        const newTab = config.openInNewTab !== false && app.openInNewTab !== false;
+        const attrs = opensInline(app.link) || !newTab ? '' : ' target="_blank" rel="noopener"';
+        // App names are authored markup (they may contain <br>), as on the previous start page.
+        return '<a class="app" href="' + escapeHtml(app.link) + '"' + attrs + '>' +
+            '<img src="' + escapeHtml(app.icon) + '" data-fallback="icons/logo.png" alt="">' +
+            '<div class="name">' + app.name + '</div>' +
+            (app.source ? '<div class="source">source: ' + escapeHtml(app.source) + '</div>' : '') +
+            '<div class="description">' + escapeHtml(app.description) + '</div>' + appCountsHtml(app) + '</a>';
+    }
+
+    function renderApps() {
+        let html = '';
+        apps.forEach(tab => {
+            if (apps.length > 1) html += '<h2 class="app-tab-title">' + escapeHtml(tab.tab) + '</h2>';
+            (tab.apps || []).forEach(group => {
+                html += '<div class="app-group"><h3 class="app-group-title">' + escapeHtml(group.group) + '</h3>' +
+                    '<div class="app-grid">' + (group.apps || []).map(renderAppCard).join('') + '</div></div>';
+            });
+        });
+        document.getElementById('appGroups').innerHTML = html;
+    }
+
+    homeView.addEventListener('click', event => {
+        const link = event.target.closest('a.app');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // ---------- domain description: three lines with a "more" toggle ----------
+
+    const descriptionContainer = document.getElementById('descriptionContainer');
+    const descriptionText = document.getElementById('domain-description');
+    const descriptionToggle = document.getElementById('domain-description-toggle');
+
+    function updateDescriptionToggle() {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionContainer.classList.add('clamped');
+        const overflows = descriptionText.scrollHeight > descriptionText.clientHeight + 1;
+        descriptionContainer.classList.toggle('clamped', overflows && !isExpanded);
+        descriptionToggle.hidden = !overflows;
+        descriptionToggle.textContent = isExpanded ? 'less' : 'more';
+    }
+
+    descriptionToggle.addEventListener('click', () => {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionToggle.setAttribute('aria-expanded', String(!isExpanded));
+        updateDescriptionToggle();
+    });
+    window.addEventListener('resize', updateDescriptionToggle);
+
+    renderSidebar();
+    renderApps();
+    route();
+    updateDescriptionToggle();
+    if (document.fonts) document.fonts.ready.then(updateDescriptionToggle);
+</script>
+</body>
+</html>

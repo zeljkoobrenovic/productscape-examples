@@ -26,6 +26,35 @@
         color: #343434;
     }
 </style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav,
+    html.embedded .section-tabs {
+        display: none !important;
+    }
+</style>
+
     <style>
     /* Shared design tokens for all generated pages.
        Canonical palette promoted from the evidence-explorer page, plus the
@@ -205,8 +234,8 @@
         }
 
         .hero-logo {
-            width: 108px;
-            height: 108px;
+            width: 92px;
+            height: 92px;
             margin-right: 12px;
         }
 
@@ -223,7 +252,7 @@
         }
 
         .hero-title {
-            font-size: 64px;
+            font-size: 52px;
             margin-bottom: 4px;
         }
 
@@ -380,6 +409,8 @@
 
         .brick-icon {
             width: 102px;
+            margin-top: 4px;
+            margin-bottom: 4px;
         }
 
         .brick-name {
@@ -1184,6 +1215,7 @@
         // The shared tabs script (_imports/tabs) calls this hook after a tab opens.
         // Render the lazily-built views for the tab that just became visible.
         window.afterOpenTab = function (tabName) {
+            updateHeroTitle(tabName);
             if (tabName === 'dependencies') {
                 renderDependenciesView();
             } else if (tabName === 'streams') {
@@ -3306,7 +3338,7 @@
 <nav class="site-nav" aria-label="Productscape sections">
     <a href="../start/index.html">Home</a>
     <a href="../customers/index.html">Customers</a>
-    <a href="../product-bricks/index.html" class="active" aria-current="page">Bricks &amp; Streams</a>
+    <a href="../product-bricks/index.html" class="active" aria-current="page">Product Bricks</a>
     <a href="../product-deployments/index.html">Products</a>
     <a href="../competition/index.html">Competition</a>
     <a href="../residuality/index.html">Stress Test</a>
@@ -3400,6 +3432,12 @@
         const activeTab = document.getElementById('tab_' + resolvedTabName);
         activeTab.className += ' active';
         activeTab.setAttribute('aria-selected', 'true');
+        // Overview pages name the open tab in their title, as the start page's sidebar does.
+        const heroTitle = document.querySelector('[data-follows-tab]');
+        if (heroTitle) {
+            if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
+            heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
+        }
         if (typeof window.afterOpenTab === 'function') {
             window.afterOpenTab(resolvedTabName);
         }
@@ -3421,7 +3459,7 @@
     </table>
 </div>
 <div>
-    <div class="tab">
+    <div class="tab section-tabs">
         <button class="tablinks active" id="tab_bricks" onclick="openTab('bricks')">Bricks</button>
         <button class="tablinks" id="tab_streams" onclick="openTab('streams')">Streams</button>
         <button class="tablinks" id="tab_data" onclick="openTab('data')">Data</button>
@@ -3471,7 +3509,19 @@
 </div>
 
 <script>
-    document.getElementById('doc-title').innerText = bricksMetadata.title || 'Product Bricks &amp; Streams';
+    // The hero names the open tab: bricks (and their dependencies), streams or data assets.
+    // Older sources title the bricks "Product Bricks & Streams"; keep just the bricks part.
+    function updateHeroTitle(tabName) {
+        const bricksTitle = (bricksMetadata.title || 'Product Bricks').replace(/\s+(&|and)\s+Streams$/i, '');
+        const titles = {
+            streams: streamsMetadata.title || 'Product Streams',
+            data: (dataAssetsPayload.metadata || {}).title || 'Data Assets'
+        };
+        const title = tabName === 'dependencies' ? 'Dependencies' : titles[tabName] || bricksTitle;
+        document.getElementById('doc-title').innerText = title;
+    }
+
+    updateHeroTitle('bricks');
     document.getElementById('doc-description').innerText = 'Product bricks connect customer and business needs to concrete implementation building blocks. This page shows an overview of the brick landscape, dependencies, streams, and delivery structure behind the domain.';
 </script>
 
@@ -3484,7 +3534,7 @@
       "label": "Privacy, Security and AI Governance Platform Home"
     },
     {
-      "label": "Bricks & Streams"
+      "label": "Product Bricks"
     }
   ]
 };

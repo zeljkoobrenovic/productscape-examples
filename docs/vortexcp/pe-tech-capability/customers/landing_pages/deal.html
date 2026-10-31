@@ -154,6 +154,35 @@
         color: #343434;
     }
 </style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav,
+    html.embedded .section-tabs {
+        display: none !important;
+    }
+</style>
+
     <style>
         body {
             font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
@@ -547,7 +576,7 @@
 <nav class="site-nav" aria-label="Productscape sections">
     <a href="../../start/index.html">Home</a>
     <a href="../../customers/index.html" class="active" aria-current="page">Customers</a>
-    <a href="../../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../../product-bricks/index.html">Product Bricks</a>
     <a href="../../product-deployments/index.html">Products</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
@@ -640,6 +669,12 @@
         const activeTab = document.getElementById('tab_' + resolvedTabName);
         activeTab.className += ' active';
         activeTab.setAttribute('aria-selected', 'true');
+        // Overview pages name the open tab in their title, as the start page's sidebar does.
+        const heroTitle = document.querySelector('[data-follows-tab]');
+        if (heroTitle) {
+            if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
+            heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
+        }
         if (typeof window.afterOpenTab === 'function') {
             window.afterOpenTab(resolvedTabName);
         }
@@ -701,7 +736,7 @@
 <script>
     function addNavigation() {
         let html = '';
-        html += '<div style="margin: 4px 20px 10px 20px; font-size: 85%; color: black">';
+        html += '<div class="image-tabs" style="margin: 4px 20px 10px 20px; font-size: 85%; color: black">';
         let prev_domain = all_customers[0].domain;
         all_customers.forEach(per => {
             if (prev_domain.toLowerCase() !== per.domain.toLowerCase()) {

@@ -178,7 +178,8 @@
     html.embedded #breadcrumbs,
     html.embedded .image-tabs,
     html.embedded .nav-strip,
-    html.embedded .channel-nav {
+    html.embedded .channel-nav,
+    html.embedded .section-tabs {
         display: none !important;
     }
 </style>
@@ -894,7 +895,7 @@
 <nav class="site-nav" aria-label="Productscape sections">
     <a href="../../start/index.html">Home</a>
     <a href="../../customers/index.html">Customers</a>
-    <a href="../../product-bricks/index.html">Bricks &amp; Streams</a>
+    <a href="../../product-bricks/index.html">Product Bricks</a>
     <a href="../../product-deployments/index.html" class="active" aria-current="page">Products</a>
     <a href="../../competition/index.html">Competition</a>
     <a href="../../residuality/index.html">Stress Test</a>
@@ -987,6 +988,12 @@
         const activeTab = document.getElementById('tab_' + resolvedTabName);
         activeTab.className += ' active';
         activeTab.setAttribute('aria-selected', 'true');
+        // Overview pages name the open tab in their title, as the start page's sidebar does.
+        const heroTitle = document.querySelector('[data-follows-tab]');
+        if (heroTitle) {
+            if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
+            heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
+        }
         if (typeof window.afterOpenTab === 'function') {
             window.afterOpenTab(resolvedTabName);
         }

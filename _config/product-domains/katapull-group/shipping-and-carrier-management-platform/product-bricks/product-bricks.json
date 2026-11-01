@@ -179,6 +179,13 @@
                   "sourceModuleId": "module-shipping-order-service",
                   "type": "uses",
                   "description": "Applies the merchant's shipping rules to each imported order."
+                },
+                {
+                  "targetBrickId": "trck",
+                  "moduleId": "module-tracking-event-bus",
+                  "sourceModuleId": "module-status-writeback",
+                  "type": "subscribes",
+                  "description": "Receives normalised shipped and delivered events to write status back to webshops and marketplaces."
                 }
               ],
               "dataDependencies": [
@@ -327,6 +334,27 @@
                   "sourceModuleId": "module-erp-wms-shipment-api",
                   "type": "uses",
                   "description": "Books the shipment once the ERP or WMS releases it."
+                },
+                {
+                  "targetBrickId": "addr",
+                  "moduleId": "module-address-check-api",
+                  "sourceModuleId": "module-erp-wms-shipment-api",
+                  "type": "uses",
+                  "description": "Validates recipient addresses on shipment requests released by ERP and WMS systems."
+                },
+                {
+                  "targetBrickId": "rule",
+                  "moduleId": "module-rule-evaluation-api",
+                  "sourceModuleId": "module-system-mapping",
+                  "type": "uses",
+                  "description": "Applies shipping rules to ERP and WMS shipment requests that arrive without a fixed carrier service."
+                },
+                {
+                  "targetBrickId": "docs",
+                  "moduleId": "module-document-api",
+                  "sourceModuleId": "module-document-return-consumer",
+                  "type": "uses",
+                  "description": "Fetches labels, packing lists and customs documents to return to the originating ERP or WMS."
                 }
               ],
               "dataDependencies": [
@@ -488,6 +516,20 @@
                   "sourceModuleId": "module-api-orchestrator",
                   "type": "uses",
                   "description": "Returns tracking timelines."
+                },
+                {
+                  "targetBrickId": "retn",
+                  "moduleId": "module-return-request-api",
+                  "sourceModuleId": "module-api-orchestrator",
+                  "type": "uses",
+                  "description": "Creates and queries return requests through the public returns endpoints."
+                },
+                {
+                  "targetBrickId": "trck",
+                  "moduleId": "module-tracking-event-bus",
+                  "sourceModuleId": "module-webhook-gateway",
+                  "type": "subscribes",
+                  "description": "Receives normalised status events to deliver as webhooks to partner systems."
                 }
               ],
               "dataDependencies": [
@@ -642,6 +684,20 @@
                   "sourceModuleId": "module-returnista-picqer-bridge",
                   "type": "uses",
                   "description": "Synchronises return requests with Returnista."
+                },
+                {
+                  "targetBrickId": "book",
+                  "moduleId": "module-booking-api",
+                  "sourceModuleId": "module-hub-mapping",
+                  "type": "uses",
+                  "description": "Books dispatch requests from Logic4, Vendit and Transus that arrive ready to ship."
+                },
+                {
+                  "targetBrickId": "trck",
+                  "moduleId": "module-tracking-event-bus",
+                  "sourceModuleId": "module-hub-event-consumer",
+                  "type": "subscribes",
+                  "description": "Receives tracking events to publish back to sibling Katapull products."
                 }
               ],
               "dataDependencies": [
@@ -814,7 +870,15 @@
                   ]
                 }
               ],
-              "brickDependencies": [],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "rule",
+                  "moduleId": "module-rule-evaluation-api",
+                  "sourceModuleId": "module-option-composer",
+                  "type": "uses",
+                  "description": "Applies the merchant's shipping rules so checkout only offers carriers and services the rules allow for the basket."
+                }
+              ],
               "dataDependencies": [
                 {
                   "assetId": "delivery-option-quote",
@@ -1547,6 +1611,20 @@
                   "sourceModuleId": "module-shipment-service",
                   "type": "uses",
                   "description": "Stores expected purchase and sales cost at booking."
+                },
+                {
+                  "targetBrickId": "dcko",
+                  "moduleId": "module-delivery-options-api",
+                  "sourceModuleId": "module-booking-api",
+                  "type": "uses",
+                  "description": "Retrieves the shopper's chosen delivery option by quote reference so the booked service matches the checkout promise."
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "moduleId": "module-tenant-api",
+                  "sourceModuleId": "module-booking-api",
+                  "type": "context",
+                  "description": "Resolves the tenant, client sub-account and its carrier accounts for each booking."
                 }
               ],
               "dataDependencies": [
@@ -1882,7 +1960,15 @@
                   ]
                 }
               ],
-              "brickDependencies": [],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "book",
+                  "moduleId": "module-booking-api",
+                  "sourceModuleId": "module-fulfilment-forwarder",
+                  "type": "uses",
+                  "description": "Lets external fulfilment partners and dropshippers book and label the forwarded order through the same platform."
+                }
+              ],
               "dataDependencies": [
                 {
                   "assetId": "shipping-order",
@@ -2011,7 +2097,15 @@
                   ]
                 }
               ],
-              "brickDependencies": [],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "tnnt",
+                  "moduleId": "module-tenant-api",
+                  "sourceModuleId": "module-carrier-credential-vault",
+                  "type": "context",
+                  "description": "Scopes carrier account numbers and credentials to the tenant and client sub-account that owns them."
+                }
+              ],
               "dataDependencies": [
                 {
                   "assetId": "carrier-service-catalogue",
@@ -2585,6 +2679,20 @@
                   "sourceModuleId": "module-returns-portal",
                   "type": "uses",
                   "description": "Delivers the return label to the consumer."
+                },
+                {
+                  "targetBrickId": "rule",
+                  "moduleId": "module-rule-evaluation-api",
+                  "sourceModuleId": "module-return-policy-evaluator",
+                  "type": "uses",
+                  "description": "Evaluates rule-based return cost and allowed return methods by order value, category or threshold."
+                },
+                {
+                  "targetBrickId": "trck",
+                  "moduleId": "module-tracking-event-bus",
+                  "sourceModuleId": "module-return-service",
+                  "type": "subscribes",
+                  "description": "Updates return status when the return parcel is dropped off and received."
                 }
               ],
               "dataDependencies": [
@@ -2748,6 +2856,13 @@
                   "sourceModuleId": "module-invoice-matcher",
                   "type": "uses",
                   "description": "Retrieves the expected cost per shipment."
+                },
+                {
+                  "targetBrickId": "book",
+                  "moduleId": "module-booking-api",
+                  "sourceModuleId": "module-invoice-matcher",
+                  "type": "uses",
+                  "description": "Looks up booked shipments by tracking number and parcel data to match carrier invoice lines."
                 }
               ],
               "dataDependencies": [
@@ -2886,7 +3001,36 @@
                   ]
                 }
               ],
-              "brickDependencies": [],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "trck",
+                  "moduleId": "module-tracking-event-bus",
+                  "sourceModuleId": "module-analytics-loader",
+                  "type": "subscribes",
+                  "description": "Loads delivery milestones for lead-time and on-time reporting."
+                },
+                {
+                  "targetBrickId": "rate",
+                  "moduleId": "module-rate-api",
+                  "sourceModuleId": "module-analytics-loader",
+                  "type": "uses",
+                  "description": "Loads expected purchase and sales cost per shipment for cost and margin reports."
+                },
+                {
+                  "targetBrickId": "co2c",
+                  "moduleId": "module-emission-api",
+                  "sourceModuleId": "module-analytics-loader",
+                  "type": "uses",
+                  "description": "Loads emission estimates per shipment for CO2 reporting."
+                },
+                {
+                  "targetBrickId": "excp",
+                  "moduleId": "module-carrier-scorecard-api",
+                  "sourceModuleId": "module-reporting-api",
+                  "type": "uses",
+                  "description": "Shows carrier performance scorecards per client, channel and carrier."
+                }
+              ],
               "dataDependencies": [
                 {
                   "assetId": "shipment-record",

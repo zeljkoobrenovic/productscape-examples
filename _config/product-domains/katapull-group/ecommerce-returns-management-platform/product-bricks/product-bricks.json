@@ -719,6 +719,13 @@
                   "sourceModuleId": "module-rule-evaluator",
                   "type": "uses",
                   "description": "Country-specific variants."
+                },
+                {
+                  "targetBrickId": "ecos",
+                  "moduleId": "module-fraud-check-orchestrator",
+                  "sourceModuleId": "module-rule-evaluator",
+                  "type": "uses",
+                  "description": "Fraud verdict used as a rule condition."
                 }
               ],
               "dataDependencies": [
@@ -1789,6 +1796,96 @@
               "description": "Connectors to marketing (Klaviyo), loyalty (Leat), size-and-fit (Faslet, Easysize), fraud prevention (Guzco) and stock planning (Optiply, Channeldock).",
               "layers": [
                 {
+                  "layer": "ui",
+                  "description": "User-facing surfaces.",
+                  "modules": [
+                    {
+                      "id": "module-app-connections-page",
+                      "name": "App Connections Page",
+                      "type": "web-component",
+                      "description": "Merchant dashboard page to connect, configure and monitor ecosystem apps.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Loads and saves app connections, mappings and sync status."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Queues, consumers and scheduled jobs.",
+                  "modules": [
+                    {
+                      "id": "module-ecosystem-event-router",
+                      "name": "Ecosystem Event Router",
+                      "type": "message-consumer",
+                      "description": "Consumes return events and routes them to the adapters of the apps each merchant has enabled.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Looks up which apps are enabled for the merchant."
+                          },
+                          {
+                            "moduleId": "module-marketing-loyalty-adapter",
+                            "type": "uses",
+                            "description": "Forwards return and refund events to Klaviyo and Leat."
+                          },
+                          {
+                            "moduleId": "module-size-fit-adapter",
+                            "type": "uses",
+                            "description": "Forwards fit-related return reasons to Faslet and Easysize."
+                          },
+                          {
+                            "moduleId": "module-stock-planning-adapter",
+                            "type": "uses",
+                            "description": "Forwards returned and restocked quantities to Optiply and Channeldock."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "stateless-service",
+                  "description": "Orchestration and calculation without durable state.",
+                  "modules": [
+                    {
+                      "id": "module-fraud-check-orchestrator",
+                      "name": "Fraud Check Orchestrator",
+                      "type": "stateless-service",
+                      "description": "Runs a synchronous fraud screen when a return is requested and returns a risk verdict to the policy rules.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-fraud-screening-adapter",
+                            "type": "uses",
+                            "description": "Calls Guzco for the shopper and order risk score."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Stateful domain services.",
+                  "modules": [
+                    {
+                      "id": "module-app-connection-service",
+                      "name": "App Connection Service",
+                      "type": "stateful-service",
+                      "description": "Per-merchant app enablement, field mappings and last sync status; credentials stay in the merchant account registry."
+                    }
+                  ]
+                },
+                {
                   "layer": "integration",
                   "description": "Adapters to external systems.",
                   "modules": [
@@ -1796,25 +1893,61 @@
                       "id": "module-marketing-loyalty-adapter",
                       "name": "Marketing and Loyalty Adapter",
                       "type": "integration",
-                      "description": "Sends return events to Klaviyo and Leat."
+                      "description": "Sends return events to Klaviyo and Leat.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Reads credentials reference and field mappings for this app."
+                          }
+                        ]
+                      }
                     },
                     {
                       "id": "module-size-fit-adapter",
                       "name": "Size and Fit Adapter",
                       "type": "integration",
-                      "description": "Shares fit reasons with Faslet and Easysize."
+                      "description": "Shares fit reasons with Faslet and Easysize.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Reads credentials reference and field mappings for this app."
+                          }
+                        ]
+                      }
                     },
                     {
                       "id": "module-fraud-screening-adapter",
                       "name": "Fraud Screening Adapter",
                       "type": "integration",
-                      "description": "Checks returns with Guzco."
+                      "description": "Checks returns with Guzco.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Reads the merchant's Guzco connection and thresholds."
+                          }
+                        ]
+                      }
                     },
                     {
                       "id": "module-stock-planning-adapter",
                       "name": "Stock Planning Adapter",
                       "type": "integration",
-                      "description": "Feeds returns to Optiply and Channeldock."
+                      "description": "Feeds returns to Optiply and Channeldock.",
+                      "dependencies": {
+                        "modules": [
+                          {
+                            "moduleId": "module-app-connection-service",
+                            "type": "uses",
+                            "description": "Reads credentials reference and field mappings for this app."
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -1823,21 +1956,52 @@
                 {
                   "targetBrickId": "pipe",
                   "moduleId": "module-return-event-bus",
-                  "sourceModuleId": "module-marketing-loyalty-adapter",
+                  "sourceModuleId": "module-ecosystem-event-router",
                   "type": "subscribes",
                   "description": "Return events."
+                },
+                {
+                  "targetBrickId": "tnnt",
+                  "moduleId": "module-merchant-account-service",
+                  "sourceModuleId": "module-app-connection-service",
+                  "type": "uses",
+                  "description": "App credentials from the connection registry."
+                },
+                {
+                  "targetBrickId": "rprt",
+                  "moduleId": "module-return-request-service",
+                  "sourceModuleId": "module-fraud-check-orchestrator",
+                  "type": "context",
+                  "description": "Return request, order and shopper details to screen."
                 }
               ],
               "dataDependencies": [
                 {
                   "assetId": "return-event-stream",
                   "moduleIds": [
+                    "module-ecosystem-event-router",
                     "module-marketing-loyalty-adapter",
                     "module-size-fit-adapter",
                     "module-stock-planning-adapter"
                   ],
                   "role": "consume",
                   "description": "Events."
+                },
+                {
+                  "assetId": "integration-connection",
+                  "moduleIds": [
+                    "module-app-connection-service"
+                  ],
+                  "role": "read",
+                  "description": "App credentials."
+                },
+                {
+                  "assetId": "return-request",
+                  "moduleIds": [
+                    "module-fraud-check-orchestrator"
+                  ],
+                  "role": "read",
+                  "description": "Return requests to screen."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [

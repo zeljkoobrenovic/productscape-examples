@@ -1,0 +1,2617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Product Deployments (Katapull Commerce Hub)</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 4px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav,
+    html.embedded .section-tabs {
+        display: none !important;
+    }
+</style>
+
+    <style>
+        :root {
+            /* data-viz roles (reference palette, light) */
+            --viz-ink: #0b0b0b;
+            --viz-ink-2: #52514e;
+            --viz-muted: #898781;
+            --viz-grid: #e1e0d9;
+            --viz-bar: #2a78d6;
+            --viz-track: #eef2f7;
+        }
+
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            margin: 8px 28px 28px;
+            color: var(--ink);
+            background: white;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        a:hover .link-text, a.link-text:hover {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .hero {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .hero-logo {
+            width: 84px;
+            height: 84px;
+            flex: none;
+            margin-top: 10px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            margin-bottom: 4px;
+        }
+
+        .hero-subtitle {
+            color: var(--muted);
+            font-size: 17px;
+            max-width: 960px;
+            line-height: 1.45;
+        }
+
+        .panel {
+            padding: 18px 2px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin: 0 0 4px 0;
+            font-weight: normal;
+        }
+
+        .section-intro {
+            color: var(--ink-soft);
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 900px;
+            margin: 0 0 14px 0;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .num {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ---------- KPI tiles ---------- */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .kpi {
+            padding: 14px 16px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            color: var(--viz-ink);
+            margin: 4px 0 2px 0;
+            line-height: 1.1;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--viz-ink-2);
+            line-height: 1.35;
+        }
+
+        /* ---------- overview layout ---------- */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 380px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        /* many channels: heatmap spans the page, side panels sit below it */
+        .overview-grid.wide {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .overview-grid.wide > .span-all {
+            grid-column: 1 / -1;
+        }
+
+        .overview-grid.wide .heatmap {
+            width: 100%;
+        }
+
+        .overview-grid.wide .heat-channel-head {
+            width: auto;
+            min-width: 48px;
+            max-width: 96px;
+            font-size: 11px;
+            hyphens: auto;
+        }
+
+        .overview-grid.wide .heat-group-head {
+            white-space: normal;
+        }
+
+        .overview-grid.wide .heat-row-head {
+            white-space: normal;
+            min-width: 150px;
+            padding-right: 6px;
+        }
+
+        .overview-grid.wide .heat-total {
+            padding: 4px 4px;
+        }
+
+        @media (max-width: 1100px) {
+            .overview-grid, .overview-grid.wide {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .block {
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+
+        .overview-figure {
+            margin: 0 0 18px 0;
+        }
+
+        .overview-figure img {
+            width: 100%;
+            max-width: 1100px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            display: block;
+        }
+
+        .overview-figure figcaption {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* ---------- insights ---------- */
+        .insight-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .insight {
+            border-left: 3px solid var(--accent-line);
+            padding: 4px 0 4px 12px;
+            font-size: 14px;
+            line-height: 1.45;
+            color: var(--ink);
+        }
+
+        .insight.attention {
+            border-left-color: var(--ink-soft);
+        }
+
+        .insight-tag {
+            display: inline-block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+
+        .insight a {
+            color: var(--accent-ink);
+        }
+
+        .insight a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- heatmap ---------- */
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        .heatmap {
+            border-collapse: separate;
+            border-spacing: 2px;
+            font-size: 13px;
+        }
+
+        .heatmap th {
+            font-weight: normal;
+        }
+
+        .heat-group-head {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--viz-ink-2);
+            text-align: left;
+            padding: 4px 6px 4px 6px;
+            border-top: 3px solid var(--viz-muted);
+            white-space: nowrap;
+        }
+
+        .heat-channel-head {
+            vertical-align: bottom;
+            text-align: left;
+            padding: 4px 6px 6px 6px;
+            width: 96px;
+            min-width: 84px;
+            max-width: 130px;
+            font-size: 12px;
+            line-height: 1.25;
+            color: var(--ink);
+        }
+
+        .heat-channel-head img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .heat-row-head {
+            text-align: left;
+            padding: 4px 12px 4px 0;
+            white-space: nowrap;
+        }
+
+        .heat-row-head a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .heat-row-head img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        .heat-cell, .heat-empty {
+            height: 38px;
+            text-align: center;
+            border-radius: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .heat-cell a {
+            display: block;
+            line-height: 38px;
+            font-weight: 600;
+        }
+
+        .heat-empty {
+            background: #f6f7f9;
+            color: #c3c2b7;
+        }
+
+        .heat-total {
+            text-align: center;
+            color: var(--viz-ink-2);
+            font-size: 12px;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+
+        .heat-foot th, .heat-foot td {
+            padding-top: 6px;
+        }
+
+        .heat-legend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+        .heat-legend-swatch {
+            width: 22px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* ---------- horizontal bars ---------- */
+        .hbar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hbar-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 110px 34px;
+            gap: 10px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .hbar-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .hbar-label span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hbar-label img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex: none;
+        }
+
+        .hbar-track {
+            height: 10px;
+            background: var(--viz-track);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .hbar-fill {
+            height: 100%;
+            background: var(--viz-bar);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .hbar-value {
+            text-align: right;
+            color: var(--viz-ink-2);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .reuse-split {
+            display: flex;
+            gap: 2px;
+            height: 14px;
+            margin: 8px 0 6px 0;
+        }
+
+        .reuse-split div {
+            height: 100%;
+        }
+
+        .reuse-split div:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .reuse-split div:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .reuse-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 14px;
+            font-size: 12px;
+            color: var(--viz-ink-2);
+            margin-bottom: 14px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: -1px;
+            flex: none;
+        }
+
+        /* ---------- toolbar ---------- */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            align-items: center;
+            margin: 4px 0 16px 0;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        .toolbar input[type=search], .toolbar select {
+            font-family: inherit;
+            font-size: 13px;
+            padding: 7px 10px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            background: white;
+            color: var(--ink);
+        }
+
+        .toolbar input[type=search] {
+            width: 240px;
+        }
+
+        .toolbar label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .toolbar .spacer {
+            flex: 1;
+        }
+
+        .group-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 14px;
+            font-size: 12px;
+            color: var(--viz-ink-2);
+        }
+
+        /* ---------- product cards ---------- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: box-shadow 0.18s ease;
+        }
+
+        .product-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .product-head {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .product-head img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            flex: none;
+        }
+
+        .product-name {
+            font-size: 21px;
+            line-height: 1.2;
+        }
+
+        .product-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .clamp {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--ink-soft);
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 0;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .stat {
+            flex: 1;
+            padding: 8px 10px;
+            border-right: 1px solid var(--line);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            color: var(--viz-ink);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sub-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .seg-bar {
+            display: flex;
+            gap: 2px;
+            height: 8px;
+            margin-bottom: 8px;
+        }
+
+        .seg-bar div:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .seg-bar div:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .seg-bar div:only-child {
+            border-radius: 4px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        a.pill:hover {
+            border-color: var(--accent-line);
+            background: var(--accent-soft);
+        }
+
+        .pill .pill-count {
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .pill img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .brick-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .brick-strip a {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .brick-strip img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: white;
+            padding: 2px;
+            box-sizing: border-box;
+        }
+
+        .brick-strip a.shared img {
+            border-color: var(--viz-bar);
+        }
+
+        .card-foot {
+            margin-top: auto;
+            font-size: 13px;
+            color: var(--accent-ink);
+        }
+
+        .empty-note {
+            font-size: 13px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* ---------- channels ---------- */
+        .group-section {
+            margin-bottom: 26px;
+        }
+
+        .group-head {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 3px solid var(--viz-muted);
+            padding-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .group-name {
+            font-size: 20px;
+        }
+
+        .group-meta {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .channel-card {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .channel-head {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .channel-head img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            flex: none;
+        }
+
+        .channel-name {
+            font-size: 17px;
+            line-height: 1.25;
+        }
+
+        .channel-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+        }
+
+        /* ---------- brick x product matrix ---------- */
+        .matrix {
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .matrix th, .matrix td {
+            border-bottom: 1px solid var(--line);
+            padding: 6px 8px;
+        }
+
+        .matrix thead th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+            vertical-align: bottom;
+            font-weight: normal;
+            border-bottom: 1px solid var(--line-strong);
+        }
+
+        .matrix .m-product-head {
+            width: 110px;
+            min-width: 90px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.25;
+        }
+
+        .matrix .m-product-head img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 4px auto;
+        }
+
+        .matrix .m-brick {
+            text-align: left;
+            white-space: nowrap;
+            min-width: 260px;
+        }
+
+        .matrix .m-brick a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .matrix .m-brick img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        .matrix td.m-cell {
+            text-align: center;
+        }
+
+        .matrix tbody tr:hover td, .matrix tbody tr:hover th {
+            background: var(--surface);
+        }
+
+        .m-marks {
+            display: inline-flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .m-mark {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            box-shadow: 0 0 0 2px white;
+        }
+
+        .m-total {
+            text-align: right;
+            color: var(--viz-ink-2);
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .m-foot td, .m-foot th {
+            border-bottom: none;
+            color: var(--viz-ink-2);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* ---------- tooltip ---------- */
+        .viz-tip {
+            position: fixed;
+            z-index: 50;
+            pointer-events: none;
+            display: none;
+            max-width: 320px;
+            background: #1f2430;
+            color: white;
+            font-size: 12px;
+            line-height: 1.45;
+            padding: 8px 10px;
+            border-radius: 8px;
+            white-space: pre-line;
+            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.25);
+        }
+        /* product dependency graph */
+        .pdg-section {
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .pdg-title {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .pdg-intro {
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            max-width: 880px;
+        }
+
+        .pdg-layout {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .pdg-controls {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            padding: 14px;
+        }
+
+        .pdg-control-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .pdg-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #374151;
+            padding: 6px 2px;
+        }
+
+        .pdg-swatch {
+            flex: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(17, 24, 39, 0.15);
+        }
+
+        .pdg-check-count {
+            color: #9ca3af;
+            font-size: 11px;
+            margin-left: auto;
+        }
+
+        .pdg-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .pdg-search:focus {
+            outline: none;
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+        }
+
+        .pdg-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .pdg-action {
+            border: 1px solid #d1d5db;
+            background-color: white;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .pdg-action:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .pdg-checklist {
+            max-height: 460px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdg-type-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #6b7280;
+            margin: 10px 0 2px 0;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pdg-type-header:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .pdg-check-item.node {
+            cursor: pointer;
+        }
+
+        .pdg-check-item.node span.label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pdg-empty-list {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 12px;
+            padding: 8px 2px;
+        }
+
+        .pdg-graph-shell {
+            min-width: 0;
+        }
+
+        .pdg-view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .pdg-view-btn {
+            border: 1px solid #d1d5db;
+            background-color: #f8fafc;
+            color: #4b5563;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .pdg-view-btn:hover {
+            background-color: #eef2f7;
+            border-color: #9ca3af;
+        }
+
+        .pdg-view-btn.active {
+            background-color: #202124;
+            border-color: #202124;
+            color: white;
+        }
+
+        .pdg-labels-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 4px;
+            font-size: 13px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .pdg-graph {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: white;
+            padding: 14px;
+            overflow: auto;
+            min-height: 560px;
+        }
+
+        .pdg-graph.force {
+            padding: 0;
+            overflow: hidden;
+            height: 620px;
+        }
+
+        .pdg-summary {
+            margin-top: 12px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .pdg-summary strong {
+            color: #1f2937;
+        }
+
+        .pdg-empty {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+    <link rel="stylesheet" target="_blank" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/force-graph@1.51.4/dist/force-graph.min.js"></script>
+</head>
+<body onload="initTab('overview')" onhashchange="initTab('overview')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../start/index.html">Home</a>
+    <a href="../customers/index.html">Customers</a>
+    <a href="../product-bricks/index.html">Product Bricks</a>
+    <a href="../product-deployments/index.html" class="active" aria-current="page">Products</a>
+    <a href="../competition/index.html">Competition</a>
+    <a href="../customers/index.html#insights">Insights</a>
+    <a href="../residuality/index.html">Stress Test</a>
+    <a href="../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        // Overview pages name the open tab in their title, as the start page's sidebar does.
+        const heroTitle = document.querySelector('[data-follows-tab]');
+        if (heroTitle) {
+            if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
+            heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
+        }
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+
+    // In-page links to another tab (e.g. the top bar's Insights link on the
+    // Customers page) only change the hash; switch to that tab.
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+            openTab(hash, {updateHistory: false});
+        }
+    });
+</script>
+
+<div class="hero">
+    <img class="hero-logo" src="icons/logo.png" alt="Products">
+    <div>
+        <div class="hero-title" data-follows-tab>Product Deployments</div>
+        <div class="hero-subtitle">Products organize the customer value proposition into concrete offers. This page shows
+            which product bricks each product is built from, where those bricks run, and how much products share.
+        </div>
+    </div>
+</div>
+
+<div class="tab section-tabs">
+    <button class="tablinks active" id="tab_overview" data-tab-title="Overview" onclick="openTab('overview')">Overview</button>
+    <button class="tablinks" id="tab_products" data-tab-title="Products" onclick="openTab('products')">Products</button>
+    <button class="tablinks" id="tab_deployment" data-tab-title="Deployments" onclick="openTab('deployment')">Deployment Channels</button>
+    <button class="tablinks" id="tab_matrix" data-tab-title="Brick Matrix" onclick="openTab('matrix')">Brick Matrix</button>
+    <button class="tablinks" id="tab_dependencies" data-tab-title="Dependencies" onclick="openTab('dependencies')">Dependency Graph</button>
+</div>
+<div>
+    <div id="tab_content_overview" class="tabcontent"></div>
+    <div id="tab_content_products" class="tabcontent">
+        <div class="panel">
+            <div class="toolbar">
+                <input type="search" id="product_search" placeholder="Search products, customers, bricks…" oninput="renderProducts()">
+                <label>Sort
+                    <select id="product_sort" onchange="renderProducts()">
+                        <option value="name">Name</option>
+                        <option value="bricks">Most bricks</option>
+                        <option value="channels">Most channels</option>
+                        <option value="shared">Most shared</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="product_show_bricks" checked onchange="renderProducts()"> Show bricks</label>
+                <span class="spacer"></span>
+                <div class="group-legend" id="product_legend"></div>
+            </div>
+            <div id="products_content"></div>
+        </div>
+    </div>
+    <div id="tab_content_deployment" class="tabcontent"></div>
+    <div id="tab_content_matrix" class="tabcontent">
+        <div class="panel">
+            <p class="section-intro">Every deployed brick against every product. Each mark is a deployment channel the brick
+                runs in for that product, coloured by channel group. Rows are sorted by how many products share the brick.</p>
+            <div class="toolbar">
+                <input type="search" id="matrix_search" placeholder="Search bricks…" oninput="renderMatrix()">
+                <label>Channel group
+                    <select id="matrix_group" onchange="renderMatrix()"></select>
+                </label>
+                <label><input type="checkbox" id="matrix_shared" onchange="renderMatrix()"> Only shared bricks</label>
+                <span class="spacer"></span>
+                <div class="group-legend" id="matrix_legend"></div>
+            </div>
+            <div class="table-scroll" id="matrix_content"></div>
+        </div>
+    </div>
+    <div id="tab_content_dependencies" class="tabcontent">
+        <div class="pdg-section">
+            <div class="pdg-intro">All dependencies between products, deployment channels, and product bricks. Filter node types on the left.</div>
+            <div class="pdg-layout">
+                <div class="pdg-controls" id="pdg_controls"></div>
+                <div class="pdg-graph-shell">
+                    <div class="pdg-view-toggle">
+                        <button type="button" class="pdg-view-btn active" data-pdgview="force" onclick="setPdgView('force')">2D force graph</button>
+                        <button type="button" class="pdg-view-btn" data-pdgview="mermaid" onclick="setPdgView('mermaid')">Flow diagram</button>
+                        <label class="pdg-labels-toggle"><input type="checkbox" onchange="setPdgLabels(this.checked)"> Show labels</label>
+                    </div>
+                    <div class="pdg-graph" id="pdg_graph"></div>
+                    <div class="pdg-summary" id="pdg_summary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="viz-tip" id="viz_tip" role="tooltip"></div>
+
+<script>
+    const products = {"portfolio": {"name": "Katapull Commerce Hub Portfolio", "version": "1.0", "products": [{"id": "highbiza", "name": "Highbiza", "type": "Katapull platform - own webshops", "description": "Managed webshops and websites for wholesalers, technical wholesalers, retailers and jewellers, with customer-specific B2B pricing, quotes, reorder and ERP, carrier and marketplace integrations.", "icon": "highbiza.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}, {"id": "trdb", "name": "Professional Trade Buyer", "icon": "customer-trdb-portrait.jpg"}]}, {"id": "effectconnect", "name": "EffectConnect", "type": "Katapull platform - marketplaces", "description": "One hub that connects webshops, back offices and SaaS partners to 50+ European marketplaces for listings, content, repricing, orders, stock, fulfilment, feeds and retail media reporting.", "icon": "effectconnect.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "tpls", "name": "Fulfilment and 3PL Company", "icon": "customer-tpls-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "sipt", "name": "Software and Implementation Partner", "icon": "customer-sipt-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}, {"id": "shpm", "name": "Shopify-Based Merchant", "icon": "customer-shpm-portrait.jpg"}]}, {"id": "vendit", "name": "Vendit", "type": "Katapull platform - physical stores", "description": "Point-of-sale, stock, webshop and store management for Dutch and Belgian specialty retailers, chains and franchise formulas.", "icon": "vendit.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}]}, {"id": "logic4", "name": "Logic4", "type": "Katapull platform - commerce core", "description": "All-in-one webshop and ERP for mid-sized Dutch and Belgian non-food wholesalers, retailers and e-tailers: PIM, orders, stock, purchasing, CRM, POS and accounting in one system.", "icon": "logic4.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "trdb", "name": "Professional Trade Buyer", "icon": "customer-trdb-portrait.jpg"}]}, {"id": "transus", "name": "Transus", "type": "Katapull platform - trade documents", "description": "EDI and e-invoicing network connecting suppliers, retailers and logistics partners for orders, despatch advice, SSCC labels, invoices and VMI.", "icon": "transus.png", "primaryCustomers": [{"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "sipt", "name": "Software and Implementation Partner", "icon": "customer-sipt-portrait.jpg"}, {"id": "trdb", "name": "Professional Trade Buyer", "icon": "customer-trdb-portrait.jpg"}]}, {"id": "picqer", "name": "Picqer", "type": "Katapull platform - warehouse", "description": "Cloud WMS for online stores, wholesalers and fulfilment companies: multi-channel orders, inventory and locations, purchasing, batch picking, packing, returns, rules and a multi-client fulfilment portal.", "icon": "picqer.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "tpls", "name": "Fulfilment and 3PL Company", "icon": "customer-tpls-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "sipt", "name": "Software and Implementation Partner", "icon": "customer-sipt-portrait.jpg"}, {"id": "shpm", "name": "Shopify-Based Merchant", "icon": "customer-shpm-portrait.jpg"}]}, {"id": "deliverymatch", "name": "DeliveryMatch", "type": "Katapull platform - delivery", "description": "Order and shipping platform: dynamic checkout, multi-carrier booking across 200+ carriers, transport management, tracking, return shipping and freight audit.", "icon": "deliverymatch.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "tpls", "name": "Fulfilment and 3PL Company", "icon": "customer-tpls-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "sipt", "name": "Software and Implementation Partner", "icon": "customer-sipt-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}, {"id": "trdb", "name": "Professional Trade Buyer", "icon": "customer-trdb-portrait.jpg"}, {"id": "shpm", "name": "Shopify-Based Merchant", "icon": "customer-shpm-portrait.jpg"}]}, {"id": "returnista", "name": "Returnista", "type": "Katapull platform - after-sales", "description": "Branded returns portal, exchanges and store credit, return operations and returns insights for European webshops.", "icon": "returnista.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "tpls", "name": "Fulfilment and 3PL Company", "icon": "customer-tpls-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}, {"id": "shpm", "name": "Shopify-Based Merchant", "icon": "customer-shpm-portrait.jpg"}]}, {"id": "katapull-commerce-hub-bundle", "name": "Katapull Commerce Hub (connected stack)", "type": "Group offering - connected platforms", "description": "The combination of Katapull platforms a shared customer uses, connected through hub bridges, with one shared account view. Group positioning; bundles and pricing are not published.", "icon": "katapull-commerce-hub-bundle.png", "primaryCustomers": [{"id": "twow", "name": "Trading Company Owner-Director", "icon": "customer-twow-portrait.jpg"}, {"id": "ecmm", "name": "E-commerce and Channel Manager", "icon": "customer-ecmm-portrait.jpg"}, {"id": "opsl", "name": "Warehouse and Logistics Operations Lead", "icon": "customer-opsl-portrait.jpg"}, {"id": "itin", "name": "IT, ERP and Integration Lead", "icon": "customer-itin-portrait.jpg"}, {"id": "fico", "name": "Financial Controller", "icon": "customer-fico-portrait.jpg"}, {"id": "rtlr", "name": "Specialty Retailer and Store Chain Manager", "icon": "customer-rtlr-portrait.jpg"}, {"id": "supb", "name": "Supplier and Brand Selling to Retail", "icon": "customer-supb-portrait.jpg"}, {"id": "tpls", "name": "Fulfilment and 3PL Company", "icon": "customer-tpls-portrait.jpg"}, {"id": "fcln", "name": "Webshop Brand Outsourcing Fulfilment", "icon": "customer-fcln-portrait.jpg"}, {"id": "sipt", "name": "Software and Implementation Partner", "icon": "customer-sipt-portrait.jpg"}, {"id": "shpr", "name": "Online and In-Store Shopper", "icon": "customer-shpr-portrait.jpg"}, {"id": "trdb", "name": "Professional Trade Buyer", "icon": "customer-trdb-portrait.jpg"}, {"id": "shpm", "name": "Shopify-Based Merchant", "icon": "customer-shpm-portrait.jpg"}]}]}};
+    const deployment = {"metadata": {"domainId": "katapull-commerce-hub", "title": "Deployment Channels", "description": "Where the Katapull platforms run and which hub products use them.", "modelVersion": "4.0"}, "channels": [{"groupId": "katapull-cloud", "groupName": "Katapull Platforms (Cloud SaaS)", "groupType": "web", "description": "Each Katapull platform runs as its own cloud service operated by the brand.", "channels": [{"subChannelId": "highbiza-cloud", "subChannelName": "Highbiza Cloud", "channelType": "web-app", "description": "Highbiza web application, API and connectors.", "deployedBricks": [{"brickId": "hbza", "brickName": "Highbiza B2B and B2C Webshops", "deploymentRole": "Operated by Highbiza; hosting details in the Highbiza productscape.", "usedInProducts": [{"productId": "highbiza", "description": "Highbiza is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Highbiza is part of the connected stack."}]}]}, {"subChannelId": "effectconnect-cloud", "subChannelName": "EffectConnect Cloud", "channelType": "web-app", "description": "EffectConnect web application, API and connectors.", "deployedBricks": [{"brickId": "efco", "brickName": "EffectConnect Marketplace Integration", "deploymentRole": "Operated by EffectConnect; hosting details in the EffectConnect productscape.", "usedInProducts": [{"productId": "effectconnect", "description": "EffectConnect is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "EffectConnect is part of the connected stack."}]}]}, {"subChannelId": "vendit-cloud", "subChannelName": "Vendit Cloud", "channelType": "web-app", "description": "Vendit web application, API and connectors.", "deployedBricks": [{"brickId": "vndt", "brickName": "Vendit POS and Store Management", "deploymentRole": "Operated by Vendit; hosting details in the Vendit productscape.", "usedInProducts": [{"productId": "vendit", "description": "Vendit is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Vendit is part of the connected stack."}]}]}, {"subChannelId": "logic4-cloud", "subChannelName": "Logic4 Cloud", "channelType": "web-app", "description": "Logic4 web application, API and connectors.", "deployedBricks": [{"brickId": "lgc4", "brickName": "Logic4 Commerce ERP", "deploymentRole": "Operated by Logic4; hosting details in the Logic4 productscape.", "usedInProducts": [{"productId": "logic4", "description": "Logic4 is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Logic4 is part of the connected stack."}]}]}, {"subChannelId": "transus-cloud", "subChannelName": "Transus Cloud", "channelType": "web-app", "description": "Transus web application, API and connectors.", "deployedBricks": [{"brickId": "trns", "brickName": "Transus EDI and E-invoicing", "deploymentRole": "Operated by Transus; hosting details in the Transus productscape.", "usedInProducts": [{"productId": "transus", "description": "Transus is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Transus is part of the connected stack."}]}]}, {"subChannelId": "picqer-cloud", "subChannelName": "Picqer Cloud", "channelType": "web-app", "description": "Picqer web application, API and connectors.", "deployedBricks": [{"brickId": "pcqr", "brickName": "Picqer Warehouse Management and Fulfilment", "deploymentRole": "Operated by Picqer; hosting details in the Picqer productscape.", "usedInProducts": [{"productId": "picqer", "description": "Picqer is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Picqer is part of the connected stack."}]}]}, {"subChannelId": "deliverymatch-cloud", "subChannelName": "DeliveryMatch Cloud", "channelType": "web-app", "description": "DeliveryMatch web application, API and connectors.", "deployedBricks": [{"brickId": "dlvm", "brickName": "DeliveryMatch Shipping and Carrier Management", "deploymentRole": "Operated by DeliveryMatch; hosting details in the DeliveryMatch productscape.", "usedInProducts": [{"productId": "deliverymatch", "description": "DeliveryMatch is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "DeliveryMatch is part of the connected stack."}]}]}, {"subChannelId": "returnista-cloud", "subChannelName": "Returnista Cloud", "channelType": "web-app", "description": "Returnista web application, API and connectors.", "deployedBricks": [{"brickId": "rtns", "brickName": "Returnista Returns Management", "deploymentRole": "Operated by Returnista; hosting details in the Returnista productscape.", "usedInProducts": [{"productId": "returnista", "description": "Returnista is this brick."}, {"productId": "katapull-commerce-hub-bundle", "description": "Returnista is part of the connected stack."}]}]}]}, {"groupId": "hub-layer", "groupName": "Commerce Hub Layer", "groupType": "integration", "description": "Group-level connectivity and shared customer view (inferred).", "channels": [{"subChannelId": "hub-bridges", "subChannelName": "Hub Bridges and Shared View", "channelType": "integration", "description": "Bridges between platforms and the shared customer view.", "deployedBricks": [{"brickId": "hubc", "brickName": "Commerce Hub Bridges and Connection Registry", "deploymentRole": "Today spread across the brands' own bridge modules; a shared deployment is inferred.", "usedInProducts": [{"productId": "highbiza", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "effectconnect", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "vendit", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "logic4", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "transus", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "picqer", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "deliverymatch", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "returnista", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "katapull-commerce-hub-bundle", "description": "Uses the hub layer to connect to sibling platforms."}]}, {"brickId": "hubv", "brickName": "Shared Customer and Commerce Chain Insight", "deploymentRole": "Today spread across the brands' own bridge modules; a shared deployment is inferred.", "usedInProducts": [{"productId": "highbiza", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "effectconnect", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "vendit", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "logic4", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "transus", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "picqer", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "deliverymatch", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "returnista", "description": "Uses the hub layer to connect to sibling platforms."}, {"productId": "katapull-commerce-hub-bundle", "description": "Uses the hub layer to connect to sibling platforms."}]}]}]}, {"groupId": "app-stores-and-plugin-marketplaces", "groupName": "App Stores and Plugin Marketplaces", "groupType": "distribution", "description": "App stores and plugin marketplaces where Katapull brands publish apps. They reach merchants who keep a non-Katapull shop or core system, and warehouse staff on phones and handhelds. Apps are documented for DeliveryMatch, Returnista, EffectConnect and Picqer, and partner-published Business Central apps exist for Transus. A web check in November 2026 found no app-store listing for Highbiza, Vendit or Logic4. Logic4's Android scanner app is not described as distributed through an app store.", "channels": [{"subChannelId": "shopify-app-store", "subChannelName": "Shopify App Store and Shopify Store Connectors", "channelType": "app-store", "description": "Katapull apps and connectors installed in Shopify stores. Shopify stays the system of record for products and orders, and the Katapull platforms work behind it.", "deployedBricks": [{"brickId": "efco", "brickName": "EffectConnect Marketplace Integration", "deploymentRole": "EffectConnect Shopify plugin: syncs products, stock and orders between Shopify and marketplaces.", "usedInProducts": [{"productId": "effectconnect", "description": "EffectConnect reaches Shopify merchants through this channel."}, {"productId": "katapull-commerce-hub-bundle", "description": "Part of the connected chain behind a Shopify store (persona shpm)."}]}, {"brickId": "pcqr", "brickName": "Picqer Warehouse Management and Fulfilment", "deploymentRole": "Picqer \"Pick & ship faster\" Shopify app (apps.shopify.com/picqer, 14-day trial): imports orders, pushes tracking and stock back to Shopify.", "usedInProducts": [{"productId": "picqer", "description": "Picqer reaches Shopify merchants through this channel."}, {"productId": "katapull-commerce-hub-bundle", "description": "Part of the connected chain behind a Shopify store (persona shpm)."}]}, {"brickId": "dlvm", "brickName": "DeliveryMatch Shipping and Carrier Management", "deploymentRole": "DeliveryMatch Shopify app (listed as free, launched August 2019): delivery options, labels and tracking.", "usedInProducts": [{"productId": "deliverymatch", "description": "DeliveryMatch reaches Shopify merchants through this channel."}, {"productId": "katapull-commerce-hub-bundle", "description": "Part of the connected chain behind a Shopify store (persona shpm)."}]}, {"brickId": "rtns", "brickName": "Returnista Returns Management", "deploymentRole": "Returnista - Return & Exchange Shopify app (launched July 2023): returns portal and exchanges.", "usedInProducts": [{"productId": "returnista", "description": "Returnista reaches Shopify merchants through this channel."}, {"productId": "katapull-commerce-hub-bundle", "description": "Part of the connected chain behind a Shopify store (persona shpm)."}]}]}, {"subChannelId": "webshop-plugin-marketplaces", "subChannelName": "Other Webshop App Stores and Plugin Repositories", "channelType": "app-store", "description": "Lightspeed App Store, Magento extensions, WooCommerce plugins and other webshop plugins.", "deployedBricks": [{"brickId": "efco", "brickName": "EffectConnect Marketplace Integration", "deploymentRole": "EffectConnect apps and plugins for the Lightspeed App Store, Magento and WooCommerce.", "usedInProducts": [{"productId": "effectconnect", "description": "EffectConnect reaches merchants on other shop platforms through plugins."}]}, {"brickId": "dlvm", "brickName": "DeliveryMatch Shipping and Carrier Management", "deploymentRole": "DeliveryMatch delivery-options checkout widget as Magento, WooCommerce and other webshop plugins.", "usedInProducts": [{"productId": "deliverymatch", "description": "DeliveryMatch reaches merchants on other shop platforms through plugins."}]}]}, {"subChannelId": "mobile-app-stores", "subChannelName": "Apple App Store and Google Play", "channelType": "mobile-app-store", "description": "Native mobile apps for warehouse staff.", "deployedBricks": [{"brickId": "pcqr", "brickName": "Picqer Warehouse Management and Fulfilment", "deploymentRole": "Picqer App for iOS and Android, included in all plans: paperless picking, receiving, counting and moving stock.", "usedInProducts": [{"productId": "picqer", "description": "Picqer floor teams use the mobile app."}, {"productId": "katapull-commerce-hub-bundle", "description": "The warehouse link of the connected chain on handhelds."}]}]}, {"subChannelId": "microsoft-appsource", "subChannelName": "Microsoft AppSource (Business Central)", "channelType": "app-store", "description": "Partner-published Business Central apps that connect to Transus: NC365 Transus EDI connect (NAS conception) and Transus API Connector (Micro Apps).", "deployedBricks": [{"brickId": "trns", "brickName": "Transus EDI and E-invoicing", "deploymentRole": "Business Central apps by partners call the Transus integration API.", "usedInProducts": [{"productId": "transus", "description": "Business Central merchants connect to Transus through AppSource apps."}]}]}, {"subChannelId": "effectconnect-app-store", "subChannelName": "EffectConnect App Store", "channelType": "app-store", "description": "A Katapull-owned catalogue of apps and partner integrations around EffectConnect. It is the only app store a Katapull brand runs itself.", "deployedBricks": [{"brickId": "efco", "brickName": "EffectConnect Marketplace Integration", "deploymentRole": "Hosts the catalogue where partner apps and integrations around EffectConnect are listed.", "usedInProducts": [{"productId": "effectconnect", "description": "Merchants find partner apps for EffectConnect here."}]}]}]}]};
+    const OVERVIEW_IMAGE = "media/deployment-overview.jpg";
+    const OVERVIEW_IMAGE_ALT = "Deployment map of Katapull Commerce Hub. products: Highbiza, EffectConnect, Vendit, Logic4, Transus, Picqer, DeliveryMatch, Returnista, Katapull Commerce Hub. channel groups: Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. Highbiza runs on Katapull Platforms, Commerce Hub Layer. EffectConnect runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. Vendit runs on Katapull Platforms, Commerce Hub Layer. Logic4 runs on Katapull Platforms, Commerce Hub Layer. Transus runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. Picqer runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. DeliveryMatch runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. Returnista runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces. Katapull Commerce Hub runs on Katapull Platforms, Commerce Hub Layer, App Stores and Plugin Marketplaces.";
+
+    // Categorical slots (fixed order) identify channel groups; groups past the
+    // eighth fold into a neutral "other" grey. Heat steps are one blue ramp.
+    const GROUP_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
+    const OTHER_COLOR = '#898781';
+    // Above this many channels the footprint heatmap gets the full page width.
+    const WIDE_HEATMAP_CHANNELS = 8;
+    const HEAT_STEPS =['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95'];
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function plural(count, one, many) {
+        return count + ' ' + (count === 1 ? one : (many || one + 's'));
+    }
+
+    function verb(count, one, many) {
+        return count === 1 ? one : many;
+    }
+
+    function pct(part, whole) {
+        return whole ? Math.round(100 * part / whole) : 0;
+    }
+
+    function deploymentIconFile(channel, group) {
+        const text = [
+            group && group.groupId,
+            group && group.groupName,
+            channel && channel.subChannelId,
+            channel && channel.subChannelName,
+            channel && channel.channelType
+        ].join(' ').toLowerCase();
+
+        if (text.includes('ios')) {
+            return 'app_store_ios.png';
+        }
+        if (text.includes('android') || text.includes('play store') || text.includes('play-store')) {
+            return 'app_store_android.png';
+        }
+        if (text.includes('private cloud') || text.includes('private-cloud')) {
+            return 'private_cloud.png';
+        }
+        if (text.includes('cloud') || text.includes('runtime') || text.includes('edge') || text.includes('cdn')) {
+            return 'public_cloud.png';
+        }
+        if (text.includes('saas') || text.includes('analytics') || text.includes('crm') || text.includes('datadog') || text.includes('snowflake') || text.includes('databricks') || text.includes('salesforce')) {
+            return 'saas.png';
+        }
+        return 'deployment.png';
+    }
+
+    /* ---------- derived model ---------- */
+    function buildModel() {
+        const model = {products: [], productById: {}, groups: [], channels: [], channelByRef: {}, bricks: [], brickById: {}, placements: 0};
+        ((products.portfolio || {}).products || []).forEach(raw => {
+            const entry = {raw: raw, id: raw.id, name: raw.name || raw.id, bricks: {}, channels: new Set()};
+            model.products.push(entry);
+            model.productById[raw.id] = entry;
+        });
+        (deployment.channels || []).forEach((rawGroup, index) => {
+            const group = {
+                raw: rawGroup,
+                id: rawGroup.groupId || ('group-' + index),
+                name: rawGroup.groupName || rawGroup.groupId || 'Channel group',
+                description: rawGroup.description || '',
+                color: index < GROUP_COLORS.length ? GROUP_COLORS[index] : OTHER_COLOR,
+                channels: []
+            };
+            model.groups.push(group);
+            (rawGroup.channels || []).forEach(rawChannel => {
+                const ref = (rawGroup.groupId || '') + '/' + (rawChannel.subChannelId || '');
+                const channel = {
+                    raw: rawChannel, ref: ref, group: group,
+                    id: rawChannel.subChannelId || '',
+                    name: rawChannel.subChannelName || rawChannel.subChannelId || ref,
+                    type: rawChannel.channelType || '',
+                    description: rawChannel.description || '',
+                    bricks: [],
+                    productBricks: {}
+                };
+                group.channels.push(channel);
+                model.channels.push(channel);
+                model.channelByRef[ref] = channel;
+                (rawChannel.deployedBricks || []).forEach(deployed => {
+                    if (!deployed || !deployed.brickId) {
+                        return;
+                    }
+                    let brick = model.brickById[deployed.brickId];
+                    if (!brick) {
+                        brick = {id: deployed.brickId, name: deployed.brickName || deployed.brickId, products: new Set(), channels: new Set()};
+                        model.brickById[brick.id] = brick;
+                        model.bricks.push(brick);
+                    }
+                    brick.channels.add(ref);
+                    model.placements += 1;
+                    const usedBy = [];
+                    (deployed.usedInProducts || []).forEach(use => {
+                        const product = model.productById[use.productId];
+                        if (!product) {
+                            return;
+                        }
+                        usedBy.push(product.id);
+                        brick.products.add(product.id);
+                        product.channels.add(ref);
+                        if (!product.bricks[brick.id]) {
+                            product.bricks[brick.id] = {brick: brick, channels: new Set(), description: use.description || ''};
+                        }
+                        product.bricks[brick.id].channels.add(ref);
+                        (channel.productBricks[product.id] = channel.productBricks[product.id] || new Set()).add(brick.id);
+                    });
+                    channel.bricks.push({brick: brick, role: deployed.deploymentRole || '', products: usedBy});
+                });
+            });
+        });
+        model.products.forEach(product => {
+            const list = Object.values(product.bricks);
+            product.brickCount = list.length;
+            product.sharedCount = list.filter(item => item.brick.products.size > 1).length;
+            product.channelCount = product.channels.size;
+        });
+        return model;
+    }
+
+    const MODEL = buildModel();
+
+    /* ---------- links and icons ---------- */
+    function productHref(product) {
+        return 'landing_pages/' + encodeURIComponent(product.id) + '.html';
+    }
+
+    function channelHref(channel) {
+        return 'deployment/' + encodeURIComponent(channel.id) + '.html';
+    }
+
+    function brickHref(brick) {
+        return '../product-bricks/landing_pages/' + encodeURIComponent(brick.id) + '.html';
+    }
+
+    function productIcon(product, cls) {
+        return '<img class="' + (cls || '') + '" src="icons/' + escapeHtml(product.raw.icon || 'product.png') + '" alt="" onerror="this.onerror=null;this.src=\'icons/product.png\'">';
+    }
+
+    function channelIcon(channel, cls) {
+        return '<img class="' + (cls || '') + '" src="icons/deployment/' + deploymentIconFile(channel.raw, channel.group.raw) + '" alt="" onerror="this.onerror=null;this.src=\'icons/deployment/deployment.png\'">';
+    }
+
+    function brickIcon(brick, cls) {
+        const id = escapeHtml(brick.id);
+        const fallback = "if(!this.dataset.f){this.dataset.f='1';this.src='../product-bricks/icons/" + id + ".jpeg';}else if(this.dataset.f==='1'){this.dataset.f='2';this.src='../product-bricks/icons/" + id + ".jpg';}else{this.onerror=null;this.src='../product-bricks/icons/logo.png';}";
+        return '<img class="' + (cls || '') + '" src="../product-bricks/icons/' + id + '.png" alt="" onerror="' + fallback + '">';
+    }
+
+    function customerIcon(customer) {
+        return '<img src="../customers/icons/' + escapeHtml(customer.icon || 'customer.png') + '" alt="" onerror="this.onerror=null;this.src=\'../customers/icons/customer.png\'">';
+    }
+
+    function tip(text) {
+        return ' data-tip="' + escapeHtml(text) + '"';
+    }
+
+    function heatColor(value, max) {
+        if (!value || !max) {
+            return null;
+        }
+        const index = Math.min(HEAT_STEPS.length - 1, Math.floor((value / max) * (HEAT_STEPS.length - 1) + 0.0001));
+        return {bg: HEAT_STEPS[index], ink: index >= 3 ? '#ffffff' : '#0b0b0b'};
+    }
+
+    function groupLegend() {
+        return MODEL.groups.map(group => '<span><span class="dot" style="background:' + group.color + '"></span>' + escapeHtml(group.name) + '</span>').join('');
+    }
+
+    function namesList(names, limit) {
+        const shown = names.slice(0, limit || 3);
+        let text = shown.join(', ');
+        if (names.length > shown.length) {
+            text += ' and ' + (names.length - shown.length) + ' more';
+        }
+        return text;
+    }
+
+    /* ---------- Overview ---------- */
+    function renderKpis() {
+        const sharedBricks = MODEL.bricks.filter(brick => brick.products.size > 1).length;
+        const usedChannels = MODEL.channels.filter(channel => Object.keys(channel.productBricks).length).length;
+        const avgBricks = MODEL.products.length ? (MODEL.products.reduce((sum, p) => sum + p.brickCount, 0) / MODEL.products.length) : 0;
+        const avgChannels = MODEL.products.length ? (MODEL.products.reduce((sum, p) => sum + p.channelCount, 0) / MODEL.products.length) : 0;
+        const multiChannel = MODEL.bricks.filter(brick => brick.channels.size > 1).length;
+        const tiles = [
+            ['Products', MODEL.products.length, 'avg ' + avgBricks.toFixed(1) + ' bricks each'],
+            ['Deployment channels', MODEL.channels.length, plural(MODEL.groups.length, 'channel group') + ' · ' + usedChannels + ' in use'],
+            ['Deployed bricks', MODEL.bricks.length, plural(MODEL.placements, 'placement') + ' across channels'],
+            ['Shared bricks', sharedBricks, pct(sharedBricks, MODEL.bricks.length) + '% used by 2+ products'],
+            ['Channels per product', avgChannels.toFixed(1), 'average deployment spread'],
+            ['Multi-channel bricks', multiChannel, 'run in more than one channel']
+        ];
+        return '<div class="kpi-row">' + tiles.map(tile =>
+            '<div class="card kpi"><div class="kpi-label">' + escapeHtml(tile[0]) + '</div>' +
+            '<div class="kpi-value">' + escapeHtml(String(tile[1])) + '</div>' +
+            '<div class="kpi-sub">' + escapeHtml(tile[2]) + '</div></div>').join('') + '</div>';
+    }
+
+    function linkTo(href, label) {
+        return '<a href="' + href + '">' + escapeHtml(label) + '</a>';
+    }
+
+    function computeInsights() {
+        const insights = [];
+        const channelsByLoad = MODEL.channels.slice().sort((a, b) => b.bricks.length - a.bricks.length);
+        const busiest = channelsByLoad[0];
+        if (busiest && busiest.bricks.length) {
+            insights.push({tag: 'Hotspot', html: linkTo(channelHref(busiest), busiest.name) + ' carries <strong>' + busiest.bricks.length +
+                    '</strong> of ' + MODEL.placements + ' brick placements (' + pct(busiest.bricks.length, MODEL.placements) + '%) and serves ' +
+                    plural(Object.keys(busiest.productBricks).length, 'product') + '.'});
+        }
+        const bricksByReuse = MODEL.bricks.slice().sort((a, b) => b.products.size - a.products.size || b.channels.size - a.channels.size);
+        const top = bricksByReuse[0];
+        if (top && top.products.size > 1) {
+            insights.push({tag: 'Reuse', html: linkTo(brickHref(top), top.name) + ' is the most shared brick, used by <strong>' + top.products.size +
+                    '</strong> of ' + MODEL.products.length + ' products.'});
+        } else if (MODEL.bricks.length) {
+            insights.push({tag: 'Reuse', attention: true, html: 'No brick is shared between products: every product has its own deployed bricks.'});
+        }
+        const productsByFootprint = MODEL.products.slice().sort((a, b) => b.brickCount - a.brickCount);
+        const largest = productsByFootprint[0];
+        if (largest && largest.brickCount) {
+            insights.push({tag: 'Footprint', html: linkTo(productHref(largest), largest.name) + ' has the largest footprint: <strong>' +
+                    plural(largest.brickCount, 'brick') + '</strong> across ' + plural(largest.channelCount, 'channel') + ', ' +
+                    pct(largest.sharedCount, largest.brickCount) + '% of them shared with other products.'});
+        }
+        const singleChannel = MODEL.products.filter(p => p.channelCount === 1);
+        if (singleChannel.length && MODEL.channels.length > 1) {
+            insights.push({tag: 'Concentration', attention: true, html: plural(singleChannel.length, 'product') + verb(singleChannel.length, ' runs', ' run') + ' in a single channel: ' +
+                    singleChannel.slice(0, 4).map(p => linkTo(productHref(p), p.name)).join(', ') + (singleChannel.length > 4 ? ' …' : '') + '.'});
+        }
+        const exclusive = MODEL.products.filter(p => p.brickCount && p.sharedCount === 0);
+        if (exclusive.length && MODEL.products.length > 1) {
+            insights.push({tag: 'Isolation', html: plural(exclusive.length, 'product') + verb(exclusive.length, ' shares', ' share') + ' no bricks with any other product: ' +
+                    exclusive.slice(0, 4).map(p => linkTo(productHref(p), p.name)).join(', ') + (exclusive.length > 4 ? ' …' : '') + '.'});
+        }
+        const unmapped = MODEL.products.filter(p => !p.brickCount);
+        if (unmapped.length) {
+            insights.push({tag: 'Gap', attention: true, html: plural(unmapped.length, 'product') + verb(unmapped.length, ' has', ' have') + ' no deployed bricks mapped: ' +
+                    unmapped.slice(0, 4).map(p => linkTo(productHref(p), p.name)).join(', ') + (unmapped.length > 4 ? ' …' : '') + '.'});
+        }
+        const idle = MODEL.channels.filter(c => !Object.keys(c.productBricks).length);
+        if (idle.length) {
+            insights.push({tag: 'Gap', attention: true, html: plural(idle.length, 'channel') + verb(idle.length, ' serves', ' serve') + ' no product: ' +
+                    idle.slice(0, 4).map(c => linkTo(channelHref(c), c.name)).join(', ') + (idle.length > 4 ? ' …' : '') + '.'});
+        }
+        const orphanBricks = MODEL.bricks.filter(b => !b.products.size);
+        if (orphanBricks.length) {
+            insights.push({tag: 'Gap', attention: true, html: plural(orphanBricks.length, 'deployed brick') + verb(orphanBricks.length, ' is', ' are') + ' not used by any product: ' +
+                    orphanBricks.slice(0, 4).map(b => linkTo(brickHref(b), b.name)).join(', ') + (orphanBricks.length > 4 ? ' …' : '') + '.'});
+        }
+        const dedicated = MODEL.channels.filter(c => Object.keys(c.productBricks).length === 1);
+        if (dedicated.length && MODEL.products.length > 1) {
+            insights.push({tag: 'Dedicated', html: plural(dedicated.length, 'channel') + verb(dedicated.length, ' serves', ' serve') + ' exactly one product: ' +
+                    dedicated.slice(0, 4).map(c => linkTo(channelHref(c), c.name) + ' → ' + escapeHtml(MODEL.productById[Object.keys(c.productBricks)[0]].name)).join('; ') +
+                    (dedicated.length > 4 ? ' …' : '') + '.'});
+        }
+        return insights;
+    }
+
+    function renderInsights() {
+        const insights = computeInsights();
+        let html = '<div class="card block"><h2 class="section-title">Key insights</h2>';
+        html += '<p class="section-intro">Derived from the deployment model.</p><div class="insight-list">';
+        if (!insights.length) {
+            html += '<div class="empty-note">No deployment data yet.</div>';
+        }
+        insights.forEach(item => {
+            html += '<div class="insight' + (item.attention ? ' attention' : '') + '"><span class="insight-tag">' + escapeHtml(item.tag) + '</span><br>' + item.html + '</div>';
+        });
+        return html + '</div></div>';
+    }
+
+    function renderFootprintHeatmap() {
+        const groups = MODEL.groups.filter(group => group.channels.length);
+        let max = 0;
+        MODEL.products.forEach(product => MODEL.channels.forEach(channel => {
+            max = Math.max(max, (channel.productBricks[product.id] || new Set()).size);
+        }));
+
+        let html = '<div class="card block"><h2 class="section-title">Deployment footprint</h2>';
+        html += '<p class="section-intro">How many of each product\'s bricks run in each channel. Darker means more bricks; hover a cell for the list, click to open the channel.</p>';
+        if (!MODEL.products.length || !MODEL.channels.length) {
+            return html + '<div class="empty-note">No products or channels mapped.</div></div>';
+        }
+        html += '<div class="table-scroll"><table class="heatmap"><thead><tr><th></th>';
+        groups.forEach(group => {
+            html += '<th class="heat-group-head" colspan="' + group.channels.length + '" style="border-top-color:' + group.color + '">' + escapeHtml(group.name) + '</th>';
+        });
+        html += '<th></th></tr><tr><th></th>';
+        groups.forEach(group => group.channels.forEach(channel => {
+            html += '<th class="heat-channel-head"><a href="' + channelHref(channel) + '"' + tip(channel.name + (channel.type ? ' · ' + channel.type : '') + '\n' + plural(channel.bricks.length, 'brick') + ' deployed') + '>' +
+                channelIcon(channel) + '<span class="link-text">' + escapeHtml(channel.name) + '</span></a></th>';
+        }));
+        html += '<th class="heat-total">Bricks</th></tr></thead><tbody>';
+
+        MODEL.products.forEach(product => {
+            html += '<tr><th class="heat-row-head"><a href="' + productHref(product) + '">' + productIcon(product) + '<span class="link-text">' + escapeHtml(product.name) + '</span></a></th>';
+            groups.forEach(group => group.channels.forEach(channel => {
+                const ids = Array.from(channel.productBricks[product.id] || []);
+                const color = heatColor(ids.length, max);
+                if (!color) {
+                    html += '<td class="heat-empty"' + tip(product.name + ' · ' + channel.name + '\nNo bricks') + '>·</td>';
+                    return;
+                }
+                const names = ids.map(id => MODEL.brickById[id].name).sort();
+                html += '<td class="heat-cell" style="background:' + color.bg + ';color:' + color.ink + '"' +
+                    tip(product.name + ' · ' + channel.name + '\n' + plural(ids.length, 'brick') + ':\n' + names.join('\n')) + '>' +
+                    '<a href="' + channelHref(channel) + '">' + ids.length + '</a></td>';
+            }));
+            html += '<td class="heat-total">' + product.brickCount + '</td></tr>';
+        });
+
+        html += '</tbody><tfoot class="heat-foot"><tr><th class="heat-total" style="text-align:left">Products served</th>';
+        groups.forEach(group => group.channels.forEach(channel => {
+            html += '<td class="heat-total">' + Object.keys(channel.productBricks).length + '</td>';
+        }));
+        html += '<td></td></tr></tfoot></table></div>';
+        html += '<div class="heat-legend">Fewer bricks' + HEAT_STEPS.map(step => '<span class="heat-legend-swatch" style="background:' + step + '"></span>').join('') +
+            'More (max ' + max + ')</div>';
+        return html + '</div>';
+    }
+
+    function renderReuse() {
+        const total = MODEL.bricks.length;
+        let html = '<div class="card block"><h2 class="section-title">Brick reuse</h2>';
+        if (!total) {
+            return html + '<div class="empty-note">No deployed bricks.</div></div>';
+        }
+        const buckets = [
+            {label: 'Not used', test: n => n === 0, color: '#c3c2b7'},
+            {label: '1 product', test: n => n === 1, color: '#9ec5f4'},
+            {label: '2 products', test: n => n === 2, color: '#3987e5'},
+            {label: '3+ products', test: n => n >= 3, color: '#184f95'}
+        ].map(bucket => Object.assign(bucket, {count: MODEL.bricks.filter(b => bucket.test(b.products.size)).length}))
+            .filter(bucket => bucket.count);
+
+        html += '<p class="section-intro">How many products each deployed brick serves.</p>';
+        html += '<div class="reuse-split">' + buckets.map(bucket =>
+            '<div style="flex:' + bucket.count + ';background:' + bucket.color + '"' + tip(bucket.label + ': ' + plural(bucket.count, 'brick') + ' (' + pct(bucket.count, total) + '%)') + '></div>').join('') + '</div>';
+        html += '<div class="reuse-legend">' + buckets.map(bucket =>
+            '<span><span class="dot" style="background:' + bucket.color + '"></span>' + escapeHtml(bucket.label) + ' <span class="num">' + bucket.count + '</span></span>').join('') + '</div>';
+
+        const ranked = MODEL.bricks.slice()
+            .sort((a, b) => b.products.size - a.products.size || b.channels.size - a.channels.size || a.name.localeCompare(b.name))
+            .slice(0, 10);
+        const maxProducts = Math.max(1, MODEL.products.length);
+        html += '<div class="sub-label">Most shared bricks</div><div class="hbar-list">';
+        ranked.forEach(brick => {
+            const names = Array.from(brick.products).map(id => MODEL.productById[id].name);
+            html += '<a class="hbar-row" href="' + brickHref(brick) + '"' + tip(brick.name + '\nUsed by: ' + (names.join(', ') || 'no product') + '\nRuns in ' + plural(brick.channels.size, 'channel')) + '>' +
+                '<span class="hbar-label">' + brickIcon(brick) + '<span class="link-text">' + escapeHtml(brick.name) + '</span></span>' +
+                '<span class="hbar-track"><span class="hbar-fill" style="display:block;width:' + pct(brick.products.size, maxProducts) + '%"></span></span>' +
+                '<span class="hbar-value">' + brick.products.size + '</span></a>';
+        });
+        html += '</div><div class="heat-legend">Bar = products using the brick, out of ' + MODEL.products.length + '.</div>';
+        return html + '</div>';
+    }
+
+    function renderOverview() {
+        let html = '<div class="panel">';
+        if (deployment.metadata && deployment.metadata.description) {
+            html += '<p class="section-intro">' + escapeHtml(deployment.metadata.description) + '</p>';
+        }
+        html += renderKpis();
+        html += overviewFigure('Illustrated summary; the footprint and matrix below are the exact data.');
+        if (MODEL.channels.length > WIDE_HEATMAP_CHANNELS) {
+            html += '<div class="overview-grid wide"><div class="span-all">' + renderFootprintHeatmap() + '</div>' +
+                '<div>' + renderInsights() + '</div><div>' + renderReuse() + '</div></div>';
+        } else {
+            html += '<div class="overview-grid"><div>' + renderFootprintHeatmap() + '</div><div>' + renderInsights() + renderReuse() + '</div></div>';
+        }
+        document.getElementById('tab_content_overview').innerHTML = html + '</div>';
+    }
+
+    /* ---------- Products ---------- */
+    function groupSegments(product) {
+        // brick placements of this product, per channel group, in group order
+        return MODEL.groups.map(group => {
+            let count = 0;
+            group.channels.forEach(channel => {
+                count += (channel.productBricks[product.id] || new Set()).size;
+            });
+            return {group: group, count: count};
+        }).filter(item => item.count);
+    }
+
+    function productMatches(product, query) {
+        if (!query) {
+            return true;
+        }
+        const haystack = [product.name, product.raw.type, product.raw.description]
+            .concat((product.raw.primaryCustomers || []).map(c => c.name))
+            .concat(Object.values(product.bricks).map(item => item.brick.name))
+            .join(' ').toLowerCase();
+        return haystack.indexOf(query) !== -1;
+    }
+
+    function renderProductCard(product, showBricks) {
+        const raw = product.raw;
+        let html = '<div class="card product-card">';
+        html += '<a class="product-head" href="' + productHref(product) + '">' + productIcon(product) +
+            '<div><div class="product-name link-text">' + escapeHtml(product.name) + '</div>' +
+            (raw.type ? '<div class="product-type">' + escapeHtml(raw.type) + '</div>' : '') + '</div></a>';
+        if (raw.description) {
+            html += '<div class="clamp"' + tip(raw.description) + '>' + escapeHtml(raw.description) + '</div>';
+        }
+        html += '<div class="stat-row">' +
+            '<div class="stat"><div class="stat-value">' + product.brickCount + '</div><div class="stat-label">Bricks</div></div>' +
+            '<div class="stat"><div class="stat-value">' + product.channelCount + '</div><div class="stat-label">Channels</div></div>' +
+            '<div class="stat"><div class="stat-value">' + pct(product.sharedCount, product.brickCount) + '%</div><div class="stat-label">Shared</div></div>' +
+            '</div>';
+
+        const channels = Array.from(product.channels).map(ref => MODEL.channelByRef[ref]).filter(Boolean)
+            .sort((a, b) => MODEL.groups.indexOf(a.group) - MODEL.groups.indexOf(b.group) || a.name.localeCompare(b.name));
+        html += '<div><div class="sub-label">Runs on</div>';
+        if (channels.length) {
+            const segments = groupSegments(product);
+            html += '<div class="seg-bar">' + segments.map(item => '<div style="flex:' + item.count + ';background:' + item.group.color + '"' +
+                tip(item.group.name + ': ' + plural(item.count, 'brick placement')) + '></div>').join('') + '</div>';
+            html += '<div class="pill-row">' + channels.map(channel => {
+                const count = (channel.productBricks[product.id] || new Set()).size;
+                return '<a class="pill" href="' + channelHref(channel) + '"' + tip(channel.group.name + ' · ' + channel.name + '\n' + plural(count, 'brick')) + '>' +
+                    '<span class="dot" style="background:' + channel.group.color + '"></span>' + escapeHtml(channel.name) +
+                    ' <span class="pill-count">' + count + '</span></a>';
+            }).join('') + '</div>';
+        } else {
+            html += '<div class="empty-note">Not deployed to any channel.</div>';
+        }
+        html += '</div>';
+
+        const customers = raw.primaryCustomers || [];
+        if (customers.length) {
+            html += '<div><div class="sub-label">Serves</div><div class="pill-row">' + customers.map(customer =>
+                '<a class="pill" href="../customers/landing_pages/' + encodeURIComponent(customer.id || '') + '.html">' + customerIcon(customer) +
+                escapeHtml(customer.name || customer.id) + '</a>').join('') + '</div></div>';
+        }
+
+        if (showBricks && product.brickCount) {
+            const bricks = Object.values(product.bricks).sort((a, b) => b.brick.products.size - a.brick.products.size || a.brick.name.localeCompare(b.brick.name));
+            html += '<div><div class="sub-label">Bricks <span class="muted" style="text-transform:none;letter-spacing:0">· blue ring = shared with other products</span></div><div class="brick-strip">' +
+                bricks.map(item => {
+                    const others = Array.from(item.brick.products).filter(id => id !== product.id).map(id => MODEL.productById[id].name);
+                    const channelNames = Array.from(item.channels).map(ref => MODEL.channelByRef[ref].name);
+                    return '<a class="' + (others.length ? 'shared' : '') + '" href="' + brickHref(item.brick) + '"' +
+                        tip(item.brick.name + (item.description ? '\n' + item.description : '') + '\nRuns in: ' + channelNames.join(', ') +
+                            (others.length ? '\nAlso used by: ' + others.join(', ') : '\nOnly this product')) + '>' + brickIcon(item.brick) + '</a>';
+                }).join('') + '</div></div>';
+        }
+        html += '<a class="card-foot" href="' + productHref(product) + '">Open product →</a>';
+        return html + '</div>';
+    }
+
+    function renderProducts() {
+        const query = (document.getElementById('product_search').value || '').trim().toLowerCase();
+        const sort = document.getElementById('product_sort').value;
+        const showBricks = document.getElementById('product_show_bricks').checked;
+        const sorters = {
+            name: (a, b) => a.name.localeCompare(b.name),
+            bricks: (a, b) => b.brickCount - a.brickCount || a.name.localeCompare(b.name),
+            channels: (a, b) => b.channelCount - a.channelCount || a.name.localeCompare(b.name),
+            shared: (a, b) => pct(b.sharedCount, b.brickCount) - pct(a.sharedCount, a.brickCount) || a.name.localeCompare(b.name)
+        };
+        const list = MODEL.products.filter(product => productMatches(product, query)).sort(sorters[sort] || sorters.name);
+        document.getElementById('product_legend').innerHTML = groupLegend();
+        document.getElementById('products_content').innerHTML = list.length
+            ? '<div class="product-grid">' + list.map(product => renderProductCard(product, showBricks)).join('') + '</div>'
+            : '<div class="empty-note">No products match the search.</div>';
+    }
+
+    /* ---------- Deployment channels ---------- */
+    function renderChannelCard(channel) {
+        let html = '<div class="card channel-card">';
+        html += '<a class="channel-head" href="' + channelHref(channel) + '">' + channelIcon(channel) + '<div>' +
+            (channel.type ? '<div class="channel-type">' + escapeHtml(channel.type) + '</div>' : '') +
+            '<div class="channel-name link-text">' + escapeHtml(channel.name) + '</div></div></a>';
+        if (channel.description) {
+            html += '<div class="clamp"' + tip(channel.description) + '>' + escapeHtml(channel.description) + '</div>';
+        }
+        const productIds = Object.keys(channel.productBricks);
+        html += '<div class="stat-row">' +
+            '<div class="stat"><div class="stat-value">' + channel.bricks.length + '</div><div class="stat-label">Bricks</div></div>' +
+            '<div class="stat"><div class="stat-value">' + productIds.length + '</div><div class="stat-label">Products</div></div>' +
+            '<div class="stat"><div class="stat-value">' + pct(channel.bricks.length, MODEL.placements) + '%</div><div class="stat-label">Of all</div></div>' +
+            '</div>';
+        html += '<div><div class="sub-label">Used by</div>';
+        if (productIds.length) {
+            html += '<div class="pill-row">' + productIds
+                .map(id => ({product: MODEL.productById[id], count: channel.productBricks[id].size}))
+                .sort((a, b) => b.count - a.count || a.product.name.localeCompare(b.product.name))
+                .map(item => '<a class="pill" href="' + productHref(item.product) + '"' + tip(item.product.name + ': ' + plural(item.count, 'brick') + ' in this channel') + '>' +
+                    productIcon(item.product) + escapeHtml(item.product.name) + ' <span class="pill-count">' + item.count + '</span></a>').join('') + '</div>';
+        } else {
+            html += '<div class="empty-note">No product uses this channel.</div>';
+        }
+        html += '</div>';
+        if (channel.bricks.length) {
+            html += '<div><div class="sub-label">Deployed bricks</div><div class="brick-strip">' + channel.bricks.map(item => {
+                const names = item.products.map(id => MODEL.productById[id].name);
+                return '<a class="' + (item.products.length > 1 ? 'shared' : '') + '" href="' + brickHref(item.brick) + '"' +
+                    tip(item.brick.name + (item.role ? '\n' + item.role : '') + '\nUsed by: ' + (names.join(', ') || 'no product')) + '>' + brickIcon(item.brick) + '</a>';
+            }).join('') + '</div></div>';
+        }
+        return html + '</div>';
+    }
+
+    // Optional generated deployment map (images --kind deployments); empty when absent.
+    // Shown on Overview and on Deployment Channels, which the start page's sidebar opens directly.
+    function overviewFigure(caption) {
+        if (!OVERVIEW_IMAGE) {
+            return '';
+        }
+        return '<figure class="overview-figure"><a href="' + escapeHtml(OVERVIEW_IMAGE) + '" target="_blank" title="Open the full image">' +
+            '<img src="' + escapeHtml(OVERVIEW_IMAGE) + '" alt="' + escapeHtml(OVERVIEW_IMAGE_ALT || 'Illustrated map of products, deployment channels and shared bricks') + '" ' +
+            'onerror="this.closest(\'figure\').remove()"></a>' +
+            '<figcaption>' + escapeHtml(caption) + '</figcaption></figure>';
+    }
+
+    function renderDeploymentChannels() {
+        let html = '<div class="panel">';
+        if (deployment.metadata && deployment.metadata.description) {
+            html += '<p class="section-intro">' + escapeHtml(deployment.metadata.description) + '</p>';
+        }
+        html += overviewFigure('Illustrated summary; the channel cards below show exactly which products and bricks use each channel.');
+        if (!MODEL.groups.length) {
+            html += '<div class="empty-note">No deployment channels defined.</div>';
+        }
+        MODEL.groups.forEach(group => {
+            const productIds = new Set();
+            let bricks = 0;
+            group.channels.forEach(channel => {
+                bricks += channel.bricks.length;
+                Object.keys(channel.productBricks).forEach(id => productIds.add(id));
+            });
+            html += '<section class="group-section"><div class="group-head" style="border-top-color:' + group.color + '">' +
+                '<span class="group-name">' + escapeHtml(group.name) + '</span>' +
+                '<span class="group-meta">' + plural(group.channels.length, 'channel') + ' · ' + plural(bricks, 'brick placement') + ' · ' + plural(productIds.size, 'product') + '</span></div>';
+            if (group.description) {
+                html += '<div class="section-intro" style="margin-bottom:0">' + escapeHtml(group.description) + '</div>';
+            }
+            html += '<div class="channel-grid">' + group.channels.map(renderChannelCard).join('') + '</div></section>';
+        });
+        document.getElementById('tab_content_deployment').innerHTML = html + '</div>';
+    }
+
+    /* ---------- Brick x product matrix ---------- */
+    function renderMatrix() {
+        const select = document.getElementById('matrix_group');
+        if (!select.options.length) {
+            select.innerHTML = '<option value="">All groups</option>' + MODEL.groups.map(group => '<option value="' + escapeHtml(group.id) + '">' + escapeHtml(group.name) + '</option>').join('');
+        }
+        document.getElementById('matrix_legend').innerHTML = groupLegend();
+        const query = (document.getElementById('matrix_search').value || '').trim().toLowerCase();
+        const groupId = select.value;
+        const onlyShared = document.getElementById('matrix_shared').checked;
+        const inGroup = ref => !groupId || MODEL.channelByRef[ref].group.id === groupId;
+
+        const rows = MODEL.bricks
+            .filter(brick => !query || brick.name.toLowerCase().indexOf(query) !== -1 || brick.id.toLowerCase().indexOf(query) !== -1)
+            .filter(brick => Array.from(brick.channels).some(inGroup))
+            .filter(brick => !onlyShared || brick.products.size > 1)
+            .sort((a, b) => b.products.size - a.products.size || b.channels.size - a.channels.size || a.name.localeCompare(b.name));
+
+        const container = document.getElementById('matrix_content');
+        if (!rows.length) {
+            container.innerHTML = '<div class="empty-note">No bricks match the filters.</div>';
+            return;
+        }
+        const columns = MODEL.products;
+        const columnCounts = columns.map(() => 0);
+        let html = '<table class="matrix"><thead><tr><th class="m-brick">Brick <span class="muted">(' + rows.length + ')</span></th>';
+        columns.forEach(product => {
+            html += '<th class="m-product-head"><a href="' + productHref(product) + '">' + productIcon(product) + '<span class="link-text">' + escapeHtml(product.name) + '</span></a></th>';
+        });
+        html += '<th class="m-total">Products</th><th class="m-total">Channels</th></tr></thead><tbody>';
+        rows.forEach(brick => {
+            html += '<tr><th class="m-brick"><a href="' + brickHref(brick) + '">' + brickIcon(brick) + '<span class="link-text">' + escapeHtml(brick.name) + '</span></a></th>';
+            columns.forEach((product, index) => {
+                const use = product.bricks[brick.id];
+                const refs = use ? Array.from(use.channels).filter(inGroup) : [];
+                if (!refs.length) {
+                    html += '<td class="m-cell"></td>';
+                    return;
+                }
+                columnCounts[index] += 1;
+                const channels = refs.map(ref => MODEL.channelByRef[ref]);
+                html += '<td class="m-cell"' + tip(brick.name + ' in ' + product.name + (use.description ? '\n' + use.description : '') + '\nRuns in: ' +
+                    channels.map(c => c.name + ' (' + c.group.name + ')').join(', ')) + '><span class="m-marks">' +
+                    channels.map(c => '<span class="m-mark" style="background:' + c.group.color + '"></span>').join('') + '</span></td>';
+            });
+            html += '<td class="m-total">' + brick.products.size + '</td><td class="m-total">' + brick.channels.size + '</td></tr>';
+        });
+        html += '</tbody><tfoot class="m-foot"><tr><th class="m-brick" style="text-align:left">Bricks per product</th>' +
+            columnCounts.map(count => '<td>' + count + '</td>').join('') + '<td></td><td></td></tr></tfoot></table>';
+        container.innerHTML = html;
+    }
+
+    /* ---------- tooltip ---------- */
+    (function setupTooltip() {
+        const tipEl = document.getElementById('viz_tip');
+        let current = null;
+
+        function place(x, y) {
+            const pad = 14;
+            const rect = tipEl.getBoundingClientRect();
+            let left = x + pad;
+            let top = y + pad;
+            if (left + rect.width > window.innerWidth - 8) left = x - rect.width - pad;
+            if (top + rect.height > window.innerHeight - 8) top = y - rect.height - pad;
+            tipEl.style.left = Math.max(8, left) + 'px';
+            tipEl.style.top = Math.max(8, top) + 'px';
+        }
+
+        function show(target, x, y) {
+            current = target;
+            tipEl.textContent = target.getAttribute('data-tip');
+            tipEl.style.display = 'block';
+            place(x, y);
+        }
+
+        function hide() {
+            current = null;
+            tipEl.style.display = 'none';
+        }
+
+        document.addEventListener('mouseover', event => {
+            const target = event.target.closest && event.target.closest('[data-tip]');
+            if (target) show(target, event.clientX, event.clientY); else hide();
+        });
+        document.addEventListener('mousemove', event => {
+            if (current) place(event.clientX, event.clientY);
+        });
+        document.addEventListener('focusin', event => {
+            const target = event.target.closest && event.target.closest('[data-tip]');
+            if (target) {
+                const rect = target.getBoundingClientRect();
+                show(target, rect.left, rect.bottom);
+            }
+        });
+        document.addEventListener('focusout', hide);
+        window.addEventListener('scroll', hide, true);
+    })();
+
+    function updateTabCounts() {
+        document.getElementById('tab_products').textContent = 'Products (' + MODEL.products.length + ')';
+        document.getElementById('tab_deployment').textContent = 'Deployment Channels (' + MODEL.channels.length + ')';
+        document.getElementById('tab_matrix').textContent = 'Brick Matrix (' + MODEL.bricks.length + ')';
+    }
+
+    /* ---------- Product dependency graph (force 2D / mermaid) ---------- */
+    const PDG_NODE_TYPES = [
+        {id: 'product', label: 'Products', color: '#ea580c'},
+        {id: 'subchannel', label: 'Subchannels', color: '#2563eb'},
+        {id: 'brick', label: 'Bricks', color: '#059669'}
+    ];
+    const pdgColorMap = {};
+    PDG_NODE_TYPES.forEach(type => {
+        pdgColorMap[type.id] = type.color;
+    });
+    let pdgView = 'force';
+    let pdgShowLabels = false;
+    let pdgForceInstance = null;
+    let pdgInitialized = false;
+    let pdgSelectedNodeIds = null;   // Set of selected node ids (null = all selected)
+    let pdgNodeSearch = '';
+
+    function pdgWithAlpha(hexColor, alpha) {
+        const hex = String(hexColor || '').replace('#', '');
+        if (hex.length !== 6) {
+            return hexColor;
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
+
+    // Blend a #rrggbb color toward white to a solid hex tint (mermaid classDef fills
+    // must be a single token, so rgba() with spaces/commas breaks the parser).
+    function pdgTint(hexColor, amount) {
+        const hex = String(hexColor || '').replace('#', '');
+        if (hex.length !== 6) {
+            return hexColor;
+        }
+        const mix = channel => {
+            const value = Math.round(channel + (255 - channel) * amount);
+            return ('0' + value.toString(16)).slice(-2);
+        };
+        return '#' + mix(parseInt(hex.substring(0, 2), 16)) +
+            mix(parseInt(hex.substring(2, 4), 16)) +
+            mix(parseInt(hex.substring(4, 6), 16));
+    }
+
+    // Build the {nodes, edges} model across products, subchannels, and bricks.
+    function buildProductDependencyGraph() {
+        const nodes = {};
+        const edgeSet = {};
+        const counts = {product: 0, subchannel: 0, brick: 0};
+        const productSet = {};
+        ((products.portfolio || {}).products || []).forEach(product => {
+            productSet[product.id] = product;
+        });
+
+        function addNode(id, name, nodeType, productId, groupKey, groupName) {
+            if (!nodes[id]) {
+                nodes[id] = {id: id, name: name || id, nodeType: nodeType, productId: productId || '', groupKey: groupKey || '', groupName: groupName || ''};
+                counts[nodeType] += 1;
+            }
+        }
+
+        function addEdge(source, target) {
+            if (!source || !target) {
+                return;
+            }
+            const key = source + '||' + target;
+            if (!edgeSet[key]) {
+                edgeSet[key] = {source: source, target: target};
+            }
+        }
+
+        // Chain: brick -> subchannel -> product, derived from deployment.json
+        // (subchannel.deployedBricks[].usedInProducts). One node per real entity: each brick,
+        // subchannel, and product appears exactly once. Subchannels carry their channel (group)
+        // so they group per channel (mermaid subgraphs / force clustering). Shared entities are
+        // shared nodes, which is the truthful picture of the data.
+        (deployment.channels || []).forEach(group => {
+            const groupName = group.groupName || group.groupId || 'Channel';
+            (group.channels || []).forEach(subChannel => {
+                const ref = (group.groupId || '') + '/' + (subChannel.subChannelId || '');
+                const subChannelName = subChannel.subChannelName || subChannel.subChannelId || ref;
+                const subChannelNodeId = 'subchannel:' + ref;
+                (subChannel.deployedBricks || []).forEach(deployed => {
+                    const products = (deployed.usedInProducts || [])
+                        .map(use => productSet[use.productId])
+                        .filter(Boolean);
+                    if (!products.length) {
+                        return;
+                    }
+                    const brickNodeId = 'brick:' + deployed.brickId;
+                    addNode(brickNodeId, deployed.brickName || deployed.brickId, 'brick');
+                    addNode(subChannelNodeId, subChannelName, 'subchannel', '', 'channelgroup:' + (group.groupId || ''), groupName);
+                    addEdge(brickNodeId, subChannelNodeId);   // brick -> subchannel
+
+                    products.forEach(product => {
+                        const productNodeId = 'product:' + product.id;
+                        addNode(productNodeId, product.name || product.id, 'product');
+                        addEdge(subChannelNodeId, productNodeId); // subchannel -> product
+                    });
+                });
+            });
+        });
+
+        return {nodes: Object.values(nodes), edges: Object.values(edgeSet), counts: counts};
+    }
+
+    function pdgTypeLabel(typeId) {
+        const type = PDG_NODE_TYPES.find(item => item.id === typeId);
+        return type ? type.label : typeId;
+    }
+
+    // All nodes are selected by default; pdgSelectedNodeIds === null means "all".
+    function pdgIsNodeSelected(nodeId) {
+        return pdgSelectedNodeIds === null || pdgSelectedNodeIds.has(nodeId);
+    }
+
+    function pdgEnsureSelectionState(allNodes) {
+        if (pdgSelectedNodeIds === null) {
+            pdgSelectedNodeIds = new Set(allNodes.map(node => node.id));
+        }
+    }
+
+    function renderPdgControls(allNodes) {
+        pdgEnsureSelectionState(allNodes);
+        const query = pdgNodeSearch.trim().toLowerCase();
+        const matches = allNodes.filter(node => !query || (node.name || '').toLowerCase().indexOf(query) !== -1);
+
+        let html = '<div class="pdg-control-title">Nodes</div>';
+        html += '<input type="search" class="pdg-search" placeholder="Search nodes…" autocomplete="off" oninput="onPdgSearch(this.value)" value="' + escapeHtml(pdgNodeSearch) + '">';
+        html += '<div class="pdg-actions">' +
+            '<button type="button" class="pdg-action" onclick="setAllPdgNodes(true)">Show all</button>' +
+            '<button type="button" class="pdg-action" onclick="setAllPdgNodes(false)">Hide all</button>' +
+            (query ? '<button type="button" class="pdg-action" onclick="showOnlyPdgMatches()">Only matching</button>' : '') +
+            '</div>';
+
+        html += '<div class="pdg-checklist">';
+        if (!matches.length) {
+            html += '<div class="pdg-empty-list">No nodes match the search.</div>';
+        } else {
+            PDG_NODE_TYPES.forEach(type => {
+                const typeNodes = matches.filter(node => node.nodeType === type.id);
+                if (!typeNodes.length) {
+                    return;
+                }
+                html += '<div class="pdg-type-header">' + escapeHtml(type.label) + ' (' + typeNodes.length + ')</div>';
+                typeNodes.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(node => {
+                    html += '<label class="pdg-check-item node" title="' + escapeHtml(node.name) + '">' +
+                        '<input type="checkbox" class="pdg-node-checkbox" value="' + escapeHtml(node.id) + '"' +
+                        (pdgIsNodeSelected(node.id) ? ' checked' : '') + ' onchange="togglePdgNode(this.value, this.checked)">' +
+                        '<span class="pdg-swatch" style="background-color:' + type.color + '"></span>' +
+                        '<span class="label">' + escapeHtml(node.name) + '</span>' +
+                        '</label>';
+                });
+            });
+        }
+        html += '</div>';
+        document.getElementById('pdg_controls').innerHTML = html;
+    }
+
+    // ---- URL state: ?view=mermaid and ?gq=<node search> keep the dependency
+    // graph view shareable (node selections are too large for a URL). ----
+    let pdgUrlRestored = false;
+
+    function restorePdgStateFromUrl() {
+        if (pdgUrlRestored) return;
+        pdgUrlRestored = true;
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('view');
+        if (view === 'mermaid' || view === 'force') pdgView = view;
+        const graphQuery = params.get('gq');
+        if (graphQuery) pdgNodeSearch = graphQuery;
+    }
+
+    function syncPdgUrl() {
+        if (!pdgUrlRestored || !window.history || !window.history.replaceState) return;
+        const params = new URLSearchParams(window.location.search);
+        if (pdgView === 'mermaid') params.set('view', 'mermaid'); else params.delete('view');
+        if (pdgNodeSearch.trim()) params.set('gq', pdgNodeSearch.trim()); else params.delete('gq');
+        const qs = params.toString();
+        window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+    }
+
+    function onPdgSearch(value) {
+        pdgNodeSearch = value || '';
+        renderPdgControls(buildProductDependencyGraph().nodes);
+        syncPdgUrl();
+    }
+
+    function togglePdgNode(nodeId, checked) {
+        const allNodes = buildProductDependencyGraph().nodes;
+        pdgEnsureSelectionState(allNodes);
+        if (checked) {
+            pdgSelectedNodeIds.add(nodeId);
+        } else {
+            pdgSelectedNodeIds.delete(nodeId);
+        }
+        renderProductDependencyGraph();
+    }
+
+    function setAllPdgNodes(selected) {
+        const allNodes = buildProductDependencyGraph().nodes;
+        pdgSelectedNodeIds = selected ? new Set(allNodes.map(node => node.id)) : new Set();
+        renderPdgControls(allNodes);
+        renderProductDependencyGraph();
+    }
+
+    function showOnlyPdgMatches() {
+        const allNodes = buildProductDependencyGraph().nodes;
+        const query = pdgNodeSearch.trim().toLowerCase();
+        pdgSelectedNodeIds = new Set(
+            allNodes.filter(node => !query || (node.name || '').toLowerCase().indexOf(query) !== -1).map(node => node.id)
+        );
+        renderPdgControls(allNodes);
+        renderProductDependencyGraph();
+    }
+
+    function setPdgView(view) {
+        pdgView = view;
+        document.querySelectorAll('.pdg-view-btn').forEach(button => {
+            button.classList.toggle('active', button.getAttribute('data-pdgview') === view);
+        });
+        renderProductDependencyGraph();
+    }
+
+    function setPdgLabels(show) {
+        pdgShowLabels = show;
+        if (pdgForceInstance && pdgView === 'force') {
+            pdgForceInstance.nodeCanvasObjectMode(() => 'after');
+        }
+    }
+
+    function pdgMermaidId(value) {
+        return 'n_' + String(value).replace(/[^a-zA-Z0-9_]/g, '_');
+    }
+
+    function pdgMermaidLabel(value) {
+        return String(value || '')
+            .replaceAll('&', 'and').replaceAll('"', '').replaceAll("'", '')
+            .replaceAll('<', '').replaceAll('>', '')
+            .replaceAll('[', '(').replaceAll(']', ')')
+            .replaceAll('{', '(').replaceAll('}', ')').replaceAll('|', '/');
+    }
+
+    function renderProductDependencyGraph() {
+        restorePdgStateFromUrl();
+        const graph = buildProductDependencyGraph();
+        pdgEnsureSelectionState(graph.nodes);
+        if (!pdgInitialized) {
+            renderPdgControls(graph.nodes);
+            pdgInitialized = true;
+        }
+        document.querySelectorAll('.pdg-view-btn').forEach(button => {
+            button.classList.toggle('active', button.getAttribute('data-pdgview') === pdgView);
+        });
+        syncPdgUrl();
+        const nodes = graph.nodes.filter(node => pdgIsNodeSelected(node.id));
+        const visibleIds = new Set(nodes.map(node => node.id));
+        const edges = graph.edges.filter(edge => visibleIds.has(edge.source) && visibleIds.has(edge.target));
+
+        const summary = document.getElementById('pdg_summary');
+        if (summary) {
+            summary.innerHTML = 'Showing <strong>' + nodes.length + '</strong> of ' + graph.nodes.length + ' nodes &middot; <strong>' + edges.length + '</strong> dependencies.';
+        }
+
+        const container = document.getElementById('pdg_graph');
+        if (!container) {
+            return;
+        }
+        container.classList.toggle('force', pdgView === 'force');
+        pdgForceInstance = null;
+
+        if (!nodes.length || !edges.length) {
+            container.innerHTML = '<div class="pdg-empty">Select nodes that share dependencies to render the graph.</div>';
+            return;
+        }
+
+        if (pdgView === 'force') {
+            renderPdgForce(container, nodes, edges);
+        } else {
+            renderPdgMermaid(container, nodes, edges);
+        }
+    }
+
+    function renderPdgForce(container, nodes, edges) {
+        if (typeof ForceGraph === 'undefined') {
+            container.innerHTML = '<div class="pdg-empty">Force graph library failed to load.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        const degree = {};
+        edges.forEach(edge => {
+            degree[edge.source] = (degree[edge.source] || 0) + 1;
+            degree[edge.target] = (degree[edge.target] || 0) + 1;
+        });
+        const graphNodes = nodes.map(node => ({
+            id: node.id, name: node.name, nodeType: node.nodeType, groupKey: node.groupKey || '', val: (degree[node.id] || 1)
+        }));
+        const graphLinks = edges.map(edge => ({source: edge.source, target: edge.target}));
+
+        const Graph = ForceGraph()(container)
+            .nodeRelSize(5)
+            .nodeVal(() => 1)
+            .nodeLabel(node => escapeHtml(node.name))
+            .nodeColor(node => pdgWithAlpha(pdgColorMap[node.nodeType] || '#6b7280', 0.65))
+            .nodeCanvasObjectMode(() => 'after')
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                if (!pdgShowLabels) return;
+                const fontSize = 12 / globalScale;
+                ctx.font = fontSize + 'px Ubuntu, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = '#374151';
+                ctx.fillText(node.name, node.x, node.y + 7);
+            })
+            .linkColor(() => 'rgba(100,116,139,0.5)')
+            .linkWidth(1.5)
+            .linkDirectionalArrowLength(4)
+            .linkDirectionalArrowRelPos(1)
+            .linkDirectionalParticles(1)
+            .linkDirectionalParticleSpeed(0.006)
+            .onNodeClick(node => {
+                if (node.id.indexOf('brick:') === 0) {
+                    window.open('../product-bricks/landing_pages/' + node.id.substring('brick:'.length) + '.html', '_blank');
+                }
+            })
+            .onEngineStop(() => {
+                // Keep the whole clustered graph inside the visible rectangle once it settles.
+                if (pdgForceInstance === Graph && typeof Graph.zoomToFit === 'function') {
+                    Graph.zoomToFit(400, 40);
+                }
+            })
+            .graphData({nodes: graphNodes, links: graphLinks});
+
+        // Pull subchannels that belong to the same channel (group) toward their shared
+        // centroid so subchannels group per channel.
+        const channelGroupStrength = 0.14;
+        Graph.d3Force('pdgCluster', (alpha) => {
+            const data = Graph.graphData();
+            const centroids = {};
+            data.nodes.forEach(node => {
+                if (node.nodeType === 'subchannel' && node.groupKey) {
+                    const c = centroids[node.groupKey] || (centroids[node.groupKey] = {x: 0, y: 0, n: 0});
+                    c.x += node.x;
+                    c.y += node.y;
+                    c.n += 1;
+                }
+            });
+            data.nodes.forEach(node => {
+                if (node.nodeType === 'subchannel' && node.groupKey) {
+                    const c = centroids[node.groupKey];
+                    if (c && c.n > 1) {
+                        const k = channelGroupStrength * alpha;
+                        node.vx = (node.vx || 0) + (c.x / c.n - node.x) * k;
+                        node.vy = (node.vy || 0) + (c.y / c.n - node.y) * k;
+                    }
+                }
+            });
+        });
+        if (typeof Graph.d3ReheatSimulation === 'function') {
+            Graph.d3ReheatSimulation();
+        }
+
+        pdgForceInstance = Graph;
+        sizePdgForce();
+        // The container may not have its final size on first paint; re-size on the next
+        // frames so the simulation expands to fill and recenters instead of cooling in a corner.
+        requestAnimationFrame(sizePdgForce);
+        setTimeout(sizePdgForce, 300);
+        // After the clusters settle, fit the whole graph into view.
+        if (typeof Graph.zoomToFit === 'function') {
+            setTimeout(() => {
+                if (pdgForceInstance === Graph) Graph.zoomToFit(400, 40);
+            }, 1400);
+        }
+    }
+
+    function sizePdgForce() {
+        if (!pdgForceInstance) {
+            return;
+        }
+        const container = document.getElementById('pdg_graph');
+        if (!container) {
+            return;
+        }
+        const w = container.clientWidth || container.offsetWidth;
+        const h = container.clientHeight || container.offsetHeight;
+        if (w > 0 && h > 0) {
+            pdgForceInstance.width(w).height(h);
+            if (typeof pdgForceInstance.d3ReheatSimulation === 'function') {
+                pdgForceInstance.d3ReheatSimulation();
+            }
+        }
+    }
+
+    window.addEventListener('resize', sizePdgForce);
+    if (typeof ResizeObserver !== 'undefined') {
+        const pdgGraphEl = document.getElementById('pdg_graph');
+        if (pdgGraphEl) {
+            new ResizeObserver(sizePdgForce).observe(pdgGraphEl);
+        }
+    }
+
+    function renderPdgMermaid(container, nodes, edges) {
+        if (typeof mermaid === 'undefined') {
+            container.innerHTML = '<div class="pdg-empty">Diagram library failed to load.</div>';
+            return;
+        }
+        let chart = 'flowchart LR\n\n';
+        // Non-subchannel nodes at top level.
+        nodes.filter(node => node.nodeType !== 'subchannel').forEach(node => {
+            chart += pdgMermaidId(node.id) + '["' + pdgMermaidLabel(node.name) + '"]\n';
+        });
+        // Subchannel nodes grouped into a subgraph per channel (group).
+        const subByGroup = {};
+        const groupNameByKey = {};
+        nodes.filter(node => node.nodeType === 'subchannel').forEach(node => {
+            const key = node.groupKey || 'group-other';
+            (subByGroup[key] = subByGroup[key] || []).push(node);
+            groupNameByKey[key] = node.groupName || 'Channel';
+        });
+        Object.keys(subByGroup).forEach((groupKey, index) => {
+            chart += 'subgraph pdgsub' + index + '["' + pdgMermaidLabel(groupNameByKey[groupKey]) + '"]\n';
+            subByGroup[groupKey].forEach(node => {
+                chart += pdgMermaidId(node.id) + '["' + pdgMermaidLabel(node.name) + '"]\n';
+            });
+            chart += 'end\n';
+        });
+        edges.forEach(edge => {
+            chart += pdgMermaidId(edge.source) + ' --> ' + pdgMermaidId(edge.target) + '\n';
+        });
+        PDG_NODE_TYPES.forEach(type => {
+            chart += 'classDef ' + type.id + 'Cls fill:' + pdgTint(type.color, 0.82) + ',stroke:' + type.color + ',color:#111827,stroke-width:2px;\n';
+            const ids = nodes.filter(node => node.nodeType === type.id).map(node => pdgMermaidId(node.id));
+            if (ids.length) {
+                chart += 'class ' + ids.join(',') + ' ' + type.id + 'Cls;\n';
+            }
+        });
+        container.innerHTML = '<div class="mermaid">' + chart + '</div>';
+        Promise.resolve(mermaid.run({querySelector: '#pdg_graph .mermaid'})).catch(() => {
+        });
+    }
+
+    if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({startOnLoad: false, securityLevel: 'loose', flowchart: {htmlLabels: false}});
+    }
+
+    // The dependency graph lives in its own tab now; (re)render and size it when the tab opens
+    // so the force-graph canvas gets real dimensions.
+    window.afterOpenTab = function (tabName) {
+        if (tabName === 'dependencies') {
+            renderProductDependencyGraph();
+            sizePdgForce();
+        }
+    };
+
+    updateTabCounts();
+    renderOverview();
+    renderProducts();
+    renderDeploymentChannels();
+    renderMatrix();
+    renderProductDependencyGraph();
+</script>
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../start/index.html",
+      "label": "Katapull Commerce Hub Home"
+    },
+    {
+      "label": "Products"
+    }
+  ]
+}
+;
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

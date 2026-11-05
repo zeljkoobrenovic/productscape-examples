@@ -97,3 +97,14 @@ revenue and grows the network effect.
 
 SPS Commerce (incl. TIE Kinetix since 2023), TrueCommerce, ecosio, EDICOM, Banqup Group. See
 `business/competition.json`.
+
+## App store channels (added 2026-11-04)
+
+Two Microsoft AppSource apps for Business Central connect to Transus. Both are published by
+partners, not by Transus:
+- NC365 Transus EDI connect by NAS conception
+  (https://www.transus.com/en/this-is-transus/news/transus-edi-interface-to-microsoft-business-central).
+- Transus API Connector by Micro Apps
+  (https://marketplace.microsoft.com/product/web-apps/PUBID.microapps|AID.transus_edi_connector|PAPPID.08ca7dc9-163f-441f-8a1e-3cdd846f4585).
+
+No Transus app was found in the Shopify App Store.

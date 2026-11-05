@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Katapull Commerce Hub</title>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    <style>
+        :root {
+            --sidebar-width: 310px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+            color: var(--ink);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+        }
+
+        .shell {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ---------- sidebar ---------- */
+
+        .sidebar {
+            flex: 0 0 var(--sidebar-width);
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            transition: margin-left 0.18s ease;
+        }
+
+        .shell.sidebar-hidden .sidebar {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 14px 10px;
+            border: 0;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 3px;
+            background: white;
+            flex: none;
+        }
+
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.25;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .sidebar-brand:hover span {
+            color: var(--accent-ink);
+        }
+
+        .sidebar-search {
+            padding: 2px 12px 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 34px;
+            padding: 0 54px 0 32px;
+            border: 1px solid var(--line-strong);
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            background: var(--surface);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            color: var(--muted);
+        }
+
+        .search-hint {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            font-size: 11px;
+            color: var(--muted);
+            border: 1px solid var(--line-strong);
+            border-radius: 4px;
+            padding: 1px 6px;
+            background: white;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            border: 0;
+            background: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+        }
+
+        .sidebar-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+            min-height: 18px;
+        }
+
+        .link-button {
+            border: 0;
+            background: none;
+            padding: 0 2px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .link-button:hover, .link-button:focus-visible {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .sidebar-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px 8px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nav-section {
+            margin-top: 6px;
+        }
+
+        .nav-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: 0;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 7px;
+        }
+
+        .nav-toggle:hover {
+            background: var(--surface-muted);
+        }
+
+        .nav-toggle:focus-visible, .nav-item:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+
+        .chevron {
+            flex: none;
+            width: 10px;
+            height: 10px;
+            color: var(--muted-strong);
+            transition: transform 0.12s ease;
+        }
+
+        [aria-expanded="true"] > .chevron {
+            transform: rotate(90deg);
+        }
+
+        .nav-category {
+            margin: 16px 6px 2px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-strong);
+        }
+
+        .nav-category:first-child {
+            margin-top: 10px;
+        }
+
+        .nav-item.nav-single {
+            margin-top: 6px;
+            padding: 7px 6px 7px 24px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .nav-item.nav-single img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-section-header {
+            padding: 7px 6px;
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+
+        .nav-section-header img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex: none;
+        }
+
+
+        .nav-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .count {
+            flex: none;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--surface-muted);
+            border-radius: 999px;
+            padding: 1px 7px;
+        }
+
+        .nav-body[hidden] {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 34px;
+            border-radius: 7px;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.3;
+        }
+
+
+        .nav-item img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            border-radius: 4px;
+            flex: none;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-soft);
+            color: var(--accent-ink);
+        }
+
+        .nav-item.active {
+            background: var(--highlight-color);
+            color: var(--accent-ink);
+            font-weight: 500;
+        }
+
+        .nav-item.overview {
+            color: var(--muted);
+        }
+
+        /* A thin rule separates a section's overview pages from its item pages. */
+        .nav-item.overview + .nav-item:not(.overview) {
+            margin-top: 4px;
+            box-shadow: inset 0 1px 0 var(--line);
+        }
+
+        .nav-item mark {
+            background: #fde68a;
+            color: inherit;
+            border-radius: 2px;
+        }
+
+        .nav-empty {
+            padding: 18px 10px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* ---------- main ---------- */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 12px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0 8px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            background: none;
+            color: var(--ink-soft);
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .icon-button:hover, .icon-button:focus-visible {
+            background: var(--surface-muted);
+            border-color: var(--line);
+            color: var(--accent-ink);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .topbar-title {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--muted);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar-title strong {
+            color: var(--ink);
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view {
+            flex: 1;
+            min-height: 0;
+            padding-top: 12px;
+        }
+
+        .view[hidden] {
+            display: none;
+        }
+
+        #frameView iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+
+        #homeView {
+            overflow-y: auto;
+            padding: 32px 36px 60px;
+        }
+
+        .home {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        /* Optional domain overview illustration (start/media/domain-overview.*). */
+        .overview-figure {
+            margin: -20px 0 44px;
+        }
+
+        .overview-figure a {
+            display: block;
+        }
+
+        .overview-figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: white;
+        }
+
+        .hero-logo {
+            width: 202px;
+            height: 202px;
+            object-fit: contain;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 10px;
+            background: white;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 52px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .domain-description {
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            overflow-wrap: anywhere;
+        }
+
+        .domain-description.clamped #domain-description {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .domain-description a {
+            color: var(--accent-ink);
+            text-decoration: underline;
+        }
+
+        .app-tab-title {
+            margin: 0 0 12px;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .app-group {
+            margin-bottom: 26px;
+        }
+
+        .app-group-title {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink-soft);
+            text-transform: capitalize;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 18px 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .app:hover, .app:focus-visible {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .app img {
+            width: 84px;
+            height: 84px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            filter: grayscale(100%);
+            transition: filter 0.15s ease;
+        }
+
+        .app:hover img, .app:focus-visible img {
+            filter: none;
+        }
+
+        .app .name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #5009DC;
+        }
+
+        .app .source {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .app .description {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+            margin-top: 6px;
+        }
+
+        .app-counts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .app-count {
+            font-size: 12px;
+            color: var(--accent-ink);
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-line);
+            border-radius: 999px;
+            padding: 2px 10px;
+        }
+
+        .app-count strong {
+            font-weight: 700;
+        }
+
+        .backdrop {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                z-index: 20;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                max-width: 88vw;
+                box-shadow: var(--shadow-hover);
+                margin-left: 0;
+            }
+
+            .shell:not(.sidebar-open) .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width) - 20px);
+            }
+
+            .shell.sidebar-open .backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 10;
+                background: rgba(15, 23, 42, 0.3);
+            }
+
+            #homeView {
+                padding: 20px 16px 40px;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .hero-logo {
+                width: 84px;
+                height: 84px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .topbar .label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="shell" id="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Productscape navigation">
+        <button class="sidebar-brand" type="button" id="brand" title="Overview">
+            <img src="icons/logo.png" alt="">
+            <span>Katapull Commerce Hub</span>
+        </button>
+        <div class="sidebar-search" id="search_container">
+            <div class="search-box">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"/>
+                    <path d="M11 11l4 4"/>
+                </svg>
+                <input id="filter_all" type="search" placeholder="Search pages..." autocomplete="off"
+                       aria-label="Search pages" aria-controls="sidebarTree">
+                <span class="search-hint" id="searchHint" aria-hidden="true">/</span>
+                <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>&times;</button>
+            </div>
+            <div class="sidebar-tools">
+                <span id="summary_all" aria-live="polite"></span>
+                <span>
+                    <button class="link-button" type="button" id="expandAll">expand all</button>
+                    &middot;
+                    <button class="link-button" type="button" id="collapseAll">collapse all</button>
+                </span>
+            </div>
+        </div>
+        <nav class="sidebar-tree" id="sidebarTree"></nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button class="icon-button" type="button" id="sidebarToggle" aria-controls="sidebar"
+                    aria-label="Toggle navigation" title="Toggle navigation">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 4h12M2 8h12M2 12h12"/>
+                </svg>
+            </button>
+            <div class="topbar-title" id="topbarTitle"></div>
+            <button class="icon-button" type="button" id="homeButton" hidden title="Back to overview">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M2 8l6-5 6 5M4 7v6h8V7"/>
+                </svg>
+                <span class="label">Overview</span>
+            </button>
+            <a class="icon-button" id="openExternal" href="#" target="_blank" hidden title="Open page in a new tab">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M9 2h5v5M14 2L7 9M12 10v4H2V4h4"/>
+                </svg>
+                <span class="label">New tab</span>
+            </a>
+        </header>
+
+        <section class="view" id="homeView">
+            <div class="home">
+                <div class="hero">
+                    <img class="hero-logo" src="icons/logo.png" alt="">
+                    <div>
+                        <h1>Katapull Commerce Hub</h1>
+                        <div class="domain-description clamped" id="descriptionContainer">
+                            <span id="domain-description">Aggregated productscape of the Katapull group: the customers shared across Highbiza, EffectConnect, Vendit, Logic4, Transus, Picqer, DeliveryMatch and Returnista, the jobs they do and which Katapull platforms they use for each job, on a high-level brick map with one brick per platform plus the hub layer that connects them.</span>
+                            <button id="domain-description-toggle" class="link-button" type="button"
+                                    aria-expanded="false" aria-controls="domain-description" hidden>more</button>
+                        </div>
+                    </div>
+                </div>
+                <figure class="overview-figure"><a href="media/domain-overview.jpg" target="_blank" rel="noopener" title="Open the full-size overview"><img src="media/domain-overview.jpg" alt="Overview of the Katapull Commerce Hub. On the left are the shared customer groups: trading companies and online merchants, logistics service providers, buyers and recipients, and specialty retailers. In the centre are the eight Katapull platforms (Highbiza, EffectConnect, Vendit, Logic4, Transus, Picqer, DeliveryMatch and Returnista) above the four brick groups: Sell Across Channels, Run the Trading Business, Fulfil and Deliver, and Commerce Hub Foundation. Below them sits shared data, then the deployment layer: Katapull platforms, the commerce hub layer, and app stores and plugin marketplaces. On the right are group companies and suppliers, brands and manufacturers. At the bottom right are competitors: Shopify, Lightspeed Commerce and Microsoft Dynamics 365 Business Central."></a></figure>
+                <div id="appGroups"></div>
+            </div>
+        </section>
+
+        <section class="view" id="frameView" hidden>
+            <iframe id="pageFrame" title="Selected page"></iframe>
+        </section>
+    </div>
+</div>
+
+<script>
+    const apps = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.apps;
+    const config = {"config": {"openInNewTab": false, "enableSearch": true, "showGlobalNav": true}, "apps": [{"tab": "Product", "apps": [{"group": "business", "apps": [{"name": "Customers-Centric<br>Product Vision", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "description": "customer groups, personas, and JTBDs", "source": ""}, {"name": "Competition", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "description": "key players, stats, and geography", "source": ""}, {"name": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "description": "customer groups, personas, and JTBDs", "source": ""}]}, {"group": "product architecture", "apps": [{"name": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "description": "basic building blocks", "source": ""}, {"name": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "description": "grouping of product bricks by user journey", "source": ""}, {"name": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "description": "data assets and data flows", "source": ""}, {"name": "Product<br>Deployments", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "description": "product deployments and environments", "source": ""}]}, {"group": "more", "apps": [{"name": "Residuality<br>(Stress Test)", "link": "../residuality/index.html", "icon": "icons/residuality.png", "description": "unexpected business changes, and response they require", "source": ""}, {"name": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "description": "guided walkthrough of this productscape", "source": ""}, {"name": "Evidence Explorer", "link": "../../../evidence-explorer/index.html", "icon": "../../../evidence-explorer/icons/logo.png", "description": "searchable evidence: repos, cloud resources, contacts", "source": ""}]}]}]}.config || {};
+    const sidebarSections = [{"id": "customers", "title": "Customers", "link": "../customers/index.html", "icon": "../customers/icons/logo.png", "groups": [{"name": "Trading Companies and Online Merchants", "items": [{"name": "Trading Company Owner-Director", "link": "../customers/landing_pages/twow.html", "icon": "../customers/icons/customer-twow-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Owner or managing director of a Dutch or Belgian wholesaler, e-tailer or brand that sells B2B and B2C through its own webshop, marketplaces and sometimes stores"}, {"name": "E-commerce and Channel Manager", "link": "../customers/landing_pages/ecmm.html", "icon": "../customers/icons/customer-ecmm-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Owns online revenue across the own webshop and marketplaces at a trading company, brand or e-tailer. Lives in Highbiza or Logic4 webshop, EffectConnect, Deliver"}, {"name": "Warehouse and Logistics Operations Lead", "link": "../customers/landing_pages/opsl.html", "icon": "../customers/icons/customer-opsl-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Runs order processing, warehouse, shipping and return handling for a scaling merchant or wholesaler. Uses Picqer or Logic4 warehouse functions, DeliveryMatch an"}, {"name": "IT, ERP and Integration Lead", "link": "../customers/landing_pages/itin.html", "icon": "../customers/icons/customer-itin-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Responsible for keeping ERP, webshop, marketplaces, WMS, carriers and trading partners connected at a trading company. Often a small team or one person. Mirrors"}, {"name": "Financial Controller", "link": "../customers/landing_pages/fico.html", "icon": "../customers/icons/customer-fico-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Closes the books of a trading company and controls cash. Needs invoices accepted, freight and marketplace costs reconciled and refunds booked right. Mirrors Log"}, {"name": "Shopify-Based Merchant", "link": "../customers/landing_pages/shpm.html", "icon": "../customers/icons/customer-shpm-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Founder or e-commerce lead of a D2C brand or webshop that runs its shop on Shopify and will not replace it. Shopify is the system of record for products and ord"}]}, {"name": "Specialty Retailers and Retail Formulas", "items": [{"name": "Specialty Retailer and Store Chain Manager", "link": "../customers/landing_pages/rtlr.html", "icon": "../customers/icons/customer-rtlr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Owner or operations manager of an independent specialty store, a chain or a franchise formula (bike, fashion, hobby, electronics) that sells in-store and online"}]}, {"name": "Suppliers, Brands and Manufacturers", "items": [{"name": "Supplier and Brand Selling to Retail", "link": "../customers/landing_pages/supb.html", "icon": "../customers/icons/customer-supb-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Order desk, logistics or e-commerce lead at a manufacturer, brand or wholesaler that supplies retailers (DIY, food, specialty) and increasingly sells direct and"}]}, {"name": "Logistics Service Providers", "items": [{"name": "Fulfilment and 3PL Company", "link": "../customers/landing_pages/tpls.html", "icon": "../customers/icons/customer-tpls-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Owner or operations lead of a fulfilment company running many webshop clients in one warehouse. Uses Picqer Fulfilment, DeliveryMatch for multi-client shipping "}, {"name": "Webshop Brand Outsourcing Fulfilment", "link": "../customers/landing_pages/fcln.html", "icon": "../customers/icons/customer-fcln-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "A webshop brand whose warehouse is run by a 3PL on Picqer. Sells via its own shop and marketplaces and wants to see and steer stock, orders and returns without "}]}, {"name": "Ecosystem Partners", "items": [{"name": "Software and Implementation Partner", "link": "../customers/landing_pages/sipt.html", "icon": "../customers/icons/customer-sipt-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Product manager or consultant at a software vendor, ERP implementer or agency that embeds or implements Katapull capabilities (marketplaces, shipping, EDI, WMS)"}]}, {"name": "Buyers and Recipients", "items": [{"name": "Online and In-Store Shopper", "link": "../customers/landing_pages/shpr.html", "icon": "../customers/icons/customer-shpr-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Consumer who buys from Katapull customers in a webshop, on a marketplace or in a store, receives a parcel and sometimes returns it. Never sees the Katapull name"}, {"name": "Professional Trade Buyer", "link": "../customers/landing_pages/trdb.html", "icon": "../customers/icons/customer-trdb-portrait.jpg", "fallback": "../customers/icons/customer.png", "description": "Buyer at an installer, workshop, retailer or business customer that reorders from Katapull wholesale customers, by webshop for small orders and by EDI for large"}]}], "views": [{"name": "Visual Overview", "link": "../customers/index.html#visual-overview", "icon": "../customers/icons/customer.png", "fallback": "../customers/icons/customer.png"}, {"name": "Relations", "link": "../customers/index.html#relations", "icon": "../customers/icons/care.png", "fallback": "../customers/icons/care.png"}, {"name": "Links", "link": "../customers/index.html#links", "icon": "../customers/icons/link.png", "fallback": "../customers/icons/link.png"}], "category": "Business"}, {"id": "competition", "title": "Competition", "countLabel": "Competitors", "link": "../competition/index.html", "icon": "../competition/icons/logo.png", "groups": [{"name": "regional", "items": [{"name": "JTL-Software", "link": "../competition/landing_pages/jtl.html", "icon": "../competition/logos/jtl.png", "fallback": "../competition/icons/logo.png", "description": "German merchant suite (JTL-Wawi ERP, shop, POS, WMS, marketplaces, EDI, shipping and returns) from one vendor. The closest analogue to the whole Katapull Commer"}, {"name": "PlentyONE (formerly plentymarkets)", "link": "../competition/landing_pages/plentyone.html", "icon": "../competition/logos/plentyone.png", "fallback": "../competition/icons/logo.png", "description": "German cloud e-commerce ERP that combines inventory, orders, warehouse and product data with 150+ marketplace and webshop channels in one product. It competes w"}, {"name": "Exact Online (Wholesale/Trade)", "link": "../competition/landing_pages/exact-online.html", "icon": "../competition/logos/exact-online.png", "fallback": "../competition/icons/logo.png", "description": "Dutch cloud business software with wholesale editions, usually combined with a separate webshop and connectors. It is the default alternative for Dutch SMEs alr"}, {"name": "Sendcloud", "link": "../competition/landing_pages/sendcloud.html", "icon": "../competition/logos/sendcloud.png", "fallback": "../competition/icons/logo.png", "description": "European self-service shipping platform with checkout, labels, tracking and a bundled returns portal. It competes for small and mid-size webshops that want ship"}, {"name": "Monta (MontaWMS)", "link": "../competition/landing_pages/monta.html", "icon": "../competition/logos/monta.png", "fallback": "../competition/icons/logo.png", "description": "E-commerce fulfilment provider with its own WMS (MontaWMS) and shipping platform (MontaShip). It is a substitute when a webshop outsources the whole fulfil-and-"}]}, {"name": "challenger", "items": [{"name": "Odoo", "link": "../competition/landing_pages/odoo.html", "icon": "../competition/logos/odoo.png", "fallback": "../competition/icons/logo.png", "description": "Belgian open-source modular ERP with website, POS, inventory, barcode and accounting apps, usually sold through implementation partners. It competes on breadth "}, {"name": "parcelLab", "link": "../competition/landing_pages/parcellab.html", "icon": "../competition/logos/parcellab.png", "fallback": "../competition/icons/logo.png", "description": "Post-purchase experience platform (tracking, notifications and returns portal) for larger retailers. It competes with the combination of DeliveryMatch tracking "}]}, {"name": "global leader", "items": [{"name": "Shopify", "link": "../competition/landing_pages/shopify.html", "icon": "../competition/logos/shopify.png", "fallback": "../competition/icons/logo.png", "description": "Global commerce platform with webshop, B2B and POS. It competes for the selling layer and the system of record: Highbiza compares itself against Shopify, Vendit"}, {"name": "Lightspeed Commerce", "link": "../competition/landing_pages/lightspeed.html", "icon": "../competition/logos/lightspeed.png", "fallback": "../competition/icons/logo.png", "description": "Cloud POS with integrated e-commerce and payments and a strong Benelux retail base. It competes for specialty retailers who want store and webshop in one produc"}, {"name": "Microsoft Dynamics 365 Business Central", "link": "../competition/landing_pages/business-central.html", "icon": "../competition/logos/business-central.png", "fallback": "../competition/icons/logo.png", "description": "Mid-market ERP sold through partners, with wholesale, EDI, WMS and shipping add-ons from its ecosystem. It is where trading companies go when they outgrow an al"}, {"name": "Linnworks", "link": "../competition/landing_pages/linnworks.html", "icon": "../competition/logos/linnworks.png", "fallback": "../competition/icons/logo.png", "description": "Multichannel inventory and order management with listings, warehouse and shipping functions in one hub. It competes for marketplace-heavy sellers who would othe"}, {"name": "nShift (incl. Transsmart)", "link": "../competition/landing_pages/nshift.html", "icon": "../competition/logos/nshift.png", "fallback": "../competition/icons/logo.png", "description": "Delivery and experience management platform formed from Unifaun, Consignor, Transsmart, Returnado and Webshipper, covering multi-carrier shipping, tracking and "}, {"name": "TrueCommerce", "link": "../competition/landing_pages/truecommerce.html", "icon": "../competition/logos/truecommerce.png", "fallback": "../competition/icons/logo.png", "description": "Managed EDI and trading partner network for suppliers, with pre-built partner maps and ERP integrations. It competes with Transus for supplier EDI and e-invoici"}, {"name": "ChannelEngine", "link": "../competition/landing_pages/channelengine.html", "icon": "../competition/logos/channelengine.png", "fallback": "../competition/icons/logo.png", "description": "Global marketplace integration platform; it absorbed Vendiro in 2023. A single-category specialist rather than a stack competitor, included as the best-of-breed"}]}], "category": "Business"}, {"id": "insights", "title": "Insights", "link": "../customers/index.html#insights", "icon": "../customers/icons/insights.png", "groups": [], "single": true, "count": 10, "category": "Business"}, {"id": "bricks", "title": "Product Bricks", "link": "../product-bricks/index.html", "icon": "../product-bricks/icons/logo.png", "groups": [{"name": "Sell Across Channels", "items": [{"name": "Highbiza B2B and B2C Webshops", "link": "../product-bricks/landing_pages/hbza.html", "icon": "../product-bricks/icons/hbza.png", "fallback": "../product-bricks/icons/brick.png", "description": "Highbiza: Managed webshops and websites for wholesalers, technical wholesalers, retailers and jewellers, with customer-specific B2B pricing, quotes, reorder and"}, {"name": "EffectConnect Marketplace Integration", "link": "../product-bricks/landing_pages/efco.html", "icon": "../product-bricks/icons/efco.png", "fallback": "../product-bricks/icons/brick.png", "description": "EffectConnect: One hub that connects webshops, back offices and SaaS partners to 50+ European marketplaces for listings, content, repricing, orders, stock, fulf"}, {"name": "Vendit POS and Store Management", "link": "../product-bricks/landing_pages/vndt.html", "icon": "../product-bricks/icons/vndt.png", "fallback": "../product-bricks/icons/brick.png", "description": "Vendit: Point-of-sale, stock, webshop and store management for Dutch and Belgian specialty retailers, chains and franchise formulas. Modeled in detail in the `r"}]}, {"name": "Run the Trading Business", "items": [{"name": "Logic4 Commerce ERP", "link": "../product-bricks/landing_pages/lgc4.html", "icon": "../product-bricks/icons/lgc4.png", "fallback": "../product-bricks/icons/brick.png", "description": "Logic4: All-in-one webshop and ERP for mid-sized Dutch and Belgian non-food wholesalers, retailers and e-tailers: PIM, orders, stock, purchasing, CRM, POS and a"}, {"name": "Transus EDI and E-invoicing", "link": "../product-bricks/landing_pages/trns.html", "icon": "../product-bricks/icons/trns.png", "fallback": "../product-bricks/icons/brick.png", "description": "Transus: EDI and e-invoicing network connecting suppliers, retailers and logistics partners for orders, despatch advice, SSCC labels, invoices and VMI. Modeled "}]}, {"name": "Fulfil and Deliver", "items": [{"name": "Picqer Warehouse Management and Fulfilment", "link": "../product-bricks/landing_pages/pcqr.html", "icon": "../product-bricks/icons/pcqr.png", "fallback": "../product-bricks/icons/brick.png", "description": "Picqer: Cloud WMS for online stores, wholesalers and fulfilment companies: multi-channel orders, inventory and locations, purchasing, batch picking, packing, re"}, {"name": "DeliveryMatch Shipping and Carrier Management", "link": "../product-bricks/landing_pages/dlvm.html", "icon": "../product-bricks/icons/dlvm.png", "fallback": "../product-bricks/icons/brick.png", "description": "DeliveryMatch: Order and shipping platform: dynamic checkout, multi-carrier booking across 200+ carriers, transport management, tracking, return shipping and fr"}, {"name": "Returnista Returns Management", "link": "../product-bricks/landing_pages/rtns.html", "icon": "../product-bricks/icons/rtns.png", "fallback": "../product-bricks/icons/brick.png", "description": "Returnista: Branded returns portal, exchanges and store credit, return operations and returns insights for European webshops. Modeled in detail in the `ecommerc"}]}, {"name": "Commerce Hub Foundation", "items": [{"name": "Commerce Hub Bridges and Connection Registry", "link": "../product-bricks/landing_pages/hubc.html", "icon": "../product-bricks/icons/hubc.png", "fallback": "../product-bricks/icons/brick.png", "description": "Group-level layer for the productised connections between Katapull platforms. Today the bridges live inside each brand (DeliveryMatch and Picqer \"Katapull Comme"}, {"name": "Shared Customer and Commerce Chain Insight", "link": "../product-bricks/landing_pages/hubv.html", "icon": "../product-bricks/icons/hubv.png", "fallback": "../product-bricks/icons/brick.png", "description": "Group-level view of shared customers: which Katapull platforms an account uses for which jobs, how healthy each connection is, and chain KPIs (order-to-delivery"}]}], "views": [{"name": "Dependencies", "link": "../product-bricks/index.html#dependencies", "icon": "../product-bricks/icons/integration.png", "fallback": "../product-bricks/icons/integration.png"}], "category": "Product Architecture"}, {"id": "streams", "title": "Streams", "link": "../product-bricks/index.html#streams", "icon": "../product-bricks/icons/stream.png", "groups": [{"name": "Sell and Deliver", "items": [{"name": "Sell and Deliver an Order from Any Channel", "link": "../product-bricks/stream_pages/sell-and-deliver-an-order-from-any-channel.html", "icon": "../product-bricks/icons/sell-and-deliver-an-order-from-any-channel.png", "fallback": "../product-bricks/icons/stream.png", "description": "An order placed in a Highbiza webshop, on a marketplace via EffectConnect or in a Vendit store reaches the commerce core, is picked in Picqer or Logic4 and ship"}, {"name": "List and Win on Marketplaces", "link": "../product-bricks/stream_pages/list-and-win-on-marketplaces.html", "icon": "../product-bricks/icons/list-and-win-on-marketplaces.png", "fallback": "../product-bricks/icons/stream.png", "description": "Product data from Logic4, Vendit or Highbiza is published through EffectConnect to marketplaces, priced to win the buy box, and marketplace orders return to the"}, {"name": "Serve Store and Online Shoppers from One Stock", "link": "../product-bricks/stream_pages/serve-store-and-online-shoppers-from-one-stock.html", "icon": "../product-bricks/icons/serve-store-and-online-shoppers-from-one-stock.png", "fallback": "../product-bricks/icons/stream.png", "description": "A specialty retailer sells in-store with Vendit and online through Highbiza or the Vendit webshop and EffectConnect, ships with DeliveryMatch and handles return"}]}, {"name": "After-Sales and Trade", "items": [{"name": "Turn a Return into Sellable Stock and Revenue", "link": "../product-bricks/stream_pages/turn-a-return-into-sellable-stock-and-revenue.html", "icon": "../product-bricks/icons/turn-a-return-into-sellable-stock-and-revenue.png", "fallback": "../product-bricks/icons/stream.png", "description": "The shopper starts a return or exchange in Returnista, DeliveryMatch carries it back, Picqer receives and restocks it and the core books the refund or credit."}, {"name": "Trade with Retailers and Suppliers by EDI", "link": "../product-bricks/stream_pages/trade-with-retailers-and-suppliers-by-edi.html", "icon": "../product-bricks/icons/trade-with-retailers-and-suppliers-by-edi.png", "fallback": "../product-bricks/icons/stream.png", "description": "Retailer orders arrive through Transus into Logic4, Vendit or Picqer; despatch advice, SSCC labels and invoices go back through Transus, with transport via Deli"}, {"name": "Run Multi-Client Fulfilment across the Hub", "link": "../product-bricks/stream_pages/run-multi-client-fulfilment-across-the-hub.html", "icon": "../product-bricks/icons/run-multi-client-fulfilment-across-the-hub.png", "fallback": "../product-bricks/icons/stream.png", "description": "A 3PL runs many webshop clients in Picqer Fulfilment, ships through DeliveryMatch with client-specific carrier contracts, processes their returns via Returnista"}]}], "category": "Product Architecture"}, {"id": "data", "title": "Data Assets", "link": "../product-bricks/index.html#data", "icon": "../product-bricks/icons/data-asset.png", "groups": [{"name": "Commerce Master Data", "items": [{"name": "Product and Assortment", "link": "../product-bricks/data_pages/product-and-assortment.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "The products a merchant sells, with identifiers (EAN/GTIN), descriptions, attributes, images and assortment per channel."}, {"name": "Price and Trade Agreement", "link": "../product-bricks/data_pages/price-and-trade-agreement.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Sales prices, customer-specific price agreements, promotions and marketplace pricing rules."}, {"name": "Business Customer and Trading Partner", "link": "../product-bricks/data_pages/business-customer-and-trading-partner.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "The merchant's business customers, retailers and suppliers with their contacts, delivery addresses, terms and EDI identifiers (GLN)."}, {"name": "Stock Position", "link": "../product-bricks/data_pages/stock-position.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "How much of each product is physically present, reserved and free to sell, per warehouse, location and store."}]}, {"name": "Orders, Shipments and Returns", "items": [{"name": "Customer Order", "link": "../product-bricks/data_pages/customer-order.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "An order from any channel (webshop, marketplace, store, EDI or API) with lines, prices, buyer and delivery details."}, {"name": "Recipient Contact and Address", "link": "../product-bricks/data_pages/recipient-contact-and-address.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Name, address, e-mail and phone of the person who receives or returns a parcel."}, {"name": "Shipment and Tracking", "link": "../product-bricks/data_pages/shipment-and-tracking.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Shipments with carrier, service, labels, transport documents and tracking events."}, {"name": "Return and Exchange", "link": "../product-bricks/data_pages/return-and-exchange.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "A return request with reason, chosen resolution (refund, exchange or store credit), return label, receipt and inspection result."}]}, {"name": "Trade Documents and Money", "items": [{"name": "Trade Document (EDI)", "link": "../product-bricks/data_pages/trade-document.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Structured orders, order responses, despatch advice, SSCC label records and inventory reports exchanged with retailers and suppliers."}, {"name": "Invoice, Payment and Refund", "link": "../product-bricks/data_pages/invoice-and-payment.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Sales invoices (including e-invoices), payments, receivables and refunds."}, {"name": "Logistics Cost and Service Billing", "link": "../product-bricks/data_pages/logistics-cost-and-service-billing.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Carrier rates, transport costs per shipment, carrier invoice lines and, for 3PLs, warehouse activity billed per client."}]}, {"name": "Hub Connectivity and Shared Customer Data", "items": [{"name": "Platform Connection and Credential", "link": "../product-bricks/data_pages/platform-connection.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Which platforms a merchant has connected to each other, with API credentials, field mappings and health status."}, {"name": "Cross-Platform Event", "link": "../product-bricks/data_pages/cross-platform-event.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Order, stock, shipment, return and document events passed between connected platforms."}, {"name": "Shared Customer Account", "link": "../product-bricks/data_pages/shared-customer-account.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "One record per merchant across all Katapull brands: legal entity, contacts, contracts and which platforms it uses."}, {"name": "Commerce Chain KPI", "link": "../product-bricks/data_pages/commerce-chain-kpi.html", "icon": "../product-bricks/icons/data-asset.png", "fallback": "../product-bricks/icons/data.png", "description": "Aggregated measures across platforms for one merchant: orders handled without manual touch, order-to-delivery time, return cost per order, margin after marketpl"}]}], "category": "Product Architecture"}, {"id": "products", "title": "Products", "link": "../product-deployments/index.html", "icon": "../product-deployments/icons/logo.png", "groups": [{"name": "Katapull platform - own webshops", "items": [{"name": "Highbiza", "link": "../product-deployments/landing_pages/highbiza.html", "icon": "../product-deployments/icons/highbiza.png", "fallback": "../product-deployments/icons/product.png", "description": "Managed webshops and websites for wholesalers, technical wholesalers, retailers and jewellers, with customer-specific B2B pricing, quotes, reorder and ERP, carr"}]}, {"name": "Katapull platform - marketplaces", "items": [{"name": "EffectConnect", "link": "../product-deployments/landing_pages/effectconnect.html", "icon": "../product-deployments/icons/effectconnect.png", "fallback": "../product-deployments/icons/product.png", "description": "One hub that connects webshops, back offices and SaaS partners to 50+ European marketplaces for listings, content, repricing, orders, stock, fulfilment, feeds a"}]}, {"name": "Katapull platform - physical stores", "items": [{"name": "Vendit", "link": "../product-deployments/landing_pages/vendit.html", "icon": "../product-deployments/icons/vendit.png", "fallback": "../product-deployments/icons/product.png", "description": "Point-of-sale, stock, webshop and store management for Dutch and Belgian specialty retailers, chains and franchise formulas."}]}, {"name": "Katapull platform - commerce core", "items": [{"name": "Logic4", "link": "../product-deployments/landing_pages/logic4.html", "icon": "../product-deployments/icons/logic4.png", "fallback": "../product-deployments/icons/product.png", "description": "All-in-one webshop and ERP for mid-sized Dutch and Belgian non-food wholesalers, retailers and e-tailers: PIM, orders, stock, purchasing, CRM, POS and accountin"}]}, {"name": "Katapull platform - trade documents", "items": [{"name": "Transus", "link": "../product-deployments/landing_pages/transus.html", "icon": "../product-deployments/icons/transus.png", "fallback": "../product-deployments/icons/product.png", "description": "EDI and e-invoicing network connecting suppliers, retailers and logistics partners for orders, despatch advice, SSCC labels, invoices and VMI."}]}, {"name": "Katapull platform - warehouse", "items": [{"name": "Picqer", "link": "../product-deployments/landing_pages/picqer.html", "icon": "../product-deployments/icons/picqer.png", "fallback": "../product-deployments/icons/product.png", "description": "Cloud WMS for online stores, wholesalers and fulfilment companies: multi-channel orders, inventory and locations, purchasing, batch picking, packing, returns, r"}]}, {"name": "Katapull platform - delivery", "items": [{"name": "DeliveryMatch", "link": "../product-deployments/landing_pages/deliverymatch.html", "icon": "../product-deployments/icons/deliverymatch.png", "fallback": "../product-deployments/icons/product.png", "description": "Order and shipping platform: dynamic checkout, multi-carrier booking across 200+ carriers, transport management, tracking, return shipping and freight audit."}]}, {"name": "Katapull platform - after-sales", "items": [{"name": "Returnista", "link": "../product-deployments/landing_pages/returnista.html", "icon": "../product-deployments/icons/returnista.png", "fallback": "../product-deployments/icons/product.png", "description": "Branded returns portal, exchanges and store credit, return operations and returns insights for European webshops."}]}, {"name": "Group offering - connected platforms", "items": [{"name": "Katapull Commerce Hub (connected stack)", "link": "../product-deployments/landing_pages/katapull-commerce-hub-bundle.html", "icon": "../product-deployments/icons/katapull-commerce-hub-bundle.png", "fallback": "../product-deployments/icons/product.png", "description": "The combination of Katapull platforms a shared customer uses, connected through hub bridges, with one shared account view. Group positioning; bundles and pricin"}]}], "views": [{"name": "Dependencies", "link": "../product-deployments/index.html#dependencies", "icon": "../product-bricks/icons/integration.png", "fallback": "../product-bricks/icons/integration.png"}, {"name": "Matrix", "link": "../product-deployments/index.html#matrix", "icon": "../product-deployments/icons/dashboard.png", "fallback": "../product-deployments/icons/dashboard.png"}], "category": "Product Architecture"}, {"id": "deployments", "title": "Deployments", "link": "../product-deployments/index.html#deployment", "card": "../product-deployments/index.html", "icon": "../product-deployments/icons/deployment/deployment.png", "groups": [{"name": "Katapull Platforms (Cloud SaaS)", "items": [{"name": "Highbiza Cloud", "link": "../product-deployments/deployment/highbiza-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Highbiza web application, API and connectors."}, {"name": "EffectConnect Cloud", "link": "../product-deployments/deployment/effectconnect-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "EffectConnect web application, API and connectors."}, {"name": "Vendit Cloud", "link": "../product-deployments/deployment/vendit-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Vendit web application, API and connectors."}, {"name": "Logic4 Cloud", "link": "../product-deployments/deployment/logic4-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Logic4 web application, API and connectors."}, {"name": "Transus Cloud", "link": "../product-deployments/deployment/transus-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Transus web application, API and connectors."}, {"name": "Picqer Cloud", "link": "../product-deployments/deployment/picqer-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Picqer web application, API and connectors."}, {"name": "DeliveryMatch Cloud", "link": "../product-deployments/deployment/deliverymatch-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "DeliveryMatch web application, API and connectors."}, {"name": "Returnista Cloud", "link": "../product-deployments/deployment/returnista-cloud.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Returnista web application, API and connectors."}]}, {"name": "Commerce Hub Layer", "items": [{"name": "Hub Bridges and Shared View", "link": "../product-deployments/deployment/hub-bridges.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Bridges between platforms and the shared customer view."}]}, {"name": "App Stores and Plugin Marketplaces", "items": [{"name": "Shopify App Store and Shopify Store Connectors", "link": "../product-deployments/deployment/shopify-app-store.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Katapull apps and connectors installed in Shopify stores. Shopify stays the system of record for products and orders, and the Katapull platforms work behind it."}, {"name": "Other Webshop App Stores and Plugin Repositories", "link": "../product-deployments/deployment/webshop-plugin-marketplaces.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Lightspeed App Store, Magento extensions, WooCommerce plugins and other webshop plugins."}, {"name": "Apple App Store and Google Play", "link": "../product-deployments/deployment/mobile-app-stores.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Native mobile apps for warehouse staff."}, {"name": "Microsoft AppSource (Business Central)", "link": "../product-deployments/deployment/microsoft-appsource.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "Partner-published Business Central apps that connect to Transus: NC365 Transus EDI connect (NAS conception) and Transus API Connector (Micro Apps)."}, {"name": "EffectConnect App Store", "link": "../product-deployments/deployment/effectconnect-app-store.html", "icon": "../product-deployments/icons/deployment/deployment.png", "fallback": "../product-deployments/icons/logo.png", "description": "A Katapull-owned catalogue of apps and partner integrations around EffectConnect. It is the only app store a Katapull brand runs itself."}]}], "category": "Product Architecture"}, {"id": "residuality", "title": "Stress Test", "link": "../residuality/index.html", "icon": "icons/residuality.png", "groups": [], "category": "More"}, {"id": "tutorial", "title": "Domain Tutorial", "link": "../tutorial/index.html", "icon": "icons/initiative.png", "groups": [], "category": "More"}];
+    const DOMAIN_NAME = document.title;
+    const SIDEBAR_HIDDEN_KEY = 'productscape:start-sidebar-hidden';
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // App names in apps.json may carry <br> for the card layout; the sidebar needs plain text.
+    function plainText(value) {
+        return String(value || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function storageGet(key, fallback) {
+        try {
+            const value = window.localStorage.getItem(key);
+            return value === null ? fallback : JSON.parse(value);
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function storageSet(key, value) {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            // Storage can be unavailable (private windows, file:// in some browsers).
+        }
+    }
+
+    function isExternal(link) {
+        return /^[a-z][a-z0-9+.-]*:/i.test(link) || link.startsWith('//');
+    }
+
+    // Package launchers link to other domains' start pages, which carry their own
+    // sidebar; open those (and external sites) as full pages instead of inline.
+    function opensInline(link) {
+        return !isExternal(link) && !/(^|\/)start\/index\.html(#.*)?$/.test(link);
+    }
+
+    // ---------- build the navigation model ----------
+
+    // Two levels only: section -> pages. Source groups stay searchable and show
+    // in tooltips; each section's overview page presents the full grouping.
+    // Package launchers have no domain sections, so their app groups become sections.
+    const launcherSections = apps.flatMap(tab => (tab.apps || []).map((group, groupIndex) => ({
+        id: 'apps/' + tab.tab + '/' + groupIndex,
+        title: (apps.length > 1 ? tab.tab + ' · ' : '') + group.group,
+        groups: [{
+            name: group.group,
+            items: (group.apps || []).map(app => ({
+                name: plainText(app.name),
+                link: app.link,
+                icon: app.icon,
+                fallback: 'icons/logo.png',
+                description: plainText(app.description) + (app.source ? ' ' + app.source : ''),
+                newTab: config.openInNewTab !== false && app.openInNewTab !== false
+            }))
+        }]
+    })));
+
+    const sections = (sidebarSections.length ? sidebarSections : launcherSections).map(section => ({
+        ...section,
+        items: section.groups.flatMap(group => group.items.map(item => ({...item, groupName: group.name})))
+    })).filter(section => section.items.length || (section.link && !section.groups.length));
+    const allItems = [];
+    sections.forEach(section => {
+        section.items.forEach(item => {
+            item.section = section;
+            item.search = (item.name + ' ' + (item.description || '') + ' ' + item.groupName + ' ' + section.title).toLowerCase();
+            allItems.push(item);
+        });
+    });
+
+    // ---------- sidebar rendering ----------
+
+    const tree = document.getElementById('sidebarTree');
+    const filterInput = document.getElementById('filter_all');
+    // Sections start collapsed on every visit; only the open page's section is revealed.
+    const expanded = new Set();
+    const CHEVRON = '<svg class="chevron" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5L7 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+    function highlight(text, query) {
+        if (!query) return escapeHtml(text);
+        const index = text.toLowerCase().indexOf(query);
+        if (index < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, index)) + '<mark>' + escapeHtml(text.slice(index, index + query.length)) +
+            '</mark>' + escapeHtml(text.slice(index + query.length));
+    }
+
+    function itemHtml(item, query, extraClass) {
+        const attrs = opensInline(item.link) ? '' : (item.newTab === false ? '' : ' target="_blank" rel="noopener"');
+        return '<a class="nav-item' + (extraClass || '') + '" href="' + escapeHtml(item.link) + '"' + attrs +
+            ' title="' + escapeHtml([item.groupName, item.description].filter(Boolean).join(' — ')) + '"' + '>' +
+            '<img src="' + escapeHtml(item.icon || item.fallback) + '" data-fallback="' + escapeHtml(item.fallback || '') + '" alt="" loading="lazy">' +
+            '<span class="nav-label">' + highlight(item.name, query) + '</span></a>';
+    }
+
+    function toggleHtml(className, id, label, count, isOpen, icon) {
+        return '<button class="nav-toggle ' + className + '" type="button" data-toggle="' + escapeHtml(id) +
+            '" aria-expanded="' + isOpen + '">' + CHEVRON +
+            (icon ? '<img src="' + escapeHtml(icon) + '" data-fallback="icons/logo.png" alt="">' : '') +
+            '<span class="nav-label">' + escapeHtml(label) + '</span><span class="count">' + count + '</span></button>';
+    }
+
+    // Category headings (Business, Product Architecture, More) above the first
+    // visible section of each category.
+    let lastCategory = '';
+
+    function categoryHtml(section) {
+        if (!section.category || section.category === lastCategory) return '';
+        lastCategory = section.category;
+        return '<div class="nav-category">' + escapeHtml(section.category) + '</div>';
+    }
+
+    function renderSidebar() {
+        lastCategory = '';
+        const query = filterInput.value.trim().toLowerCase();
+        let html = '';
+        let matches = 0;
+        sections.forEach(section => {
+            // A section without pages is a single link, e.g. Stress Test under More.
+            if (!section.items.length) {
+                if (query && !section.title.toLowerCase().includes(query)) return;
+                if (query) matches++;
+                html += categoryHtml(section) + itemHtml({name: section.title, link: section.link, icon: section.icon,
+                    fallback: 'icons/logo.png'}, query, ' nav-single');
+                return;
+            }
+            const items = section.items.filter(item => !query || item.search.includes(query));
+            if (!items.length) return;
+            matches += items.length;
+            html += categoryHtml(section);
+            // While searching every section with a match is open; the remembered
+            // state returns when the search is cleared.
+            const sectionOpen = !!query || expanded.has(section.id);
+            html += '<div class="nav-section">' +
+                toggleHtml('nav-section-header', section.id, section.title, items.length, sectionOpen, section.icon) +
+                '<div class="nav-body"' + (sectionOpen ? '' : ' hidden') + '>';
+            if (section.link && !query) {
+                html += itemHtml({name: 'Overview', link: section.link, icon: section.icon, fallback: 'icons/logo.png'}, '', ' overview');
+                (section.views || []).forEach(view => html += itemHtml(view, '', ' overview'));
+            }
+            items.forEach(item => html += itemHtml(item, query));
+            html += '</div></div>';
+        });
+        tree.innerHTML = html || '<div class="nav-empty">No pages match "' + escapeHtml(query) + '"</div>';
+        document.getElementById('summary_all').textContent = query
+            ? matches + ' match' + (matches === 1 ? '' : 'es')
+            : allItems.length + ' pages';
+        document.getElementById('searchClear').hidden = !query;
+        document.getElementById('searchHint').hidden = !!query;
+        markActive();
+    }
+
+    // The overview entries are built on the fly, so give them an index too.
+    // Views are the other tabs of a section's overview page.
+    const overviewItems = sections.filter(section => section.link).flatMap(section => [
+        {name: section.title, link: section.link, section: section},
+        ...(section.views || []).map(view => ({name: view.name, link: view.link, section: section}))
+    ]);
+
+    tree.addEventListener('click', event => {
+        const toggle = event.target.closest('[data-toggle]');
+        if (toggle) {
+            const id = toggle.dataset.toggle;
+            const open = toggle.getAttribute('aria-expanded') !== 'true';
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.nextElementSibling.hidden = !open;
+            if (!filterInput.value.trim()) {
+                open ? expanded.add(id) : expanded.delete(id);
+            }
+            // Opening a section also shows its overview page.
+            const section = sections.find(candidate => candidate.id === id);
+            if (open && section && section.link) followLink(event, section.link, true);
+            return;
+        }
+        const link = event.target.closest('a.nav-item');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // Arrow keys move through visible entries; Escape returns to the search box.
+    tree.addEventListener('keydown', event => {
+        const focusable = [...tree.querySelectorAll('.nav-toggle, .nav-item')].filter(el => el.offsetParent !== null);
+        const index = focusable.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            const next = focusable[index + (event.key === 'ArrowDown' ? 1 : -1)];
+            if (next) next.focus(); else if (event.key === 'ArrowUp') filterInput.focus();
+        } else if (event.key === 'Escape') {
+            filterInput.focus();
+        } else if ((event.key === 'ArrowRight' || event.key === 'ArrowLeft') && document.activeElement.dataset.toggle) {
+            const isOpen = document.activeElement.getAttribute('aria-expanded') === 'true';
+            if (isOpen !== (event.key === 'ArrowRight')) document.activeElement.click();
+        }
+    });
+
+    function setAllExpanded(open) {
+        expanded.clear();
+        if (open) sections.forEach(section => expanded.add(section.id));
+        renderSidebar();
+    }
+
+    document.getElementById('expandAll').addEventListener('click', () => setAllExpanded(true));
+    document.getElementById('collapseAll').addEventListener('click', () => setAllExpanded(false));
+
+    filterInput.addEventListener('input', renderSidebar);
+    filterInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            filterInput.value = '';
+            renderSidebar();
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            const first = tree.querySelector('.nav-item');
+            if (first) first.focus();
+        } else if (event.key === 'Enter') {
+            const first = tree.querySelector('.nav-item:not(.overview)');
+            if (first) first.click();
+        }
+    });
+    document.getElementById('searchClear').addEventListener('click', () => {
+        filterInput.value = '';
+        renderSidebar();
+        filterInput.focus();
+    });
+    document.addEventListener('keydown', event => {
+        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+        if (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey) {
+            event.preventDefault();
+            showSidebar(true);
+            filterInput.focus();
+            filterInput.select();
+        }
+    });
+
+    if (config.enableSearch === false) {
+        document.getElementById('search_container').hidden = true;
+    }
+
+    // Broken or missing icons fall back to the section's generic icon.
+    document.addEventListener('error', event => {
+        const img = event.target;
+        if (img.tagName !== 'IMG' || !img.dataset.fallback) return;
+        const fallback = img.dataset.fallback;
+        img.removeAttribute('data-fallback');
+        img.src = fallback;
+    }, true);
+
+    // ---------- sidebar visibility ----------
+
+    const shell = document.getElementById('shell');
+    const isNarrow = () => window.matchMedia('(max-width: 900px)').matches;
+
+    function showSidebar(show) {
+        if (isNarrow()) {
+            shell.classList.toggle('sidebar-open', show);
+        } else {
+            shell.classList.toggle('sidebar-hidden', !show);
+            storageSet(SIDEBAR_HIDDEN_KEY, !show);
+        }
+    }
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        showSidebar(isNarrow() ? !shell.classList.contains('sidebar-open') : shell.classList.contains('sidebar-hidden'));
+    });
+    document.getElementById('backdrop').addEventListener('click', () => showSidebar(false));
+    if (storageGet(SIDEBAR_HIDDEN_KEY, false)) shell.classList.add('sidebar-hidden');
+
+    // ---------- routing: #page=<relative link> shows that page inline ----------
+
+    const homeView = document.getElementById('homeView');
+    const frameView = document.getElementById('frameView');
+    const frame = document.getElementById('pageFrame');
+    const openExternal = document.getElementById('openExternal');
+    const topbarTitle = document.getElementById('topbarTitle');
+    let currentPage = '';
+    // The page the frame shows; it differs from its src after navigation inside the frame.
+    let framePage = '';
+
+    function followLink(event, link, keepSidebar) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!opensInline(link)) return;
+        event.preventDefault();
+        location.hash = 'page=' + encodeURIComponent(link);
+        if (isNarrow() && !keepSidebar) showSidebar(false);
+    }
+
+    function pageFromHash() {
+        const match = location.hash.match(/^#page=(.+)$/);
+        if (!match) return '';
+        const link = decodeURIComponent(match[1]);
+        return opensInline(link) ? link : '';
+    }
+
+    function findItem(link) {
+        const base = link.split('#')[0];
+        return allItems.find(item => item.link === link) ||
+            overviewItems.find(item => item.link === link) ||
+            allItems.find(item => item.link.split('#')[0] === base) ||
+            overviewItems.find(item => item.link.split('#')[0] === base);
+    }
+
+    function setTitle(item, fallbackTitle) {
+        let html = '<button class="link-button" type="button" id="crumbHome">' + escapeHtml(DOMAIN_NAME) + '</button>';
+        if (item && item.section && item.section.title !== item.name) html += '<span>/</span><span>' + escapeHtml(item.section.title) + '</span>';
+        if (item || fallbackTitle) html += '<span>/</span><strong>' + escapeHtml(item ? item.name : fallbackTitle) + '</strong>';
+        topbarTitle.innerHTML = item || fallbackTitle ? html : '<strong>Overview</strong>';
+        const crumb = document.getElementById('crumbHome');
+        if (crumb) crumb.addEventListener('click', goHome);
+    }
+
+    function markActive() {
+        tree.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+        if (!currentPage) return;
+        const active = [...tree.querySelectorAll('.nav-item')].find(el => el.getAttribute('href') === currentPage);
+        if (active) active.classList.add('active');
+    }
+
+    function revealActive(item) {
+        if (!item || filterInput.value.trim()) return;
+        if (!expanded.has(item.section.id)) {
+            expanded.add(item.section.id);
+            renderSidebar();
+        }
+        const active = tree.querySelector('.nav-item.active');
+        if (active) active.scrollIntoView({block: 'nearest'});
+    }
+
+    function route() {
+        currentPage = pageFromHash();
+        const item = currentPage ? findItem(currentPage) : null;
+        homeView.hidden = !!currentPage;
+        frameView.hidden = !currentPage;
+        document.getElementById('homeButton').hidden = !currentPage;
+        openExternal.hidden = !currentPage;
+        if (currentPage) {
+            // A change of #tab only scrolls the frame to that tab, without reloading it.
+            if (framePage !== currentPage) frame.setAttribute('src', currentPage);
+            framePage = currentPage;
+            openExternal.href = currentPage;
+            document.title = (item ? item.name : 'Page') + ' · ' + DOMAIN_NAME;
+        } else {
+            frame.removeAttribute('src');
+            framePage = '';
+            document.title = DOMAIN_NAME;
+        }
+        setTitle(item);
+        markActive();
+        revealActive(item);
+    }
+
+    function goHome() {
+        if (location.hash) history.pushState(null, '', location.pathname + location.search);
+        route();
+    }
+
+    // Relative link from this page's folder to an absolute URL, or '' when it
+    // leaves the site (different origin).
+    function relativeLink(href) {
+        const from = new URL('.', location.href);
+        const to = new URL(href);
+        if (from.origin !== to.origin || from.protocol !== to.protocol) return '';
+        const fromParts = from.pathname.split('/').filter(Boolean);
+        const toParts = to.pathname.split('/');
+        const fileName = toParts.pop();
+        const toDirs = toParts.filter(Boolean);
+        let common = 0;
+        while (common < fromParts.length && common < toDirs.length && fromParts[common] === toDirs[common]) common++;
+        return '../'.repeat(fromParts.length - common) + toDirs.slice(common).concat(fileName).join('/') + to.hash;
+    }
+
+    // Keep the address bar, title and sidebar in step with navigation inside the
+    // frame. Browsers block this for file:// pages; the frame still works there.
+    frame.addEventListener('load', () => {
+        let location_;
+        try {
+            location_ = frame.contentWindow.location.href;
+        } catch (e) {
+            return;
+        }
+        if (!location_ || location_ === 'about:blank') return;
+        // Pages without the breadcrumbs import (the script-free tutorial) can't mark
+        // themselves as embedded; do it for them.
+        frame.contentDocument.documentElement.classList.add('embedded');
+        if (!frame.contentDocument.querySelector('style[data-embedded]')) {
+            const style = frame.contentDocument.createElement('style');
+            style.dataset.embedded = '';
+            style.textContent = 'html.embedded .site-nav, html.embedded #breadcrumbs { display: none !important; }';
+            frame.contentDocument.head.appendChild(style);
+        }
+        const link = relativeLink(location_);
+        if (!link) return;
+        if (link.split('#')[0] === 'index.html' || link.split('#')[0] === '../start/index.html') {
+            // A "Home" link inside the frame: show the overview instead of nesting the start page.
+            goHome();
+            return;
+        }
+        framePage = link;
+        if (link !== currentPage) {
+            currentPage = link;
+            history.replaceState(null, '', '#page=' + encodeURIComponent(link));
+            openExternal.href = link;
+            const item = findItem(link);
+            let frameTitle = '';
+            try {
+                frameTitle = frame.contentDocument.title;
+            } catch (e) {
+                // ignore
+            }
+            setTitle(item, frameTitle);
+            document.title = (item ? item.name : frameTitle || 'Page') + ' · ' + DOMAIN_NAME;
+            markActive();
+            revealActive(item);
+        }
+    });
+
+    document.getElementById('brand').addEventListener('click', goHome);
+    document.getElementById('homeButton').addEventListener('click', goHome);
+    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
+
+    // ---------- overview (home) content ----------
+
+    // Cards show the page counts of the sidebar sections they lead to.
+    function appCountsHtml(app) {
+        const counts = sidebarSections
+            .filter(section => (section.card || section.link) === app.link && section.groups.length)
+            .map(section => '<span class="app-count"><strong>' +
+                section.groups.reduce((sum, group) => sum + group.items.length, 0) + '</strong> ' +
+                escapeHtml(section.countLabel || section.title) + '</span>')
+            .concat(sidebarSections
+                .filter(section => !section.groups.length && section.link === app.link && section.count > 0)
+                .map(section => '<span class="app-count"><strong>' + section.count + '</strong> ' +
+                    escapeHtml(section.title) + '</span>'))
+            .concat(sidebarSections.flatMap(section => section.views || [])
+                .filter(view => view.link === app.link && view.count > 0)
+                .map(view => '<span class="app-count"><strong>' + view.count + '</strong> ' +
+                    escapeHtml(view.name) + '</span>'));
+        return counts.length ? '<div class="app-counts">' + counts.join('') + '</div>' : '';
+    }
+
+    function renderAppCard(app) {
+        const newTab = config.openInNewTab !== false && app.openInNewTab !== false;
+        const attrs = opensInline(app.link) || !newTab ? '' : ' target="_blank" rel="noopener"';
+        // App names are authored markup (they may contain <br>), as on the previous start page.
+        return '<a class="app" href="' + escapeHtml(app.link) + '"' + attrs + '>' +
+            '<img src="' + escapeHtml(app.icon) + '" data-fallback="icons/logo.png" alt="">' +
+            '<div class="name">' + app.name + '</div>' +
+            (app.source ? '<div class="source">source: ' + escapeHtml(app.source) + '</div>' : '') +
+            '<div class="description">' + escapeHtml(app.description) + '</div>' + appCountsHtml(app) + '</a>';
+    }
+
+    function renderApps() {
+        let html = '';
+        apps.forEach(tab => {
+            if (apps.length > 1) html += '<h2 class="app-tab-title">' + escapeHtml(tab.tab) + '</h2>';
+            (tab.apps || []).forEach(group => {
+                html += '<div class="app-group"><h3 class="app-group-title">' + escapeHtml(group.group) + '</h3>' +
+                    '<div class="app-grid">' + (group.apps || []).map(renderAppCard).join('') + '</div></div>';
+            });
+        });
+        document.getElementById('appGroups').innerHTML = html;
+    }
+
+    homeView.addEventListener('click', event => {
+        const link = event.target.closest('a.app');
+        if (link) followLink(event, link.getAttribute('href'));
+    });
+
+    // ---------- domain description: three lines with a "more" toggle ----------
+
+    const descriptionContainer = document.getElementById('descriptionContainer');
+    const descriptionText = document.getElementById('domain-description');
+    const descriptionToggle = document.getElementById('domain-description-toggle');
+
+    function updateDescriptionToggle() {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionContainer.classList.add('clamped');
+        const overflows = descriptionText.scrollHeight > descriptionText.clientHeight + 1;
+        descriptionContainer.classList.toggle('clamped', overflows && !isExpanded);
+        descriptionToggle.hidden = !overflows;
+        descriptionToggle.textContent = isExpanded ? 'less' : 'more';
+    }
+
+    descriptionToggle.addEventListener('click', () => {
+        const isExpanded = descriptionToggle.getAttribute('aria-expanded') === 'true';
+        descriptionToggle.setAttribute('aria-expanded', String(!isExpanded));
+        updateDescriptionToggle();
+    });
+    window.addEventListener('resize', updateDescriptionToggle);
+
+    renderSidebar();
+    renderApps();
+    route();
+    updateDescriptionToggle();
+    if (document.fonts) document.fonts.ready.then(updateDescriptionToggle);
+</script>
+</body>
+</html>

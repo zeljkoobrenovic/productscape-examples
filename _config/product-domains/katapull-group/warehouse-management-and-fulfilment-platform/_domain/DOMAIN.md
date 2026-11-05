@@ -106,3 +106,12 @@ Fulfilment clients use the portal at no charge to Picqer; the 3PL pays. Partners
 - What is the Picqer customer count, revenue and headcount? Only the team page (about 30 people listed) and the claims above are public.
 - What will client invoicing in Picqer Fulfilment cost, and when will it be released?
 - How far will Picqer expand beyond the Netherlands and Belgium?
+
+## App store channels (added 2026-11-04)
+
+- Shopify App Store listing "Picqer | Pick & ship faster" (https://apps.shopify.com/picqer). It has a
+  14-day trial and syncs orders, shipping status, tracking and stock. It needs unique SKUs and
+  manages one Shopify location (https://picqer.com/en/support/articles/shopify-integration).
+- The Picqer App is available only through the Apple App Store and Google Play
+  (https://picqer.com/en/support/topics/app, https://apps.apple.com/us/app/picqer/id1600064988).
+  Picqer Classic remains iOS-only and receives no further updates.

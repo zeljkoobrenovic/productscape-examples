@@ -64,7 +64,7 @@
         flex-wrap: wrap;
         gap: 4px;
         border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 4px;
+        margin-bottom: 24px;
     }
 
     .tab button {
@@ -186,6 +186,38 @@
 
 
     <style>
+
+        /* Overview */
+        .ov { max-width: 1200px; padding-top: 12px; }
+        .ov-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .ov-fact { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; text-transform: capitalize; }
+        .ov-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 22px; }
+        .ov-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border: 1px solid #e5e7eb;
+            border-radius: 10px; background: #fff; cursor: pointer; font: inherit; text-align: left; color: #111827; }
+        .ov-tile:hover, .ov-tile:focus-visible { border-color: #93c5fd; background: #f8fbff; }
+        .ov-tile.zero { color: #9ca3af; }
+        .ov-tile-value { font-size: 28px; font-weight: 700; line-height: 1.1; }
+        .ov-tile-label { font-size: 13px; color: #4b5563; }
+        .ov-section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #1d4ed8; margin: 6px 0 10px; }
+        .ov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 14px; margin-bottom: 22px; }
+        .ov-panel { border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; padding: 14px 16px; min-width: 0; }
+        .ov-panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .ov-panel-title { font-weight: 700; font-size: 16px; color: #111827; }
+        .ov-panel-count { font-weight: 400; color: #6b7280; font-size: 14px; }
+        .ov-panel-link, .ov-more { border: 0; background: none; color: #1d4ed8; cursor: pointer; font: inherit; font-size: 13px; padding: 0; }
+        .ov-panel-link:hover, .ov-more:hover { text-decoration: underline; }
+        .ov-more { margin-top: 8px; }
+        .ov-panel-note { font-size: 13px; color: #4b5563; margin: -4px 0 10px; }
+        .ov-chips { display: flex; flex-direction: column; gap: 6px; }
+        .ov-chip { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; color: inherit; text-decoration: none; }
+        a.ov-chip:hover { background: #f3f4f6; }
+        .ov-chip img { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; flex: 0 0 32px; }
+        .ov-chip-text { display: flex; flex-direction: column; min-width: 0; }
+        .ov-chip-label { font-weight: 600; color: #111827; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ov-chip-meta { font-size: 12px; color: #6b7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ov-empty { color: #6b7280; font-size: 14px; }
+        .ov-outcomes { margin: 0; padding-left: 20px; line-height: 1.6; color: #111827; }
+
 
         .links-group {
             margin-bottom: 20px;
@@ -747,6 +779,12 @@
             if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
             heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
         }
+        // A tab may describe itself; otherwise the page's own subtitle stays.
+        const heroSubtitle = document.querySelector('[data-follows-tab-subtitle]');
+        if (heroSubtitle) {
+            if (!heroSubtitle.dataset.defaultSubtitle) heroSubtitle.dataset.defaultSubtitle = heroSubtitle.textContent.trim();
+            heroSubtitle.textContent = activeTab.dataset.tabSubtitle || heroSubtitle.dataset.defaultSubtitle;
+        }
         if (typeof window.afterOpenTab === 'function') {
             window.afterOpenTab(resolvedTabName);
         }
@@ -809,7 +847,7 @@
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
     const currentStream = {"id": "operator-manage-lease-and-risk-lifecycle", "name": "Manage Lease and Risk Lifecycle", "icon": "operator-manage-lease-and-risk-lifecycle.png", "type": "outcome-based-stream", "description": "Help operators create, control, and service lease contracts with the right risk and compliance guardrails.", "group": "Operations Experience", "rootGroup": "Operations Experience", "flows": [{"id": "operator-manage-lease-and-risk-lifecycle-flow", "title": "Manage Lease and Risk Lifecycle", "description": "Help operators create, control, and service lease contracts with the right risk and compliance guardrails.", "steps": [{"id": "create-lease-case", "title": "Create lease case", "keyFacts": ["This step determines how quickly users reach initial value.", "It often combines setup effort, policy choices, and correctness checks."], "painPoints": ["Users stall when setup asks for too much context too early.", "Errors here create rework and reduce confidence in the product model."], "dependencies": [{"type": "brick", "id": "leor", "name": "Lease Origination & Credit Decisioning", "description": "Supports lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness.", "how": "Uses Lease Origination & Credit Decisioning for lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness in create lease case."}, {"type": "brick", "id": "cont", "name": "Contract Lifecycle Management", "description": "Manages quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history.", "how": "Uses Contract Lifecycle Management for quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history in create lease case."}]}, {"id": "run-risk-decision", "title": "Run risk decision", "keyFacts": ["Run risk decision is a meaningful step in the operations experience flow.", "Users need clear guidance and feedback here to keep moving forward."], "painPoints": ["Users drop out when run risk decision feels fragmented across channels.", "Confidence decreases when the product does not explain what happens next."], "dependencies": [{"type": "brick", "id": "leor", "name": "Lease Origination & Credit Decisioning", "description": "Supports lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness.", "how": "Uses Lease Origination & Credit Decisioning for lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness in run risk decision."}]}, {"id": "approve-contract-setup", "title": "Approve contract setup", "keyFacts": ["This step determines how quickly users reach initial value.", "It often combines setup effort, policy choices, and correctness checks."], "painPoints": ["Users stall when setup asks for too much context too early.", "Errors here create rework and reduce confidence in the product model."], "dependencies": [{"type": "brick", "id": "cont", "name": "Contract Lifecycle Management", "description": "Manages quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history.", "how": "Uses Contract Lifecycle Management for quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history in approve contract setup."}]}, {"id": "handle-lifecycle-exceptions", "title": "Handle lifecycle exceptions", "keyFacts": ["Handle lifecycle exceptions is a meaningful step in the operations experience flow.", "Users need clear guidance and feedback here to keep moving forward."], "painPoints": ["Users drop out when handle lifecycle exceptions feels fragmented across channels.", "Confidence decreases when the product does not explain what happens next."], "dependencies": [{"type": "brick", "id": "cont", "name": "Contract Lifecycle Management", "description": "Manages quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history.", "how": "Uses Contract Lifecycle Management for quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history in handle lifecycle exceptions."}, {"type": "brick", "id": "cpco", "name": "Compliance, Privacy & Audit Controls", "description": "Implements privacy, consent, auditability, financial control, and tax-sensitive compliance requirements across markets.", "how": "Uses Compliance, Privacy & Audit Controls for implements privacy, consent, auditability, financial control, and tax-sensitive compliance requirements across markets in handle lifecycle exceptions."}]}]}], "outcomes": ["Lease setup is more predictable", "Operators can resolve risk issues faster"], "brickDependencies": [{"targetBrickId": "leor", "type": "composition"}, {"targetBrickId": "cont", "type": "composition"}, {"targetBrickId": "cpco", "type": "composition"}], "externalSystemsThisStreamDependsOn": [{"system": "Credit, Insurance, and Finance Partners", "type": "regulated-partner", "interface": "Decisioning and claims APIs", "description": "Provide risk and financing services."}], "externalSystemsDependingOnThisStream": []};
-    const related_bricks = [{"id": "leor", "name": "Lease Origination & Credit Decisioning", "type": "service", "status": "sustaining", "description": "Supports lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-configuration-workspace", "name": "Configuration Workspace", "type": "web-component", "description": "Operational interface for managing rules, policies, and overrides in Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-decision-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-decision-api", "name": "Decision API", "type": "api", "description": "API that returns policy, quote, or eligibility outcomes calculated by Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-decision-evaluation-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-simulation-and-override-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-policy-change-events", "name": "Policy Change Events", "type": "message-consumer", "description": "Event stream that communicates policy updates and decision outcomes from Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-decision-evaluation-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-simulation-and-override-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-rules-and-configuration-model", "name": "Rules and Configuration Model", "type": "service", "description": "Defines the configurable policies, thresholds, and business rules for Lease Origination & Credit Decisioning."}, {"id": "module-decision-evaluation-engine", "name": "Decision Evaluation Engine", "type": "service", "description": "Executes policy and pricing decisions in real time within Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-simulation-and-override-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-simulation-and-override-controls", "name": "Simulation and Override Controls", "type": "service", "description": "Supports testing, exceptions, and operator overrides for Lease Origination & Credit Decisioning."}]}], "dataDependencies": [{"assetId": "customer-contact-point", "moduleIds": ["module-rules-and-configuration-model", "module-decision-evaluation-engine", "module-simulation-and-override-controls"], "role": "read", "description": "Reads Customer Contact Point to support domain workflows."}, {"assetId": "audit-log", "moduleIds": ["module-policy-change-events"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}], "brickDependencies": [{"targetBrickId": "orde", "moduleId": "module-workflow-api", "sourceModuleId": "module-decision-api", "type": "workflow", "description": "Depends on Order Orchestration & Checkout to provide operations capabilities required by Lease Origination & Credit Decisioning."}, {"targetBrickId": "trkm", "moduleId": "module-alert-and-signal-feed", "sourceModuleId": "module-policy-change-events", "type": "event-subscription", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Lease Origination & Credit Decisioning."}, {"targetBrickId": "cont", "moduleId": "module-domain-event-feed", "sourceModuleId": "module-policy-change-events", "type": "event-subscription", "description": "Depends on Contract Lifecycle Management to provide service capabilities required by Lease Origination & Credit Decisioning."}], "externalSystemsThisBrickDependsOn": [{"system": "Back-Office Policy Systems", "type": "back-office", "interface": "Configuration API", "description": "Lease Origination & Credit Decisioning synchronizes rules, policies, or decision parameters with external policy systems.", "sourceModuleId": "module-decision-evaluation-engine"}, {"system": "Compliance and Regulatory Services", "type": "compliance", "interface": "Validation API", "description": "Lease Origination & Credit Decisioning may call regulatory or compliance services to validate decisions and exceptions.", "sourceModuleId": "module-decision-evaluation-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Operational Decision Flows", "type": "decision-consumer", "interface": "Decision API", "description": "Execution flows depend on Lease Origination & Credit Decisioning to evaluate rules, policies, eligibility, or pricing outcomes.", "moduleId": "module-decision-api"}, {"system": "Administration and Governance Tools", "type": "policy-consumer", "interface": "Configuration Interface", "description": "Governance and admin tooling depend on Lease Origination & Credit Decisioning to maintain controlled rule and policy changes.", "moduleId": "module-decision-api"}], "domain": "leasing_finance", "group": "lease-origination-and-financial-control"}, {"id": "cont", "name": "Contract Lifecycle Management", "type": "service", "status": "sustaining", "description": "Manages quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-operations-workspace", "name": "Operations Workspace", "type": "web-component", "description": "User interface for administration and operational control of Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-service-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-service-api", "name": "Service API", "type": "api", "description": "API surface for interacting with the business capabilities implemented by Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-core-domain-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-rules-and-administration", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-reporting-and-exception-handling", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-domain-event-feed", "name": "Domain Event Feed", "type": "message-consumer", "description": "Event interface that publishes notable business changes from Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-core-domain-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-rules-and-administration", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-reporting-and-exception-handling", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-core-domain-engine", "name": "Core Domain Engine", "type": "service", "description": "Implements the main business logic and lifecycle handled by Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-rules-and-administration", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-rules-and-administration", "name": "Rules and Administration", "type": "service", "description": "Provides the configuration, rules, and administrative controls required by Contract Lifecycle Management."}, {"id": "module-reporting-and-exception-handling", "name": "Reporting and Exception Handling", "type": "service", "description": "Supports visibility, diagnostics, and manual handling of exceptions in Contract Lifecycle Management."}]}], "dataDependencies": [{"assetId": "quote-subsidy-savings-configurator", "moduleIds": ["module-core-domain-engine", "module-rules-and-administration", "module-reporting-and-exception-handling"], "role": "read", "description": "Reads Quote Subsidy Savings Configurator to support domain workflows."}], "brickDependencies": [{"targetBrickId": "ride", "moduleId": "module-authentication-api", "sourceModuleId": "module-service-api", "type": "identity", "description": "Depends on Rider Identity, Wallet & App Experience to provide identity capabilities required by Contract Lifecycle Management."}, {"targetBrickId": "elpy", "moduleId": "module-outbound-event-feed", "sourceModuleId": "module-domain-event-feed", "type": "event-routing", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Contract Lifecycle Management."}, {"targetBrickId": "trkm", "moduleId": "module-dashboard-interface", "sourceModuleId": "module-operations-workspace", "type": "operator-insight", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Contract Lifecycle Management."}], "externalSystemsThisBrickDependsOn": [{"system": "Back-Office Systems", "type": "back-office", "interface": "Service API", "description": "Contract Lifecycle Management exchanges operational state and business records with external back-office systems.", "sourceModuleId": "module-core-domain-engine"}, {"system": "Notification and Communication Platforms", "type": "communication", "interface": "Messaging API", "description": "Contract Lifecycle Management uses external communication channels to notify users, operators, or partners.", "sourceModuleId": "module-core-domain-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Business Workflows", "type": "service-consumer", "interface": "Service API", "description": "Upstream business workflows depend on Contract Lifecycle Management for core domain capabilities and state transitions.", "moduleId": "module-service-api"}, {"system": "Operations and Support Teams", "type": "operations-consumer", "interface": "Operations Workspace / Events", "description": "Operations consumers depend on Contract Lifecycle Management for administration, visibility, and exception resolution.", "moduleId": "module-service-api"}], "domain": "leasing_finance", "group": "lease-origination-and-financial-control"}, {"id": "cpco", "name": "Compliance, Privacy & Audit Controls", "type": "service", "status": "sustaining", "description": "Implements privacy, consent, auditability, financial control, and tax-sensitive compliance requirements across markets.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-administration-console", "name": "Administration Console", "type": "web-component", "description": "Operational interface for managing identity settings and access policies in Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-authentication-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-authentication-api", "name": "Authentication API", "type": "api", "description": "Programmatic interface for authentication, authorization, or account checks exposed by Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-identity-and-policy-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-entitlements-and-lifecycle-management", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-audit-and-compliance-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-audit-event-stream", "name": "Audit Event Stream", "type": "message-consumer", "description": "Event interface that publishes security and compliance signals from Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-identity-and-policy-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-entitlements-and-lifecycle-management", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-audit-and-compliance-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-identity-and-policy-engine", "name": "Identity and Policy Engine", "type": "service", "description": "Authenticates actors, evaluates access policies, and manages trust rules for Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-entitlements-and-lifecycle-management", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-audit-and-compliance-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-entitlements-and-lifecycle-management", "name": "Entitlements and Lifecycle Management", "type": "service", "description": "Manages roles, permissions, account state, and lifecycle changes within Compliance, Privacy & Audit Controls."}, {"id": "module-audit-and-compliance-controls", "name": "Audit and Compliance Controls", "type": "service", "description": "Records security-relevant actions and compliance evidence produced by Compliance, Privacy & Audit Controls."}]}], "dataDependencies": [{"assetId": "consent-record", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "own", "description": "Acts as the primary owning brick for Consent Record."}, {"assetId": "audit-log", "moduleIds": ["module-audit-event-stream"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}, {"assetId": "payment-instrument-reference", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "read", "description": "Reads Payment Instrument Reference to support domain workflows."}, {"assetId": "transaction", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "write", "description": "Writes or updates Transaction during domain workflows."}], "brickDependencies": [{"targetBrickId": "cont", "moduleId": "module-service-api", "sourceModuleId": "module-authentication-api", "type": "service-api", "description": "Depends on Contract Lifecycle Management to provide service capabilities required by Compliance, Privacy & Audit Controls."}, {"targetBrickId": "elpy", "moduleId": "module-outbound-event-feed", "sourceModuleId": "module-audit-event-stream", "type": "event-routing", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Compliance, Privacy & Audit Controls."}, {"targetBrickId": "trkm", "moduleId": "module-dashboard-interface", "sourceModuleId": "module-administration-console", "type": "operator-insight", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Compliance, Privacy & Audit Controls."}], "externalSystemsThisBrickDependsOn": [{"system": "Corporate Identity Provider", "type": "identity", "interface": "OIDC / SAML", "description": "Compliance, Privacy & Audit Controls integrates with an external identity provider for authentication and federation.", "sourceModuleId": "module-identity-and-policy-engine"}, {"system": "Compliance Screening Services", "type": "compliance", "interface": "Screening API", "description": "Compliance, Privacy & Audit Controls may call external screening or verification services to enforce trust and compliance checks.", "sourceModuleId": "module-audit-and-compliance-controls"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer and Operator Applications", "type": "identity-consumer", "interface": "Authentication / Authorization Interface", "description": "Internal and external applications depend on Compliance, Privacy & Audit Controls for authentication, authorization, and trusted account state.", "moduleId": "module-authentication-api"}, {"system": "Audit and Risk Systems", "type": "control-consumer", "interface": "Audit / Event Interface", "description": "Governance and risk systems depend on Compliance, Privacy & Audit Controls to emit trust, access, and compliance events.", "moduleId": "module-authentication-api"}], "domain": "platform_foundation", "group": "shared-platform-services"}];
+    const related_bricks = [{"id": "leor", "name": "Lease Origination & Credit Decisioning", "type": "service", "status": "sustaining", "description": "Supports lease proposal creation, underwriting inputs, credit checks where applicable, and contract activation readiness.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-configuration-workspace", "name": "Configuration Workspace", "type": "web-component", "description": "Operational interface for managing rules, policies, and overrides in Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-decision-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-decision-api", "name": "Decision API", "type": "api", "description": "API that returns policy, quote, or eligibility outcomes calculated by Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-decision-evaluation-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-simulation-and-override-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-policy-change-events", "name": "Policy Change Events", "type": "message-consumer", "description": "Event stream that communicates policy updates and decision outcomes from Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-decision-evaluation-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-simulation-and-override-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-rules-and-configuration-model", "name": "Rules and Configuration Model", "type": "service", "description": "Defines the configurable policies, thresholds, and business rules for Lease Origination & Credit Decisioning."}, {"id": "module-decision-evaluation-engine", "name": "Decision Evaluation Engine", "type": "service", "description": "Executes policy and pricing decisions in real time within Lease Origination & Credit Decisioning.", "dependencies": {"modules": [{"moduleId": "module-rules-and-configuration-model", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-simulation-and-override-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-simulation-and-override-controls", "name": "Simulation and Override Controls", "type": "service", "description": "Supports testing, exceptions, and operator overrides for Lease Origination & Credit Decisioning."}]}], "dataDependencies": [{"assetId": "customer-contact-point", "moduleIds": ["module-rules-and-configuration-model", "module-decision-evaluation-engine", "module-simulation-and-override-controls"], "role": "read", "description": "Reads Customer Contact Point to support domain workflows."}, {"assetId": "audit-log", "moduleIds": ["module-policy-change-events"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}], "brickDependencies": [{"targetBrickId": "orde", "moduleId": "module-workflow-api", "sourceModuleId": "module-decision-api", "type": "workflow", "description": "Depends on Order Orchestration & Checkout to provide operations capabilities required by Lease Origination & Credit Decisioning."}, {"targetBrickId": "trkm", "moduleId": "module-alert-and-signal-feed", "sourceModuleId": "module-policy-change-events", "type": "event-subscription", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Lease Origination & Credit Decisioning."}, {"targetBrickId": "cont", "moduleId": "module-domain-event-feed", "sourceModuleId": "module-policy-change-events", "type": "event-subscription", "description": "Depends on Contract Lifecycle Management to provide service capabilities required by Lease Origination & Credit Decisioning."}], "externalSystemsThisBrickDependsOn": [{"system": "Back-Office Policy Systems", "type": "back-office", "interface": "Configuration API", "description": "Lease Origination & Credit Decisioning synchronizes rules, policies, or decision parameters with external policy systems.", "sourceModuleId": "module-decision-evaluation-engine"}, {"system": "Compliance and Regulatory Services", "type": "compliance", "interface": "Validation API", "description": "Lease Origination & Credit Decisioning may call regulatory or compliance services to validate decisions and exceptions.", "sourceModuleId": "module-decision-evaluation-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Operational Decision Flows", "type": "decision-consumer", "interface": "Decision API", "description": "Execution flows depend on Lease Origination & Credit Decisioning to evaluate rules, policies, eligibility, or pricing outcomes.", "moduleId": "module-decision-api"}, {"system": "Administration and Governance Tools", "type": "policy-consumer", "interface": "Configuration Interface", "description": "Governance and admin tooling depend on Lease Origination & Credit Decisioning to maintain controlled rule and policy changes.", "moduleId": "module-decision-api"}], "domain": "Leasing Finance", "group": "lease-origination-and-financial-control"}, {"id": "cont", "name": "Contract Lifecycle Management", "type": "service", "status": "sustaining", "description": "Manages quotes, contracts, amendments, renewals, pauses, offboarding, and audit-ready contract history.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-operations-workspace", "name": "Operations Workspace", "type": "web-component", "description": "User interface for administration and operational control of Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-service-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-service-api", "name": "Service API", "type": "api", "description": "API surface for interacting with the business capabilities implemented by Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-core-domain-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-rules-and-administration", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-reporting-and-exception-handling", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-domain-event-feed", "name": "Domain Event Feed", "type": "message-consumer", "description": "Event interface that publishes notable business changes from Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-core-domain-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-rules-and-administration", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-reporting-and-exception-handling", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-core-domain-engine", "name": "Core Domain Engine", "type": "service", "description": "Implements the main business logic and lifecycle handled by Contract Lifecycle Management.", "dependencies": {"modules": [{"moduleId": "module-rules-and-administration", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-rules-and-administration", "name": "Rules and Administration", "type": "service", "description": "Provides the configuration, rules, and administrative controls required by Contract Lifecycle Management."}, {"id": "module-reporting-and-exception-handling", "name": "Reporting and Exception Handling", "type": "service", "description": "Supports visibility, diagnostics, and manual handling of exceptions in Contract Lifecycle Management."}]}], "dataDependencies": [{"assetId": "quote-subsidy-savings-configurator", "moduleIds": ["module-core-domain-engine", "module-rules-and-administration", "module-reporting-and-exception-handling"], "role": "read", "description": "Reads Quote Subsidy Savings Configurator to support domain workflows."}], "brickDependencies": [{"targetBrickId": "ride", "moduleId": "module-authentication-api", "sourceModuleId": "module-service-api", "type": "identity", "description": "Depends on Rider Identity, Wallet & App Experience to provide identity capabilities required by Contract Lifecycle Management."}, {"targetBrickId": "elpy", "moduleId": "module-outbound-event-feed", "sourceModuleId": "module-domain-event-feed", "type": "event-routing", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Contract Lifecycle Management."}, {"targetBrickId": "trkm", "moduleId": "module-dashboard-interface", "sourceModuleId": "module-operations-workspace", "type": "operator-insight", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Contract Lifecycle Management."}], "externalSystemsThisBrickDependsOn": [{"system": "Back-Office Systems", "type": "back-office", "interface": "Service API", "description": "Contract Lifecycle Management exchanges operational state and business records with external back-office systems.", "sourceModuleId": "module-core-domain-engine"}, {"system": "Notification and Communication Platforms", "type": "communication", "interface": "Messaging API", "description": "Contract Lifecycle Management uses external communication channels to notify users, operators, or partners.", "sourceModuleId": "module-core-domain-engine"}], "externalSystemsDependingOnThisBrick": [{"system": "Business Workflows", "type": "service-consumer", "interface": "Service API", "description": "Upstream business workflows depend on Contract Lifecycle Management for core domain capabilities and state transitions.", "moduleId": "module-service-api"}, {"system": "Operations and Support Teams", "type": "operations-consumer", "interface": "Operations Workspace / Events", "description": "Operations consumers depend on Contract Lifecycle Management for administration, visibility, and exception resolution.", "moduleId": "module-service-api"}], "domain": "Leasing Finance", "group": "lease-origination-and-financial-control"}, {"id": "cpco", "name": "Compliance, Privacy & Audit Controls", "type": "service", "status": "sustaining", "description": "Implements privacy, consent, auditability, financial control, and tax-sensitive compliance requirements across markets.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-administration-console", "name": "Administration Console", "type": "web-component", "description": "Operational interface for managing identity settings and access policies in Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-authentication-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-authentication-api", "name": "Authentication API", "type": "api", "description": "Programmatic interface for authentication, authorization, or account checks exposed by Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-identity-and-policy-engine", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-entitlements-and-lifecycle-management", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-audit-and-compliance-controls", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "worker", "description": "Background workers, event consumers, daemons, and asynchronous processing modules.", "modules": [{"id": "module-audit-event-stream", "name": "Audit Event Stream", "type": "message-consumer", "description": "Event interface that publishes security and compliance signals from Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-identity-and-policy-engine", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-entitlements-and-lifecycle-management", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}, {"moduleId": "module-audit-and-compliance-controls", "type": "processes", "description": "Asynchronous module invokes the backing service logic for event processing."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-identity-and-policy-engine", "name": "Identity and Policy Engine", "type": "service", "description": "Authenticates actors, evaluates access policies, and manages trust rules for Compliance, Privacy & Audit Controls.", "dependencies": {"modules": [{"moduleId": "module-entitlements-and-lifecycle-management", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}, {"moduleId": "module-audit-and-compliance-controls", "type": "governs", "description": "Core service logic applies the brick control, policy, or rule module."}]}}, {"id": "module-entitlements-and-lifecycle-management", "name": "Entitlements and Lifecycle Management", "type": "service", "description": "Manages roles, permissions, account state, and lifecycle changes within Compliance, Privacy & Audit Controls."}, {"id": "module-audit-and-compliance-controls", "name": "Audit and Compliance Controls", "type": "service", "description": "Records security-relevant actions and compliance evidence produced by Compliance, Privacy & Audit Controls."}]}], "dataDependencies": [{"assetId": "consent-record", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "own", "description": "Acts as the primary owning brick for Consent Record."}, {"assetId": "audit-log", "moduleIds": ["module-audit-event-stream"], "role": "publish", "description": "Publishes events or audit records related to Audit Log."}, {"assetId": "payment-instrument-reference", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "read", "description": "Reads Payment Instrument Reference to support domain workflows."}, {"assetId": "transaction", "moduleIds": ["module-identity-and-policy-engine", "module-entitlements-and-lifecycle-management", "module-audit-and-compliance-controls"], "role": "write", "description": "Writes or updates Transaction during domain workflows."}], "brickDependencies": [{"targetBrickId": "cont", "moduleId": "module-service-api", "sourceModuleId": "module-authentication-api", "type": "service-api", "description": "Depends on Contract Lifecycle Management to provide service capabilities required by Compliance, Privacy & Audit Controls."}, {"targetBrickId": "elpy", "moduleId": "module-outbound-event-feed", "sourceModuleId": "module-audit-event-stream", "type": "event-routing", "description": "Depends on Eligibility, Payroll & HRIS Sync to provide integration capabilities required by Compliance, Privacy & Audit Controls."}, {"targetBrickId": "trkm", "moduleId": "module-dashboard-interface", "sourceModuleId": "module-administration-console", "type": "operator-insight", "description": "Depends on Trip, Telematics & Asset Monitoring to provide analytics capabilities required by Compliance, Privacy & Audit Controls."}], "externalSystemsThisBrickDependsOn": [{"system": "Corporate Identity Provider", "type": "identity", "interface": "OIDC / SAML", "description": "Compliance, Privacy & Audit Controls integrates with an external identity provider for authentication and federation.", "sourceModuleId": "module-identity-and-policy-engine"}, {"system": "Compliance Screening Services", "type": "compliance", "interface": "Screening API", "description": "Compliance, Privacy & Audit Controls may call external screening or verification services to enforce trust and compliance checks.", "sourceModuleId": "module-audit-and-compliance-controls"}], "externalSystemsDependingOnThisBrick": [{"system": "Customer and Operator Applications", "type": "identity-consumer", "interface": "Authentication / Authorization Interface", "description": "Internal and external applications depend on Compliance, Privacy & Audit Controls for authentication, authorization, and trusted account state.", "moduleId": "module-authentication-api"}, {"system": "Audit and Risk Systems", "type": "control-consumer", "interface": "Audit / Event Interface", "description": "Governance and risk systems depend on Compliance, Privacy & Audit Controls to emit trust, access, and compliance events.", "moduleId": "module-authentication-api"}], "domain": "Platform Foundation", "group": "shared-platform-services"}];
     const linked_products = [];
     const supported_jobs = [];
 
@@ -929,13 +967,19 @@
 
 <div class="page">
     <div class="tab" id="primary_tabs">
-        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
-        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Overview</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flow Narratives</button>
+        <button class="tablinks" id="tab_bricks" onclick="openTab('bricks')">Bricks</button>
+        <button class="tablinks" id="tab_products" onclick="openTab('products')">Products</button>
+        <button class="tablinks" id="tab_jobs" onclick="openTab('jobs')">Customer Jobs</button>
         <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
     </div>
 
     <div id="tab_content_home" class="tabcontent"></div>
     <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_bricks" class="tabcontent"></div>
+    <div id="tab_content_products" class="tabcontent"></div>
+    <div id="tab_content_jobs" class="tabcontent"></div>
     <div id="tab_content_links" class="tabcontent"></div>
 
 
@@ -976,47 +1020,8 @@
     headerHtml += '</div></div></div>';
     document.getElementById('Header').innerHTML = headerHtml;
 
-    function renderHome() {
-        const flows = getFlows();
-        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
-        const primaryActors = getPrimaryActors();
+    function renderBricksTab() {
         let html = '';
-
-        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
-        if (!flows.length) {
-            html += '<div class="muted">No flows listed for this stream.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            flows.forEach(flow => {
-                const summary = summarizeFlow(flow);
-                html += '<div class="card">';
-                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
-                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
-                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
-                if (summary.actor) {
-                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
-                }
-                if (summary.trigger) {
-                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
-                }
-                if (summary.result) {
-                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
-                }
-                html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        html += '<div class="group"><div class="section-title">Outcomes</div>';
-        if (!(currentStream.outcomes || []).length) {
-            html += '<div class="muted">No outcomes listed for this stream.</div>';
-        } else {
-            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
-        }
-        html += '</div>';
-
         html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
         if (!related_bricks.length) {
             html += '<div class="muted">No linked product bricks.</div>';
@@ -1036,6 +1041,11 @@
         }
         html += '</div>';
 
+        document.getElementById('tab_content_bricks').innerHTML = html;
+    }
+
+    function renderProductsTab() {
+        let html = '';
         html += '<div class="group"><div class="section-title">Linked Products</div>';
         if (!linked_products.length) {
             html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
@@ -1055,16 +1065,43 @@
         }
         html += '</div>';
 
-        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
-        if (!supported_jobs.length) {
+        document.getElementById('tab_content_products').innerHTML = html;
+    }
+
+    // One card per job; the same job reached through several products lists them together.
+    function groupedJobs() {
+        const byJob = new Map();
+        supported_jobs.forEach(job => {
+            const key = (job.customerId || '') + '|' + (job.jobId || job.jobName);
+            if (!byJob.has(key)) {
+                byJob.set(key, {...job, products: []});
+            }
+            const entry = byJob.get(key);
+            if (job.productName && !entry.products.includes(job.productName)) {
+                entry.products.push(job.productName);
+            }
+        });
+        return Array.from(byJob.values());
+    }
+
+    function renderJobsTab() {
+        const jobs = groupedJobs();
+        let html = '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!jobs.length) {
             html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
         } else {
             html += '<div class="card-grid">';
-            supported_jobs.forEach(job => {
+            jobs.forEach(job => {
                 html += '<div class="card">';
-                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
-                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-header">';
+                html += '<a href="../../customers/landing_pages/' + escapeHtml(job.customerId) + '.html" target="_blank" rel="noopener noreferrer"><img class="card-icon" src="../../customers/icons/' + escapeHtml(job.customerIcon || 'customer.png') + '" alt="" onerror="this.onerror=null;this.src=\'../../customers/icons/customer.png\'"></a>';
+                html += '<div><div class="card-meta">' + escapeHtml(job.customerName || job.customerGroup || '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div></div>';
+                html += '</div>';
                 html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.products.length) {
+                    html += '<div class="card-copy"><strong>In:</strong> ' + escapeHtml(job.products.join(', ')) + '</div>';
+                }
                 if (job.supportRationale) {
                     html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
                 }
@@ -1076,8 +1113,124 @@
             html += '</div>';
         }
         html += '</div>';
+        document.getElementById('tab_content_jobs').innerHTML = html;
+    }
+
+    // ---- Overview: the stream at a glance; every detail lives in its own tab. ----
+    const OVERVIEW_CHIP_LIMIT = 8;
+
+    function overviewChip(href, icon, fallback, label, meta, external) {
+        let chip = '<a class="ov-chip" href="' + escapeHtml(href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>';
+        if (icon) {
+            chip += '<img src="' + escapeHtml(icon) + '" alt="" onerror="this.onerror=null;this.src=\'' + fallback + '\'">';
+        }
+        chip += '<span class="ov-chip-text"><span class="ov-chip-label">' + escapeHtml(label) + '</span>';
+        if (meta) chip += '<span class="ov-chip-meta">' + escapeHtml(meta) + '</span>';
+        return chip + '</span></a>';
+    }
+
+    function overviewChipList(items, renderItem, tab, emptyText) {
+        if (!items.length) return '<div class="ov-empty">' + escapeHtml(emptyText) + '</div>';
+        let list = '<div class="ov-chips">' + items.slice(0, OVERVIEW_CHIP_LIMIT).map(renderItem).join('') + '</div>';
+        if (items.length > OVERVIEW_CHIP_LIMIT) {
+            list += '<button class="ov-more" onclick="openTab(\'' + tab + '\')">+' + (items.length - OVERVIEW_CHIP_LIMIT) + ' more</button>';
+        }
+        return list;
+    }
+
+    function overviewPanel(title, tab, count, body, note) {
+        let panel = '<section class="ov-panel"><div class="ov-panel-head"><div class="ov-panel-title">' + escapeHtml(title) +
+            (count !== null ? ' <span class="ov-panel-count">' + count + '</span>' : '') + '</div>';
+        if (tab) panel += '<button class="ov-panel-link" onclick="openTab(\'' + tab + '\')">Details &rarr;</button>';
+        panel += '</div>';
+        if (note) panel += '<div class="ov-panel-note">' + escapeHtml(note) + '</div>';
+        return panel + body + '</section>';
+    }
+
+    function overviewCustomers() {
+        const byId = {};
+        supported_jobs.forEach(job => {
+            if (!byId[job.customerId]) {
+                byId[job.customerId] = {id: job.customerId, name: job.customerName, icon: job.customerIcon, jobs: new Set()};
+            }
+            byId[job.customerId].jobs.add(job.jobId || job.jobName);
+        });
+        return Object.values(byId);
+    }
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const painPoints = flows.reduce((count, flow) => count + (flow.steps || []).reduce((sum, step) => sum + (step.painPoints || []).length, 0), 0);
+        const outcomes = currentStream.outcomes || [];
+        const customers = overviewCustomers();
+        const jobCount = groupedJobs().length;
+        const externals = currentStream.externalSystemsThisStreamDependsOn || [];
+
+        const tiles = [
+            ['Flows', flows.length, 'flows'],
+            ['Steps', totalSteps, 'flows'],
+            ['Pain points', painPoints, 'flows'],
+            ['Bricks', related_bricks.length, 'bricks'],
+            ['Products', linked_products.length, 'products'],
+            ['Customers', customers.length, 'jobs'],
+            ['Customer jobs', jobCount, 'jobs'],
+        ];
+        let html = '<div class="ov">';
+        const facts = [currentStream.type ? currentStream.type.replaceAll('-', ' ') : '', currentStream.group].filter(Boolean);
+        if (facts.length) {
+            html += '<div class="ov-facts">' + facts.map(fact => '<span class="ov-fact">' + escapeHtml(fact) + '</span>').join('') + '</div>';
+        }
+        html += '<div class="ov-tiles">' + tiles.map(([label, value, tab]) =>
+            '<button class="ov-tile' + (value ? '' : ' zero') + '" onclick="openTab(\'' + tab + '\')"><span class="ov-tile-value">' + value +
+            '</span><span class="ov-tile-label">' + escapeHtml(label) + '</span></button>').join('') + '</div>';
+
+        // What the stream achieves and how it unfolds.
+        html += '<div class="ov-section-title">What it achieves</div><div class="ov-grid">';
+        html += overviewPanel('Outcomes', null, outcomes.length, outcomes.length
+            ? '<ul class="ov-outcomes">' + outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul>'
+            : '<div class="ov-empty">No outcomes listed for this stream.</div>', '');
+        html += overviewPanel('Flows', 'flows', flows.length, overviewChipList(flows, flow => {
+            const summary = summarizeFlow(flow);
+            const steps = (flow.steps || []).length;
+            const meta = [steps + (steps === 1 ? ' step' : ' steps'), summary.actor].filter(Boolean).join(' · ');
+            return overviewChip('#flows', '', '', flow.title || flow.id, meta, false);
+        }, 'flows', 'No flows listed for this stream.'), '');
+        html += '</div>';
+
+        // Who it serves and what it is built from.
+        html += '<div class="ov-section-title">Who it serves and what it runs on</div><div class="ov-grid">';
+        html += overviewPanel('Customers', 'jobs', customers.length,
+            overviewChipList(customers, customer => overviewChip('../../customers/landing_pages/' + customer.id + '.html',
+                '../../customers/icons/' + (customer.icon || 'customer.png'), '../../customers/icons/customer.png',
+                customer.name, customer.jobs.size === 1 ? '1 job' : customer.jobs.size + ' jobs', true),
+                'jobs', 'No customer jobs were inferred from the supporting bricks.'),
+            jobCount ? 'Supports ' + jobCount + ' customer job' + (jobCount === 1 ? '' : 's') + '.' : '');
+        html += overviewPanel('Products', 'products', linked_products.length,
+            overviewChipList(linked_products, product => overviewChip('../../product-deployments/landing_pages/' + product.id + '.html',
+                '../../product-deployments/icons/' + (product.icon || 'product.png'), '../../product-deployments/icons/product.png',
+                product.name || product.id, product.type || '', true), 'products', 'No linked products were inferred from the supporting bricks.'), '');
+        const builtOn = [
+            ...related_bricks.map(brick => ({href: '../landing_pages/' + brick.id + '.html', icon: '../icons/' + brick.id + '.png', name: brick.name || brick.id, meta: brick.group || brick.domain || 'brick'})),
+            ...externals.map(item => ({href: '', icon: '', name: item.system || item.name || 'External system', meta: 'external system'})),
+        ];
+        html += overviewPanel('Built on', 'bricks', builtOn.length, overviewChipList(builtOn, item => item.href
+            ? overviewChip(item.href, item.icon, '../icons/brick.png', item.name, item.meta, false)
+            : '<div class="ov-chip"><span class="ov-chip-text"><span class="ov-chip-label">' + escapeHtml(item.name) + '</span><span class="ov-chip-meta">' + escapeHtml(item.meta) + '</span></span></div>',
+            'bricks', 'No linked product bricks.'), '');
+        html += '</div></div>';
 
         document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function updateStreamTabLabels() {
+        const setLabel = (id, label, count) => {
+            const tab = document.getElementById(id);
+            if (tab) tab.textContent = label + ' (' + count + ')';
+        };
+        setLabel('tab_bricks', 'Bricks', related_bricks.length);
+        setLabel('tab_products', 'Products', linked_products.length);
+        setLabel('tab_jobs', 'Customer Jobs', groupedJobs().length);
     }
 
     function renderFlows() {
@@ -1221,7 +1374,11 @@
 
     renderHome();
     renderFlows();
+    renderBricksTab();
+    renderProductsTab();
+    renderJobsTab();
     renderLinks();
+    updateStreamTabLabels();
 </script>
 
 

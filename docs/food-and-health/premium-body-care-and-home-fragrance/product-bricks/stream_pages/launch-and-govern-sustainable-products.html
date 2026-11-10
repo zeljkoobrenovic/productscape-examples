@@ -64,7 +64,7 @@
         flex-wrap: wrap;
         gap: 4px;
         border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 4px;
+        margin-bottom: 24px;
     }
 
     .tab button {
@@ -186,6 +186,38 @@
 
 
     <style>
+
+        /* Overview */
+        .ov { max-width: 1200px; padding-top: 12px; }
+        .ov-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .ov-fact { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; text-transform: capitalize; }
+        .ov-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 22px; }
+        .ov-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border: 1px solid #e5e7eb;
+            border-radius: 10px; background: #fff; cursor: pointer; font: inherit; text-align: left; color: #111827; }
+        .ov-tile:hover, .ov-tile:focus-visible { border-color: #93c5fd; background: #f8fbff; }
+        .ov-tile.zero { color: #9ca3af; }
+        .ov-tile-value { font-size: 28px; font-weight: 700; line-height: 1.1; }
+        .ov-tile-label { font-size: 13px; color: #4b5563; }
+        .ov-section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #1d4ed8; margin: 6px 0 10px; }
+        .ov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 14px; margin-bottom: 22px; }
+        .ov-panel { border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; padding: 14px 16px; min-width: 0; }
+        .ov-panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .ov-panel-title { font-weight: 700; font-size: 16px; color: #111827; }
+        .ov-panel-count { font-weight: 400; color: #6b7280; font-size: 14px; }
+        .ov-panel-link, .ov-more { border: 0; background: none; color: #1d4ed8; cursor: pointer; font: inherit; font-size: 13px; padding: 0; }
+        .ov-panel-link:hover, .ov-more:hover { text-decoration: underline; }
+        .ov-more { margin-top: 8px; }
+        .ov-panel-note { font-size: 13px; color: #4b5563; margin: -4px 0 10px; }
+        .ov-chips { display: flex; flex-direction: column; gap: 6px; }
+        .ov-chip { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; color: inherit; text-decoration: none; }
+        a.ov-chip:hover { background: #f3f4f6; }
+        .ov-chip img { width: 32px; height: 32px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; flex: 0 0 32px; }
+        .ov-chip-text { display: flex; flex-direction: column; min-width: 0; }
+        .ov-chip-label { font-weight: 600; color: #111827; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ov-chip-meta { font-size: 12px; color: #6b7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ov-empty { color: #6b7280; font-size: 14px; }
+        .ov-outcomes { margin: 0; padding-left: 20px; line-height: 1.6; color: #111827; }
+
 
         .links-group {
             margin-bottom: 20px;
@@ -747,6 +779,12 @@
             if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
             heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
         }
+        // A tab may describe itself; otherwise the page's own subtitle stays.
+        const heroSubtitle = document.querySelector('[data-follows-tab-subtitle]');
+        if (heroSubtitle) {
+            if (!heroSubtitle.dataset.defaultSubtitle) heroSubtitle.dataset.defaultSubtitle = heroSubtitle.textContent.trim();
+            heroSubtitle.textContent = activeTab.dataset.tabSubtitle || heroSubtitle.dataset.defaultSubtitle;
+        }
         if (typeof window.afterOpenTab === 'function') {
             window.afterOpenTab(resolvedTabName);
         }
@@ -809,7 +847,7 @@
     const all_bricks = window.SHARED_DOMAIN_DATA.allBricks;
     const allStreams = window.SHARED_DOMAIN_DATA.allStreams;
     const currentStream = {"id": "launch-and-govern-sustainable-products", "name": "Launch and Govern Sustainable Products", "icon": "launch-and-govern-sustainable-products.png", "type": "outcome-based-stream", "description": "Coordinate product setup, claims, sourcing evidence, launch readiness, and store execution for premium collections and refills.", "group": "Commerce and Operations", "rootGroup": "Commerce and Operations", "flows": [{"id": "launch-and-govern-sustainable-products-flow", "title": "Launch and Govern Sustainable Products", "description": "From collection planning to approved omnichannel launch.", "steps": [{"id": "prepare-product-and-claims", "title": "Prepare product and claims", "dependencies": [{"type": "brick", "id": "launch", "name": "Launch and Assortment Planning", "description": "Launch calendar, market scope, and readiness.", "how": "Coordinates commercial and operational launch timing."}, {"type": "brick", "id": "form", "name": "Formula and Product Development", "description": "Formula and ingredient development records.", "how": "Provides product evidence for claims and compatibility."}, {"type": "brick", "id": "comp", "name": "Claims, Safety and Regulatory Compliance", "description": "Claim, safety, and regulatory approvals.", "how": "Prevents inaccurate or restricted product claims from reaching customers."}]}, {"id": "publish-and-execute-launch", "title": "Publish and execute launch", "dependencies": [{"type": "brick", "id": "pims", "name": "Product Information Management", "description": "Product setup, localization, and publication workflow.", "how": "Gets products ready for markets and channels."}, {"type": "brick", "id": "task", "name": "Store Task and Execution", "description": "Store task and launch execution workflow.", "how": "Ensures boutiques execute merchandising and service requirements."}]}]}], "outcomes": ["Higher launch readiness", "Lower claim and setup defects", "Higher claim-safe launch velocity"], "brickDependencies": [{"targetBrickId": "launch", "type": "composition"}, {"targetBrickId": "pims", "type": "composition"}, {"targetBrickId": "form", "type": "composition"}, {"targetBrickId": "supp", "type": "composition"}, {"targetBrickId": "comp", "type": "composition"}, {"targetBrickId": "task", "type": "composition"}], "externalSystemsThisStreamDependsOn": [{"externalSystemId": "erp-product-master", "name": "ERP Product Master", "relationship": "uses"}, {"externalSystemId": "supplier-portal", "name": "Supplier Portal", "relationship": "uses"}], "externalSystemsDependingOnThisStream": []};
-    const related_bricks = [{"id": "launch", "name": "Launch and Assortment Planning", "type": "service", "status": "invest", "description": "Seasonal launch calendar, regional assortment, SKU readiness, allocation intent, campaign dependencies, and channel rollout plans.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-launch-planning-ui", "name": "Launch planning UI", "type": "web-component", "description": "Internal planning tool for assortment and launch readiness.", "dependencies": {"modules": [{"moduleId": "module-launch-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-launch-api", "name": "Launch API", "type": "api", "description": "Feeds launch dates, market scope, and assortment plans to downstream bricks.", "dependencies": {"modules": [{"moduleId": "module-launch-calendar-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-assortment-planning-workspace", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-launch-calendar-service", "name": "Launch calendar service", "type": "service", "description": "Maintains launch timing, market scope, and readiness milestones."}, {"id": "module-assortment-planning-workspace", "name": "Assortment planning workspace", "type": "service", "description": "Coordinates assortment decisions across retail, ecommerce, wholesale, travel retail, and hotels."}]}], "dataDependencies": [{"assetId": "launch-plan", "moduleIds": ["module-launch-calendar-service", "module-assortment-planning-workspace"], "role": "own", "description": "Owns launch calendar, assortment, and readiness state."}], "brickDependencies": [{"targetBrickId": "pims", "moduleId": "module-sku-onboarding-workflow", "sourceModuleId": "module-launch-calendar-service", "type": "product", "description": "Depends on product setup and asset readiness."}, {"targetBrickId": "invt", "moduleId": "module-availability-api", "sourceModuleId": "module-launch-calendar-service", "type": "inventory", "description": "Feeds allocation priorities to inventory."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "pims", "name": "Product Information Management", "type": "integration", "status": "invest", "description": "Merchandising and product information workflows for SKU setup, localized copy, assets, launch readiness, and downstream catalog publication.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-merchandising-workbench", "name": "Merchandising workbench", "type": "web-component", "description": "Internal UI for product, SKU, copy, and asset readiness.", "dependencies": {"modules": [{"moduleId": "module-pim-export-feed", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-pim-export-feed", "name": "PIM export feed", "type": "api", "description": "Feeds approved data to catalog, POS, wholesale, and partner systems.", "dependencies": {"modules": [{"moduleId": "module-sku-onboarding-workflow", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-sku-onboarding-workflow", "name": "SKU onboarding workflow", "type": "service", "description": "Coordinates product, asset, ingredient, and launch readiness data."}]}], "dataDependencies": [{"assetId": "product-master-data", "moduleIds": ["module-sku-onboarding-workflow"], "role": "own", "description": "Owns product setup and publication readiness state."}], "brickDependencies": [{"targetBrickId": "launch", "moduleId": "module-launch-calendar-service", "sourceModuleId": "module-sku-onboarding-workflow", "type": "planning", "description": "Uses launch plans to prioritize SKU readiness."}], "externalSystemsThisBrickDependsOn": [{"system": "digital-asset-management", "description": "Stores product imagery and campaign assets.", "sourceModuleId": "module-sku-onboarding-workflow"}], "externalSystemsDependingOnThisBrick": [], "domain": "Commerce and Fulfillment", "group": "Catalog and pricing"}, {"id": "form", "name": "Formula and Product Development", "type": "service", "status": "sustaining", "description": "Formula, fragrance, ingredient, safety, sample, test, and product-development traceability from concept to launch.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-formula-record-api", "name": "Formula record API", "type": "api", "description": "Provides structured formula and ingredient data to compliance and catalog workflows.", "dependencies": {"modules": [{"moduleId": "module-formula-record-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-formula-record-service", "name": "Formula record service", "type": "service", "description": "Tracks formula versions, ingredient usage, safety state, and development milestones."}]}], "dataDependencies": [{"assetId": "formula-record", "moduleIds": ["module-formula-record-service"], "role": "own", "description": "Owns formula, fragrance, ingredient, and product-development records."}], "brickDependencies": [{"targetBrickId": "comp", "moduleId": "module-compliance-api", "sourceModuleId": "module-formula-record-service", "type": "compliance", "description": "Feeds formulas and ingredient records to compliance."}, {"targetBrickId": "cata", "moduleId": "module-catalog-api", "sourceModuleId": "module-formula-record-service", "type": "catalog", "description": "Publishes approved ingredient and usage metadata."}], "externalSystemsThisBrickDependsOn": [{"system": "plm-system", "description": "Product lifecycle management system for formula and packaging development.", "sourceModuleId": "module-formula-record-service"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "supp", "name": "Supplier and Ethical Sourcing", "type": "integration", "status": "invest", "description": "Supplier records, ingredient traceability, ethical sourcing evidence, audit state, packaging supplier data, and responsible procurement controls.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-supplier-evidence-api", "name": "Supplier evidence API", "type": "api", "description": "Provides supplier and sourcing evidence to compliance and reporting.", "dependencies": {"modules": [{"moduleId": "module-supplier-evidence-register", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-supplier-evidence-register", "name": "Supplier evidence register", "type": "service", "description": "Stores supplier attestations, audit outcomes, and sourcing evidence."}]}], "dataDependencies": [{"assetId": "supplier-evidence", "moduleIds": ["module-supplier-evidence-register"], "role": "own", "description": "Owns supplier, sourcing, and audit evidence."}], "brickDependencies": [{"targetBrickId": "comp", "moduleId": "module-compliance-api", "sourceModuleId": "module-supplier-evidence-register", "type": "compliance", "description": "Feeds evidence used to approve claims and market entry."}], "externalSystemsThisBrickDependsOn": [{"system": "supplier-management-system", "description": "Supplier master data, audits, contracts, and certifications.", "sourceModuleId": "module-supplier-evidence-register"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "comp", "name": "Claims, Safety and Regulatory Compliance", "type": "service", "status": "invest", "description": "Cosmetic safety, market eligibility, ingredient restrictions, sustainability claims, refill claims, labeling, privacy, and audit controls.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-compliance-api", "name": "Compliance API", "type": "api", "description": "Returns approved claims, restrictions, and market eligibility.", "dependencies": {"modules": [{"moduleId": "module-claim-approval-workflow", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-market-eligibility-checks", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-claim-approval-workflow", "name": "Claim approval workflow", "type": "service", "description": "Controls approval of product, ingredient, sustainability, and marketing claims."}, {"id": "module-market-eligibility-checks", "name": "Market eligibility checks", "type": "service", "description": "Evaluates product compliance by market, channel, and claim set."}]}], "dataDependencies": [{"assetId": "compliance-decision", "moduleIds": ["module-claim-approval-workflow", "module-market-eligibility-checks"], "role": "own", "description": "Owns product compliance, claim approval, and audit decisions."}, {"assetId": "audit-log", "moduleIds": ["module-claim-approval-workflow", "module-market-eligibility-checks"], "role": "publish", "description": "Publishes compliance workflow audit events."}], "brickDependencies": [{"targetBrickId": "form", "moduleId": "module-formula-record-api", "sourceModuleId": "module-claim-approval-workflow", "type": "formula", "description": "Uses formula and ingredient records for safety checks."}, {"targetBrickId": "supp", "moduleId": "module-supplier-evidence-api", "sourceModuleId": "module-claim-approval-workflow", "type": "evidence", "description": "Uses supplier records to support sourcing and sustainability claims."}], "externalSystemsThisBrickDependsOn": [{"system": "regulatory-content-database", "description": "Ingredient restrictions, market rules, cosmetic safety references, and claim guidance.", "sourceModuleId": "module-claim-approval-workflow"}, {"system": "quality-management-system", "description": "Quality, safety, incident, and audit workflow records that inform compliance decisions.", "sourceModuleId": "module-claim-approval-workflow"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "task", "name": "Store Task and Execution", "type": "full-stack", "status": "invest", "description": "Store task lists for launches, sampling, refill cabinet setup, visual merchandising, pickup operations, and campaign execution.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-store-task-ui", "name": "Store task UI", "type": "web-component", "description": "Store team task list and execution checklist.", "dependencies": {"modules": [{"moduleId": "module-task-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-task-api", "name": "Task API", "type": "api", "description": "Publishes and tracks store execution tasks.", "dependencies": {"modules": [{"moduleId": "module-task-assignment-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-execution-evidence-capture", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-task-assignment-service", "name": "Task assignment service", "type": "service", "description": "Publishes tasks by store, role, deadline, and campaign."}, {"id": "module-execution-evidence-capture", "name": "Execution evidence capture", "type": "service", "description": "Captures task completion, photos, exceptions, and audit notes."}]}], "dataDependencies": [{"assetId": "store-task", "moduleIds": ["module-task-assignment-service", "module-execution-evidence-capture"], "role": "own", "description": "Owns task assignment, completion, and evidence data."}], "brickDependencies": [{"targetBrickId": "launch", "moduleId": "module-launch-api", "sourceModuleId": "module-task-assignment-service", "type": "planning", "description": "Receives launch and campaign tasks."}, {"targetBrickId": "refi", "moduleId": "module-refill-compatibility-api", "sourceModuleId": "module-task-assignment-service", "type": "refill", "description": "Uses refill guidance for cabinet and education tasks."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Store and assisted service"}];
+    const related_bricks = [{"id": "launch", "name": "Launch and Assortment Planning", "type": "service", "status": "invest", "description": "Seasonal launch calendar, regional assortment, SKU readiness, allocation intent, campaign dependencies, and channel rollout plans.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-launch-planning-ui", "name": "Launch planning UI", "type": "web-component", "description": "Internal planning tool for assortment and launch readiness.", "dependencies": {"modules": [{"moduleId": "module-launch-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-launch-api", "name": "Launch API", "type": "api", "description": "Feeds launch dates, market scope, and assortment plans to downstream bricks.", "dependencies": {"modules": [{"moduleId": "module-launch-calendar-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-assortment-planning-workspace", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-launch-calendar-service", "name": "Launch calendar service", "type": "service", "description": "Maintains launch timing, market scope, and readiness milestones."}, {"id": "module-assortment-planning-workspace", "name": "Assortment planning workspace", "type": "service", "description": "Coordinates assortment decisions across retail, ecommerce, wholesale, travel retail, and hotels."}]}], "dataDependencies": [{"assetId": "launch-plan", "moduleIds": ["module-launch-calendar-service", "module-assortment-planning-workspace"], "role": "own", "description": "Owns launch calendar, assortment, and readiness state."}], "brickDependencies": [{"targetBrickId": "pims", "moduleId": "module-sku-onboarding-workflow", "sourceModuleId": "module-launch-calendar-service", "type": "product", "description": "Depends on product setup and asset readiness."}, {"targetBrickId": "invt", "moduleId": "module-availability-api", "sourceModuleId": "module-launch-calendar-service", "type": "inventory", "description": "Feeds allocation priorities to inventory."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "pims", "name": "Product Information Management", "type": "integration", "status": "invest", "description": "Merchandising and product information workflows for SKU setup, localized copy, assets, launch readiness, and downstream catalog publication.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-merchandising-workbench", "name": "Merchandising workbench", "type": "web-component", "description": "Internal UI for product, SKU, copy, and asset readiness.", "dependencies": {"modules": [{"moduleId": "module-pim-export-feed", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-pim-export-feed", "name": "PIM export feed", "type": "api", "description": "Feeds approved data to catalog, POS, wholesale, and partner systems.", "dependencies": {"modules": [{"moduleId": "module-sku-onboarding-workflow", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-sku-onboarding-workflow", "name": "SKU onboarding workflow", "type": "service", "description": "Coordinates product, asset, ingredient, and launch readiness data."}]}], "dataDependencies": [{"assetId": "product-master-data", "moduleIds": ["module-sku-onboarding-workflow"], "role": "own", "description": "Owns product setup and publication readiness state."}], "brickDependencies": [{"targetBrickId": "launch", "moduleId": "module-launch-calendar-service", "sourceModuleId": "module-sku-onboarding-workflow", "type": "planning", "description": "Uses launch plans to prioritize SKU readiness."}], "externalSystemsThisBrickDependsOn": [{"system": "Digital asset management", "type": "content", "description": "Stores product imagery and campaign assets.", "sourceModuleId": "module-sku-onboarding-workflow"}], "externalSystemsDependingOnThisBrick": [], "domain": "Commerce and Fulfillment", "group": "Catalog and pricing"}, {"id": "form", "name": "Formula and Product Development", "type": "service", "status": "sustaining", "description": "Formula, fragrance, ingredient, safety, sample, test, and product-development traceability from concept to launch.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-formula-record-api", "name": "Formula record API", "type": "api", "description": "Provides structured formula and ingredient data to compliance and catalog workflows.", "dependencies": {"modules": [{"moduleId": "module-formula-record-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-formula-record-service", "name": "Formula record service", "type": "service", "description": "Tracks formula versions, ingredient usage, safety state, and development milestones."}]}], "dataDependencies": [{"assetId": "formula-record", "moduleIds": ["module-formula-record-service"], "role": "own", "description": "Owns formula, fragrance, ingredient, and product-development records."}], "brickDependencies": [{"targetBrickId": "comp", "moduleId": "module-compliance-api", "sourceModuleId": "module-formula-record-service", "type": "compliance", "description": "Feeds formulas and ingredient records to compliance."}, {"targetBrickId": "cata", "moduleId": "module-catalog-api", "sourceModuleId": "module-formula-record-service", "type": "catalog", "description": "Publishes approved ingredient and usage metadata."}], "externalSystemsThisBrickDependsOn": [{"system": "PLM system", "type": "erp", "description": "Product lifecycle management system for formula and packaging development.", "sourceModuleId": "module-formula-record-service"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "supp", "name": "Supplier and Ethical Sourcing", "type": "integration", "status": "invest", "description": "Supplier records, ingredient traceability, ethical sourcing evidence, audit state, packaging supplier data, and responsible procurement controls.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-supplier-evidence-api", "name": "Supplier evidence API", "type": "api", "description": "Provides supplier and sourcing evidence to compliance and reporting.", "dependencies": {"modules": [{"moduleId": "module-supplier-evidence-register", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-supplier-evidence-register", "name": "Supplier evidence register", "type": "service", "description": "Stores supplier attestations, audit outcomes, and sourcing evidence."}]}], "dataDependencies": [{"assetId": "supplier-evidence", "moduleIds": ["module-supplier-evidence-register"], "role": "own", "description": "Owns supplier, sourcing, and audit evidence."}], "brickDependencies": [{"targetBrickId": "comp", "moduleId": "module-compliance-api", "sourceModuleId": "module-supplier-evidence-register", "type": "compliance", "description": "Feeds evidence used to approve claims and market entry."}], "externalSystemsThisBrickDependsOn": [{"system": "Supplier management system", "type": "erp", "description": "Supplier master data, audits, contracts, and certifications.", "sourceModuleId": "module-supplier-evidence-register"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "comp", "name": "Claims, Safety and Regulatory Compliance", "type": "service", "status": "invest", "description": "Cosmetic safety, market eligibility, ingredient restrictions, sustainability claims, refill claims, labeling, privacy, and audit controls.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-compliance-api", "name": "Compliance API", "type": "api", "description": "Returns approved claims, restrictions, and market eligibility.", "dependencies": {"modules": [{"moduleId": "module-claim-approval-workflow", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-market-eligibility-checks", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-claim-approval-workflow", "name": "Claim approval workflow", "type": "service", "description": "Controls approval of product, ingredient, sustainability, and marketing claims."}, {"id": "module-market-eligibility-checks", "name": "Market eligibility checks", "type": "service", "description": "Evaluates product compliance by market, channel, and claim set."}]}], "dataDependencies": [{"assetId": "compliance-decision", "moduleIds": ["module-claim-approval-workflow", "module-market-eligibility-checks"], "role": "own", "description": "Owns product compliance, claim approval, and audit decisions."}, {"assetId": "audit-log", "moduleIds": ["module-claim-approval-workflow", "module-market-eligibility-checks"], "role": "publish", "description": "Publishes compliance workflow audit events."}], "brickDependencies": [{"targetBrickId": "form", "moduleId": "module-formula-record-api", "sourceModuleId": "module-claim-approval-workflow", "type": "formula", "description": "Uses formula and ingredient records for safety checks."}, {"targetBrickId": "supp", "moduleId": "module-supplier-evidence-api", "sourceModuleId": "module-claim-approval-workflow", "type": "evidence", "description": "Uses supplier records to support sourcing and sustainability claims."}], "externalSystemsThisBrickDependsOn": [{"system": "Regulatory content database", "type": "data-provider", "description": "Ingredient restrictions, market rules, cosmetic safety references, and claim guidance.", "sourceModuleId": "module-claim-approval-workflow"}, {"system": "Quality management system", "type": "erp", "description": "Quality, safety, incident, and audit workflow records that inform compliance decisions.", "sourceModuleId": "module-claim-approval-workflow"}], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Assortment and sustainability operations"}, {"id": "task", "name": "Store Task and Execution", "type": "full-stack", "status": "invest", "description": "Store task lists for launches, sampling, refill cabinet setup, visual merchandising, pickup operations, and campaign execution.", "links": [{"group": "Evidence", "description": "Real-world evidence related to this product brick.", "links": [{"label": "Evidence Explorer", "link": "../../../../evidence-explorer/index.html", "description": "Search evidence \u2014 source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.", "embedLink": "../../../../evidence-explorer/index.html?embed=1"}]}], "layers": [{"layer": "ui", "description": "User-facing web, mobile, backoffice, and operator experience modules.", "modules": [{"id": "module-store-task-ui", "name": "Store task UI", "type": "web-component", "description": "Store team task list and execution checklist.", "dependencies": {"modules": [{"moduleId": "module-task-api", "type": "uses", "description": "UI module calls the brick API or backing service for this experience."}]}}]}, {"layer": "interfaces", "description": "APIs, BFFs, and explicit service boundary interfaces exposed to clients or other systems.", "modules": [{"id": "module-task-api", "name": "Task API", "type": "api", "description": "Publishes and tracks store execution tasks.", "dependencies": {"modules": [{"moduleId": "module-task-assignment-service", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}, {"moduleId": "module-execution-evidence-capture", "type": "delegates", "description": "Interface module delegates request handling to the backing service layer."}]}}]}, {"layer": "service", "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.", "modules": [{"id": "module-task-assignment-service", "name": "Task assignment service", "type": "service", "description": "Publishes tasks by store, role, deadline, and campaign."}, {"id": "module-execution-evidence-capture", "name": "Execution evidence capture", "type": "service", "description": "Captures task completion, photos, exceptions, and audit notes."}]}], "dataDependencies": [{"assetId": "store-task", "moduleIds": ["module-task-assignment-service", "module-execution-evidence-capture"], "role": "own", "description": "Owns task assignment, completion, and evidence data."}], "brickDependencies": [{"targetBrickId": "launch", "moduleId": "module-launch-api", "sourceModuleId": "module-task-assignment-service", "type": "planning", "description": "Receives launch and campaign tasks."}, {"targetBrickId": "refi", "moduleId": "module-refill-compatibility-api", "sourceModuleId": "module-task-assignment-service", "type": "refill", "description": "Uses refill guidance for cabinet and education tasks."}], "externalSystemsThisBrickDependsOn": [], "externalSystemsDependingOnThisBrick": [], "domain": "Brand Operations and Channels", "group": "Store and assisted service"}];
     const linked_products = [];
     const supported_jobs = [];
 
@@ -929,13 +967,19 @@
 
 <div class="page">
     <div class="tab" id="primary_tabs">
-        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Home</button>
-        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flows Narratives (0)</button>
+        <button class="tablinks active" id="tab_home" onclick="openTab('home')">Overview</button>
+        <button class="tablinks" id="tab_flows" onclick="openTab('flows')">Flow Narratives</button>
+        <button class="tablinks" id="tab_bricks" onclick="openTab('bricks')">Bricks</button>
+        <button class="tablinks" id="tab_products" onclick="openTab('products')">Products</button>
+        <button class="tablinks" id="tab_jobs" onclick="openTab('jobs')">Customer Jobs</button>
         <button class="tablinks" id="tab_links" onclick="openTab('links')">Links</button>
     </div>
 
     <div id="tab_content_home" class="tabcontent"></div>
     <div id="tab_content_flows" class="tabcontent"></div>
+    <div id="tab_content_bricks" class="tabcontent"></div>
+    <div id="tab_content_products" class="tabcontent"></div>
+    <div id="tab_content_jobs" class="tabcontent"></div>
     <div id="tab_content_links" class="tabcontent"></div>
 
 
@@ -976,47 +1020,8 @@
     headerHtml += '</div></div></div>';
     document.getElementById('Header').innerHTML = headerHtml;
 
-    function renderHome() {
-        const flows = getFlows();
-        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
-        const primaryActors = getPrimaryActors();
+    function renderBricksTab() {
         let html = '';
-
-        html += '<div class="group"><div class="section-title">Flow Narratives (' + flows.length + ')</div>';
-        if (!flows.length) {
-            html += '<div class="muted">No flows listed for this stream.</div>';
-        } else {
-            html += '<div class="card-grid">';
-            flows.forEach(flow => {
-                const summary = summarizeFlow(flow);
-                html += '<div class="card">';
-                html += '<div class="card-meta">' + escapeHtml(streamMetaPath(currentStream)) + '</div>';
-                html += '<div class="card-title">' + escapeHtml(flow.title || flow.id) + '</div>';
-                html += '<div class="card-copy">' + escapeHtml(flow.description || '') + '</div>';
-                html += '<div class="muted">' + ((flow.steps || []).length) + ' steps</div>';
-                if (summary.actor) {
-                    html += '<div class="card-copy"><strong>Actor:</strong> ' + escapeHtml(summary.actor) + '</div>';
-                }
-                if (summary.trigger) {
-                    html += '<div class="card-copy"><strong>Trigger:</strong> ' + escapeHtml(summary.trigger) + '</div>';
-                }
-                if (summary.result) {
-                    html += '<div class="card-copy"><strong>Success looks like:</strong> ' + escapeHtml(summary.result) + '</div>';
-                }
-                html += '</div>';
-            });
-            html += '</div>';
-        }
-        html += '</div>';
-
-        html += '<div class="group"><div class="section-title">Outcomes</div>';
-        if (!(currentStream.outcomes || []).length) {
-            html += '<div class="muted">No outcomes listed for this stream.</div>';
-        } else {
-            html += '<div class="card"><ul class="list">' + currentStream.outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul></div>';
-        }
-        html += '</div>';
-
         html += '<div class="group"><div class="section-title">Supporting Product Bricks</div>';
         if (!related_bricks.length) {
             html += '<div class="muted">No linked product bricks.</div>';
@@ -1036,6 +1041,11 @@
         }
         html += '</div>';
 
+        document.getElementById('tab_content_bricks').innerHTML = html;
+    }
+
+    function renderProductsTab() {
+        let html = '';
         html += '<div class="group"><div class="section-title">Linked Products</div>';
         if (!linked_products.length) {
             html += '<div class="muted">No linked products were inferred from the supporting bricks.</div>';
@@ -1055,16 +1065,43 @@
         }
         html += '</div>';
 
-        html += '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
-        if (!supported_jobs.length) {
+        document.getElementById('tab_content_products').innerHTML = html;
+    }
+
+    // One card per job; the same job reached through several products lists them together.
+    function groupedJobs() {
+        const byJob = new Map();
+        supported_jobs.forEach(job => {
+            const key = (job.customerId || '') + '|' + (job.jobId || job.jobName);
+            if (!byJob.has(key)) {
+                byJob.set(key, {...job, products: []});
+            }
+            const entry = byJob.get(key);
+            if (job.productName && !entry.products.includes(job.productName)) {
+                entry.products.push(job.productName);
+            }
+        });
+        return Array.from(byJob.values());
+    }
+
+    function renderJobsTab() {
+        const jobs = groupedJobs();
+        let html = '<div class="group"><div class="section-title">Supported Customer Jobs</div>';
+        if (!jobs.length) {
             html += '<div class="muted">No customer jobs were inferred from the supporting bricks.</div>';
         } else {
             html += '<div class="card-grid">';
-            supported_jobs.forEach(job => {
+            jobs.forEach(job => {
                 html += '<div class="card">';
-                html += '<div class="card-meta">' + escapeHtml(job.customerGroup || '') + (job.productName ? ' | ' + escapeHtml(job.productName) : '') + '</div>';
-                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div>';
+                html += '<div class="card-header">';
+                html += '<a href="../../customers/landing_pages/' + escapeHtml(job.customerId) + '.html" target="_blank" rel="noopener noreferrer"><img class="card-icon" src="../../customers/icons/' + escapeHtml(job.customerIcon || 'customer.png') + '" alt="" onerror="this.onerror=null;this.src=\'../../customers/icons/customer.png\'"></a>';
+                html += '<div><div class="card-meta">' + escapeHtml(job.customerName || job.customerGroup || '') + '</div>';
+                html += '<div class="card-title">' + escapeHtml(job.jobName || job.jobId) + '</div></div>';
+                html += '</div>';
                 html += '<div class="card-copy">' + escapeHtml(job.jobOutcome || job.jobWhatItIs || '') + '</div>';
+                if (job.products.length) {
+                    html += '<div class="card-copy"><strong>In:</strong> ' + escapeHtml(job.products.join(', ')) + '</div>';
+                }
                 if (job.supportRationale) {
                     html += '<div class="card-copy"><strong>Why this stream matters here:</strong> ' + escapeHtml(job.supportRationale) + '</div>';
                 }
@@ -1076,8 +1113,124 @@
             html += '</div>';
         }
         html += '</div>';
+        document.getElementById('tab_content_jobs').innerHTML = html;
+    }
+
+    // ---- Overview: the stream at a glance; every detail lives in its own tab. ----
+    const OVERVIEW_CHIP_LIMIT = 8;
+
+    function overviewChip(href, icon, fallback, label, meta, external) {
+        let chip = '<a class="ov-chip" href="' + escapeHtml(href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>';
+        if (icon) {
+            chip += '<img src="' + escapeHtml(icon) + '" alt="" onerror="this.onerror=null;this.src=\'' + fallback + '\'">';
+        }
+        chip += '<span class="ov-chip-text"><span class="ov-chip-label">' + escapeHtml(label) + '</span>';
+        if (meta) chip += '<span class="ov-chip-meta">' + escapeHtml(meta) + '</span>';
+        return chip + '</span></a>';
+    }
+
+    function overviewChipList(items, renderItem, tab, emptyText) {
+        if (!items.length) return '<div class="ov-empty">' + escapeHtml(emptyText) + '</div>';
+        let list = '<div class="ov-chips">' + items.slice(0, OVERVIEW_CHIP_LIMIT).map(renderItem).join('') + '</div>';
+        if (items.length > OVERVIEW_CHIP_LIMIT) {
+            list += '<button class="ov-more" onclick="openTab(\'' + tab + '\')">+' + (items.length - OVERVIEW_CHIP_LIMIT) + ' more</button>';
+        }
+        return list;
+    }
+
+    function overviewPanel(title, tab, count, body, note) {
+        let panel = '<section class="ov-panel"><div class="ov-panel-head"><div class="ov-panel-title">' + escapeHtml(title) +
+            (count !== null ? ' <span class="ov-panel-count">' + count + '</span>' : '') + '</div>';
+        if (tab) panel += '<button class="ov-panel-link" onclick="openTab(\'' + tab + '\')">Details &rarr;</button>';
+        panel += '</div>';
+        if (note) panel += '<div class="ov-panel-note">' + escapeHtml(note) + '</div>';
+        return panel + body + '</section>';
+    }
+
+    function overviewCustomers() {
+        const byId = {};
+        supported_jobs.forEach(job => {
+            if (!byId[job.customerId]) {
+                byId[job.customerId] = {id: job.customerId, name: job.customerName, icon: job.customerIcon, jobs: new Set()};
+            }
+            byId[job.customerId].jobs.add(job.jobId || job.jobName);
+        });
+        return Object.values(byId);
+    }
+
+    function renderHome() {
+        const flows = getFlows();
+        const totalSteps = flows.reduce((count, flow) => count + ((flow.steps || []).length), 0);
+        const painPoints = flows.reduce((count, flow) => count + (flow.steps || []).reduce((sum, step) => sum + (step.painPoints || []).length, 0), 0);
+        const outcomes = currentStream.outcomes || [];
+        const customers = overviewCustomers();
+        const jobCount = groupedJobs().length;
+        const externals = currentStream.externalSystemsThisStreamDependsOn || [];
+
+        const tiles = [
+            ['Flows', flows.length, 'flows'],
+            ['Steps', totalSteps, 'flows'],
+            ['Pain points', painPoints, 'flows'],
+            ['Bricks', related_bricks.length, 'bricks'],
+            ['Products', linked_products.length, 'products'],
+            ['Customers', customers.length, 'jobs'],
+            ['Customer jobs', jobCount, 'jobs'],
+        ];
+        let html = '<div class="ov">';
+        const facts = [currentStream.type ? currentStream.type.replaceAll('-', ' ') : '', currentStream.group].filter(Boolean);
+        if (facts.length) {
+            html += '<div class="ov-facts">' + facts.map(fact => '<span class="ov-fact">' + escapeHtml(fact) + '</span>').join('') + '</div>';
+        }
+        html += '<div class="ov-tiles">' + tiles.map(([label, value, tab]) =>
+            '<button class="ov-tile' + (value ? '' : ' zero') + '" onclick="openTab(\'' + tab + '\')"><span class="ov-tile-value">' + value +
+            '</span><span class="ov-tile-label">' + escapeHtml(label) + '</span></button>').join('') + '</div>';
+
+        // What the stream achieves and how it unfolds.
+        html += '<div class="ov-section-title">What it achieves</div><div class="ov-grid">';
+        html += overviewPanel('Outcomes', null, outcomes.length, outcomes.length
+            ? '<ul class="ov-outcomes">' + outcomes.map(outcome => '<li>' + escapeHtml(outcome) + '</li>').join('') + '</ul>'
+            : '<div class="ov-empty">No outcomes listed for this stream.</div>', '');
+        html += overviewPanel('Flows', 'flows', flows.length, overviewChipList(flows, flow => {
+            const summary = summarizeFlow(flow);
+            const steps = (flow.steps || []).length;
+            const meta = [steps + (steps === 1 ? ' step' : ' steps'), summary.actor].filter(Boolean).join(' · ');
+            return overviewChip('#flows', '', '', flow.title || flow.id, meta, false);
+        }, 'flows', 'No flows listed for this stream.'), '');
+        html += '</div>';
+
+        // Who it serves and what it is built from.
+        html += '<div class="ov-section-title">Who it serves and what it runs on</div><div class="ov-grid">';
+        html += overviewPanel('Customers', 'jobs', customers.length,
+            overviewChipList(customers, customer => overviewChip('../../customers/landing_pages/' + customer.id + '.html',
+                '../../customers/icons/' + (customer.icon || 'customer.png'), '../../customers/icons/customer.png',
+                customer.name, customer.jobs.size === 1 ? '1 job' : customer.jobs.size + ' jobs', true),
+                'jobs', 'No customer jobs were inferred from the supporting bricks.'),
+            jobCount ? 'Supports ' + jobCount + ' customer job' + (jobCount === 1 ? '' : 's') + '.' : '');
+        html += overviewPanel('Products', 'products', linked_products.length,
+            overviewChipList(linked_products, product => overviewChip('../../product-deployments/landing_pages/' + product.id + '.html',
+                '../../product-deployments/icons/' + (product.icon || 'product.png'), '../../product-deployments/icons/product.png',
+                product.name || product.id, product.type || '', true), 'products', 'No linked products were inferred from the supporting bricks.'), '');
+        const builtOn = [
+            ...related_bricks.map(brick => ({href: '../landing_pages/' + brick.id + '.html', icon: '../icons/' + brick.id + '.png', name: brick.name || brick.id, meta: brick.group || brick.domain || 'brick'})),
+            ...externals.map(item => ({href: '', icon: '', name: item.system || item.name || 'External system', meta: 'external system'})),
+        ];
+        html += overviewPanel('Built on', 'bricks', builtOn.length, overviewChipList(builtOn, item => item.href
+            ? overviewChip(item.href, item.icon, '../icons/brick.png', item.name, item.meta, false)
+            : '<div class="ov-chip"><span class="ov-chip-text"><span class="ov-chip-label">' + escapeHtml(item.name) + '</span><span class="ov-chip-meta">' + escapeHtml(item.meta) + '</span></span></div>',
+            'bricks', 'No linked product bricks.'), '');
+        html += '</div></div>';
 
         document.getElementById('tab_content_home').innerHTML = html;
+    }
+
+    function updateStreamTabLabels() {
+        const setLabel = (id, label, count) => {
+            const tab = document.getElementById(id);
+            if (tab) tab.textContent = label + ' (' + count + ')';
+        };
+        setLabel('tab_bricks', 'Bricks', related_bricks.length);
+        setLabel('tab_products', 'Products', linked_products.length);
+        setLabel('tab_jobs', 'Customer Jobs', groupedJobs().length);
     }
 
     function renderFlows() {
@@ -1221,7 +1374,11 @@
 
     renderHome();
     renderFlows();
+    renderBricksTab();
+    renderProductsTab();
+    renderJobsTab();
     renderLinks();
+    updateStreamTabLabels();
 </script>
 
 

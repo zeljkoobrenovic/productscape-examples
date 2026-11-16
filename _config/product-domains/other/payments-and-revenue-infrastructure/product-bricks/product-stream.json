@@ -1,34 +1,37 @@
 {
   "metadata": {
-    "title": "Product Streams",
-    "description": "Outcome-based product streams for the Payments and Revenue Infrastructure domain, covering payments, recurring monetization, platform money movement, and shared financial operations.",
+    "title": "Payments and Revenue Infrastructure Product Streams",
+    "description": "Customer and operator flows with explicit decisions, recovery and financial evidence. The flows are a logical model, not a claim that all optional products are available together in every region.",
     "sources": [
-      "https://stripe.com/payments",
-      "https://stripe.com/payments/elements",
-      "https://stripe.com/billing",
-      "https://stripe.com/connect",
-      "https://stripe.com/terminal",
-      "https://stripe.com/radar",
-      "https://docs.stripe.com/tax/dashboard",
-      "https://stripe.com/identity"
+      "https://docs.adyen.com/platforms/account-structure-resources",
+      "https://docs.adyen.com/unified-commerce",
+      "https://docs.stripe.com/billing/subscriptions/usage-based",
+      "https://docs.stripe.com/connect/accounts-v2",
+      "https://docs.stripe.com/global-payouts",
+      "https://docs.stripe.com/payments/managed-payments",
+      "https://docs.stripe.com/treasury",
+      "https://docs.stripe.com/webhooks",
+      "https://www.adyen.com/press-and-media/adyen-agentic",
+      "https://www.adyen.com/press-and-media/adyen-launches-intelligent-money-movement"
     ],
     "flowModelVersion": "3.2",
-    "flowModelNote": "Each experience carries only experience-specific flows. Each flow step lists the bricks and external systems used inside that experience."
+    "flowModelNote": "Steps identify the responsible capabilities and external contracts. Optional, preview and entity-specific functions retain their eligibility restrictions."
   },
   "rootGroups": [
     {
       "name": "Merchant Payments",
-      "description": "",
+      "description": "Outcomes for merchant payments.",
       "subGroups": [],
       "streams": [
         {
           "id": "accept-payments-globally",
           "name": "Accept Payments Globally with High Conversion",
           "type": "outcome-based-stream",
-          "description": "Help merchants turn purchase intent into captured payments across markets and payment methods with low friction and low loss.",
+          "description": "Move an eligible purchase from checkout intent to captured funds and reconciled exceptions. Merchant, processor and merchant-of-record responsibilities remain explicit.",
           "outcomes": [
-            "Higher successful payment conversion",
-            "Higher merchant GPV retention"
+            "Successful payment conversion",
+            "Controlled fraud loss and payment cost",
+            "Reconciled cash receipt"
           ],
           "brickDependencies": [
             {
@@ -40,11 +43,51 @@
               "type": "composition"
             },
             {
+              "targetBrickId": "pmlk",
+              "type": "composition"
+            },
+            {
               "targetBrickId": "pmtd",
               "type": "composition"
             },
             {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rout",
+              "type": "composition"
+            },
+            {
               "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rada",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "devx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "disp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
               "type": "composition"
             }
           ],
@@ -52,68 +95,714 @@
             {
               "id": "accept-payments-globally-flow",
               "title": "Accept Payments Globally with High Conversion",
-              "description": "From buyer checkout intent to captured payment and managed exceptions.",
+              "description": "Move an eligible purchase from checkout intent to captured funds and reconciled exceptions. Merchant, processor and merchant-of-record responsibilities remain explicit.",
               "steps": [
                 {
                   "id": "launch-the-right-checkout-surface",
                   "title": "Launch the right checkout surface",
+                  "keyFacts": [
+                    "Bind the merchant order, offer and consent to a checkout session."
+                  ],
+                  "painPoints": [
+                    "An abandoned or repeated session must not create duplicate collection."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "chck",
                       "name": "Hosted Checkout",
-                      "description": "Hosted checkout experience.",
-                      "how": "Accelerates launch and standardizes buyer experience."
+                      "description": "Create a hosted session.",
+                      "how": "Create a hosted session."
                     },
                     {
                       "type": "brick",
                       "id": "elem",
                       "name": "Payment Elements",
-                      "description": "Embeddable payment UI.",
-                      "how": "Supports custom payment experiences without rebuilding orchestration."
+                      "description": "Provide an eligible embedded form.",
+                      "how": "Provide an eligible embedded form."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pmlk",
+                      "name": "Payment Links",
+                      "description": "Resolve a payment-link offer to a session.",
+                      "how": "Resolve a payment-link offer to a session."
                     }
                   ]
                 },
                 {
                   "id": "present-the-best-payment-options",
-                  "title": "Present the best payment options",
+                  "title": "Present eligible methods and routing choices",
+                  "keyFacts": [
+                    "Method eligibility is separate from optional processor routing; restricted integrations retain their product limits."
+                  ],
+                  "painPoints": [
+                    "A supported recipient market or method does not imply universal merchant eligibility."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "pmtd",
                       "name": "Payment Method Orchestration",
-                      "description": "Payment method selection and ordering.",
-                      "how": "Shows the right methods by market and context."
+                      "description": "Select eligible methods.",
+                      "how": "Select eligible methods."
                     },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Read entity/capability state.",
+                      "how": "Read entity/capability state."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rout",
+                      "name": "Processor Routing and Execution Contracts",
+                      "description": "Apply eligible processor route rules when enabled.",
+                      "how": "Apply eligible processor route rules when enabled."
+                    }
+                  ]
+                },
+                {
+                  "id": "authenticate-authorize-and-capture",
+                  "title": "Authenticate, authorize and capture",
+                  "keyFacts": [
+                    "Track each attempt and final capture independently from the browser result."
+                  ],
+                  "painPoints": [
+                    "Timeouts and issuer declines require state recovery before retry."
+                  ],
+                  "dependencies": [
                     {
                       "type": "brick",
                       "id": "auth",
                       "name": "Authorization Optimization",
-                      "description": "Approval-rate optimization.",
-                      "how": "Recovers legitimate payments that would otherwise fail."
+                      "description": "Preserve attempts, authentication and capture state.",
+                      "how": "Preserve attempts, authentication and capture state."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rada",
+                      "name": "Fraud Detection and Adaptive Risk Controls",
+                      "description": "Apply risk policy and review controls.",
+                      "how": "Apply risk policy and review controls."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Record financial outcomes.",
+                      "how": "Record financial outcomes."
                     }
                   ]
                 },
                 {
                   "id": "protect-and-operate-the-transaction",
                   "title": "Protect and operate the transaction",
-                  "dependencies": []
+                  "keyFacts": [
+                    "Signed asynchronous events update order and financial state with deduplication."
+                  ],
+                  "painPoints": [
+                    "Duplicate or unordered delivery can cause incorrect fulfillment or accounting."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Persist and replay attributable events.",
+                      "how": "Persist and replay attributable events."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "devx",
+                      "name": "Developer API and Dashboard Foundations",
+                      "description": "Control integration access and request identity.",
+                      "how": "Control integration access and request identity."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rada",
+                      "name": "Fraud Detection and Adaptive Risk Controls",
+                      "description": "Review later risk feedback.",
+                      "how": "Review later risk feedback."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Track post-payment cases.",
+                      "how": "Track post-payment cases."
+                    }
+                  ]
+                },
+                {
+                  "id": "resolve-refunds-and-disputes",
+                  "title": "Resolve refunds and disputes",
+                  "keyFacts": [
+                    "Link reversals and evidence to the original transaction and responsible provider."
+                  ],
+                  "painPoints": [
+                    "A refund request can remain pending; third-party processor cases require their own handling."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Track refund outcome.",
+                      "how": "Track refund outcome."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Manage case evidence and deadlines.",
+                      "how": "Manage case evidence and deadlines."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Post linked financial adjustments.",
+                      "how": "Post linked financial adjustments."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-received-funds",
+                  "title": "Reconcile received funds",
+                  "keyFacts": [
+                    "Match gross, net, fees and currency to settlement evidence."
+                  ],
+                  "painPoints": [
+                    "A captured payment is not yet an explained cash receipt."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Resolve settlement mismatches.",
+                      "how": "Resolve settlement mismatches."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Expose traceable financial reporting.",
+                      "how": "Expose traceable financial reporting."
+                    }
+                  ]
                 }
               ]
             }
           ],
-          "externalSystemsThisStreamDependsOn": [],
-          "icon": "accept-payments-globally.png",
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Merchant commerce systems",
+              "type": "integration",
+              "interface": "Order and fulfillment API",
+              "description": "The merchant owns inventory, fulfillment and order acceptance."
+            },
+            {
+              "system": "Payment schemes and processors",
+              "type": "integration",
+              "interface": "Authorization and settlement contracts",
+              "description": "External decisions, fees, liability and finality constrain execution."
+            }
+          ],
           "links": [
             {
-              "group": "Evidence",
-              "description": "Real-world evidence related to this stream.",
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
               "links": [
                 {
-                  "label": "Evidence Explorer",
-                  "link": "../../../../evidence-explorer/index.html",
-                  "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this stream.",
-                  "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                  "label": "Stablecoin payment acceptance",
+                  "link": "https://docs.stripe.com/payments/stablecoin-payments",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Orchestration private preview and supported products",
+                  "link": "https://docs.stripe.com/payments/orchestration",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Webhook duplicate and ordering behavior",
+                  "link": "https://docs.stripe.com/webhooks",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Adyen Uplift modules",
+                  "link": "https://www.adyen.com/uplift",
+                  "description": "Adyen"
+                }
+              ]
+            }
+          ],
+          "icon": "accept-payments-globally.png"
+        },
+        {
+          "id": "operate-unified-commerce",
+          "name": "Operate Unified Commerce and Store Recovery",
+          "type": "outcome-based-stream",
+          "description": "Keep stores, digital checkout, cross-channel returns and settlement connected through order and payment references.",
+          "outcomes": [
+            "Consistent order and payment state",
+            "Recoverable offline collection",
+            "Reconciled cross-channel refunds"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "term",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pmtd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "chck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "disp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "operate-unified-commerce-flow",
+              "title": "Operate Unified Commerce and Store Recovery",
+              "description": "Keep stores, digital checkout, cross-channel returns and settlement connected through order and payment references.",
+              "steps": [
+                {
+                  "id": "prepare-store-and-reader",
+                  "title": "Prepare the store and reader",
+                  "keyFacts": [
+                    "Store operators confirm reader readiness and eligible methods before trading."
+                  ],
+                  "painPoints": [
+                    "A configured reader can still be unavailable or outside regional/product coverage."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "term",
+                      "name": "Terminal and Reader Operations",
+                      "description": "Own reader and store state.",
+                      "how": "Own reader and store state."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pmtd",
+                      "name": "Payment Method Orchestration",
+                      "description": "Check supported payment methods.",
+                      "how": "Check supported payment methods."
+                    }
+                  ]
+                },
+                {
+                  "id": "link-order-and-payment",
+                  "title": "Link order and payment across channels",
+                  "keyFacts": [
+                    "Merchant order identity must survive the transition between online and physical touchpoints."
+                  ],
+                  "painPoints": [
+                    "Payment data alone does not supply inventory or fulfillment truth."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Create online purchase sessions.",
+                      "how": "Create online purchase sessions."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "term",
+                      "name": "Terminal and Reader Operations",
+                      "description": "Link terminal payment activity.",
+                      "how": "Link terminal payment activity."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Own authorization and capture state.",
+                      "how": "Own authorization and capture state."
+                    }
+                  ]
+                },
+                {
+                  "id": "recover-offline-collection",
+                  "title": "Recover delayed offline collection",
+                  "keyFacts": [
+                    "Retain the original local transaction and later collection result."
+                  ],
+                  "painPoints": [
+                    "Offline acceptance can leave the merchant exposed if later collection fails."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "term",
+                      "name": "Terminal and Reader Operations",
+                      "description": "Queue and recover eligible offline transactions.",
+                      "how": "Queue and recover eligible offline transactions."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Track later capture outcomes.",
+                      "how": "Track later capture outcomes."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Reconcile delayed status.",
+                      "how": "Reconcile delayed status."
+                    }
+                  ]
+                },
+                {
+                  "id": "return-across-channels",
+                  "title": "Return across channels",
+                  "keyFacts": [
+                    "Use the original order/payment reference and disclosed refund policy."
+                  ],
+                  "painPoints": [
+                    "Store and online systems can otherwise issue conflicting refunds."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Record refunds against original payment.",
+                      "how": "Record refunds against original payment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Handle related cases.",
+                      "how": "Handle related cases."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Post linked monetary changes.",
+                      "how": "Post linked monetary changes."
+                    }
+                  ]
+                },
+                {
+                  "id": "close-store-and-settlement",
+                  "title": "Close store activity and settlement",
+                  "keyFacts": [
+                    "Reconcile store totals and original transactions to provider settlement."
+                  ],
+                  "painPoints": [
+                    "A matched device total does not explain fees, FX or settlement timing."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Match external statements.",
+                      "how": "Match external statements."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Provide store and finance reports.",
+                      "how": "Provide store and finance reports."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Merchant POS, inventory and loyalty systems",
+              "type": "integration",
+              "interface": "Order, stock and consented loyalty interfaces",
+              "description": "These remain merchant-owned/contracted adjacent systems."
+            },
+            {
+              "system": "Payment readers",
+              "type": "integration",
+              "interface": "Supported terminal integration",
+              "description": "Device readiness and supported offline modes constrain behavior."
+            }
+          ],
+          "links": [
+            {
+              "group": "Stripe terminal contract",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Stripe Terminal offline payments and reader limits",
+                  "link": "https://docs.stripe.com/terminal/features/operate-offline/overview?reader-type=internet",
+                  "description": "Stripe documentation"
+                }
+              ]
+            },
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Unified commerce",
+                  "link": "https://docs.adyen.com/unified-commerce",
+                  "description": "Adyen documentation"
+                },
+                {
+                  "label": "Offline payment behavior and exposure",
+                  "link": "https://docs.adyen.com/point-of-sale/offline-payment/",
+                  "description": "Adyen documentation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "serve-agent-commerce",
+          "name": "Serve Authorized Agent Commerce",
+          "type": "outcome-based-stream",
+          "description": "Expose accurate merchant offers and checkout state to an eligible agent channel, then execute a bounded purchase with attributable payment evidence.",
+          "outcomes": [
+            "Correct offers and order state",
+            "Authorized payment execution",
+            "Recoverable agent checkout"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "chck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "devx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pmtd",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "taxx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mand",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rada",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "disp",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "serve-agent-commerce-flow",
+              "title": "Serve Authorized Agent Commerce",
+              "description": "Expose accurate merchant offers and checkout state to an eligible agent channel, then execute a bounded purchase with attributable payment evidence.",
+              "steps": [
+                {
+                  "id": "publish-current-offers",
+                  "title": "Publish current purchasable offers",
+                  "keyFacts": [
+                    "Feed accurate product, price and availability data from the merchant system."
+                  ],
+                  "painPoints": [
+                    "A stale catalog can create an order the merchant cannot fulfill."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Adapt eligible catalog/cart interfaces.",
+                      "how": "Adapt eligible catalog/cart interfaces."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "devx",
+                      "name": "Developer API and Dashboard Foundations",
+                      "description": "Scope integration credentials.",
+                      "how": "Scope integration credentials."
+                    }
+                  ]
+                },
+                {
+                  "id": "confirm-cart-and-responsibility",
+                  "title": "Confirm cart facts and responsibility",
+                  "keyFacts": [
+                    "Refresh price, tax, delivery and seller identity at purchase time."
+                  ],
+                  "painPoints": [
+                    "A recommendation is not a final executable order."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Bind current cart to the order/session.",
+                      "how": "Bind current cart to the order/session."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pmtd",
+                      "name": "Payment Method Orchestration",
+                      "description": "Choose eligible methods.",
+                      "how": "Choose eligible methods."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "taxx",
+                      "name": "Tax Determination and Registration",
+                      "description": "Apply the responsible party’s tax treatment.",
+                      "how": "Apply the responsible party’s tax treatment."
+                    }
+                  ]
+                },
+                {
+                  "id": "verify-authority-and-execute",
+                  "title": "Verify authority and execute payment",
+                  "keyFacts": [
+                    "Bind the actual principal and delegated action to the purchase where the integration supports it."
+                  ],
+                  "painPoints": [
+                    "An authenticated agent credential is not unlimited spending permission."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mand",
+                      "name": "Delegated Authority and Approvals",
+                      "description": "Evaluate mandate and approval evidence.",
+                      "how": "Evaluate mandate and approval evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rada",
+                      "name": "Fraud Detection and Adaptive Risk Controls",
+                      "description": "Assess agent-related risk.",
+                      "how": "Assess agent-related risk."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Execute the payment with an attributable result.",
+                      "how": "Execute the payment with an attributable result."
+                    }
+                  ]
+                },
+                {
+                  "id": "confirm-and-recover-order-state",
+                  "title": "Confirm and recover order state",
+                  "keyFacts": [
+                    "Use payment events and authoritative state to confirm fulfillment and recovery."
+                  ],
+                  "painPoints": [
+                    "An agent retry after an ambiguous response can duplicate a purchase."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Deduplicate/replay events.",
+                      "how": "Deduplicate/replay events."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Recover session/order linkage.",
+                      "how": "Recover session/order linkage."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Route post-purchase issues to their owner.",
+                      "how": "Route post-purchase issues to their owner."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Agent platforms and merchant order systems",
+              "type": "integration",
+              "interface": "Supported agent protocol and offer/cart contracts",
+              "description": "Protocol, region and product availability are explicit; this flow is not universal interoperability."
+            }
+          ],
+          "links": [
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Agentic Commerce Suite",
+                  "link": "https://stripe.com/en-es/newsroom/news/agentic-commerce-suite",
+                  "description": "Stripe"
+                },
+                {
+                  "label": "Adyen Agentic launch and initial availability",
+                  "link": "https://www.adyen.com/press-and-media/adyen-agentic",
+                  "description": "Adyen"
+                },
+                {
+                  "label": "Agentic integration paths",
+                  "link": "https://docs.adyen.com/online-payments/agentic-commerce",
+                  "description": "Adyen documentation"
                 }
               ]
             }
@@ -123,21 +812,26 @@
     },
     {
       "name": "Revenue Automation",
-      "description": "",
+      "description": "Outcomes for revenue automation.",
       "subGroups": [],
       "streams": [
         {
           "id": "automate-recurring-revenue",
           "name": "Automate Recurring Revenue and Finance Workflows",
           "type": "outcome-based-stream",
-          "description": "Help recurring businesses launch monetization changes quickly while keeping collections, tax, and accounting trustworthy.",
+          "description": "Release pricing and collect recurring or usage charges with reproducible rating, explicit correction and a controlled finance handoff.",
           "outcomes": [
-            "Higher net revenue retention",
-            "Lower month-end manual work"
+            "Net revenue retention",
+            "Fewer invoice corrections",
+            "Shorter validated pricing-change lead time"
           ],
           "brickDependencies": [
             {
               "targetBrickId": "subs",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "taxx",
               "type": "composition"
             },
             {
@@ -149,11 +843,23 @@
               "type": "composition"
             },
             {
-              "targetBrickId": "taxx",
+              "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
               "type": "composition"
             },
             {
               "targetBrickId": "revn",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
               "type": "composition"
             }
           ],
@@ -161,76 +867,475 @@
             {
               "id": "automate-recurring-revenue-flow",
               "title": "Automate Recurring Revenue and Finance Workflows",
-              "description": "From pricing setup to collections and accounting outputs.",
+              "description": "Release pricing and collect recurring or usage charges with reproducible rating, explicit correction and a controlled finance handoff.",
               "steps": [
                 {
-                  "id": "configure-monetization",
-                  "title": "Configure monetization",
+                  "id": "define-commercial-terms",
+                  "title": "Define and version commercial terms",
+                  "keyFacts": [
+                    "Select Billing/Metronome compatibility and approve rates, commitments and tax responsibility."
+                  ],
+                  "painPoints": [
+                    "An unversioned pricing change makes past charges impossible to explain."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "subs",
                       "name": "Subscription and Price Management",
-                      "description": "Recurring pricing and lifecycle logic.",
-                      "how": "Lets RevOps launch recurring models quickly."
+                      "description": "Own accepted subscription and price versions.",
+                      "how": "Own accepted subscription and price versions."
                     },
                     {
                       "type": "brick",
-                      "id": "usag",
-                      "name": "Usage Metering and Rating",
-                      "description": "Usage billing logic.",
-                      "how": "Supports modern hybrid and usage-based models."
+                      "id": "taxx",
+                      "name": "Tax Determination and Registration",
+                      "description": "Identify tax treatment and responsibility.",
+                      "how": "Identify tax treatment and responsibility."
                     }
                   ]
                 },
                 {
-                  "id": "collect-and-recover-revenue",
-                  "title": "Collect and recover revenue",
+                  "id": "meter-and-rate-usage",
+                  "title": "Meter, rate and consume credits",
+                  "keyFacts": [
+                    "Deduplicate usage, preserve event time and apply the accepted rate; credits are consumption entitlements."
+                  ],
+                  "painPoints": [
+                    "Late events, duplicate events and credit exhaustion can change the invoice."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "usag",
+                      "name": "Usage Metering and Rating",
+                      "description": "Normalize events, rate usage and apply corrections.",
+                      "how": "Normalize events, rate usage and apply corrections."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "subs",
+                      "name": "Subscription and Price Management",
+                      "description": "Supply effective contract versions.",
+                      "how": "Supply effective contract versions."
+                    }
+                  ]
+                },
+                {
+                  "id": "validate-and-issue-invoice",
+                  "title": "Validate and issue the invoice",
+                  "keyFacts": [
+                    "Reconcile lines, credit consumption and tax before collection."
+                  ],
+                  "painPoints": [
+                    "A billing run can be numerically valid while using the wrong contract."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "invo",
                       "name": "Invoicing and Collections",
-                      "description": "Invoice and dunning workflow.",
-                      "how": "Turns billable activity into collected cash."
-                    }
-                  ]
-                },
-                {
-                  "id": "close-the-loop-with-finance",
-                  "title": "Close the loop with finance",
-                  "dependencies": [
+                      "description": "Issue controlled invoice and credit-note records.",
+                      "how": "Issue controlled invoice and credit-note records."
+                    },
                     {
                       "type": "brick",
                       "id": "taxx",
                       "name": "Tax Determination and Registration",
-                      "description": "Tax compliance operations.",
-                      "how": "Keeps monetization globally launchable."
+                      "description": "Apply the appropriate tax result.",
+                      "how": "Apply the appropriate tax result."
+                    }
+                  ]
+                },
+                {
+                  "id": "collect-and-recover",
+                  "title": "Collect and recover failed payments",
+                  "keyFacts": [
+                    "Use current invoice state to coordinate payment and dunning."
+                  ],
+                  "painPoints": [
+                    "Repeated retries can duplicate collection or hide involuntary churn."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "invo",
+                      "name": "Invoicing and Collections",
+                      "description": "Schedule recovery and communications.",
+                      "how": "Schedule recovery and communications."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Track payment outcome.",
+                      "how": "Track payment outcome."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Observe asynchronous status safely.",
+                      "how": "Observe asynchronous status safely."
+                    }
+                  ]
+                },
+                {
+                  "id": "correct-and-recognize",
+                  "title": "Correct and recognize revenue",
+                  "keyFacts": [
+                    "Link adjustments to usage and commercial terms before applying recognition rules."
+                  ],
+                  "painPoints": [
+                    "Cash collection and revenue recognition differ in timing and purpose."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "usag",
+                      "name": "Usage Metering and Rating",
+                      "description": "Preserve corrected rated events.",
+                      "how": "Preserve corrected rated events."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "invo",
+                      "name": "Invoicing and Collections",
+                      "description": "Record invoice adjustments.",
+                      "how": "Record invoice adjustments."
                     },
                     {
                       "type": "brick",
                       "id": "revn",
                       "name": "Revenue Recognition",
-                      "description": "Accounting treatment automation.",
-                      "how": "Makes billed activity auditable and trusted."
+                      "description": "Produce recognition schedules.",
+                      "how": "Produce recognition schedules."
+                    }
+                  ]
+                },
+                {
+                  "id": "export-and-close",
+                  "title": "Export and close",
+                  "keyFacts": [
+                    "Finance accepts the export after source records and settlement reconcile."
+                  ],
+                  "painPoints": [
+                    "Disconnected exports leave unexplained balances at month end."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Resolve cash/settlement differences.",
+                      "how": "Resolve cash/settlement differences."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Publish controlled finance exports.",
+                      "how": "Publish controlled finance exports."
                     }
                   ]
                 }
               ]
             }
           ],
-          "externalSystemsThisStreamDependsOn": [],
-          "icon": "automate-recurring-revenue.png",
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Merchant usage producers",
+              "type": "integration",
+              "interface": "Event ingestion",
+              "description": "The merchant supplies correct customer, event, unit and correction semantics."
+            },
+            {
+              "system": "Enterprise finance systems",
+              "type": "integration",
+              "interface": "Revenue and cash imports",
+              "description": "The controller accepts accounting treatment and reconciliation."
+            }
+          ],
           "links": [
             {
-              "group": "Evidence",
-              "description": "Real-world evidence related to this stream.",
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
               "links": [
                 {
-                  "label": "Evidence Explorer",
-                  "link": "../../../../evidence-explorer/index.html",
-                  "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this stream.",
-                  "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                  "label": "Choose Metronome or basic usage-based billing",
+                  "link": "https://docs.stripe.com/billing/subscriptions/usage-based",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Bill for LLM tokens",
+                  "link": "https://docs.stripe.com/billing/token-billing",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Why Adyen acquired Orb",
+                  "link": "https://www.adyen.com/knowledge-hub/why-adyen-acquired-orb",
+                  "description": "Adyen"
+                }
+              ]
+            }
+          ],
+          "icon": "automate-recurring-revenue.png"
+        },
+        {
+          "id": "sell-digital-products-with-managed-payments",
+          "name": "Sell Eligible Digital Products with Managed Payments",
+          "type": "outcome-based-stream",
+          "description": "Choose and operate an eligible merchant-of-record arrangement with clear checkout, tax, transaction-support and finance handoffs.",
+          "outcomes": [
+            "Clear seller responsibility",
+            "Correct buyer charges and support ownership",
+            "Reconciled seller proceeds"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "morc",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "subs",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "chck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pmlk",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "taxx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "disp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "sell-digital-products-with-managed-payments-flow",
+              "title": "Sell Eligible Digital Products with Managed Payments",
+              "description": "Choose and operate an eligible merchant-of-record arrangement with clear checkout, tax, transaction-support and finance handoffs.",
+              "steps": [
+                {
+                  "id": "confirm-seller-and-product-scope",
+                  "title": "Confirm seller and product scope",
+                  "keyFacts": [
+                    "Record the eligible digital product, selling entity and supported integration."
+                  ],
+                  "painPoints": [
+                    "The arrangement does not support every product, country or Connect use case."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "morc",
+                      "name": "Merchant-of-Record Responsibility and Support",
+                      "description": "Own responsibility and eligibility evidence.",
+                      "how": "Own responsibility and eligibility evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Identify the legal party.",
+                      "how": "Identify the legal party."
+                    }
+                  ]
+                },
+                {
+                  "id": "publish-eligible-offer",
+                  "title": "Publish an eligible purchase offer",
+                  "keyFacts": [
+                    "Connect the agreed price and responsibility to the supported hosted checkout path."
+                  ],
+                  "painPoints": [
+                    "An unsupported embedded or platform integration cannot inherit the same promise."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "subs",
+                      "name": "Subscription and Price Management",
+                      "description": "Supply accepted subscription terms where supported.",
+                      "how": "Supply accepted subscription terms where supported."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Create the supported hosted session.",
+                      "how": "Create the supported hosted session."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pmlk",
+                      "name": "Payment Links",
+                      "description": "Publish an eligible payment link.",
+                      "how": "Publish an eligible payment link."
+                    }
+                  ]
+                },
+                {
+                  "id": "collect-and-handle-tax",
+                  "title": "Collect and handle the applicable tax",
+                  "keyFacts": [
+                    "The selected arrangement determines who performs transaction and indirect-tax work."
+                  ],
+                  "painPoints": [
+                    "Tax calculation alone does not establish registration, filing or seller-of-record responsibility."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Track payment and refund outcome.",
+                      "how": "Track payment and refund outcome."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "taxx",
+                      "name": "Tax Determination and Registration",
+                      "description": "Record applicable tax treatment and owner.",
+                      "how": "Record applicable tax treatment and owner."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "morc",
+                      "name": "Merchant-of-Record Responsibility and Support",
+                      "description": "Bind handling to the arrangement.",
+                      "how": "Bind handling to the arrangement."
+                    }
+                  ]
+                },
+                {
+                  "id": "handle-buyer-cases",
+                  "title": "Handle buyer cases with an identified owner",
+                  "keyFacts": [
+                    "Transaction support and dispute/refund escalation follow the agreement."
+                  ],
+                  "painPoints": [
+                    "Buyers and sellers can otherwise be passed between support teams."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "morc",
+                      "name": "Merchant-of-Record Responsibility and Support",
+                      "description": "Coordinate responsibility and support handoffs.",
+                      "how": "Coordinate responsibility and support handoffs."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Track dispute evidence.",
+                      "how": "Track dispute evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Deliver attributable status.",
+                      "how": "Deliver attributable status."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-seller-proceeds",
+                  "title": "Reconcile seller proceeds",
+                  "keyFacts": [
+                    "Separate charges, tax, fees, refunds and net proceeds."
+                  ],
+                  "painPoints": [
+                    "A net amount without lineage is insufficient for the seller’s accounting."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Track financial outcomes.",
+                      "how": "Track financial outcomes."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Match settlement evidence.",
+                      "how": "Match settlement evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Export seller finance records.",
+                      "how": "Export seller finance records."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Seller commerce and buyer support systems",
+              "type": "integration",
+              "interface": "Offer, fulfillment and case handoffs",
+              "description": "Non-transaction seller obligations remain identified."
+            },
+            {
+              "system": "Responsible tax and support operations",
+              "type": "integration",
+              "interface": "Agreement-specific workflows",
+              "description": "Ownership follows the merchant-of-record arrangement."
+            }
+          ],
+          "links": [
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Managed Payments and merchant-of-record responsibilities",
+                  "link": "https://docs.stripe.com/payments/managed-payments",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Paddle for SaaS",
+                  "link": "https://developer.paddle.com/get-started/how-paddle-works/saas/",
+                  "description": "Paddle documentation"
                 }
               ]
             }
@@ -239,18 +1344,19 @@
       ]
     },
     {
-      "name": "Platform Infrastructure",
-      "description": "",
+      "name": "Platform Money Movement",
+      "description": "Outcomes for platform money movement.",
       "subGroups": [],
       "streams": [
         {
           "id": "operate-platform-money-movement",
-          "name": "Operate Platform Onboarding, Funds Flows, and Payouts",
+          "name": "Operate Platform Money Movement Safely",
           "type": "outcome-based-stream",
-          "description": "Help platforms activate counterparties, route funds, and scale payouts safely with strong operator visibility.",
+          "description": "Activate an eligible counterparty, allocate funds under the contracted liability model and complete a traceable recipient payout.",
           "outcomes": [
-            "Higher connected-account activation",
-            "Higher platform GPV growth"
+            "Activated connected account rate",
+            "On-time payout rate",
+            "Actionable recipient remediation"
           ],
           "brickDependencies": [
             {
@@ -266,7 +1372,19 @@
               "type": "composition"
             },
             {
+              "targetBrickId": "chck",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "auth",
+              "type": "composition"
+            },
+            {
               "targetBrickId": "split",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
               "type": "composition"
             },
             {
@@ -274,91 +1392,510 @@
               "type": "composition"
             },
             {
+              "targetBrickId": "disp",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
               "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
               "type": "composition"
             }
           ],
           "flows": [
             {
               "id": "operate-platform-money-movement-flow",
-              "title": "Operate Platform Onboarding, Funds Flows, and Payouts",
-              "description": "From connected-account onboarding into live payouts and operator controls.",
+              "title": "Operate Platform Money Movement Safely",
+              "description": "Activate an eligible counterparty, allocate funds under the contracted liability model and complete a traceable recipient payout.",
               "steps": [
                 {
-                  "id": "activate-connected-accounts",
-                  "title": "Activate connected accounts",
+                  "id": "identify-party-and-role",
+                  "title": "Identify the legal party and role",
+                  "keyFacts": [
+                    "Separate legal identity, service role, funds owner and loss bearer."
+                  ],
+                  "painPoints": [
+                    "One generic account label hides important responsibility differences."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "acct",
                       "name": "Connected Account Lifecycle",
-                      "description": "Connected-account state model.",
-                      "how": "Keeps account activation and stream state explicit."
+                      "description": "Record roles and product capability requirements.",
+                      "how": "Record roles and product capability requirements."
                     },
                     {
                       "type": "brick",
                       "id": "kycb",
                       "name": "KYC and KYB Verification",
-                      "description": "Verification workflows.",
-                      "how": "Reduces activation loss caused by incomplete compliance steps."
+                      "description": "Request legal-party and beneficial-owner evidence.",
+                      "how": "Request legal-party and beneficial-owner evidence."
+                    }
+                  ]
+                },
+                {
+                  "id": "verify-and-remediate",
+                  "title": "Verify and remediate capabilities",
+                  "keyFacts": [
+                    "Activation and later restrictions depend on required evidence and review."
+                  ],
+                  "painPoints": [
+                    "Repeated unexplained evidence requests cause recipient abandonment."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "kycb",
+                      "name": "KYC and KYB Verification",
+                      "description": "Own verification and remediation cases.",
+                      "how": "Own verification and remediation cases."
                     },
                     {
                       "type": "brick",
                       "id": "iden",
                       "name": "Identity Verification",
-                      "description": "Higher-assurance identity workflows.",
-                      "how": "Adds trust where platforms need stronger assurance."
+                      "description": "Supply identity evidence.",
+                      "how": "Supply identity evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Apply allowed/restricted capability state.",
+                      "how": "Apply allowed/restricted capability state."
                     }
                   ]
                 },
                 {
-                  "id": "route-and-disburse-funds",
-                  "title": "Route and disburse funds",
+                  "id": "collect-and-allocate",
+                  "title": "Collect and allocate the payment",
+                  "keyFacts": [
+                    "A successful payment is split only under the effective party and fee/reserve rules."
+                  ],
+                  "painPoints": [
+                    "An apparently successful split can assign loss or funds to the wrong party."
+                  ],
                   "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "chck",
+                      "name": "Hosted Checkout",
+                      "description": "Collect an eligible platform payment.",
+                      "how": "Collect an eligible platform payment."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "auth",
+                      "name": "Authorization Optimization",
+                      "description": "Track capture.",
+                      "how": "Track capture."
+                    },
                     {
                       "type": "brick",
                       "id": "split",
                       "name": "Funds Routing and Split Settlement",
-                      "description": "Funds-flow orchestration.",
-                      "how": "Handles fees, reserves, and multi-party settlement."
+                      "description": "Allocate funds and fees.",
+                      "how": "Allocate funds and fees."
                     },
                     {
                       "type": "brick",
-                      "id": "pyot",
-                      "name": "Global Payouts and Treasury Workflows",
-                      "description": "Payout execution.",
-                      "how": "Moves money out on the right schedule and rails."
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Record each obligation.",
+                      "how": "Record each obligation."
                     }
                   ]
                 },
                 {
-                  "id": "operate-the-money-system",
-                  "title": "Operate the money system",
+                  "id": "fund-and-instruct-payout",
+                  "title": "Fund and instruct a verified payout",
+                  "keyFacts": [
+                    "Check available funds, recipient destination, restrictions and the promised window."
+                  ],
+                  "painPoints": [
+                    "A payout API response does not establish that the recipient can use the money."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Validate destination and create a funded instruction.",
+                      "how": "Validate destination and create a funded instruction."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Expose available funds and reservations.",
+                      "how": "Expose available funds and reservations."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Apply current account capabilities.",
+                      "how": "Apply current account capabilities."
+                    }
+                  ]
+                },
+                {
+                  "id": "resolve-returns-and-negative-balances",
+                  "title": "Resolve returns and negative balances",
+                  "keyFacts": [
+                    "Preserve the original instruction and contracted recourse; explain actions to the recipient."
+                  ],
+                  "painPoints": [
+                    "Blindly reissuing a delayed payout can duplicate payment."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Track failures, returns and controlled reissue.",
+                      "how": "Track failures, returns and controlled reissue."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "split",
+                      "name": "Funds Routing and Split Settlement",
+                      "description": "Attribute fees and recourse.",
+                      "how": "Attribute fees and recourse."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Handle related payment disputes.",
+                      "how": "Handle related payment disputes."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Recover event/state differences.",
+                      "how": "Recover event/state differences."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-recipient-statement",
+                  "title": "Reconcile the recipient statement",
+                  "keyFacts": [
+                    "Show gross earnings, fees, reserves, returns and net received amount."
+                  ],
+                  "painPoints": [
+                    "An unexplained statement damages recipient trust even when payment succeeded."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
                       "id": "reca",
                       "name": "Reconciliation and Balance Operations",
-                      "description": "Exception and payout operations.",
-                      "how": "Lets platform operators trust what happened and why."
+                      "description": "Match internal and external financial records.",
+                      "how": "Match internal and external financial records."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Publish recipient and platform evidence.",
+                      "how": "Publish recipient and platform evidence."
                     }
                   ]
                 }
               ]
             }
           ],
-          "externalSystemsThisStreamDependsOn": [],
-          "icon": "operate-platform-money-movement.png",
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Recipients and evidence providers",
+              "type": "integration",
+              "interface": "Onboarding and verification interfaces",
+              "description": "Users provide legal-party and destination evidence; review requirements vary."
+            },
+            {
+              "system": "Banks and payout rails",
+              "type": "integration",
+              "interface": "Transfer and beneficiary contracts",
+              "description": "External acceptance, failure and return states affect funds availability."
+            }
+          ],
           "links": [
             {
-              "group": "Evidence",
-              "description": "Real-world evidence related to this stream.",
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
               "links": [
                 {
-                  "label": "Evidence Explorer",
-                  "link": "../../../../evidence-explorer/index.html",
-                  "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this stream.",
-                  "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                  "label": "Connect Accounts v2",
+                  "link": "https://docs.stripe.com/connect/accounts-v2",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Global Payouts: funding and sender availability",
+                  "link": "https://docs.stripe.com/global-payouts",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Platform account structure",
+                  "link": "https://docs.adyen.com/platforms/account-structure-resources",
+                  "description": "Adyen documentation"
+                }
+              ]
+            }
+          ],
+          "icon": "operate-platform-money-movement.png"
+        },
+        {
+          "id": "offer-platform-financial-services",
+          "name": "Offer Eligible Platform Financial Services",
+          "type": "outcome-based-stream",
+          "description": "Let a platform participant assess and use an eligible account, card or financing offer with explicit obligations and support.",
+          "outcomes": [
+            "Informed voluntary adoption",
+            "Visible product eligibility",
+            "Reconciled spend and repayment"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "kycb",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "issu",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "capm",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pyot",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "offer-platform-financial-services-flow",
+              "title": "Offer Eligible Platform Financial Services",
+              "description": "Let a platform participant assess and use an eligible account, card or financing offer with explicit obligations and support.",
+              "steps": [
+                {
+                  "id": "assess-product-eligibility",
+                  "title": "Assess eligibility for the selected product",
+                  "keyFacts": [
+                    "Account, issuing and capital eligibility are different decisions."
+                  ],
+                  "painPoints": [
+                    "Payment acceptance eligibility can be mistaken for financial-product approval."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Read product and jurisdiction capability policy.",
+                      "how": "Read product and jurisdiction capability policy."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "kycb",
+                      "name": "KYC and KYB Verification",
+                      "description": "Collect required evidence.",
+                      "how": "Collect required evidence."
+                    }
+                  ]
+                },
+                {
+                  "id": "disclose-and-accept-terms",
+                  "title": "Disclose and accept terms",
+                  "keyFacts": [
+                    "Identify funds ownership, fees, spending controls or repayment obligations before acceptance."
+                  ],
+                  "painPoints": [
+                    "Bundled product language can conceal liability or an unwanted financing obligation."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tres",
+                      "name": "Financial Accounts and Business Liquidity",
+                      "description": "Record the account arrangement.",
+                      "how": "Record the account arrangement."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "issu",
+                      "name": "Issuing and Spend Controls",
+                      "description": "Configure an eligible card program.",
+                      "how": "Configure an eligible card program."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "capm",
+                      "name": "Capital and Financing Offers",
+                      "description": "Record the voluntary financing agreement.",
+                      "how": "Record the voluntary financing agreement."
+                    }
+                  ]
+                },
+                {
+                  "id": "execute-under-controls",
+                  "title": "Execute under product controls",
+                  "keyFacts": [
+                    "Spend, transfers and repayment use the effective agreement and available funds."
+                  ],
+                  "painPoints": [
+                    "Limits and eligibility can change after onboarding."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "issu",
+                      "name": "Issuing and Spend Controls",
+                      "description": "Apply card spending rules.",
+                      "how": "Apply card spending rules."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "capm",
+                      "name": "Capital and Financing Offers",
+                      "description": "Apply accepted repayment terms.",
+                      "how": "Apply accepted repayment terms."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Execute eligible payouts.",
+                      "how": "Execute eligible payouts."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Track resulting obligations.",
+                      "how": "Track resulting obligations."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-and-support",
+                  "title": "Reconcile and support the participant",
+                  "keyFacts": [
+                    "Provide statements, clear support ownership and a path to resolve restrictions."
+                  ],
+                  "painPoints": [
+                    "Unexplained deductions or holds undermine product trust."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Match movement and repayment evidence.",
+                      "how": "Match movement and repayment evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Expose participant statements.",
+                      "how": "Expose participant statements."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Explain restricted capabilities.",
+                      "how": "Explain restricted capabilities."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Contracted account, card and financing providers",
+              "type": "integration",
+              "interface": "Product-specific financial contracts",
+              "description": "Provider, jurisdiction and agreement govern eligibility and obligations."
+            }
+          ],
+          "links": [
+            {
+              "group": "Stripe financial-product contracts",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Stripe Issuing and product availability",
+                  "link": "https://docs.stripe.com/issuing",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Stripe Capital for platforms",
+                  "link": "https://docs.stripe.com/capital/how-capital-for-platforms-works",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Stripe Treasury for platforms",
+                  "link": "https://docs.stripe.com/treasury/connect",
+                  "description": "Stripe documentation"
+                }
+              ]
+            },
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Business accounts: development phase and eligibility",
+                  "link": "https://docs.adyen.com/business-accounts",
+                  "description": "Adyen documentation"
+                },
+                {
+                  "label": "Adyen Issuing",
+                  "link": "https://docs.adyen.com/issuing",
+                  "description": "Adyen documentation"
+                },
+                {
+                  "label": "Adyen Capital",
+                  "link": "https://docs.adyen.com/capital",
+                  "description": "Adyen documentation"
+                },
+                {
+                  "label": "Treasury financial accounts and account structures",
+                  "link": "https://docs.stripe.com/treasury",
+                  "description": "Stripe documentation"
                 }
               ]
             }
@@ -367,20 +1904,29 @@
       ]
     },
     {
-      "name": "Shared Foundations",
-      "description": "",
+      "name": "Financial Operations",
+      "description": "Outcomes for financial operations.",
       "subGroups": [],
       "streams": [
         {
           "id": "run-trust-and-finance-operations",
-          "name": "Run Trust, Reporting, and Finance Operations",
+          "name": "Run Trust and Finance Operations",
           "type": "outcome-based-stream",
-          "description": "Make Stripe operable for finance, risk, and engineering teams through shared ledger, reporting, and eventing streams.",
+          "description": "Resolve financial and risk exceptions, reconcile obligations to external cash and approve the reporting close.",
           "outcomes": [
-            "Lower finance exception rate",
-            "Higher operator trust"
+            "Reconciled cash availability",
+            "Lower aged unreconciled value",
+            "Controlled finance exports"
           ],
           "brickDependencies": [
+            {
+              "targetBrickId": "devx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
             {
               "targetBrickId": "rada",
               "type": "composition"
@@ -394,7 +1940,242 @@
               "type": "composition"
             },
             {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "invo",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "revn",
+              "type": "composition"
+            },
+            {
               "targetBrickId": "rpts",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "run-trust-and-finance-operations-flow",
+              "title": "Run Trust and Finance Operations",
+              "description": "Resolve financial and risk exceptions, reconcile obligations to external cash and approve the reporting close.",
+              "steps": [
+                {
+                  "id": "control-access-and-intake",
+                  "title": "Control access and ingest evidence",
+                  "keyFacts": [
+                    "Authenticate operators and persist attributable source events before processing."
+                  ],
+                  "painPoints": [
+                    "Leaked credentials or duplicate processing can corrupt money records."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "devx",
+                      "name": "Developer API and Dashboard Foundations",
+                      "description": "Scope access and retain audits.",
+                      "how": "Scope access and retain audits."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Verify, deduplicate and replay events.",
+                      "how": "Verify, deduplicate and replay events."
+                    }
+                  ]
+                },
+                {
+                  "id": "review-risk-and-disputes",
+                  "title": "Review risk and disputes",
+                  "keyFacts": [
+                    "Link risk actions and dispute decisions to the original financial exposure."
+                  ],
+                  "painPoints": [
+                    "A case closure is incomplete until monetary adjustments are explained."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rada",
+                      "name": "Fraud Detection and Adaptive Risk Controls",
+                      "description": "Own risk decisions.",
+                      "how": "Own risk decisions."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "disp",
+                      "name": "Disputes and Chargeback Operations",
+                      "description": "Own dispute evidence.",
+                      "how": "Own dispute evidence."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Record adjustments.",
+                      "how": "Record adjustments."
+                    }
+                  ]
+                },
+                {
+                  "id": "match-obligations-to-settlement",
+                  "title": "Match obligations to settlement",
+                  "keyFacts": [
+                    "Compare transaction, transfer, fee, FX and return references with statements."
+                  ],
+                  "painPoints": [
+                    "Matching only totals can conceal offsetting errors."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Supply entity/currency obligations.",
+                      "how": "Supply entity/currency obligations."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Match batches and identify exceptions.",
+                      "how": "Match batches and identify exceptions."
+                    }
+                  ]
+                },
+                {
+                  "id": "resolve-material-differences",
+                  "title": "Resolve material differences",
+                  "keyFacts": [
+                    "A named owner investigates aged items and approves corrections."
+                  ],
+                  "painPoints": [
+                    "Unowned differences accumulate into an unreliable close."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Track age, value and resolution.",
+                      "how": "Track age, value and resolution."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "invo",
+                      "name": "Invoicing and Collections",
+                      "description": "Correct billing records.",
+                      "how": "Correct billing records."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "revn",
+                      "name": "Revenue Recognition",
+                      "description": "Adjust recognition schedules under approved policy.",
+                      "how": "Adjust recognition schedules under approved policy."
+                    }
+                  ]
+                },
+                {
+                  "id": "approve-and-publish-close",
+                  "title": "Approve and publish the close",
+                  "keyFacts": [
+                    "Separate cash reconciliation from revenue treatment and retain approval lineage."
+                  ],
+                  "painPoints": [
+                    "Uncontrolled exports can diverge from accepted financial state."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Publish versioned exports.",
+                      "how": "Publish versioned exports."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "devx",
+                      "name": "Developer API and Dashboard Foundations",
+                      "description": "Preserve approved access and action evidence.",
+                      "how": "Preserve approved access and action evidence."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "External processors and account providers",
+              "type": "integration",
+              "interface": "Settlement batches and account statements",
+              "description": "External evidence is necessary to verify cash and fees."
+            },
+            {
+              "system": "Merchant ERP and accounting teams",
+              "type": "integration",
+              "interface": "Approved finance exports",
+              "description": "Finance owns close acceptance and accounting policy."
+            }
+          ],
+          "links": [
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Webhook duplicate and ordering behavior",
+                  "link": "https://docs.stripe.com/webhooks",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Handle webhook events",
+                  "link": "https://docs.adyen.com/development-resources/webhooks/handle-webhook-events",
+                  "description": "Adyen documentation"
+                }
+              ]
+            }
+          ],
+          "icon": "run-trust-and-finance-operations.png"
+        },
+        {
+          "id": "manage-business-liquidity",
+          "name": "Manage Business Liquidity and Standalone Payouts",
+          "type": "outcome-based-stream",
+          "description": "Fund obligations and make recipient cash available through the business’s eligible financial-account and payout arrangements.",
+          "outcomes": [
+            "Reconciled cash availability",
+            "Payouts completed within promise",
+            "Fewer unfunded obligations"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "mand",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pyot",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "devx",
               "type": "composition"
             },
             {
@@ -402,91 +2183,398 @@
               "type": "composition"
             },
             {
-              "targetBrickId": "devx",
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
               "type": "composition"
             }
           ],
           "flows": [
             {
-              "id": "run-trust-and-finance-operations-flow",
-              "title": "Run Trust, Reporting, and Finance Operations",
-              "description": "From real-time decisions into auditable reporting and integrations.",
+              "id": "manage-business-liquidity-flow",
+              "title": "Manage Business Liquidity and Standalone Payouts",
+              "description": "Fund obligations and make recipient cash available through the business’s eligible financial-account and payout arrangements.",
               "steps": [
                 {
-                  "id": "make-real-time-risk-and-state-decisions",
-                  "title": "Make real-time risk and state decisions",
+                  "id": "confirm-account-arrangement",
+                  "title": "Confirm the account arrangement",
+                  "keyFacts": [
+                    "Identify legal holder, service/bank relationship, entity eligibility and the party authorized to move funds."
+                  ],
+                  "painPoints": [
+                    "Broad recipient reach does not prove the sender can use the product."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
-                      "id": "rada",
-                      "name": "Fraud Detection and Adaptive Risk Controls",
-                      "description": "Real-time risk decisioning.",
-                      "how": "Protects the system while preserving legitimate activity."
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Check legal party and capability.",
+                      "how": "Check legal party and capability."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tres",
+                      "name": "Financial Accounts and Business Liquidity",
+                      "description": "Record account structure and funding terms.",
+                      "how": "Record account structure and funding terms."
+                    }
+                  ]
+                },
+                {
+                  "id": "fund-and-convert",
+                  "title": "Fund and convert for the obligation",
+                  "keyFacts": [
+                    "Use available money and an approved FX quote/fee when needed."
+                  ],
+                  "painPoints": [
+                    "A pending balance or expired FX quote cannot fund an unconditional promise."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "tres",
+                      "name": "Financial Accounts and Business Liquidity",
+                      "description": "Manage account funding and conversion.",
+                      "how": "Manage account funding and conversion."
                     },
                     {
                       "type": "brick",
                       "id": "ledg",
                       "name": "Balances and Internal Ledger",
-                      "description": "Financial state tracking.",
-                      "how": "Provides the source of truth for money-state transitions."
+                      "description": "Distinguish pending, reserved and available funds.",
+                      "how": "Distinguish pending, reserved and available funds."
                     }
                   ]
                 },
                 {
-                  "id": "understand-and-resolve-exceptions",
-                  "title": "Understand and resolve exceptions",
+                  "id": "approve-and-send",
+                  "title": "Approve and send the payout",
+                  "keyFacts": [
+                    "Validate the destination and obtain the required approval before execution."
+                  ],
+                  "painPoints": [
+                    "A changed beneficiary or broad mandate can misdirect money."
+                  ],
                   "dependencies": [
                     {
                       "type": "brick",
-                      "id": "disp",
-                      "name": "Disputes and Chargeback Operations",
-                      "description": "Dispute workflows.",
-                      "how": "Explains and manages post-transaction risk events."
-                    }
-                  ]
-                },
-                {
-                  "id": "export-and-integrate-operational-truth",
-                  "title": "Export and integrate operational truth",
-                  "dependencies": [
-                    {
-                      "type": "brick",
-                      "id": "rpts",
-                      "name": "Reporting, Sigma, and Data Export",
-                      "description": "Reporting and data workflows.",
-                      "how": "Turns Stripe activity into actionable operational and finance insight."
+                      "id": "mand",
+                      "name": "Delegated Authority and Approvals",
+                      "description": "Record bounded approval where automation is used.",
+                      "how": "Record bounded approval where automation is used."
                     },
                     {
                       "type": "brick",
-                      "id": "webh",
-                      "name": "Eventing and Webhooks",
-                      "description": "Event-driven integration layer.",
-                      "how": "Connects Stripe state changes to customer systems."
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Execute the validated instruction.",
+                      "how": "Execute the validated instruction."
                     },
                     {
                       "type": "brick",
                       "id": "devx",
                       "name": "Developer API and Dashboard Foundations",
-                      "description": "Shared control plane.",
-                      "how": "Makes the domain programmable and operable."
+                      "description": "Authenticate the operator/integration.",
+                      "how": "Authenticate the operator/integration."
+                    }
+                  ]
+                },
+                {
+                  "id": "track-and-resolve",
+                  "title": "Track recipient access and resolve returns",
+                  "keyFacts": [
+                    "Preserve the instruction/provider references until funds are available or returned."
+                  ],
+                  "painPoints": [
+                    "Timeouts must not trigger a blind duplicate payout."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Track completion, failure and return.",
+                      "how": "Track completion, failure and return."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Recover delayed or repeated status.",
+                      "how": "Recover delayed or repeated status."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Post linked balance changes.",
+                      "how": "Post linked balance changes."
+                    }
+                  ]
+                },
+                {
+                  "id": "reconcile-cash",
+                  "title": "Reconcile cash by entity and currency",
+                  "keyFacts": [
+                    "Match external statements and return/FX records to the funding obligation."
+                  ],
+                  "painPoints": [
+                    "A single consolidated total conceals entity and currency differences."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Resolve differences.",
+                      "how": "Resolve differences."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Publish controlled treasury reports.",
+                      "how": "Publish controlled treasury reports."
                     }
                   ]
                 }
               ]
             }
           ],
-          "externalSystemsThisStreamDependsOn": [],
-          "icon": "run-trust-and-finance-operations.png",
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Contracted account providers and payout rails",
+              "type": "integration",
+              "interface": "Funding, FX, beneficiary and settlement contracts",
+              "description": "The contracted product determines sender eligibility and money-movement responsibilities."
+            }
+          ],
           "links": [
             {
-              "group": "Evidence",
-              "description": "Real-world evidence related to this stream.",
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
               "links": [
                 {
-                  "label": "Evidence Explorer",
-                  "link": "../../../../evidence-explorer/index.html",
-                  "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this stream.",
-                  "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                  "label": "Treasury financial accounts and account structures",
+                  "link": "https://docs.stripe.com/treasury",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Global Payouts: funding and sender availability",
+                  "link": "https://docs.stripe.com/global-payouts",
+                  "description": "Stripe documentation"
+                },
+                {
+                  "label": "Intelligent Money Movement",
+                  "link": "https://www.adyen.com/press-and-media/adyen-launches-intelligent-money-movement",
+                  "description": "Adyen"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "execute-delegated-spending",
+          "name": "Execute Spending within Delegated Authority",
+          "type": "outcome-based-stream",
+          "description": "Allow an eligible automated financial action only within an approved business mandate, and preserve human control over ambiguity or exceptions.",
+          "outcomes": [
+            "Actions within approved authority",
+            "Auditable execution",
+            "Prompt revocation and exception resolution"
+          ],
+          "brickDependencies": [
+            {
+              "targetBrickId": "mand",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "acct",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "devx",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "tres",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "pyot",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "webh",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "ledg",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "reca",
+              "type": "composition"
+            },
+            {
+              "targetBrickId": "rpts",
+              "type": "composition"
+            }
+          ],
+          "flows": [
+            {
+              "id": "execute-delegated-spending-flow",
+              "title": "Execute Spending within Delegated Authority",
+              "description": "Allow an eligible automated financial action only within an approved business mandate, and preserve human control over ambiguity or exceptions.",
+              "steps": [
+                {
+                  "id": "define-the-mandate",
+                  "title": "Define the mandate",
+                  "keyFacts": [
+                    "A named principal approves actor, purpose, recipient scope, budget, expiry and allowed product."
+                  ],
+                  "painPoints": [
+                    "Broad access credentials do not establish the business purpose or budget."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mand",
+                      "name": "Delegated Authority and Approvals",
+                      "description": "Own mandate constraints and approval.",
+                      "how": "Own mandate constraints and approval."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "acct",
+                      "name": "Connected Account Lifecycle",
+                      "description": "Check legal-party and product eligibility.",
+                      "how": "Check legal-party and product eligibility."
+                    }
+                  ]
+                },
+                {
+                  "id": "check-at-execution-time",
+                  "title": "Check at execution time",
+                  "keyFacts": [
+                    "Recheck revocation, remaining authority and available funding before execution."
+                  ],
+                  "painPoints": [
+                    "Authority can expire or funds can change after a plan is made."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mand",
+                      "name": "Delegated Authority and Approvals",
+                      "description": "Evaluate the current mandate.",
+                      "how": "Evaluate the current mandate."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "devx",
+                      "name": "Developer API and Dashboard Foundations",
+                      "description": "Authenticate the requester.",
+                      "how": "Authenticate the requester."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "tres",
+                      "name": "Financial Accounts and Business Liquidity",
+                      "description": "Check eligible account funding.",
+                      "how": "Check eligible account funding."
+                    }
+                  ]
+                },
+                {
+                  "id": "execute-once-and-observe",
+                  "title": "Execute once and observe state",
+                  "keyFacts": [
+                    "Preserve request identity and wait for the authoritative financial result."
+                  ],
+                  "painPoints": [
+                    "An ambiguous timeout does not justify repeating a payment."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "pyot",
+                      "name": "Payout Execution and Returns",
+                      "description": "Execute an eligible payout action.",
+                      "how": "Execute an eligible payout action."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "webh",
+                      "name": "Eventing and Webhooks",
+                      "description": "Recover authoritative status.",
+                      "how": "Recover authoritative status."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "ledg",
+                      "name": "Balances and Internal Ledger",
+                      "description": "Record the monetary result.",
+                      "how": "Record the monetary result."
+                    }
+                  ]
+                },
+                {
+                  "id": "escalate-revoke-and-reconcile",
+                  "title": "Escalate, revoke and reconcile",
+                  "keyFacts": [
+                    "A human resolves exceptions; revocation blocks future actions and accounting retains completed action evidence."
+                  ],
+                  "painPoints": [
+                    "Revocation cannot be assumed to reverse an already completed financial action."
+                  ],
+                  "dependencies": [
+                    {
+                      "type": "brick",
+                      "id": "mand",
+                      "name": "Delegated Authority and Approvals",
+                      "description": "Escalate and revoke future authority.",
+                      "how": "Escalate and revoke future authority."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "reca",
+                      "name": "Reconciliation and Balance Operations",
+                      "description": "Reconcile the executed action.",
+                      "how": "Reconcile the executed action."
+                    },
+                    {
+                      "type": "brick",
+                      "id": "rpts",
+                      "name": "Reporting, Sigma, and Data Export",
+                      "description": "Provide an auditable outcome.",
+                      "how": "Provide an auditable outcome."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "externalSystemsThisStreamDependsOn": [
+            {
+              "system": "Business approvers and agent integrations",
+              "type": "integration",
+              "interface": "Mandate and financial-action contracts",
+              "description": "Only supported product actions are eligible; roadmap card features are not assumed available."
+            }
+          ],
+          "links": [
+            {
+              "group": "Product documentation",
+              "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+              "links": [
+                {
+                  "label": "Treasury for agents",
+                  "link": "https://stripe.com/en-es/newsroom/news/treasury-for-agents",
+                  "description": "Stripe"
                 }
               ]
             }

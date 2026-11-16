@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><rect x='18' y='22' width='30' height='24' rx='4' fill='white'/><rect x='52' y='22' width='30' height='24' rx='4' fill='%2393c5fd'/><rect x='18' y='54' width='64' height='24' rx='4' fill='%23dbeafe'/></svg>">
+    <title>Treasury and Finance Controller</title>
+    <style>
+    .page-type-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border-radius: 999px;
+        border: 1px dashed #989898;
+        text-transform: uppercase;
+        margin-right: 6px;
+        color: #8c8c8c;
+        font-size: 11px;
+    }
+</style>
+    <style>
+    /* Shared design tokens for all generated pages.
+       Canonical palette promoted from the evidence-explorer page, plus the
+       de-facto grays/blues already used across templates. New CSS should use
+       these instead of hex literals; existing literals migrate opportunistically. */
+    :root {
+        /* surfaces */
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --surface: #f8fafc;
+        --surface-muted: #eef2f7;
+        --surface-fallback: #f8fafc;
+
+        /* text */
+        --ink: #1f2430;
+        --ink-soft: #5b6472;
+        --muted: #6b7280;
+        --muted-strong: #8a94a6;
+
+        /* lines and borders */
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --group-border: #d8e0ea;
+
+        /* accent */
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --accent-soft: #eff4ff;
+        --accent-line: #c9dbff;
+        --highlight-color: #dbeafe;
+
+        /* shape and depth */
+        --radius: 14px;
+        --radius-sm: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 6px 18px rgba(16, 24, 40, 0.06);
+        --shadow-hover: 0 2px 6px rgba(16, 24, 40, 0.08), 0 14px 30px rgba(16, 24, 40, 0.12);
+        --card-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+    }
+</style>
+
+    <style>
+    .tab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 24px;
+    }
+
+    .tab button {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 11px 16px;
+        margin-bottom: -1px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px 8px 0 0;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .tab button:hover {
+        color: #1f2937;
+        background-color: #f3f4f6;
+    }
+
+    .tab button:focus-visible {
+        outline: 2px solid #1d4ed8;
+        outline-offset: -2px;
+    }
+
+    .tab button.active {
+        color: #1d4ed8;
+        border-bottom-color: #1d4ed8;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 2px 2px;
+        animation: tabContentFade 0.2s ease;
+    }
+
+    @keyframes tabContentFade {
+        from {
+            opacity: 0;
+            transform: translateY(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 720px) {
+        .tab {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tab button {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0;
+        }
+
+        .tab button.active {
+            border-bottom-color: #1d4ed8;
+        }
+    }
+</style>
+
+    <style>
+    .breadcrumbs-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0;
+        padding: 6px 4px;
+        font-size: 80%;
+        color: #5b6472;
+    }
+
+    .breadcrumb {
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #343434;
+    }
+</style>
+<script>
+    // Pages shown inside the start page's viewer get their section links,
+    // breadcrumbs and sibling-page icon strips from its sidebar and top bar,
+    // so hide their own.
+    if (window.self !== window.top) {
+        document.documentElement.classList.add('embedded');
+        // Keep links to other Productscape pages inside the viewer instead of a new
+        // browser tab, where they would show without the sidebar.
+        document.addEventListener('click', event => {
+            const link = event.target.closest && event.target.closest('a[target="_blank"]');
+            const href = link && link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) return;
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            window.location.href = link.href;
+        }, true);
+    }
+</script>
+<style>
+    html.embedded .site-nav,
+    html.embedded #breadcrumbs,
+    html.embedded .image-tabs,
+    html.embedded .nav-strip,
+    html.embedded .channel-nav,
+    html.embedded .section-tabs {
+        display: none !important;
+    }
+</style>
+
+    <style>
+        body {
+            font-family: Vollkorn, Ubuntu, Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .review-image {
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+            width: 400px;
+            margin: 10px;
+            padding: 10px
+        }
+
+        .review-image-small {
+            width: 100%;
+        }
+
+        .tab-image {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+        }
+
+        .tab-image-selected {
+            width: 24px;
+            margin: 2px;
+            padding: 2px;
+            border-bottom: 4px solid blue;
+        }
+
+        .group {
+            margin-top: 2px;
+            margin-bottom: 40px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            vertical-align: top;
+        }
+
+        .kpi {
+            margin-top: -3px;
+            margin-bottom: -6px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            vertical-align: top;
+            display: block;
+            background-color: #f0f0f0;
+        }
+
+        .step {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 1px solid lightgrey;
+            display: inline-block;
+            width: 280px;
+            vertical-align: top;
+        }
+
+        .outcome {
+            margin: 12px;
+            padding: 20px;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+            overflow: hidden;
+            border: 3px solid blue;
+            vertical-align: top;
+            font-size: 130%;
+            display: inline-block;
+        }
+
+        .repo {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+        .aws {
+            overflow: hidden;
+            margin: 10px;
+            padding: 7px;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+
+        .person {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        .docs {
+            text-align: center;
+            padding: 6px;
+            margin: 4px;
+            display: inline-block;
+            font-size: 11px;
+            width: 110px;
+            overflow: hidden;
+            vertical-align: top;
+        }
+
+        .number {
+            display: inline-block;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            margin: 8px;
+            width: 100px;
+        }
+
+        .dependency-icon {
+            height: 32px;
+            margin-left: 8px;
+            margin-right: 8px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+            padding: 4px;
+            border-radius: 5px;
+        }
+
+        .kpi-title {
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .kpi-icon {
+            height: 50px;
+            padding: 0;
+            margin-bottom: 12px;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 40px 0px 40px 80px;
+            border-color: transparent transparent transparent black;
+            transform: rotate(0deg);
+        }
+
+        .activity-summary {
+            margin: 14px 0;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+
+        .activity-stat {
+            display: inline-block;
+            margin-right: 18px;
+            min-width: 110px;
+        }
+
+        .activity-stat-value {
+            font-size: 30px;
+            color: #1d4ed8;
+        }
+
+        .activity-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th,
+        .activity-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .activity-table th {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .activity-link {
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+
+        .activity-muted {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .activity-block {
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 3px solid #d7dce1;
+        }
+
+        .activity-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 8px 8px 0;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background-color: #eef2f6;
+            font-size: 12px;
+        }
+
+        .activity-pill-highlight {
+            background-color: #dbeafe;
+            border: 1px solid #60a5fa;
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #d7dce1;
+            background-color: white;
+        }
+
+        .activity-icon-round {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .jobs-view-toggle {
+            display: inline-flex;
+            gap: 8px;
+            margin: 0 0 18px 24px;
+            padding: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background-color: #f8fafc;
+        }
+
+        .jobs-view-button {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            background-color: transparent;
+            color: #475569;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .jobs-view-button-active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .job-summary-table {
+            margin: 24px;
+            font-size: 120%;
+        }
+
+        .job-detail-group {
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+
+        .job-detail-hero {
+            width: 900px;
+            object-fit: contain;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .job-step-image {
+            max-width: 240px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+        }
+
+        .comic-job {
+            margin: 20px 24px 36px 24px;
+            padding: 24px;
+            border: 1px solid #d1d5db;
+            border-radius: 16px;
+            background-color: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px;
+        }
+
+        .comic-job-title {
+            color: #2563eb;
+            font-size: 220%;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comic-job-media {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .comic-job-media img {
+            width: min(100%, 900px);
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 12px;
+            background: white;
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 28px;
+        }
+
+        .comic-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .comic-step {
+            width: 500px;
+            max-width: 100%;
+            padding: 18px;
+            border: 1px solid #d7dce1;
+            border-radius: 14px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 6px 18px;
+        }
+
+        .comic-step-title {
+            color: #2563eb;
+            font-size: 135%;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comic-step-media {
+            text-align: center;
+        }
+
+        .comic-step-media img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f8fafc;
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+</head>
+<body onload="initTab('HomeTab')" onhashchange="initTab('HomeTab')">
+<style>
+    .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        align-items: center;
+        margin: 2px 0 10px 0;
+        padding: 4px 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-family: Ubuntu, Optima, Segoe, sans-serif;
+        font-size: 13px;
+    }
+    .site-nav a {
+        color: #6b7280;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .site-nav a:hover { color: #1d4ed8; background: #eff6ff; }
+    .site-nav a.active { color: #1d4ed8; font-weight: 600; background: #dbeafe; }
+</style>
+<nav class="site-nav" aria-label="Productscape sections">
+    <a href="../../start/index.html">Home</a>
+    <a href="../../customers/index.html" class="active" aria-current="page">Customers</a>
+    <a href="../../product-bricks/index.html">Product Bricks</a>
+    <a href="../../product-deployments/index.html">Products</a>
+    <a href="../../competition/index.html">Competition</a>
+    <a href="../../customers/index.html#insights">Insights</a>
+    <a href="../../residuality/index.html">Stress Test</a>
+    <a href="../../tutorial/index.html">Domain Tutorial</a>
+</nav>
+<div id="breadcrumbs" style="margin-left: 18px"></div>
+<script>
+    function resolveHashTabName() {
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+                return hash;
+            }
+        }
+
+        return '';
+    }
+
+    function resolveFallbackTabName(tabName) {
+        if (tabName && document.getElementById('tab_' + tabName) && document.getElementById('tab_content_' + tabName)) {
+            return tabName;
+        }
+
+        const firstTab = document.querySelector('.tablinks[id^="tab_"]');
+        if (firstTab) {
+            return firstTab.id.substring(4);
+        }
+
+        return '';
+    }
+
+    function initTab(tabName) {
+        setupTabAccessibility();
+        const resolvedTabName = resolveHashTabName() || resolveFallbackTabName(tabName);
+        openTab(resolvedTabName, { updateHistory: false });
+    }
+
+    // WAI-ARIA tab pattern: roles, aria-selected, and arrow-key navigation.
+    // Applied once; safe to call repeatedly.
+    function setupTabAccessibility() {
+        document.querySelectorAll('.tab').forEach(bar => {
+            if (bar.dataset.a11yReady) return;
+            bar.dataset.a11yReady = '1';
+            bar.setAttribute('role', 'tablist');
+            const buttons = Array.from(bar.querySelectorAll('.tablinks'));
+            buttons.forEach(btn => {
+                btn.setAttribute('role', 'tab');
+                const name = btn.id && btn.id.startsWith('tab_') ? btn.id.substring(4) : '';
+                if (name && document.getElementById('tab_content_' + name)) {
+                    btn.setAttribute('aria-controls', 'tab_content_' + name);
+                    const panel = document.getElementById('tab_content_' + name);
+                    panel.setAttribute('role', 'tabpanel');
+                }
+            });
+            bar.addEventListener('keydown', event => {
+                if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                const current = buttons.indexOf(document.activeElement);
+                if (current === -1) return;
+                event.preventDefault();
+                const offset = event.key === 'ArrowRight' ? 1 : -1;
+                const next = buttons[(current + offset + buttons.length) % buttons.length];
+                next.focus();
+                next.click();
+            });
+        });
+    }
+
+    function openTab(tabName, options) {
+        const resolvedTabName = resolveFallbackTabName(tabName);
+        if (!resolvedTabName) {
+            return '';
+        }
+
+        const tabcontent = document.getElementsByClassName('tabcontent');
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        const tablinks = document.getElementsByClassName('tablinks');
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+            tablinks[i].setAttribute('aria-selected', 'false');
+        }
+
+        const shouldUpdateHistory = !options || options.updateHistory !== false;
+        if (shouldUpdateHistory && window.location.hash !== '#' + resolvedTabName) {
+            history.pushState({}, '', '#' + resolvedTabName);
+        }
+
+        document.getElementById('tab_content_' + resolvedTabName).style.display = 'block';
+        const activeTab = document.getElementById('tab_' + resolvedTabName);
+        activeTab.className += ' active';
+        activeTab.setAttribute('aria-selected', 'true');
+        // Overview pages name the open tab in their title, as the start page's sidebar does.
+        const heroTitle = document.querySelector('[data-follows-tab]');
+        if (heroTitle) {
+            if (!heroTitle.dataset.defaultTitle) heroTitle.dataset.defaultTitle = heroTitle.textContent;
+            heroTitle.textContent = activeTab.dataset.tabTitle || heroTitle.dataset.defaultTitle;
+        }
+        // A tab may describe itself; otherwise the page's own subtitle stays.
+        const heroSubtitle = document.querySelector('[data-follows-tab-subtitle]');
+        if (heroSubtitle) {
+            if (!heroSubtitle.dataset.defaultSubtitle) heroSubtitle.dataset.defaultSubtitle = heroSubtitle.textContent.trim();
+            heroSubtitle.textContent = activeTab.dataset.tabSubtitle || heroSubtitle.dataset.defaultSubtitle;
+        }
+        if (typeof window.afterOpenTab === 'function') {
+            window.afterOpenTab(resolvedTabName);
+        }
+
+        return resolvedTabName;
+    }
+
+    // In-page links to another tab (e.g. the top bar's Insights link on the
+    // Customers page) only change the hash; switch to that tab.
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        if (hash && document.getElementById('tab_' + hash) && document.getElementById('tab_content_' + hash)) {
+            openTab(hash, {updateHistory: false});
+        }
+    });
+</script>
+
+
+<script>
+    const config = {"domains": [{"id": "payments-and-revenue-infrastructure", "name": "Payments and Revenue Infrastructure", "description": "Stripe-centered payments and revenue infrastructure for merchants, recurring businesses, platforms and treasury teams. Follow customer outcomes through checkout, usage billing, merchant-of-record services, financial accounts, payouts and shared controls, with an in-depth Adyen comparison and product-specific eligibility. Research refreshed 15 November 2026; architecture and unmeasured KPIs are explicit models."}]};
+    const all_customers = [{"id": "cg1-p1", "name": "Growth Commerce GM", "description": "A digital commerce leader responsible for conversion, authorization performance, global expansion, and reliable money operations across web, mobile, and increasingly in-person channels. Success means capturing more legitimate demand without growing fraud, support burden, or finance complexity. Works with payments engineering, risk, store operations and finance; those teams own integration acceptance, reader readiness, loss review and settlement exceptions.", "icon": "customer-cg1-p1-portrait.png", "careAbout": ["Maximizing successful payment conversion on every checkout session", "Adding local payment methods without long integration cycles", "Reducing authorization failures caused by issuer, SCA, or orchestration gaps", "Keeping refunds, disputes, and reconciliation manageable as volume scales", "Using one platform across online, mobile, and in-person commerce", "Compare Stripe, Adyen and other routes using the same merchant cohort, total cost, loss and cash-availability measures"], "winsThem": ["Hosted and embeddable checkout surfaces that ship quickly", "Strong authorization optimization and payment-method coverage", "Unified reporting across charges, refunds, disputes, and payouts", "Built-in fraud controls that protect conversion rather than only block volume", "A clear path from online payments into Terminal and finance operations", "Documented product and region eligibility, recoverable integrations and independently reconciled pilot results"], "theirFear": ["Losing revenue because checkout conversion degrades silently by market or payment method", "Adding operational overhead every time they launch a new country or channel", "Creating finance, support, or fraud problems while chasing growth"], "jobsToBeDone": [{"id": "jtbd-cg1-1", "name": "Accept more payments globally with higher conversion", "whatItIs": "Turn purchase intent into successfully authorized and captured payments across markets, devices, and payment methods with minimal customer friction.", "outcome": "Higher captured revenue from the same demand while keeping fraud and operational cost controlled.", "steps": [{"step": "Launch a checkout flow that buyers trust", "description": "Stand up a payment experience that works fast on web and mobile and supports saved details, wallets, and local methods.", "streamsNeeded": [{"id": "chck", "name": "Hosted Checkout", "howItSupports": "Provides a fast-to-launch, conversion-optimized checkout surface with built-in payment UX."}, {"id": "elem", "name": "Payment Elements", "howItSupports": "Lets teams embed a customizable payment form while keeping method logic centralized."}, {"id": "pmtd", "name": "Payment Method Orchestration", "howItSupports": "Shows the right payment methods by market, device, and customer context."}, {"id": "accept-payments-globally", "name": "Accept Payments Globally with High Conversion", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-1.jpg", "title": "Growth Commerce GM JTBD step 1: Launch a checkout flow that buyers trust", "alt": "Enterprise infographic for step 1 of the job \"Accept more payments globally with higher conversion\": Launch a checkout flow that buyers trust."}]}, {"step": "Improve payment success on legitimate demand", "description": "Reduce payment failure caused by issuer declines, authentication friction, and low-quality routing.", "streamsNeeded": [{"id": "auth", "name": "Authorization Optimization", "howItSupports": "Uses retries, network tokens, and routing improvements to recover legitimate transactions."}, {"id": "rada", "name": "Fraud Detection and Adaptive Risk Controls", "howItSupports": "Blocks abusive behavior while preserving approval rates on good customers."}, {"id": "disp", "name": "Disputes and Chargeback Operations", "howItSupports": "Keeps post-payment loss and support cost from eroding conversion gains."}], "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-2.jpg", "title": "Growth Commerce GM JTBD step 2: Improve payment success on legitimate demand", "alt": "Enterprise infographic for step 2 of the job \"Accept more payments globally with higher conversion\": Improve payment success on legitimate demand."}]}, {"step": "Operate payments without finance chaos", "description": "Understand balances, refunds, reconciliation, and payout timing well enough to scale internationally.", "streamsNeeded": [{"id": "ledg", "name": "Balances and Internal Ledger", "howItSupports": "Tracks money movement states across authorizations, captures, refunds, and payouts."}, {"id": "reca", "name": "Reconciliation and Balance Operations", "howItSupports": "Explains how payment events map into balances and cash movement."}, {"id": "rpts", "name": "Reporting, Sigma, and Data Export", "howItSupports": "Gives finance and operations teams usable transaction-level reporting."}], "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-1-3.jpg", "title": "Growth Commerce GM JTBD step 3: Operate payments without finance chaos", "alt": "Enterprise infographic for step 3 of the job \"Accept more payments globally with higher conversion\": Operate payments without finance chaos."}]}, {"step": "Evaluate new agent and processor routes with explicit limits", "description": "Payments engineering pilots eligible card-routing or agent-commerce integrations; the commerce team compares costs and outcomes while preserving order, authority and settlement references. Preview restrictions remain visible.", "streamsNeeded": [{"id": "accept-payments-globally", "name": "Accept Payments Globally with High Conversion", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}, {"id": "serve-agent-commerce", "name": "Serve Authorized Agent Commerce", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg1-p1-jtbd-cg1-1-illustrated.png", "title": "Growth Commerce GM: Accept more payments globally with higher conversion", "alt": "Four scenes show a commerce team improving checkout, reviewing payment failures, reconciling money operations, and testing eligible new routes within explicit pilot limits."}]}, {"id": "jtbd-cg1-2", "name": "Unify online and in-person commerce without fragmenting operations", "whatItIs": "Add in-person payment acceptance and omnichannel refund or reporting workflows without creating a second payments stack.", "outcome": "One commerce platform across online, mobile, and physical touchpoints.", "steps": [{"step": "Extend the same payment platform into stores or field operations", "description": "Bring card-present payments into the operating model without rebuilding finance processes.", "streamsNeeded": [{"id": "term", "name": "Terminal and Reader Operations", "howItSupports": "Adds in-person payment acceptance and reader lifecycle management."}, {"id": "pmtd", "name": "Payment Method Orchestration", "howItSupports": "Keeps payment-method handling consistent across channels where relevant."}, {"id": "ledg", "name": "Balances and Internal Ledger", "howItSupports": "Keeps online and in-person payment states legible in one money model."}, {"id": "operate-unified-commerce", "name": "Operate Unified Commerce and Store Recovery", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-1.jpg", "title": "Growth Commerce GM JTBD step 1: Extend the same payment platform into stores or field operations", "alt": "Enterprise infographic for step 1 of the job \"Unify online and in-person commerce without fragmenting operations\": Extend the same payment platform into stores or field operations."}]}, {"step": "Give support and finance one source of truth", "description": "Handle refunds, disputes, and reporting centrally even when channels differ.", "streamsNeeded": [{"id": "disp", "name": "Disputes and Chargeback Operations", "howItSupports": "Centralizes post-transaction issue handling across payment channels."}, {"id": "reca", "name": "Reconciliation and Balance Operations", "howItSupports": "Keeps cash-flow, payout, and exception workflows aligned."}, {"id": "webh", "name": "Eventing and Webhooks", "howItSupports": "Pushes consistent payment events into order, support, and ERP systems."}], "media": [{"type": "image", "src": "media/jbtd-cg1-p1-jtbd-cg1-2-2.jpg", "title": "Growth Commerce GM JTBD step 2: Give support and finance one source of truth", "alt": "Enterprise infographic for step 2 of the job \"Unify online and in-person commerce without fragmenting operations\": Give support and finance one source of truth."}]}, {"step": "Recover store exceptions and reconcile channel returns", "description": "Store operators manage reader availability and delayed offline collection; finance links refunds and settlement to the original order. The merchant owns inventory and fulfillment integration.", "streamsNeeded": [{"id": "operate-unified-commerce", "name": "Operate Unified Commerce and Store Recovery", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg1-p1-jtbd-cg1-2-illustrated.png", "title": "Growth Commerce GM: Unify online and in-person commerce without fragmenting operations", "alt": "A commerce GM connects store readers and online checkout, helps support locate original purchases, and coordinates reader recovery and linked returns with finance."}]}], "customerJourneyStories": [{"id": "journey-cg1-p1-1", "name": "Global checkout expansion without conversion loss", "linkedJobIds": ["jtbd-cg1-1", "jtbd-cg1-2"], "summary": "A commerce GM wants to add countries, payment methods, and physical touchpoints while protecting conversion and keeping finance operations understandable.", "stages": [{"stage": "Trigger", "narrative": "Declining conversion in a market or a store rollout triggers a payments review."}, {"stage": "Discovery", "narrative": "The GM encounters Stripe through an ecommerce integration partner, a peer merchant reference or payment-performance material, then shortlists it alongside Adyen and other relevant providers."}, {"stage": "Evaluation", "narrative": "Payments engineering and finance compare method coverage, contractual liability, reader coverage, total cost and migration effort; risk agrees loss guardrails and the test cohort before a pilot."}, {"stage": "Trial", "narrative": "A limited market or store pilot runs alongside the incumbent; exit criteria include agreed conversion and loss performance, reconciled settlements and a tested rollback."}, {"stage": "Engagement", "narrative": "Growth and operations review payment cohorts together, while store teams own device exceptions and finance owns settlement mismatches."}, {"stage": "Retention", "narrative": "Renewal or expansion follows sustained net customer value, reliable operations and demonstrated support across the next eligible market or channel."}], "media": [{"type": "image", "src": "media/journey-cg1-p1-journey-cg1-p1-1-illustrated.png", "title": "Growth Commerce GM: Global checkout expansion without conversion loss", "alt": "Six adoption scenes follow a commerce GM from a conversion problem and partner referral through provider comparison, a bounded pilot, shared operations and evidence-based renewal."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cg1-top", "name": "Successful payment conversion", "description": "Unique checkout attempts ending in a captured payment / eligible initiated checkout attempts. Segment by market, method, device and channel. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "icon": "kpi-cg1-p1-co-cg1-top.png"}, "branches": [{"id": "co-cg1-b1", "name": "Checkout submission rate", "children": [{"id": "co-cg1-b1-c1", "name": "Checkout completion rate", "description": "Sessions reaching the payment confirmation step / sessions submitting payment details; count each session once. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-co-cg1-b1-c1.png"}, {"id": "co-cg1-b1-c2", "name": "Local payment method coverage", "description": "Demand-weighted preferred methods supported / preferred-method demand in the selected expansion markets. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-co-cg1-b1-c2.png"}], "unit": "%", "description": "Checkout sessions submitting a payment / initiated eligible checkout sessions. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}, {"id": "co-cg1-b2", "name": "Captured payment attempt rate", "children": [{"id": "co-cg1-b2-c1", "name": "Issuer authorization rate", "description": "Approved first card authorizations / first card authorization requests; report retries separately. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-co-cg1-b2-c1.png"}, {"id": "co-cg1-b2-c2", "name": "Fraud-adjusted dispute loss rate", "description": "Confirmed fraud and unrecovered dispute losses, deduplicated / captured volume, multiplied by 10,000; use a matured loss cohort. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "basis points", "children": [], "icon": "kpi-cg1-p1-co-cg1-b2-c2.png"}], "unit": "%", "description": "Payment attempts successfully captured / submitted attempts; distinguish asynchronous pending payments and retries. Review monthly using a fixed cohort; owner: Growth Commerce GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-cg1-top", "name": "Enterprise merchant GPV retention", "description": "Current-period processed volume from a fixed prior-year merchant cohort / that cohort\u2019s prior-year volume. Supplier outcome; separate organic merchant growth from routing-share change. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "icon": "kpi-cg1-p1-bo-cg1-top.png"}, "branches": [{"id": "bo-cg1-b1", "name": "Merchant product expansion rate", "children": [{"id": "bo-cg1-b1-c1", "name": "Link-enabled returning checkout share", "description": "Returning checkout sessions using Link / eligible returning sessions; an adoption diagnostic, not proof of conversion uplift. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-bo-cg1-b1-c1.png"}, {"id": "bo-cg1-b1-c2", "name": "Terminal attach on omnichannel accounts", "description": "Eligible omnichannel merchant accounts actively using Terminal / eligible omnichannel accounts. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-bo-cg1-b1-c2.png"}], "unit": "%", "description": "Retained eligible merchants activating an additional paid product / retained eligible merchants. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}, {"id": "bo-cg1-b2", "name": "Merchant operations escalation rate", "children": [{"id": "bo-cg1-b2-c1", "name": "Reconciliation exception rate", "description": "Settlement items not matched within the agreed close window / settlement items due for matching. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-bo-cg1-b2-c1.png"}, {"id": "bo-cg1-b2-c2", "name": "Manual fraud review rate", "description": "Screened payment attempts requiring manual review / screened attempts; interpret with losses and conversion. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg1-p1-bo-cg1-b2-c2.png"}], "unit": "per 1,000 payments", "description": "Merchant support escalations about payments operations / captured payments, multiplied by 1,000; lower is better. Review monthly using a fixed cohort; measurement owner: Stripe commerce product and merchant operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}]}}, "productStrategy": {"vision": "Capture more demand with controlled loss, cost and operational effort. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Establish cohort baselines and complete store/refund reconciliation.", "productTheme": "Measured payment performance", "customerKPI": {"northStar": "Successful payment conversion", "supporting": ["Issuer authorization rate", "Fraud-adjusted dispute loss rate"]}, "businessKPI": {"northStar": "Enterprise merchant GPV retention", "supporting": ["Link-enabled returning checkout share", "Terminal attach on omnichannel accounts"], "revenueStreams": ["Payments", "Terminal", "Radar"]}, "strategicMilestones": ["Reconcile pilot settlements before expanding", "Test recovery from duplicate events and offline reader exceptions"]}, "year3": {"focus": "By 2029-11-15: Expand eligible markets and channels after proven net merchant benefit.", "productTheme": "Unified commerce operations", "customerKPI": {"northStar": "Successful payment conversion", "supporting": ["Local payment method coverage", "Checkout completion rate"]}, "businessKPI": {"northStar": "Enterprise merchant GPV retention", "supporting": ["Merchant product expansion rate", "Reconciliation exception rate"], "revenueStreams": ["Payments", "Terminal", "Radar"]}, "strategicMilestones": ["Extend the same order and finance references across channels", "Compare route performance with consistent cost and loss cohorts"]}, "year5": {"focus": "By 2031-11-15: Scale eligible agent-commerce and routing choices with auditable control.", "productTheme": "Controlled new commerce channels", "customerKPI": {"northStar": "Successful payment conversion", "supporting": ["Captured payment attempt rate", "Fraud-adjusted dispute loss rate"]}, "businessKPI": {"northStar": "Enterprise merchant GPV retention", "supporting": ["Enterprise merchant GPV retention", "Merchant operations escalation rate"], "revenueStreams": ["Payments", "Terminal", "Radar"]}, "strategicMilestones": ["Keep merchant choice and customer consent explicit", "Use availability evidence before expanding automated checkout"]}}}, "domain": "Direct Merchants"}, {"id": "cg2-p1", "name": "SaaS Revenue Operations Lead", "description": "A revenue operations or monetization leader responsible for subscription growth, usage-based packaging, failed-payment recovery, invoicing, tax, and month-end accuracy. Success means shipping pricing changes faster while reducing involuntary churn and manual finance work. Partners with product engineering and the controller to validate price versions, AI usage costs, credits and accounting outputs before release.", "icon": "customer-cg2-p1-portrait.png", "careAbout": ["Launching recurring and usage-based pricing without heavy engineering involvement", "Recovering failed recurring payments before they become churn", "Closing invoices and collections predictably across geographies", "Handling tax and revenue recognition correctly as the business scales", "Giving finance, product, and GTM teams one monetization source of truth", "Explain consumption and price changes to customers before an unexpected invoice", "Choose merchant-operated tax responsibilities or an eligible merchant-of-record arrangement explicitly"], "winsThem": ["Flexible product, price, and meter models", "Subscription dunning and retry logic that actually recovers revenue", "Invoice, tax, and revenue-recognition workflows tied to the same data model", "Clear reporting for ARR, collections, and churn diagnostics", "A credible path from startup billing to enterprise-grade finance operations"], "theirFear": ["Shipping monetization changes slowly because billing logic is brittle", "Losing healthy customers to involuntary churn or invoice friction", "Creating a finance close process that depends on manual spreadsheets and exceptions"], "jobsToBeDone": [{"id": "jtbd-cg2-1", "name": "Launch recurring and usage-based monetization quickly", "whatItIs": "Turn packaging, pricing, and contract changes into live subscription or invoice flows with low engineering dependency.", "outcome": "Faster monetization experiments and smoother expansion revenue.", "steps": [{"step": "Model products, prices, and meters", "description": "Configure recurring, hybrid, or usage-based plans without rebuilding core billing logic.", "streamsNeeded": [{"id": "subs", "name": "Subscription and Price Management", "howItSupports": "Defines products, prices, proration, trials, and contract lifecycle behavior."}, {"id": "usag", "name": "Usage Metering and Rating", "howItSupports": "Turns product usage into billable records and rated amounts."}, {"id": "invo", "name": "Invoicing and Collections", "howItSupports": "Creates payable invoices and collection workflows from recurring and usage events."}, {"id": "automate-recurring-revenue", "name": "Automate Recurring Revenue and Finance Workflows", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-1.jpg", "title": "SaaS Revenue Operations Lead JTBD step 1: Model products, prices, and meters", "alt": "Enterprise infographic for step 1 of the job \"Launch recurring and usage-based monetization quickly\": Model products, prices, and meters."}]}, {"step": "Collect recurring revenue without avoidable churn", "description": "Recover failed payments and keep subscription status transitions understandable to customers and support teams.", "streamsNeeded": [{"id": "auth", "name": "Authorization Optimization", "howItSupports": "Improves renewal success on legitimate payment attempts."}, {"id": "invo", "name": "Invoicing and Collections", "howItSupports": "Runs reminders, retries, and collections behavior across invoice states."}, {"id": "webh", "name": "Eventing and Webhooks", "howItSupports": "Synchronizes subscription state into product access and internal systems."}], "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-2.jpg", "title": "SaaS Revenue Operations Lead JTBD step 2: Collect recurring revenue without avoidable churn", "alt": "Enterprise infographic for step 2 of the job \"Launch recurring and usage-based monetization quickly\": Collect recurring revenue without avoidable churn."}]}, {"step": "Close the loop with finance and compliance", "description": "Make tax, revenue recognition, and reporting robust enough for board and audit scrutiny.", "streamsNeeded": [{"id": "taxx", "name": "Tax Determination and Registration", "howItSupports": "Calculates tax and monitors registration obligations as monetization expands."}, {"id": "revn", "name": "Revenue Recognition", "howItSupports": "Transforms billing events into auditable accounting treatment."}, {"id": "rpts", "name": "Reporting, Sigma, and Data Export", "howItSupports": "Gives RevOps and finance consistent ARR, churn, and collections reporting."}], "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-1-3.jpg", "title": "SaaS Revenue Operations Lead JTBD step 3: Close the loop with finance and compliance", "alt": "Enterprise infographic for step 3 of the job \"Launch recurring and usage-based monetization quickly\": Close the loop with finance and compliance."}]}, {"step": "Validate usage, credits and margin before a pricing change", "description": "Replay a representative usage cohort against versioned commercial terms; verify late events, duplicate events, credit exhaustion and AI unit cost. Select Metronome or an existing supported Billing Meters integration based on compatibility.", "streamsNeeded": [{"id": "automate-recurring-revenue", "name": "Automate Recurring Revenue and Finance Workflows", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg2-p1-jtbd-cg2-1-illustrated.png", "title": "SaaS Revenue Operations Lead: Launch recurring and usage-based monetization quickly", "alt": "Four scenes show a revenue lead defining pricing, recovering recurring payments, aligning finance records, and validating usage, credits and costs before a pricing change."}]}, {"id": "jtbd-cg2-2", "name": "Reduce month-end manual work while keeping revenue data trustworthy", "whatItIs": "Create a billing and finance operating model where invoices, payments, taxes, and accounting outputs stay aligned.", "outcome": "Faster close with fewer manual adjustments and fewer trust gaps between GTM and finance.", "steps": [{"step": "Keep billing events and cash states aligned", "description": "Understand how invoices, retries, payments, credits, and refunds affect receivables and balances.", "streamsNeeded": [{"id": "ledg", "name": "Balances and Internal Ledger", "howItSupports": "Provides the money-state backbone behind invoice collection and refunds."}, {"id": "reca", "name": "Reconciliation and Balance Operations", "howItSupports": "Explains settlement, payout, and exception handling to finance teams."}, {"id": "rpts", "name": "Reporting, Sigma, and Data Export", "howItSupports": "Produces queryable transaction and billing detail for close workflows."}], "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-2-1.jpg", "title": "SaaS Revenue Operations Lead JTBD step 1: Keep billing events and cash states aligned", "alt": "Enterprise infographic for step 1 of the job \"Reduce month-end manual work while keeping revenue data trustworthy\": Keep billing events and cash states aligned."}]}, {"step": "Prove compliance and accounting correctness", "description": "Make tax and revenue outputs audit-friendly as the pricing model gets more complex.", "streamsNeeded": [{"id": "taxx", "name": "Tax Determination and Registration", "howItSupports": "Applies the right tax treatment and registration awareness to billed activity."}, {"id": "revn", "name": "Revenue Recognition", "howItSupports": "Automates revenue schedules and deferred revenue treatment."}, {"id": "devx", "name": "Developer API and Dashboard Foundations", "howItSupports": "Exposes configurable controls and audit trails for operators."}], "media": [{"type": "image", "src": "media/jbtd-cg2-p1-jtbd-cg2-2-2.jpg", "title": "SaaS Revenue Operations Lead JTBD step 2: Prove compliance and accounting correctness", "alt": "Enterprise infographic for step 2 of the job \"Reduce month-end manual work while keeping revenue data trustworthy\": Prove compliance and accounting correctness."}]}, {"step": "Confirm who owns tax and buyer support", "description": "The controller records the merchant-of-record arrangement, eligible products and jurisdictions, filing responsibilities, dispute ownership and customer support handoffs. Managed Payments does not imply Connect compatibility.", "streamsNeeded": [{"id": "sell-digital-products-with-managed-payments", "name": "Sell Eligible Digital Products with Managed Payments", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg2-p1-jtbd-cg2-2-illustrated.png", "title": "SaaS Revenue Operations Lead: Reduce month-end manual work while keeping revenue data trustworthy", "alt": "A revenue team links billing events to cash, reviews tax and revenue evidence, and assigns merchant, tax and buyer-support responsibilities before closing."}]}], "customerJourneyStories": [{"id": "journey-cg2-p1-1", "name": "Usage-based monetization without finance breakage", "linkedJobIds": ["jtbd-cg2-1", "jtbd-cg2-2"], "summary": "A RevOps lead wants to add usage pricing and invoice complexity without sacrificing collection rates, tax correctness, or month-end trust.", "stages": [{"stage": "Trigger", "narrative": "A new usage or AI pricing model exposes spreadsheet corrections, customer bill disputes or a slow finance close."}, {"stage": "Discovery", "narrative": "The lead finds Stripe Billing and Metronome through developer documentation, finance peers or an implementation partner; Orb/Adyen, Chargebee and Paddle surface as different alternatives."}, {"stage": "Evaluation", "narrative": "Product and finance compare contracts, credits, tax responsibility, accounting handoffs and compatibility. They decide whether to remain merchant of record and define migration acceptance."}, {"stage": "Trial", "narrative": "A representative subscription and usage cohort runs in parallel; invoice totals, corrections, credit balances and exports must reconcile before collection is switched."}, {"stage": "Engagement", "narrative": "Revenue operations controls price versions and collections; engineering monitors usage ingestion and the controller signs off accounting outputs."}, {"stage": "Retention", "narrative": "The business expands usage when pricing changes stay explainable and collection/close effort falls; renewal depends on measured outcomes, not suite attachment alone."}], "media": [{"type": "image", "src": "media/journey-cg2-p1-journey-cg2-p1-1-illustrated.png", "title": "SaaS Revenue Operations Lead: Usage-based monetization without finance breakage", "alt": "Six scenes show a revenue lead discovering billing providers, comparing responsibilities, testing a parallel cohort, establishing shared controls and renewing only when outcomes justify it."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cg2-top", "name": "Net revenue retention", "description": "Ending recurring revenue from the starting customer cohort, including expansion and contraction / starting recurring revenue. Use a consistent revenue basis. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "icon": "kpi-cg2-p1-co-cg2-top.png"}, "branches": [{"id": "co-cg2-b1", "name": "Recurring collection rate", "children": [{"id": "co-cg2-b1-c1", "name": "Recovered failed recurring revenue", "description": "Initially failed recurring invoice value collected within 30 days / initially failed recurring invoice value. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-co-cg2-b1-c1.png"}, {"id": "co-cg2-b1-c2", "name": "Invoice collection within 30 days", "description": "Invoice value collected within 30 days after due date / invoice value due in the cohort. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-co-cg2-b1-c2.png"}], "unit": "%", "description": "Recurring invoice value collected within the contractual window / recurring invoice value due. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}, {"id": "co-cg2-b2", "name": "Pricing changes accepted without correction", "children": [{"id": "co-cg2-b2-c1", "name": "Pricing change lead time", "description": "Median time from approved commercial terms to a validated production price version; include finance acceptance. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "business days", "children": [], "icon": "kpi-cg2-p1-co-cg2-b2-c1.png"}, {"id": "co-cg2-b2-c2", "name": "Tax coverage on obligated jurisdictions", "description": "Applicable registered/filing obligations with an assigned owner and supported process / obligations identified for the merchant\u2019s product and entity. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-co-cg2-b2-c2.png"}], "unit": "%", "description": "Released pricing changes that complete one billing cycle without corrective credit or invoice / released changes completing a cycle. Review monthly using a fixed cohort; owner: SaaS Revenue Operations Lead with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-cg2-top", "name": "Revenue automation suite expansion", "description": "Existing revenue-suite customers adopting another paid revenue product / eligible existing revenue-suite customers. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "icon": "kpi-cg2-p1-bo-cg2-top.png"}, "branches": [{"id": "bo-cg2-b1", "name": "Revenue suite product adoption", "children": [{"id": "bo-cg2-b1-c1", "name": "Billing plus Tax attach", "description": "Eligible Billing customers actively using Tax / eligible Billing customers; Managed Payments tax handling is a different commercial arrangement. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-bo-cg2-b1-c1.png"}, {"id": "bo-cg2-b1-c2", "name": "Usage billing attach", "description": "Eligible revenue customers actively using metered billing / eligible revenue customers; identify Metronome and Meters cohorts separately. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-bo-cg2-b1-c2.png"}], "unit": "products per customer", "description": "Mean count of actively used paid revenue products per eligible customer, excluding trials. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}, {"id": "bo-cg2-b2", "name": "Revenue operations account retention", "children": [{"id": "bo-cg2-b2-c1", "name": "Month-end support escalation rate", "description": "Revenue-suite customers raising close-related escalations / active revenue-suite customers, multiplied by 100. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "per 100 customers", "children": [], "icon": "kpi-cg2-p1-bo-cg2-b2-c1.png"}, {"id": "bo-cg2-b2-c2", "name": "Revenue export accuracy", "description": "Exported revenue records reconciled to accepted source records without adjustment / records checked in the close. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg2-p1-bo-cg2-b2-c2.png"}], "unit": "%", "description": "Revenue-suite accounts retained through their renewal window / accounts due for renewal. Review monthly using a fixed cohort; measurement owner: Stripe revenue product and customer operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}]}}, "productStrategy": {"vision": "Change monetization without losing invoice, tax and accounting trust. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Validate pricing, usage and invoice accuracy before broad migration.", "productTheme": "Trusted usage monetization", "customerKPI": {"northStar": "Net revenue retention", "supporting": ["Recovered failed recurring revenue", "Pricing change lead time"]}, "businessKPI": {"northStar": "Revenue automation suite expansion", "supporting": ["Usage billing attach", "Revenue export accuracy"], "revenueStreams": ["Billing / Metronome", "Tax", "Revenue Recognition", "Managed Payments"]}, "strategicMilestones": ["Choose Metronome or existing Meters by integration needs", "Separate Managed Payments responsibilities from merchant-operated tax"]}, "year3": {"focus": "By 2029-11-15: Expand contractual and credit models with an auditable finance close.", "productTheme": "Flexible contracts with controlled corrections", "customerKPI": {"northStar": "Net revenue retention", "supporting": ["Pricing changes accepted without correction", "Tax coverage on obligated jurisdictions"]}, "businessKPI": {"northStar": "Revenue automation suite expansion", "supporting": ["Billing plus Tax attach", "Month-end support escalation rate"], "revenueStreams": ["Billing / Metronome", "Tax", "Revenue Recognition", "Managed Payments"]}, "strategicMilestones": ["Reconcile late usage and credits through invoice adjustments", "Measure AI unit cost and margin by price version"]}, "year5": {"focus": "By 2031-11-15: Automate routine revenue work while preserving approval and explanation.", "productTheme": "Accountable revenue operations", "customerKPI": {"northStar": "Net revenue retention", "supporting": ["Recurring collection rate", "Pricing change lead time"]}, "businessKPI": {"northStar": "Revenue automation suite expansion", "supporting": ["Revenue operations account retention", "Revenue suite product adoption"], "revenueStreams": ["Billing / Metronome", "Tax", "Revenue Recognition", "Managed Payments"]}, "strategicMilestones": ["Keep human review for material contract/accounting changes", "Retain export and migration paths across providers"]}}}, "domain": "Recurring Revenue Operators"}, {"id": "cg3-p1", "name": "Platform Payments GM", "description": "A product or business leader responsible for onboarding sellers, service providers, or creators; moving funds between parties; and monetizing platform payments without creating compliance or operational drag. Success means faster account activation, reliable payouts, and scalable controls for regulated money movement. Works with risk/compliance, payments engineering and recipient support; activation, liability and funds availability require explicit handoffs.", "icon": "customer-cg3-p1-portrait.png", "careAbout": ["Onboarding connected accounts quickly without excessive verification failure", "Supporting marketplace or platform payouts across countries and seller types", "Keeping funds flows, fees, reserves, and reconciliations understandable", "Reducing compliance and fraud risk without blocking legitimate platform growth", "Launching financial workflows that feel native to the platform experience", "Explain capability restrictions and payout delays to sellers", "Keep the legal party, account role, balance owner and loss bearer distinct"], "winsThem": ["Configurable connected-account models and onboarding flows", "Strong payout, split settlement, and fee collection primitives", "Integrated KYC, identity, and risk controls", "Clear ledger, balance, and reconciliation views for platform operators", "A path into issuing or treasury-style experiences when the platform matures"], "theirFear": ["Growing the platform while onboarding friction prevents provider activation", "Handling complex funds flows with poor operational visibility or reconciliation gaps", "Crossing a compliance threshold before the internal operations model is ready"], "jobsToBeDone": [{"id": "jtbd-cg3-1", "name": "Onboard and activate counterparties at scale", "whatItIs": "Turn providers, sellers, or creators into verified and transacting connected accounts without heavy manual review.", "outcome": "Higher activated supply and faster time to first earnings event.", "steps": [{"step": "Choose the right connected-account model", "description": "Configure onboarding, responsibility boundaries, and dashboard exposure for different partner types.", "streamsNeeded": [{"id": "acct", "name": "Connected Account Lifecycle", "howItSupports": "Defines account types, capabilities, onboarding states, and lifecycle controls."}, {"id": "kycb", "name": "KYC and KYB Verification", "howItSupports": "Collects and validates the identity and business data needed to activate accounts."}, {"id": "iden", "name": "Identity Verification", "howItSupports": "Adds document and identity checks where the platform flow requires stronger assurance."}, {"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": [{"type": "image", "src": "media/jbtd-cg3-p1-jtbd-cg3-1-1.jpg", "title": "Platform Payments GM JTBD step 1: Choose the right connected-account model", "alt": "Enterprise infographic for step 1 of the job \"Onboard and activate counterparties at scale\": Choose the right connected-account model."}]}, {"step": "Get the counterparty live quickly", "description": "Move from onboarding into first charge, first transfer, or first payout without avoidable operations delay.", "streamsNeeded": [{"id": "split", "name": "Funds Routing and Split Settlement", "howItSupports": "Routes incoming funds, fees, reserves, and net transfers correctly across parties."}, {"id": "pyot", "name": "Payout Execution and Returns", "howItSupports": "Moves money out to connected accounts on the right schedule and rails."}, {"id": "webh", "name": "Eventing and Webhooks", "howItSupports": "Notifies platform systems when accounts, payouts, and funds-flow states change."}], "media": [{"type": "image", "src": "media/jbtd-cg3-p1-jtbd-cg3-1-2.jpg", "title": "Platform Payments GM JTBD step 2: Get the counterparty live quickly", "alt": "Enterprise infographic for step 2 of the job \"Onboard and activate counterparties at scale\": Get the counterparty live quickly."}]}, {"step": "Remediate changing verification and capability requirements", "description": "The risk team requests missing evidence, explains restricted capabilities and confirms remediation. Recipients can see what is required without exposing sensitive risk signals.", "streamsNeeded": [{"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg3-p1-jtbd-cg3-1-illustrated.png", "title": "Platform Payments GM: Onboard and activate counterparties at scale", "alt": "A platform payments GM defines account responsibilities, tracks a seller's first payment and payout separately, and helps resolve changing verification requirements."}]}, {"id": "jtbd-cg3-2", "name": "Operate platform money movement safely and profitably", "whatItIs": "Manage splits, fees, reserves, payouts, disputes, and financial controls without losing track of who owns what money or why.", "outcome": "Platform payments grow with strong operator trust and fewer manual exceptions.", "steps": [{"step": "Control funds, fees, and payout timing", "description": "Run complex platform settlements while keeping the unit economics and operator tools clear.", "streamsNeeded": [{"id": "split", "name": "Funds Routing and Split Settlement", "howItSupports": "Calculates platform fees, seller allocations, reserves, and transfer sequencing."}, {"id": "ledg", "name": "Balances and Internal Ledger", "howItSupports": "Maintains money-state traceability across platform and connected-account balances."}, {"id": "reca", "name": "Reconciliation and Balance Operations", "howItSupports": "Helps platform finance and ops teams close the loop on payouts and exceptions."}], "media": [{"type": "image", "src": "media/jbtd-cg3-p1-jtbd-cg3-2-1.jpg", "title": "Platform Payments GM JTBD step 1: Control funds, fees, and payout timing", "alt": "Enterprise infographic for step 1 of the job \"Operate platform money movement safely and profitably\": Control funds, fees, and payout timing."}]}, {"step": "Protect the platform from fraud and compliance failure", "description": "Control risky counterparties and money movement without slowing healthy platform supply too much.", "streamsNeeded": [{"id": "rada", "name": "Fraud Detection and Adaptive Risk Controls", "howItSupports": "Scores risky payment and platform activity in real time."}, {"id": "disp", "name": "Disputes and Chargeback Operations", "howItSupports": "Handles downstream payment disputes that can affect platform economics."}, {"id": "capm", "name": "Capital and Financing Offers", "howItSupports": "Lets mature platforms extend financing workflows tied to connected-account performance."}], "media": [{"type": "image", "src": "media/jbtd-cg3-p1-jtbd-cg3-2-2.jpg", "title": "Platform Payments GM JTBD step 2: Protect the platform from fraud and compliance failure", "alt": "Enterprise infographic for step 2 of the job \"Operate platform money movement safely and profitably\": Protect the platform from fraud and compliance failure."}]}, {"step": "Offer eligible financial services with clear responsibilities", "description": "Assess account, card and financing eligibility separately; disclose limits, fees, repayment obligations and support ownership before a platform user accepts an offer.", "streamsNeeded": [{"id": "offer-platform-financial-services", "name": "Offer Eligible Platform Financial Services", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg3-p1-jtbd-cg3-2-illustrated.png", "title": "Platform Payments GM: Operate platform money movement safely and profitably", "alt": "Platform staff review splits and payouts, handle targeted risk exceptions, and separately assess optional accounts, cards or financing with clear terms."}]}], "customerJourneyStories": [{"id": "journey-cg3-p1-1", "name": "Marketplace activation and payout reliability at scale", "linkedJobIds": ["jtbd-cg3-1", "jtbd-cg3-2"], "summary": "A platform payments GM needs to activate more supply, move money to counterparties predictably, and keep operator controls strong as the platform expands internationally.", "stages": [{"stage": "Trigger", "narrative": "Seller activation stalls, payout complaints rise or a new platform market changes responsibility and eligibility requirements."}, {"stage": "Discovery", "narrative": "The GM discovers Connect and Adyen for Platforms through platform peers, vertical SaaS partners or payment-provider discussions."}, {"stage": "Evaluation", "narrative": "Legal, risk and engineering compare account roles, negative-balance liability, regional eligibility, fees and recipient support; they define an onboarding and payout pilot."}, {"stage": "Trial", "narrative": "A bounded eligible seller cohort completes verification, a live transaction and a reconciled payout, including tested document-remediation and payout-return paths."}, {"stage": "Engagement", "narrative": "The platform monitors capability changes and funds flows daily; recipient support can explain blocked onboarding, fees and delayed funds."}, {"stage": "Retention", "narrative": "Retention follows predictable seller activation and usable earnings with sustainable platform economics; optional financial products require separate eligibility and adoption evidence."}], "media": [{"type": "image", "src": "media/journey-cg3-p1-journey-cg3-p1-1-illustrated.png", "title": "Platform Payments GM: Marketplace activation and payout reliability at scale", "alt": "A platform GM moves through six adoption stages, from seller complaints to provider discovery, liability review, a bounded seller pilot, daily controls and conditional renewal."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cg3-top", "name": "Activated connected account rate", "description": "Eligible completed applicants reaching a first successful live charge or transfer within 30 days / eligible completed applicants. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "icon": "kpi-cg3-p1-co-cg3-top.png"}, "branches": [{"id": "co-cg3-b1", "name": "Onboarding completion rate", "children": [{"id": "co-cg3-b1-c1", "name": "Verification completion rate", "description": "Applications meeting required verification and capability conditions / applications submitted for verification. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-co-cg3-b1-c1.png"}, {"id": "co-cg3-b1-c2", "name": "Time to first live charge or transfer", "description": "Median elapsed days from an eligible application start to its first successful financial activity; report p90 and unresolved applications alongside. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "days", "children": [], "icon": "kpi-cg3-p1-co-cg3-b1-c2.png"}], "unit": "%", "description": "Started eligible applications completing required information and review / started eligible applications. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}, {"id": "co-cg3-b2", "name": "Money movement completion rate", "children": [{"id": "co-cg3-b2-c1", "name": "On-time payout rate", "description": "Payouts confirmed available to recipients within the disclosed window / payouts due in that window. API acceptance is not completion. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-co-cg3-b2-c1.png"}, {"id": "co-cg3-b2-c2", "name": "Reconciliation accuracy", "description": "Funds-flow records matched to ledger, fees and external settlement without unexplained difference / records checked. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-co-cg3-b2-c2.png"}], "unit": "%", "description": "Eligible instructed transfers and payouts reaching their expected final state within the promise / eligible instructions. Review monthly using a fixed cohort; owner: Platform Payments GM with the relevant finance/risk analyst. Baseline and target are not yet measured in this illustrative model.", "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-cg3-top", "name": "Connect platform GPV growth", "description": "Change in Connect processed volume / prior-year Connect volume for the specified platform cohort; supplier outcome. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model.", "unit": "% year over year", "icon": "kpi-cg3-p1-bo-cg3-top.png"}, "branches": [{"id": "bo-cg3-b1", "name": "Embedded finance adoption rate", "children": [{"id": "bo-cg3-b1-c1", "name": "Monetized funds-flow share", "description": "Eligible platform payment volume generating contracted platform fees / eligible platform payment volume. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-bo-cg3-b1-c1.png"}, {"id": "bo-cg3-b1-c2", "name": "Payouts attach", "description": "Eligible platforms actively using the selected payout product / eligible platforms; distinguish Connect from standalone Global Payouts. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-bo-cg3-b1-c2.png"}], "unit": "%", "description": "Eligible platforms using a contracted embedded financial product / eligible platforms; distinguish preview access from production use. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}, {"id": "bo-cg3-b2", "name": "Platform control exception rate", "children": [{"id": "bo-cg3-b2-c1", "name": "Manual connected-account review rate", "description": "Applications escalated for manual review / applications reviewed; interpret with risk outcomes and eligibility. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "%", "children": [], "icon": "kpi-cg3-p1-bo-cg3-b2-c1.png"}, {"id": "bo-cg3-b2-c2", "name": "Critical payout incident rate", "description": "Payout incidents meeting the agreed severity definition / initiated payouts, multiplied by 100,000. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "unit": "per 100,000 payouts", "children": [], "icon": "kpi-cg3-p1-bo-cg3-b2-c2.png"}], "unit": "per 10,000 instructions", "description": "Policy or reconciliation exceptions requiring intervention / financial instructions, multiplied by 10,000. Review monthly using a fixed cohort; measurement owner: Stripe Connect product and platform operations leads. Baseline and target are not yet measured in this illustrative model. This is a supplier outcome or operating diagnostic, interpreted alongside customer value.", "icon": "kpi.png"}]}}, "productStrategy": {"vision": "Activate eligible counterparties and move their funds with explainable responsibility. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Repair verification remediation and recipient payout visibility.", "productTheme": "Explainable account activation", "customerKPI": {"northStar": "Activated connected account rate", "supporting": ["Time to first live charge or transfer", "On-time payout rate"]}, "businessKPI": {"northStar": "Connect platform GPV growth", "supporting": ["Payouts attach", "Critical payout incident rate"], "revenueStreams": ["Connect", "Eligible embedded financial services"]}, "strategicMilestones": ["Name capability and liability owners per platform model", "Test a returned payout and a restricted seller"]}, "year3": {"focus": "By 2029-11-15: Offer accounts, cards and finance only to eligible cohorts.", "productTheme": "Controlled embedded financial services", "customerKPI": {"northStar": "Activated connected account rate", "supporting": ["Verification completion rate", "Reconciliation accuracy"]}, "businessKPI": {"northStar": "Connect platform GPV growth", "supporting": ["Embedded finance adoption rate", "Monetized funds-flow share"], "revenueStreams": ["Connect", "Eligible embedded financial services"]}, "strategicMilestones": ["Separate product eligibility from payment acceptance", "Disclose financing obligations and negative-balance recourse"]}, "year5": {"focus": "By 2031-11-15: Expand funds-flow models without weakening legal-party and balance controls.", "productTheme": "Resilient multi-party money movement", "customerKPI": {"northStar": "Activated connected account rate", "supporting": ["Money movement completion rate", "Onboarding completion rate"]}, "businessKPI": {"northStar": "Connect platform GPV growth", "supporting": ["Connect platform GPV growth", "Platform control exception rate"], "revenueStreams": ["Connect", "Eligible embedded financial services"]}, "strategicMilestones": ["Preserve policy and account-role history across regions", "Measure recipient outcomes alongside platform monetization"]}}}, "domain": "Platforms and Marketplaces"}, {"id": "cg3-p2", "name": "Platform Seller and Payout Recipient", "description": "A business or professional earning through a marketplace or SaaS platform. Completes verification and relies on the platform for clear fees, usable earnings and remediation. This is a platform end user, not necessarily a direct Stripe buyer.", "careAbout": ["Understand documents, restrictions, fees and payout timing", "Receive funds in the correct verified account", "Resolve an exception without repeating sensitive evidence", "Evaluate optional account, card or financing offers independently"], "winsThem": ["Actionable verification requests and visible capability status", "A payout promise tied to actual recipient access", "Clear statements and a reachable support owner"], "theirFear": ["Funds are held with no explanation or route to remediation", "A changed destination sends money to the wrong party", "A financing offer conceals repayment or eligibility conditions"], "jobsToBeDone": [{"id": "jtbd-cg3-3", "name": "Receive the first usable platform earnings", "whatItIs": "Become eligible to transact and receive net earnings in a verified destination.", "outcome": "The seller understands what was earned, deducted and received.", "steps": [{"step": "Provide evidence for the right legal party", "description": "Submit business and beneficial-owner information and confirm requested capabilities.", "streamsNeeded": [{"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Confirm the destination and payout promise", "description": "Verify the transfer destination and review fees, reserves and expected funds-availability time.", "streamsNeeded": [{"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Match earnings to received funds", "description": "Reconcile a first payment, deductions and recipient confirmation against the platform statement.", "streamsNeeded": [{"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg3-p2-jtbd-cg3-3-illustrated.png", "title": "Platform Seller and Payout Recipient: Receive the first usable platform earnings", "alt": "A seller supplies business evidence, confirms the payout destination and terms, then matches sales and deductions to funds actually received."}]}, {"id": "jtbd-cg3-4", "name": "Resolve a restriction or evaluate an optional financial service", "whatItIs": "Respond to changed eligibility and decide whether an account, card or financing offer fits the business.", "outcome": "Restrictions have an actionable resolution and optional financial obligations are understood.", "steps": [{"step": "Understand the required action", "description": "Find the missing verification evidence or payout failure explanation and the support owner.", "streamsNeeded": [{"id": "operate-platform-money-movement", "name": "Operate Platform Money Movement Safely", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Choose or decline an eligible financial offer", "description": "Review account terms, card controls or financing fees and repayment conditions; acceptance is voluntary and product-specific.", "streamsNeeded": [{"id": "offer-platform-financial-services", "name": "Offer Eligible Platform Financial Services", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Track the resolution or obligation", "description": "Confirm restored capability, a returned/reissued payout or a financing repayment on a reconcilable statement.", "streamsNeeded": [{"id": "offer-platform-financial-services", "name": "Offer Eligible Platform Financial Services", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg3-p2-jtbd-cg3-4-illustrated.png", "title": "Platform Seller and Payout Recipient: Resolve a restriction or evaluate an optional financial service", "alt": "Two independent three-scene lanes show a seller resolving missing evidence and checking a payout update, or separately evaluating and accepting or declining an optional financial offer."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-rec-top", "name": "Time to usable platform earnings", "unit": "days", "description": "Median time from eligible onboarding start to the first payout available to the recipient; include open cases in aging reports. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "co-rec-b1", "name": "Verification resolution time", "unit": "days", "description": "Median time from a required-evidence request to a final capability decision. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-rec-b1-c1", "name": "First-pass evidence acceptance", "unit": "%", "description": "Evidence submissions accepted without a repeat request / evidence submissions. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-rec-b1-c2", "name": "Aged onboarding cases", "unit": "%", "description": "Eligible applications unresolved beyond the disclosed window / eligible open applications. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "co-rec-b2", "name": "Payout availability delay", "unit": "hours", "description": "Median time from a payout becoming due to recipient funds availability; report p90 separately. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-rec-b2-c1", "name": "Recipient payout failure rate", "unit": "%", "description": "Payouts requiring recipient action or return handling / payouts due. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-rec-b2-c2", "name": "Statement explainability rate", "unit": "%", "description": "Sampled payout statements whose gross, fee, reserve and net amounts reconcile without support / sampled statements. Owner: Platform Seller and Payout Recipient and platform support. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-rec-top", "name": "Platform recipient retention", "unit": "%", "description": "Eligible active recipients continuing business activity after 90 days / eligible recipients in the starting cohort; platform outcome. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "bo-rec-b1", "name": "Recipient activation rate", "unit": "%", "description": "Eligible applicants reaching a first completed payment and payout / eligible applicants. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-rec-b1-c1", "name": "Completed recipient onboarding", "unit": "%", "description": "Eligible started applications meeting required capability conditions / eligible started applications. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-rec-b1-c2", "name": "First payout completion rate", "unit": "%", "description": "Activated recipients receiving their first due payout / activated recipients with a due payout. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "bo-rec-b2", "name": "Recipient support resolution rate", "unit": "%", "description": "Recipient cases resolved within the disclosed service window / recipient cases due for resolution. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-rec-b2-c1", "name": "Repeat recipient support contacts", "unit": "%", "description": "Cases requiring a repeat contact for the same unresolved issue / recipient cases. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-rec-b2-c2", "name": "Recipient financial offer opt-in", "unit": "%", "description": "Eligible users voluntarily accepting a disclosed account/card/financing offer / eligible users shown that offer; report by product. Owner: Platform Payments GM. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}}, "customerJourneyStories": [{"id": "journey-cg3-p2-1", "name": "Trust the platform with verification and earnings", "linkedJobIds": ["jtbd-cg3-3", "jtbd-cg3-4"], "summary": "The seller joins a platform to reach customers but needs confidence in its onboarding and payout process.", "stages": [{"stage": "Trigger", "narrative": "The seller joins a platform to reach customers but needs confidence in its onboarding and payout process.", "media": []}, {"stage": "Discovery", "narrative": "A platform invitation, seller peer or partner explains the payment service and what the seller must provide.", "media": []}, {"stage": "Evaluation", "narrative": "The seller reviews fees, payout windows, data requests, liability terms and support access before agreeing to the service.", "media": []}, {"stage": "Trial", "narrative": "The seller completes a small first transaction and checks that net funds arrive at the verified destination as promised.", "media": []}, {"stage": "Engagement", "narrative": "Earnings statements and actionable exception notices become part of routine business administration.", "media": []}, {"stage": "Retention", "narrative": "The seller stays when access to earnings and support are dependable; any financial-product offer is evaluated separately.", "media": []}], "media": [{"type": "image", "src": "media/journey-cg3-p2-journey-cg3-p2-1-illustrated.png", "title": "Platform Seller and Payout Recipient: Trust the platform with verification and earnings", "alt": "Six scenes follow a seller considering a platform, receiving an invitation, reviewing terms, checking the first deposit, using statements and staying when earnings and support are dependable."}]}], "productStrategy": {"vision": "Receive usable earnings and understand the obligations of platform participation. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Make first earnings and required remediation understandable.", "productTheme": "Usable earnings with clear support", "customerKPI": {"northStar": "Time to usable platform earnings", "supporting": ["First-pass evidence acceptance", "Recipient payout failure rate"]}, "businessKPI": {"northStar": "Platform recipient retention", "supporting": ["Completed recipient onboarding", "First payout completion rate"], "revenueStreams": ["Platform service fees", "Voluntary eligible financial products"]}, "strategicMilestones": ["Show actionable evidence requirements", "Reconcile first net payout to its statement"]}, "year3": {"focus": "By 2029-11-15: Reduce repeated support and make optional financial terms comparable.", "productTheme": "Predictable platform participation", "customerKPI": {"northStar": "Time to usable platform earnings", "supporting": ["Statement explainability rate", "Verification resolution time"]}, "businessKPI": {"northStar": "Platform recipient retention", "supporting": ["Repeat recipient support contacts", "Recipient financial offer opt-in"], "revenueStreams": ["Platform service fees", "Voluntary eligible financial products"]}, "strategicMilestones": ["Explain reserves and payout changes before they surprise recipients", "Support voluntary product-specific acceptance"]}, "year5": {"focus": "By 2031-11-15: Support durable access to earnings as the recipient business changes.", "productTheme": "Trust through changing eligibility", "customerKPI": {"northStar": "Time to usable platform earnings", "supporting": ["Payout availability delay", "Aged onboarding cases"]}, "businessKPI": {"northStar": "Platform recipient retention", "supporting": ["Platform recipient retention", "Recipient support resolution rate"], "revenueStreams": ["Platform service fees", "Voluntary eligible financial products"]}, "strategicMilestones": ["Reverify changed ownership with minimal repeated evidence", "Retain understandable statements and resolution history"]}}}, "icon": "customer-cg3-p2-portrait.png", "domain": "Platforms and Marketplaces"}, {"id": "cg4-p1", "name": "Treasury and Finance Controller", "description": "Owns cash availability, settlement reconciliation, funding and financial close across legal entities. Buys financial accounts and payout services with legal/risk review; approves delegated spending and finance-system integration.", "careAbout": ["Know which entity owns each balance and when money is usable", "Reconcile fees, FX, refunds and returns without unexplained differences", "Fund eligible payouts without unnecessary idle cash", "Control delegated spending with approval and revocation"], "winsThem": ["Transparent account structures, regional eligibility and funding requirements", "Traceable transfers and statements that reconcile with the finance ledger", "Recoverable payout and close exceptions with named owners"], "theirFear": ["A completed API request hides unavailable funds", "A new service silently changes the contracting party or loss allocation", "An automated action spends beyond its mandate"], "jobsToBeDone": [{"id": "jtbd-cg4-1", "name": "Make cash available where the business needs it", "whatItIs": "Manage business financial accounts and payout obligations across eligible entities, currencies and routes.", "outcome": "Recipients receive usable funds within a disclosed promise and treasury can explain the funding.", "steps": [{"step": "Select the account and payout arrangement", "description": "Record entity eligibility, bank/financial-account structure, beneficial ownership and the party responsible for moving money.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Fund and authorize the obligation", "description": "Distinguish available funds from pending balance; price FX and fees and obtain approval before instructing a payout.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Resolve delayed or returned funds", "description": "Check beneficiary and route status, preserve the original instruction and reconcile any return before reissuing.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Bound delegated spending", "description": "Approve a named principal, purpose, recipient and budget; revoke authority or escalate ambiguous execution to a human.", "streamsNeeded": [{"id": "execute-delegated-spending", "name": "Execute Spending within Delegated Authority", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg4-p1-jtbd-cg4-1-illustrated.png", "title": "Treasury and Finance Controller: Make cash available where the business needs it", "alt": "A controller checks eligible account arrangements, funds and approves payouts, resolves returns using original references, and sets limits on optional delegated spending."}]}, {"id": "jtbd-cg4-2", "name": "Close financial activity with an explained cash position", "whatItIs": "Match payment, billing and money-movement facts to settlement and the enterprise finance ledger.", "outcome": "The close has auditable exceptions and no unexplained cash difference.", "steps": [{"step": "Match source activity to external settlement", "description": "Match original and provider references across charges, fees, FX, refunds and payout returns.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Resolve accounting exceptions", "description": "Assign aged mismatches and usage/invoice corrections to the owning team; retain adjustment lineage.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Approve and export the close", "description": "Reconcile revenue schedules and cash separately, approve material adjustments and publish controlled finance exports.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg4-p1-jtbd-cg4-2-illustrated.png", "title": "Treasury and Finance Controller: Close financial activity with an explained cash position", "alt": "A finance controller matches settlement evidence, assigns and corrects discrepancies with a retained history, and approves separate revenue and cash records for the close."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cg4-top", "name": "Reconciled cash availability", "unit": "%", "description": "Available balances matched to external account evidence / balances expected to be available, calculated separately per currency and entity. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "co-cg4-b1", "name": "Payouts completed within promise", "unit": "%", "description": "Payouts confirmed available before the promised deadline / payouts due. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-cg4-b1-c1", "name": "Payout return rate", "unit": "%", "description": "Returned payout instructions / payout instructions in a matured cohort. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-cg4-b1-c2", "name": "Unfunded payout obligations", "unit": "%", "description": "Due payout value lacking available approved funding / total due payout value. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "co-cg4-b2", "name": "Close completed on schedule", "unit": "%", "description": "Entity closes approved by the agreed deadline / entity closes due. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-cg4-b2-c1", "name": "Aged unreconciled settlement value", "unit": "%", "description": "Value of unmatched items older than the close threshold / settlement value for the close. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-cg4-b2-c2", "name": "Manual cash reconciliation effort", "unit": "hours per close", "description": "Analyst hours spent resolving cash and settlement exceptions for an entity close. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-cg4-top", "name": "Treasury customer retention", "unit": "%", "description": "Eligible contracted treasury customers retained at renewal / treasury customers due for renewal. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "bo-cg4-b1", "name": "Treasury product utilization", "unit": "%", "description": "Activated financial-account customers with eligible recurring business activity / activated financial-account customers. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-cg4-b1-c1", "name": "Active funded financial accounts", "unit": "%", "description": "Eligible accounts holding available funding and completing business activity in the month / eligible activated accounts. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-cg4-b1-c2", "name": "Standalone payout adoption", "unit": "%", "description": "Eligible treasury customers actively using standalone payouts / eligible treasury customers. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "bo-cg4-b2", "name": "Treasury service continuity", "unit": "%", "description": "Customer months without a material treasury service incident / active customer months. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-cg4-b2-c1", "name": "Treasury support escalation rate", "unit": "per 100 accounts", "description": "Material account or payout support escalations / active accounts, multiplied by 100. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-cg4-b2-c2", "name": "Unresolved funds-access incidents", "unit": "count", "description": "Open incidents preventing access to otherwise eligible funds at month end. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}}, "customerJourneyStories": [{"id": "journey-cg4-p1-1", "name": "Adopt a financial account with a reconciled payout pilot", "linkedJobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "summary": "Fragmented balances or recurring payout failures prompt a review of treasury operations.", "stages": [{"stage": "Trigger", "narrative": "Fragmented balances or recurring payout failures prompt a review of treasury operations.", "media": []}, {"stage": "Discovery", "narrative": "The controller learns about Stripe Treasury, Adyen Intelligent Money Movement and Airwallex from banking partners, finance peers or enterprise account teams.", "media": []}, {"stage": "Evaluation", "narrative": "Finance and legal compare account ownership, entity/country eligibility, funding, liability, FX and reporting; they set acceptance criteria for the chosen account arrangement.", "media": []}, {"stage": "Trial", "narrative": "An eligible entity funds a limited account, pays a small recipient cohort and reconciles statements and returns before migration expands.", "media": []}, {"stage": "Engagement", "narrative": "Treasury uses controlled approvals and daily cash views; the controller closes against matched source and external records.", "media": []}, {"stage": "Retention", "narrative": "The business renews when cash access and close quality remain predictable; broader regions or delegated spending require separate approval and product availability.", "media": []}], "media": [{"type": "image", "src": "media/journey-cg4-p1-journey-cg4-p1-1-illustrated.png", "title": "Treasury and Finance Controller: Adopt a financial account with a reconciled payout pilot", "alt": "A controller follows six adoption stages from fragmented balances through peer discovery, legal and finance review, a small reconciled pilot, daily controls and conditional renewal."}]}], "productStrategy": {"vision": "Make cash usable and every material financial difference explainable. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Pilot eligible financial accounts and reconcile funding, fees and payout returns.", "productTheme": "Known cash and clear responsibility", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Payouts completed within promise", "Aged unreconciled settlement value"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Active funded financial accounts", "Treasury support escalation rate"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Document account ownership and funded obligations", "Confirm recipient access before declaring a payout complete"]}, "year3": {"focus": "By 2029-11-15: Coordinate eligible entities and routes with controlled close automation.", "productTheme": "Cash control across business entities", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Unfunded payout obligations", "Manual cash reconciliation effort"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Standalone payout adoption", "Treasury service continuity"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Reconcile FX and returns to original instructions", "Retain entity-specific account terms and support responsibility"]}, "year5": {"focus": "By 2031-11-15: Allow bounded delegated spending with explicit approval and revocation.", "productTheme": "Auditable treasury automation", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Close completed on schedule", "Payout return rate"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Treasury customer retention", "Unresolved funds-access incidents"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Test revoked authority and ambiguous execution", "Expand only to supported products and jurisdictions"]}}}, "icon": "customer-cg4-p1-portrait.png", "domain": "Treasury and Finance Operators"}];
+    const customer = {"id": "cg4-p1", "name": "Treasury and Finance Controller", "description": "Owns cash availability, settlement reconciliation, funding and financial close across legal entities. Buys financial accounts and payout services with legal/risk review; approves delegated spending and finance-system integration.", "careAbout": ["Know which entity owns each balance and when money is usable", "Reconcile fees, FX, refunds and returns without unexplained differences", "Fund eligible payouts without unnecessary idle cash", "Control delegated spending with approval and revocation"], "winsThem": ["Transparent account structures, regional eligibility and funding requirements", "Traceable transfers and statements that reconcile with the finance ledger", "Recoverable payout and close exceptions with named owners"], "theirFear": ["A completed API request hides unavailable funds", "A new service silently changes the contracting party or loss allocation", "An automated action spends beyond its mandate"], "jobsToBeDone": [{"id": "jtbd-cg4-1", "name": "Make cash available where the business needs it", "whatItIs": "Manage business financial accounts and payout obligations across eligible entities, currencies and routes.", "outcome": "Recipients receive usable funds within a disclosed promise and treasury can explain the funding.", "steps": [{"step": "Select the account and payout arrangement", "description": "Record entity eligibility, bank/financial-account structure, beneficial ownership and the party responsible for moving money.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Fund and authorize the obligation", "description": "Distinguish available funds from pending balance; price FX and fees and obtain approval before instructing a payout.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Resolve delayed or returned funds", "description": "Check beneficiary and route status, preserve the original instruction and reconcile any return before reissuing.", "streamsNeeded": [{"id": "manage-business-liquidity", "name": "Manage Business Liquidity and Standalone Payouts", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Bound delegated spending", "description": "Approve a named principal, purpose, recipient and budget; revoke authority or escalate ambiguous execution to a human.", "streamsNeeded": [{"id": "execute-delegated-spending", "name": "Execute Spending within Delegated Authority", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg4-p1-jtbd-cg4-1-illustrated.png", "title": "Treasury and Finance Controller: Make cash available where the business needs it", "alt": "A controller checks eligible account arrangements, funds and approves payouts, resolves returns using original references, and sets limits on optional delegated spending."}]}, {"id": "jtbd-cg4-2", "name": "Close financial activity with an explained cash position", "whatItIs": "Match payment, billing and money-movement facts to settlement and the enterprise finance ledger.", "outcome": "The close has auditable exceptions and no unexplained cash difference.", "steps": [{"step": "Match source activity to external settlement", "description": "Match original and provider references across charges, fees, FX, refunds and payout returns.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Resolve accounting exceptions", "description": "Assign aged mismatches and usage/invoice corrections to the owning team; retain adjustment lineage.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}, {"step": "Approve and export the close", "description": "Reconcile revenue schedules and cash separately, approve material adjustments and publish controlled finance exports.", "streamsNeeded": [{"id": "run-trust-and-finance-operations", "name": "Run Trust and Finance Operations", "howItSupports": "Connects this job to the end-to-end flow and its financial controls."}], "media": []}], "media": [{"type": "image", "src": "media/jtbd-cg4-p1-jtbd-cg4-2-illustrated.png", "title": "Treasury and Finance Controller: Close financial activity with an explained cash position", "alt": "A finance controller matches settlement evidence, assigns and corrects discrepancies with a retained history, and approves separate revenue and cash records for the close."}]}], "kpiPyramids": {"customerOutcomes": {"top": {"id": "co-cg4-top", "name": "Reconciled cash availability", "unit": "%", "description": "Available balances matched to external account evidence / balances expected to be available, calculated separately per currency and entity. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "co-cg4-b1", "name": "Payouts completed within promise", "unit": "%", "description": "Payouts confirmed available before the promised deadline / payouts due. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-cg4-b1-c1", "name": "Payout return rate", "unit": "%", "description": "Returned payout instructions / payout instructions in a matured cohort. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-cg4-b1-c2", "name": "Unfunded payout obligations", "unit": "%", "description": "Due payout value lacking available approved funding / total due payout value. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "co-cg4-b2", "name": "Close completed on schedule", "unit": "%", "description": "Entity closes approved by the agreed deadline / entity closes due. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [{"id": "co-cg4-b2-c1", "name": "Aged unreconciled settlement value", "unit": "%", "description": "Value of unmatched items older than the close threshold / settlement value for the close. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "co-cg4-b2-c2", "name": "Manual cash reconciliation effort", "unit": "hours per close", "description": "Analyst hours spent resolving cash and settlement exceptions for an entity close. Owner: Treasury and Finance Controller. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}, "businessOutcomes": {"top": {"id": "bo-cg4-top", "name": "Treasury customer retention", "unit": "%", "description": "Eligible contracted treasury customers retained at renewal / treasury customers due for renewal. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "icon": "kpi.png"}, "branches": [{"id": "bo-cg4-b1", "name": "Treasury product utilization", "unit": "%", "description": "Activated financial-account customers with eligible recurring business activity / activated financial-account customers. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-cg4-b1-c1", "name": "Active funded financial accounts", "unit": "%", "description": "Eligible accounts holding available funding and completing business activity in the month / eligible activated accounts. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-cg4-b1-c2", "name": "Standalone payout adoption", "unit": "%", "description": "Eligible treasury customers actively using standalone payouts / eligible treasury customers. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}, {"id": "bo-cg4-b2", "name": "Treasury service continuity", "unit": "%", "description": "Customer months without a material treasury service incident / active customer months. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [{"id": "bo-cg4-b2-c1", "name": "Treasury support escalation rate", "unit": "per 100 accounts", "description": "Material account or payout support escalations / active accounts, multiplied by 100. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}, {"id": "bo-cg4-b2-c2", "name": "Unresolved funds-access incidents", "unit": "count", "description": "Open incidents preventing access to otherwise eligible funds at month end. Owner: Stripe treasury product and operations lead. Review monthly; baseline and target are unmeasured.", "children": [], "icon": "kpi.png"}], "icon": "kpi.png"}]}}, "customerJourneyStories": [{"id": "journey-cg4-p1-1", "name": "Adopt a financial account with a reconciled payout pilot", "linkedJobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "summary": "Fragmented balances or recurring payout failures prompt a review of treasury operations.", "stages": [{"stage": "Trigger", "narrative": "Fragmented balances or recurring payout failures prompt a review of treasury operations.", "media": []}, {"stage": "Discovery", "narrative": "The controller learns about Stripe Treasury, Adyen Intelligent Money Movement and Airwallex from banking partners, finance peers or enterprise account teams.", "media": []}, {"stage": "Evaluation", "narrative": "Finance and legal compare account ownership, entity/country eligibility, funding, liability, FX and reporting; they set acceptance criteria for the chosen account arrangement.", "media": []}, {"stage": "Trial", "narrative": "An eligible entity funds a limited account, pays a small recipient cohort and reconciles statements and returns before migration expands.", "media": []}, {"stage": "Engagement", "narrative": "Treasury uses controlled approvals and daily cash views; the controller closes against matched source and external records.", "media": []}, {"stage": "Retention", "narrative": "The business renews when cash access and close quality remain predictable; broader regions or delegated spending require separate approval and product availability.", "media": []}], "media": [{"type": "image", "src": "media/journey-cg4-p1-journey-cg4-p1-1-illustrated.png", "title": "Treasury and Finance Controller: Adopt a financial account with a reconciled payout pilot", "alt": "A controller follows six adoption stages from fragmented balances through peer discovery, legal and finance review, a small reconciled pilot, daily controls and conditional renewal."}]}], "productStrategy": {"vision": "Make cash usable and every material financial difference explainable. These are modeling choices anchored to 2026-11-15, not a published vendor roadmap. Baselines must precede numerical targets.", "timeHorizons": {"year1": {"focus": "By 2027-11-15: Pilot eligible financial accounts and reconcile funding, fees and payout returns.", "productTheme": "Known cash and clear responsibility", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Payouts completed within promise", "Aged unreconciled settlement value"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Active funded financial accounts", "Treasury support escalation rate"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Document account ownership and funded obligations", "Confirm recipient access before declaring a payout complete"]}, "year3": {"focus": "By 2029-11-15: Coordinate eligible entities and routes with controlled close automation.", "productTheme": "Cash control across business entities", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Unfunded payout obligations", "Manual cash reconciliation effort"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Standalone payout adoption", "Treasury service continuity"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Reconcile FX and returns to original instructions", "Retain entity-specific account terms and support responsibility"]}, "year5": {"focus": "By 2031-11-15: Allow bounded delegated spending with explicit approval and revocation.", "productTheme": "Auditable treasury automation", "customerKPI": {"northStar": "Reconciled cash availability", "supporting": ["Close completed on schedule", "Payout return rate"]}, "businessKPI": {"northStar": "Treasury customer retention", "supporting": ["Treasury customer retention", "Unresolved funds-access incidents"], "revenueStreams": ["Treasury-related services", "Global Payouts"]}, "strategicMilestones": ["Test revoked authority and ambiguous execution", "Expand only to supported products and jurisdictions"]}}}, "icon": "customer-cg4-p1-portrait.png", "domain": "Treasury and Finance Operators"};
+    // id -> 'stream' | 'brick'; lets JTBD tiles link to the owning page.
+    const streamBrickKinds = {"chck": "brick", "elem": "brick", "pmlk": "brick", "pmtd": "brick", "auth": "brick", "term": "brick", "rout": "brick", "subs": "brick", "usag": "brick", "invo": "brick", "taxx": "brick", "revn": "brick", "rpts": "brick", "morc": "brick", "acct": "brick", "kycb": "brick", "iden": "brick", "split": "brick", "pyot": "brick", "issu": "brick", "capm": "brick", "tres": "brick", "rada": "brick", "disp": "brick", "ledg": "brick", "reca": "brick", "webh": "brick", "devx": "brick", "mand": "brick", "accept-payments-globally": "stream", "operate-unified-commerce": "stream", "serve-agent-commerce": "stream", "automate-recurring-revenue": "stream", "sell-digital-products-with-managed-payments": "stream", "operate-platform-money-movement": "stream", "offer-platform-financial-services": "stream", "run-trust-and-finance-operations": "stream", "manage-business-liquidity": "stream", "execute-delegated-spending": "stream"};
+    function streamBrickHref(id) {
+        const kind = streamBrickKinds[id];
+        if (kind === 'stream') return '../../product-bricks/stream_pages/' + id + '.html';
+        if (kind === 'brick') return '../../product-bricks/landing_pages/' + id + '.html';
+        return null;
+    }
+    const customerInsights = [{"id": "pri-01", "title": "Financial infrastructure spans several customer buying decisions", "summary": "Stripe\u2019s 2025 update reports payment scale alongside revenue and platform businesses. Adyen now describes an enterprise money-movement proposition.", "implication": "Modeling implication: Keep the merchant, recurring-revenue and platform loops, with treasury as a distinct buyer and responsibility boundary.", "priority": "high", "tags": ["scope", "business-model"], "sources": [{"id": "stripe-2025", "title": "Stripe 2025 annual update", "url": "https://stripe.com/newsroom/news/stripe-2025-update", "publisher": "Stripe", "date": "2026-02-24"}, {"id": "adyen-money", "title": "Intelligent Money Movement", "url": "https://www.adyen.com/press-and-media/adyen-launches-intelligent-money-movement", "publisher": "Adyen", "date": "2026-04-09"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-06", "title": "Merchant-of-record selection changes the work the seller owns", "summary": "Managed Payments covers eligible digital products with defined transaction and indirect-tax responsibilities and integration restrictions. Paddle offers a different merchant-of-record billing option.", "implication": "Modeling implication: Make the merchant-of-record choice explicit in recurring-revenue evaluation; tax calculation, filing and acting as seller are distinct responsibilities.", "priority": "high", "tags": ["merchant-of-record", "tax"], "sources": [{"id": "stripe-managed", "title": "Managed Payments and merchant-of-record responsibilities", "url": "https://docs.stripe.com/payments/managed-payments", "publisher": "Stripe documentation"}, {"id": "paddle-saas", "title": "Paddle for SaaS", "url": "https://developer.paddle.com/get-started/how-paddle-works/saas/", "publisher": "Paddle documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-07", "title": "Unified commerce includes store recovery and cross-channel reconciliation", "summary": "Adyen documentation connects online and physical commerce; offline payments carry later-collection exposure and device/method limits.", "implication": "Modeling implication: Add store operations, reader state, original-order references, returns and delayed collection to the existing Terminal job and a dedicated stream.", "priority": "high", "tags": ["adyen", "unified-commerce", "offline"], "sources": [{"id": "adyen-unified", "title": "Unified commerce", "url": "https://docs.adyen.com/unified-commerce", "publisher": "Adyen documentation"}, {"id": "adyen-offline", "title": "Offline payment behavior and exposure", "url": "https://docs.adyen.com/point-of-sale/offline-payment/", "publisher": "Adyen documentation"}, {"id": "stripe-terminal-offline", "title": "Stripe Terminal offline payments and reader limits", "url": "https://docs.stripe.com/terminal/features/operate-offline/overview?reader-type=internet", "publisher": "Stripe documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-09", "title": "Standalone payouts require a funding and responsibility model", "summary": "Stripe Global Payouts requires Treasury and separates broad recipient reach from narrower sender eligibility. Treasury describes distinct account structures and preview limits.", "implication": "Modeling implication: Separate business liquidity from platform settlement, preserve funding and account-owner evidence, and measure recipient access rather than API acknowledgement.", "priority": "high", "tags": ["treasury", "payouts"], "sources": [{"id": "stripe-payouts", "title": "Global Payouts: funding and sender availability", "url": "https://docs.stripe.com/global-payouts", "publisher": "Stripe documentation"}, {"id": "stripe-treasury", "title": "Treasury financial accounts and account structures", "url": "https://docs.stripe.com/treasury", "publisher": "Stripe documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-10", "title": "Selling through an agent differs from authorizing an agent to spend", "summary": "Stripe and Adyen expose agent-commerce integrations; Stripe\u2019s treasury-agent announcement describes permissioned business financial actions. Adyen\u2019s launch specified limited US enterprise availability.", "implication": "Modeling implication: Use separate commerce and spending flows. Bind principal, mandate, budget, approval and revocation to the relevant financial action.", "priority": "high", "tags": ["agents", "authority", "availability"], "sources": [{"id": "stripe-agentic", "title": "Agentic Commerce Suite", "url": "https://stripe.com/en-es/newsroom/news/agentic-commerce-suite", "publisher": "Stripe", "date": "2025-12-11"}, {"id": "stripe-agent-treasury", "title": "Treasury for agents", "url": "https://stripe.com/en-es/newsroom/news/treasury-for-agents", "publisher": "Stripe", "date": "2026-10-21"}, {"id": "adyen-agentic", "title": "Adyen Agentic launch and initial availability", "url": "https://www.adyen.com/press-and-media/adyen-agentic", "publisher": "Adyen", "date": "2026-06-16"}, {"id": "adyen-agentic-docs", "title": "Agentic integration paths", "url": "https://docs.adyen.com/online-payments/agentic-commerce", "publisher": "Adyen documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-11", "title": "Method selection, processor routing and multi pay-in are different capabilities", "summary": "Stripe Orchestration is a restricted private preview; Adyen multi pay-in is a limited pilot for bringing third-party acquired funds into platform balances.", "implication": "Modeling implication: Model routing separately from method ordering and inbound funds consolidation. Preserve third-party dispute and settlement ownership.", "priority": "high", "tags": ["orchestration", "adyen", "availability"], "sources": [{"id": "stripe-orchestration", "title": "Orchestration private preview and supported products", "url": "https://docs.stripe.com/payments/orchestration", "publisher": "Stripe documentation"}, {"id": "adyen-multipay", "title": "Multi pay-in pilot", "url": "https://docs.adyen.com/platforms/multi-pay-in", "publisher": "Adyen documentation"}, {"id": "spreedly", "title": "Spreedly orchestration platform", "url": "https://www.spreedly.com/", "publisher": "Spreedly"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-12", "title": "Stablecoin acceptance is one financial rail, not a universal account model", "summary": "Stripe documents stablecoin acceptance with merchant-region restrictions, local-fiat settlement and different refund/capture/dispute behavior from cards.", "implication": "Modeling implication: Represent the rail and original wallet reference; keep acceptance distinct from custody, wallets, issuing and cross-border payout.", "priority": "medium", "tags": ["stablecoin", "settlement"], "sources": [{"id": "stripe-stablecoin", "title": "Stablecoin payment acceptance", "url": "https://docs.stripe.com/payments/stablecoin-payments", "publisher": "Stripe documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-13", "title": "Adyen financial services broaden the platform comparison", "summary": "Adyen documents issuing and eligible-user capital alongside development-phase business accounts. Each offering has its own controls and availability. On November 10, Sage announced planned business-account and debit-card integration in France using Adyen infrastructure and Mastercard; it described development, not general availability.", "implication": "Modeling implication: Include card controls, voluntary financing acceptance, repayment and account eligibility in platform evaluation; payment-processing eligibility is not enough. Treat the Sage example as a planned accounting-to-finance distribution path, with its first market and implementation state explicit.", "priority": "high", "tags": ["adyen", "embedded-finance"], "sources": [{"id": "adyen-issuing", "title": "Adyen Issuing", "url": "https://docs.adyen.com/issuing", "publisher": "Adyen documentation"}, {"id": "adyen-capital", "title": "Adyen Capital", "url": "https://docs.adyen.com/capital", "publisher": "Adyen documentation"}, {"id": "adyen-business", "title": "Business accounts: development phase and eligibility", "url": "https://docs.adyen.com/business-accounts", "publisher": "Adyen documentation"}, {"id": "stripe-issuing", "title": "Stripe Issuing and product availability", "url": "https://docs.stripe.com/issuing", "publisher": "Stripe documentation"}, {"id": "stripe-capital-platforms", "title": "Stripe Capital for platforms", "url": "https://docs.stripe.com/capital/how-capital-for-platforms-works", "publisher": "Stripe documentation"}, {"id": "stripe-platform-treasury", "title": "Stripe Treasury for platforms", "url": "https://docs.stripe.com/treasury/connect", "publisher": "Stripe documentation"}, {"id": "adyen-sage", "title": "Sage embedded business accounts and cards: planned France implementation", "url": "https://www.adyen.com/press-and-media/adyen-sage-partnership", "publisher": "Adyen / Sage", "date": "2026-11-10"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-16", "title": "Financial events require replay and reconciliation", "summary": "Stripe describes duplicate and unordered webhook delivery; Adyen documents authenticated handling and duplicate detection.", "implication": "Modeling implication: Model durable intake, idempotency, replay and matching to authoritative state. A webhook is evidence of a state change, not an exactly-once accounting instruction. Preserve the payment intent across retries and distinguish attempts from confirmed completion. Checkout Sessions and Payment Intents are integration choices; the logical record model does not prescribe a low-level API.", "priority": "high", "tags": ["reliability", "events"], "sources": [{"id": "stripe-webhooks", "title": "Webhook duplicate and ordering behavior", "url": "https://docs.stripe.com/webhooks", "publisher": "Stripe documentation"}, {"id": "adyen-webhooks", "title": "Handle webhook events", "url": "https://docs.adyen.com/development-resources/webhooks/handle-webhook-events", "publisher": "Adyen documentation"}, {"id": "stripe-payment-lifecycle", "title": "Stripe payment intent lifecycle and checkout integration choices", "url": "https://docs.stripe.com/payments/payment-intents", "publisher": "Stripe documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-17", "title": "Instant-transfer and resilience obligations depend on the regulated entity", "summary": "The ECB distinguishes Instant Payments Regulation dates by institution and geography. DORA applies to in-scope financial entities; PCI guidance retains the March 2025 effective date for the previously future-dated requirements.", "implication": "Modeling implication: Tie requirements to the entity, service and rail. Treat stress scenarios as hypotheses and require modeled evidence before claiming survival.", "priority": "high", "tags": ["regulation", "residuality"], "sources": [{"id": "ecb-instant", "title": "Instant Payments Regulation implementation", "url": "https://www.ecb.europa.eu/paym/retail/instant_payments/html/instant_payments_regulation.ht.html", "publisher": "European Central Bank"}, {"id": "esma-dora", "title": "Digital Operational Resilience Act", "url": "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/digital-operational-resilience-act-dora", "publisher": "ESMA"}, {"id": "pci-401", "title": "PCI DSS v4.0.1 and requirement effective dates", "url": "https://blog.pcisecuritystandards.org/just-published-pci-dss-v4-0-1", "publisher": "PCI Security Standards Council"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-18", "title": "Banking infrastructure must be compared through actual legal arrangements", "summary": "Adyen describes separate European authorizations and a US federal branch. Stripe Treasury describes partner-bank account structures.", "implication": "Modeling implication: Record the service entity, funds owner and contract instead of assuming that a license or account label grants the same rights in every region.", "priority": "high", "tags": ["adyen", "banking", "liability"], "sources": [{"id": "adyen-eu-license", "title": "Adyen European licenses", "url": "https://www.adyen.com/en_GB/licenses/europe", "publisher": "Adyen"}, {"id": "adyen-us-license", "title": "Adyen United States federal branch", "url": "https://www.adyen.com/licenses/united-states", "publisher": "Adyen"}, {"id": "stripe-treasury", "title": "Treasury financial accounts and account structures", "url": "https://docs.stripe.com/treasury", "publisher": "Stripe documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}, {"id": "pri-19", "title": "Payment economics depend on the merchant and product bundle", "summary": "Adyen pricing separates processing, method and additional-product charges. Alternative billing, orchestration and merchant-of-record offerings cover different work.", "implication": "Modeling implication: Compare a stated mix of geography, methods, channel, volume, losses, FX, payout needs and internal operating effort; do not assert a generic cheapest provider.", "priority": "high", "tags": ["economics", "competition"], "sources": [{"id": "adyen-pricing", "title": "Adyen pricing structure", "url": "https://www.adyen.com/pricing", "publisher": "Adyen"}, {"id": "chargebee-billing", "title": "Chargebee Billing", "url": "https://www.chargebee.com/billing/", "publisher": "Chargebee"}, {"id": "spreedly", "title": "Spreedly orchestration platform", "url": "https://www.spreedly.com/", "publisher": "Spreedly"}, {"id": "paddle-saas", "title": "Paddle for SaaS", "url": "https://developer.paddle.com/get-started/how-paddle-works/saas/", "publisher": "Paddle documentation"}], "link": {"customerId": "cg4-p1", "jobIds": ["jtbd-cg4-1", "jtbd-cg4-2"], "kpiIds": ["co-cg4-top", "co-cg4-b2-c1"]}}];
+</script>
+<div id="Navigation"></div>
+<div style="margin: 20px">
+    <div id="Header"></div>
+
+    <div style="margin: 0; margin-top: 12px">
+        <div class="tab">
+            <button class="tablinks active" id="tab_HomeTab" onclick="openTab('HomeTab')">Home</button>
+            <button class="tablinks" id="tab_JobsTab" onclick="openTab('JobsTab')">Jobs To Be Done</button>
+            <button class="tablinks" id="tab_JourneysTab" onclick="openTab('JourneysTab')">Journeys</button>
+            <button class="tablinks" id="tab_KPITab" onclick="openTab('KPITab')">KPIs</button>
+            <button class="tablinks" id="tab_RoadmapTab" onclick="openTab('RoadmapTab')">Product Vision</button>
+            <button class="tablinks" id="tab_InsightsTab" onclick="openTab('InsightsTab')">Insights</button>
+        </div>
+
+        <div id="tab_content_HomeTab" class="tabcontent" style="padding: 10px">
+            <div id="Home"></div>
+        </div>
+        <div id="tab_content_JobsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Jobs"></div>
+        </div>
+        <div id="tab_content_JourneysTab" class="tabcontent" style="padding: 10px;">
+            <div id="Journeys"></div>
+        </div>
+        <div id="tab_content_KPITab" class="tabcontent" style="padding: 10px;">
+            <div id="KPI"></div>
+        </div>
+        <div id="tab_content_RoadmapTab" class="tabcontent" style="padding: 10px;">
+            <div id="Roadmap"></div>
+        </div>
+        <div id="tab_content_InsightsTab" class="tabcontent" style="padding: 10px;">
+            <div id="Insights"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addNavigation() {
+        let html = '';
+        html += '<div class="image-tabs" style="margin: 4px 20px 10px 20px; font-size: 85%; color: black">';
+        let prev_domain = all_customers[0].domain;
+        all_customers.forEach(per => {
+            if (prev_domain.toLowerCase() !== per.domain.toLowerCase()) {
+                prev_domain = per.domain;
+                html += '<div style="margin-top: 5px; margin-left: 4px; vertical-align: top; display: inline-block; border-left: 2px solid lightgrey; height: 30px;">&nbsp;</div>';
+            }
+            html += '<a href="' + per.id + '.html">';
+            const tabClass = per.id === customer.id ? 'tab-image-selected' : 'tab-image';
+            html += '<img src="../icons/' + per.icon + '" style="" class="' + tabClass + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '</a>';
+        });
+        html += '</div>';
+
+        document.getElementById('Navigation').innerHTML = html;
+    }
+
+    addNavigation();
+
+    function addHeader() {
+        let html = '';
+
+        html += '<table>';
+        html += '<tr>';
+        html += '<td>';
+        html += '<div>';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 200px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="vertical-align: top">';
+        html += '<div style="margin-left: 20px; font-size: 90%; color: grey; vertical-align: top">';
+        html += '<div class="page-type-badge" style="">Customer</div>';
+        html += '</div>';
+        html += '<div style="font-size: 50px; margin-left: 20px">';
+        html += customer.name;
+        html += '</div>';
+        html += '<div style="font-size: 16px; margin-left: 20px; color: grey; margin-top: 3px">';
+        html += customer.description ? customer.description : '';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        document.getElementById('Header').innerHTML = html;
+    }
+
+    function addHome() {
+        let html = '';
+
+        html += '<div class="doc" style="text-align: center; margin-bottom: 22px; margin-left: 24px">';
+        html += '<table>';
+        html += '<tr>';
+        html += '<td style="width: 48px; vertical-align: top">';
+        html += '<img src="../icons/care.png" style="height: 64px; margin: 8px">';
+        html += '<div style="color: darkgreen; font-size: 90%">care about</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.careAbout.forEach(item => {
+            html += '<div style="background-color: rgba(0, 100, 0, 0.1); margin-top: 32px; margin-bottom: 42px;padding: 16px 12px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+
+        html += '<td style="width: 22px"></td>';
+
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/win.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: blue; font-size: 90%">wins them</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.winsThem.forEach(item => {
+            html += '<div style="background-color: rgba(0, 0, 100, 0.1); margin-top: 32px; margin-bottom: 42px;padding: 16px 12px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="width: 22px"></td>';
+        html += '<td style="width: 24px; vertical-align: top">';
+        html += '<img src="../icons/fear.png" style="height: 64px; margin: 8px">';
+
+        html += '<div style="color: crimson; font-size: 90%">their fear</div>';
+        html += '<div style="color: black; font-size: 100%; width: 240px">';
+        customer.theirFear.forEach(item => {
+            html += '<div style="background-color: rgba(100, 0, 0, 0.1); margin-top: 32px; margin-bottom: 42px;padding: 16px 12px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += item;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+
+        html += '</div>';
+
+        document.getElementById('Home').innerHTML = html;
+    }
+
+    function jobNamesForCustomer(jobIds) {
+        const jobs = (customer.jobsToBeDone || []);
+        const jobLookup = {};
+        jobs.forEach(job => {
+            if (job.id) {
+                jobLookup[job.id] = job.name || job.id;
+            }
+        });
+        return (jobIds || []).map(jobId => jobLookup[jobId] || jobId);
+    }
+
+    function kpiNamesForLink(link) {
+        // Prefer stable KPI IDs resolved against this customer's KPI pyramid; fall back to legacy display-name kpis.
+        if (link && link.kpiIds && link.kpiIds.length) {
+            const lookup = {};
+            function walk(node) {
+                if (!node) return;
+                if (node.id) {
+                    lookup[node.id] = node.name || node.id;
+                }
+                (node.branches || []).forEach(walk);
+                (node.children || []).forEach(walk);
+            }
+            const pyramids = (customer || {}).kpiPyramids || {};
+            ['customerOutcomes', 'businessOutcomes'].forEach(key => {
+                const pyramid = pyramids[key];
+                if (!pyramid) return;
+                walk(pyramid.top);
+                (pyramid.branches || []).forEach(walk);
+            });
+            return link.kpiIds.map(kpiId => lookup[kpiId] || kpiId);
+        }
+        return (link && link.kpis) || [];
+    }
+
+    function addInsights() {
+        let html = '';
+
+        html += '<div style="margin: 24px">';
+
+        if (!customerInsights || customerInsights.length === 0) {
+            html += '<div class="group">No customer-linked insights defined for this domain yet.</div>';
+        } else {
+            customerInsights.forEach(insight => {
+                html += '<div class="group" style="width: 250px; display: inline-block; margin: 8px; padding: 16px; background: white">';
+                html += '<div style="font-size: 150%; color: #1d4ed8; margin-bottom: 8px">' + escapeHtml(insight.title) + '</div>';
+                html += '<div style="margin-bottom: 10px">' + escapeHtml(insight.summary) + '</div>';
+                if (insight.implication) {
+                    html += '<div style="margin-bottom: 10px"><b>Product implication:</b> ' + escapeHtml(insight.implication) + '</div>';
+                }
+                if (insight.link) {
+                    if (insight.link.jobIds && insight.link.jobIds.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>Jobs:</b> ' + escapeHtml(jobNamesForCustomer(insight.link.jobIds).join(', ')) + '</div>';
+                    }
+                    const kpiNames = kpiNamesForLink(insight.link);
+                    if (kpiNames.length) {
+                        html += '<div style="font-size: 13px; color: #4b5563; margin-bottom: 4px"><b>KPIs:</b> ' + escapeHtml(kpiNames.join(', ')) + '</div>';
+                    }
+                }
+                if (insight.tags && insight.tags.length) {
+                    html += '<div style="margin-top: 8px; margin-bottom: 10px">';
+                    insight.tags.forEach(tag => {
+                        html += '<span style="display:inline-block; margin:0 8px 6px 0; padding:4px 10px; border-radius:999px; background:#eef2f6; font-size:12px">' + escapeHtml(tag) + '</span>';
+                    });
+                    html += '</div>';
+                }
+                if (insight.sources && insight.sources.length) {
+                    html += '<div style="margin-top: 8px">';
+                    html += '<div style="font-size: 13px; color: #6b7280; margin-bottom: 4px">Sources</div>';
+                    insight.sources.forEach(source => {
+                        html += '<div style="font-size: 13px; margin-bottom: 4px">';
+                        html += '<a class="activity-link" target="_blank" href="' + escapeHtml(source.url) + '">' + escapeHtml(source.title) + '</a>';
+                        html += '<span class="activity-muted"> (' + escapeHtml(source.publisher || '') + (source.date ? ', ' + escapeHtml(source.date) : '') + ')</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        document.getElementById('Insights').innerHTML = html;
+    }
+
+    function addJBTD() {
+        let html = '';
+
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="jobs-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJobsView(\'default\')">Default View</button>';
+        html += '<button id="jobs-view-comic" class="jobs-view-button" onclick="setJobsView(\'comic\')">Comic View</button>';
+        html += '</div>';
+
+        html += '<div id="jobs-default-view">';
+        html += '<table class="job-summary-table">';
+        html += '<tr style="font-size: 80%; color: grey">';
+        html += '<td>Job</td>';
+        html += '<td></td>';
+        html += '<td>Outcome</td>';
+        html += '</tr>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<tr>';
+            html += '<td>';
+            html += '<div style="text-align: left">';
+            html += '<div style="font-size: 100%; color: blue;">' + job.name + '</div>';
+            html += '</div>';
+            html += '<ul style="font-size: 70%">';
+            job.steps.forEach(step => {
+                html += '<li>';
+                html += step.step;
+                html += '</li>';
+            });
+            html += '</ul>';
+            html += '</td>';
+            html += '<td style="width: 20px">';
+            html += '</td>';
+            html += '<td style="vertical-align: top">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">(' + job.whatItIs + ')</div>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+
+        html += '<div style="height: 50px"></div>';
+
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="group job-detail-group">';
+            if (job.media) {
+                html += '<div style="margin-top: 10px">';
+                job.media.forEach(item => {
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + job.name + '</div>';
+            html += '<div style="">' + job.whatItIs + '</div>';
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            html += '<div  class="outcome">';
+            html += '<div style="">' + job.outcome + '</div>';
+            html += '</div>';
+            html += '<div style=""><img src="../icons/up.png" style="width: 60px"></div>';
+            job.steps.forEach(step => {
+                html += '<div style="" class="step">';
+                html += '<div style="color: blue; font-size: 140%; margin-bottom: 20px">' + step.step + '</div>';
+                html += '<div style="">' + step.description + '</div>';
+                html += '<div style="margin-top: 14px">';
+                html += '<table>';
+                (step.streamsNeeded || []).forEach(stream => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px; border: 1px dashed lightgrey; padding: 6px; ">';
+                    html += '<div style="color: blue; font-size: 80%; white-space: nowrap; overflow: hidden; ">';
+                    const streamHref = streamBrickHref(stream.id);
+                    html += streamHref
+                        ? '<a href="' + streamHref + '" style="color: blue; text-decoration: none;">' + stream.name + '</a>'
+                        : stream.name;
+                    html += '</div>';
+                    html += '<div style="font-size: 70%;">';
+                    html += stream.howItSupports;
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                (step.bricksNeeded || []).forEach(brick => {
+                    html += '<tr>';
+                    html += '<td style=" text-align: left; padding: 0;">';
+                    html += '<div style="margin: 6px 6px 6px 24px; border-left: 2px solid #eee; padding: 2px 6px; ">';
+                    html += '<div style="color: #888; font-size: 70%; white-space: nowrap; overflow: hidden; ">';
+                    const brickHref = streamBrickHref(brick.id);
+                    html += '&#8627; ' + (brickHref
+                        ? '<a href="' + brickHref + '" style="color: #888; text-decoration: none;">' + brick.name + '</a>'
+                        : brick.name);
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                html += '</table>';
+                html += '</div>';
+                if (step.media) {
+                    html += '<div style="margin-top: 10px">';
+                    step.media.forEach(item => {
+                        html += '<div style="display: inline-block">';
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="job-step-image">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        html += '<div id="jobs-comic-view" style="display: none">';
+        customer.jobsToBeDone.forEach(job => {
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + job.name + '</div>';
+            if (job.media) {
+                html += '<div class="comic-job-media">';
+                job.media.forEach(item => {
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            job.steps.forEach(step => {
+                html += '<div class="comic-step">';
+                html += '<div class="comic-step-title">' + step.step + '</div>';
+                if (step.media) {
+                    html += '<div class="comic-step-media">';
+                    step.media.forEach(item => {
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Jobs').innerHTML = html;
+        setJobsView('default');
+    }
+
+    function addJourneys() {
+        const journeys = customer.customerJourneyStories || [];
+        if (!journeys.length) {
+            document.getElementById('Journeys').innerHTML = '<div class="group">No customer journeys defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+        html += '<div class="jobs-view-toggle">';
+        html += '<button id="journeys-view-default" class="jobs-view-button jobs-view-button-active" onclick="setJourneysView(\'default\')">Default View</button>';
+        html += '<button id="journeys-view-comic" class="jobs-view-button" onclick="setJourneysView(\'comic\')">Comics View</button>';
+        html += '</div>';
+
+        html += '<div id="journeys-default-view">';
+        html += '<div style="height: 50px"></div>';
+
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="group job-detail-group">';
+            if (journey.media && journey.media.length) {
+                html += '<div style="margin-top: 10px">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    html += '<div style="display: inline-block">';
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '" class="job-detail-hero">';
+                    html += '</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="font-size: 210%; color: blue; margin-bottom: 12px">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="margin-bottom: 12px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.linkedJobIds && journey.linkedJobIds.length) {
+                html += '<div style="font-size: 80%; color: grey; margin-top: 8px;">Linked jobs: ' + escapeHtml(journey.linkedJobIds.join(', ')) + '</div>';
+            }
+            html += '<div style="text-align: center; margin-top: 24px; background-color: white" class="group">';
+            stages.forEach((stage, index) => {
+                html += '<div class="step">';
+                html += '<div style="font-size: 70%; color: grey; margin-bottom: 8px">Stage ' + (index + 1) + '</div>';
+                html += '<div style="font-size: 130%; color: blue; margin-bottom: 12px">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<div style="margin-bottom: 12px">';
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '" class="review-image-small">';
+                        html += '</a>';
+                        html += '</div>';
+                    });
+                }
+                if (stage.narrative) {
+                    html += '<div style="font-size: 90%; margin-top: 8px">' + escapeHtml(stage.narrative) + '</div>';
+                }
+                html += '</div>';
+                if (index < stages.length - 1) {
+                    html += '<div style="display: inline-block; vertical-align: top; margin-top: 120px;">';
+                    html += '<img src="../icons/right.png" style="width: 32px; margin-left: 8px; margin-right: 8px">';
+                    html += '</div>';
+                }
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+
+        html += '</div>';
+
+        html += '<div id="journeys-comic-view" style="display: none">';
+        journeys.forEach(journey => {
+            const stages = journey.stages || [];
+            html += '<div class="comic-job">';
+            html += '<div class="comic-job-title">' + escapeHtml(journey.name || '') + '</div>';
+            if (journey.summary) {
+                html += '<div style="text-align: center; margin-bottom: 16px">' + escapeHtml(journey.summary) + '</div>';
+            }
+            if (journey.media && journey.media.length) {
+                html += '<div class="comic-job-media">';
+                journey.media.forEach(item => {
+                    if (!item || !item.src) {
+                        return;
+                    }
+                    const src = '../' + item.src;
+                    html += '<a target="_blank" href="' + src + '">';
+                    html += '<img src="' + src + '">';
+                    html += '</a>';
+                });
+                html += '</div>';
+            }
+            html += '<div class="comic-steps">';
+            stages.forEach((stage, index) => {
+                html += '<div class="comic-step">';
+                html += '<div style="font-size: 75%; color: grey; margin-bottom: 8px; text-align: center">Stage ' + (index + 1) + '</div>';
+                html += '<div class="comic-step-title">' + escapeHtml(stage.stage || '') + '</div>';
+                if (stage.media && stage.media.length) {
+                    html += '<div class="comic-step-media">';
+                    stage.media.forEach(item => {
+                        if (!item || !item.src) {
+                            return;
+                        }
+                        const src = '../' + item.src;
+                        html += '<a target="_blank" href="' + src + '">';
+                        html += '<img src="' + src + '">';
+                        html += '</a>';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        document.getElementById('Journeys').innerHTML = html;
+        setJourneysView('default');
+    }
+
+    function setJobsView(view) {
+        const defaultView = document.getElementById('jobs-default-view');
+        const comicView = document.getElementById('jobs-comic-view');
+        const defaultButton = document.getElementById('jobs-view-default');
+        const comicButton = document.getElementById('jobs-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function setJourneysView(view) {
+        const defaultView = document.getElementById('journeys-default-view');
+        const comicView = document.getElementById('journeys-comic-view');
+        const defaultButton = document.getElementById('journeys-view-default');
+        const comicButton = document.getElementById('journeys-view-comic');
+
+        if (!defaultView || !comicView || !defaultButton || !comicButton) {
+            return;
+        }
+
+        const showComic = view === 'comic';
+        defaultView.style.display = showComic ? 'none' : 'block';
+        comicView.style.display = showComic ? 'block' : 'none';
+
+        defaultButton.className = 'jobs-view-button' + (showComic ? '' : ' jobs-view-button-active');
+        comicButton.className = 'jobs-view-button' + (showComic ? ' jobs-view-button-active' : '');
+    }
+
+    function kpiIconFile(node) {
+        return (node && node.icon) ? node.icon : 'kpi.png';
+    }
+
+    function kpiCurrentValue(node) {
+        if (!node || !node.currentValue) {
+            return '';
+        }
+        return String(node.currentValue) + (node.unit ? ' (' + String(node.unit) + ')' : '');
+    }
+
+    function kpiValueStatusLabel(node) {
+        if (!node || !node.valueStatus) {
+            return '';
+        }
+        const labels = {
+            example: 'illustrative example',
+            baseline: 'measured baseline',
+            target: 'target',
+            placeholder: 'placeholder'
+        };
+        return labels[node.valueStatus] || String(node.valueStatus);
+    }
+
+    function renderKpiMeta(node) {
+        let html = '';
+        if (node && node.currentValue) {
+            const statusLabel = kpiValueStatusLabel(node);
+            const valueLabel = (node.valueStatus === 'target') ? 'Target:' : 'Current:';
+            html += '<div style="font-size: 80%; color: #1d4ed8; margin-top: 10px"><b>' + valueLabel + '</b> ' + escapeHtml(kpiCurrentValue(node));
+            if (statusLabel) {
+                html += ' <span style="color:#888; font-style: italic;">(' + escapeHtml(statusLabel) + ')</span>';
+            }
+            html += '</div>';
+        }
+        if (node && node.target) {
+            html += '<div style="font-size: 80%; color: #047857; margin-top: 2px"><b>Target:</b> ' + escapeHtml(String(node.target)) + '</div>';
+        }
+        if (node && node.guardrailRole) {
+            html += '<div style="font-size: 78%; color: #b91c1c; margin-top: 2px"><b>Guardrail:</b> ' + escapeHtml(String(node.guardrailRole)) + '</div>';
+        }
+        if (node && (node.period || node.calculationMethod || node.valueSource)) {
+            html += '<div style="font-size: 76%; color: #6b7280; margin-top: 3px">';
+            if (node.period) { html += '<div><b>Period:</b> ' + escapeHtml(String(node.period)) + '</div>'; }
+            if (node.calculationMethod) { html += '<div><b>How measured:</b> ' + escapeHtml(String(node.calculationMethod)) + '</div>'; }
+            if (node.valueSource) { html += '<div><b>Value source:</b> ' + escapeHtml(String(node.valueSource)) + '</div>'; }
+            html += '</div>';
+        }
+        if (node && node.guardrail) {
+            html += '<div style="font-size: 76%; color: #7c3aed; margin-top: 3px"><b>Composite guardrail:</b> ' + escapeHtml(String(node.guardrail)) + '</div>';
+        }
+        if (node && node.link) {
+            html += '<div style="font-size: 80%; margin-top: 4px"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(node.link) + '">' + escapeHtml(node.linkLabel || 'Open link') + '</a></div>';
+        }
+        return html;
+    }
+
+    function renderKpiTitle(node) {
+        let html = '';
+        html += '<div class="kpi-title">';
+        html += '<div><img class="kpi-icon" src="../icons/' + escapeHtml(kpiIconFile(node)) + '" onerror="this.onerror=null;this.src=\'../icons/kpi.png\'"></div>';
+        html += '<div><div>' + escapeHtml(node.name || '') + '</div>' + renderKpiMeta(node) + '</div>';
+        html += '</div>';
+        return html;
+    }
+
+    function addKPIChild(child, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '|';
+        html += '<table style="vertical-align: top; width: 100%; max-width:800px">';
+        html += '<tr>';
+        html += '<td colspan="' + (child.children ? child.children.length : 1) + '" style="vertical-align: top">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 100%; padding: 4px">';
+        html += renderKpiTitle(child);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px; padding-top: 8px; padding-bottom: 8px">';
+        html += child.description ? child.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        if (child.children) {
+            child.children.forEach(c => {
+                html += '<td style="vertical-align: top">';
+                html += addKPIChild(c, color);
+                html += '</td>';
+            });
+        }
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIPyramid(pyramid, color) {
+        let html = '';
+
+        html += '<div style="text-align: center; vertical-align: top">';
+        html += '<table style="vertical-align: top">';
+        html += '<tr>';
+        html += '<td colspan="' + pyramid.branches.length + '">';
+        html += '<div class="kpi" style="background-color: ' + color + '">';
+        html += '<div style="font-size: 120%; padding: 4px">';
+        html += renderKpiTitle(pyramid.top);
+        html += '</div>';
+        html += '<div style="background-color: white; font-size: 80%; padding: 2px">';
+        html += pyramid.top.description ? pyramid.top.description : '&nbsp;';
+        html += '</div>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        pyramid.branches.forEach(c => {
+            html += '<td style="vertical-align: top;">';
+            html += addKPIChild(c, color);
+            html += '</td>';
+        });
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function addKPIs() {
+        if (!customer.kpiPyramids || !customer.kpiPyramids.customerOutcomes || !customer.kpiPyramids.businessOutcomes) {
+            document.getElementById('KPI').innerHTML = '<div class="group">No KPI pyramid defined for this customer yet.</div>';
+            return;
+        }
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Customer Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.customerOutcomes, '#C0F3EA');
+        html += '</div>'
+
+        html += '<div class="group">'
+        html += '<div style="text-align: left; font-size: 150%; color: blue; margin-bottom: 12px">Business Outcomes</div>'
+        html += addKPIPyramid(customer.kpiPyramids.businessOutcomes, '#B7BDF7');
+        html += '</div>'
+
+        document.getElementById('KPI').innerHTML = html;
+    }
+
+    function normalizeRoadmapKpi(value, supportingKey) {
+        if (!value) {
+            return {northStar: '', [supportingKey]: []};
+        }
+        if (typeof value === 'string') {
+            return {northStar: value, [supportingKey]: []};
+        }
+        const normalized = Object.assign({}, value);
+        normalized.northStar = normalized.northStar || normalized.name || '';
+        normalized[supportingKey] = normalized[supportingKey] || [];
+        return normalized;
+    }
+
+    function renderCategoryGate(horizon) {
+        if (!horizon || !horizon.categoryGate) {
+            return '';
+        }
+        return '<div style="padding: 8px 10px; margin: 4px 6px; font-size: 72%; background:#fff8e1; border-left: 3px solid #f0b429; color:#5c4400">'
+            + '<b>Category gate:</b> ' + horizon.categoryGate + '</div>';
+    }
+
+    function addProductVision() {
+        if (!customer.productStrategy || !customer.productStrategy.timeHorizons) {
+            document.getElementById('Roadmap').innerHTML = '<div class="group">No product vision defined for this customer yet.</div>';
+            return;
+        }
+
+        let strategy = customer.productStrategy;
+        const timeHorizon1 = strategy.timeHorizons['year1'];
+        const timeHorizon2 = strategy.timeHorizons['year3'];
+        const timeHorizon3 = strategy.timeHorizons['year5'];
+        const businessKpi1 = normalizeRoadmapKpi(timeHorizon1.businessKPI, 'revenueStreams');
+        const businessKpi2 = normalizeRoadmapKpi(timeHorizon2.businessKPI, 'revenueStreams');
+        const businessKpi3 = normalizeRoadmapKpi(timeHorizon3.businessKPI, 'revenueStreams');
+        const customerKpi1 = normalizeRoadmapKpi(timeHorizon1.customerKPI, 'supporting');
+        const customerKpi2 = normalizeRoadmapKpi(timeHorizon2.customerKPI, 'supporting');
+        const customerKpi3 = normalizeRoadmapKpi(timeHorizon3.customerKPI, 'supporting');
+
+        let html = '';
+
+        html += '<div class="group">';
+        html += '<table>';
+        html += '<tr style="font-size: 80%; color: #a0a0a0">';
+        html += '<td></td>';
+        html += '<td style="padding-left: 16px">Year 1</td>';
+        html += '<td style="padding-left: 16px">Year 3</td>';
+        html += '<td style="padding-left: 16px">Year 5</td>';
+        html += '<td style="padding-left: 16px"></td>';
+        html += '<td rowspan="10" style="width: 280px; vertical-align: top; padding: 20px">';
+        html += '<div style="font-size: 120%; margin-bottom: 24px">';
+        html += 'VISION';
+        html += '</div>';
+        html += '<div style="font-size: 120%">';
+        html += '<img src="../icons/' + customer.icon + '" style="width: 100px" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+        html += '</div>';
+        html += '<div style="font-size: 140%">';
+        html += strategy.vision;
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon1.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon1.focus + '</div>';
+        html += renderCategoryGate(timeHorizon1);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon2.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon2.focus + '</div>';
+        html += renderCategoryGate(timeHorizon2);
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + timeHorizon3.productTheme + '</div>';
+        html += '<div style="padding: 10px; font-size: 80%">' + timeHorizon3.focus + '</div>';
+        html += renderCategoryGate(timeHorizon3);
+        html += '</td>';
+        html += '<td style="padding: 10px"></td>';
+        html += '<td>';
+        html += '</td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td></td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 1 (Year 1)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 2 (Year 3)</td>';
+        html += '<td style="height: 40px; background-color: black; color: #f0f0f0; padding: 20px">Milestone 3 (Year 5)</td>';
+        html += '<td><div class="triangle"></div></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Business<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi1.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi2.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + businessKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        businessKpi3.revenueStreams.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td></td>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<td>Customer<br>KPI</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi1.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi1.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi2.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi2.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td style="padding: 6px; width: 250px; border-left: 2px solid grey; vertical-align: top">';
+        html += '<div style="padding: 6px; width: 250px">' + customerKpi3.northStar + '</div>';
+        html += '<div style="padding: 6px; width: 250px; font-size: 80%">';
+        customerKpi3.supporting.forEach(stream => {
+            html += '<div style="margin-top: 2px; margin-bottom: 2px; padding: 2px; border: 1px solid lightgrey; border-radius: 7px">';
+            html += stream;
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</td>';
+        html += '<td>';
+        html += '';
+        html += '</td>';
+        html += '</tr>';
+        html += '</table>';
+        html += '</div>'
+
+
+        document.getElementById('Roadmap').innerHTML = html;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function formatDate(dateValue) {
+        if (!dateValue) return 'No date';
+        const date = new Date(dateValue + 'T00:00:00');
+        if (isNaN(date.getTime())) return dateValue;
+        return date.toLocaleDateString('en-GB', {year: 'numeric', month: 'short', day: 'numeric'});
+    }
+
+    function renderKpis(items) {
+        let html = '';
+        items.forEach(item => {
+            html += '<div><b>' + escapeHtml(item.kpi) + '</b>';
+            if (item.unit) {
+                html += ' <span class="activity-muted">(' + escapeHtml(item.unit) + ')</span>';
+            }
+            if (item.expectedImpact) {
+                html += ': ' + escapeHtml(item.expectedImpact);
+            }
+            if (item.currentValue) {
+                html += '<div class="activity-muted"><b>Current:</b> ' + escapeHtml(String(item.currentValue)) + '</div>';
+            }
+            if (item.description) {
+                html += '<div class="activity-muted">' + escapeHtml(item.description) + '</div>';
+            }
+            if (item.link) {
+                html += '<div class="activity-muted"><a target="_blank" rel="noopener noreferrer" href="' + escapeHtml(item.link) + '">' + escapeHtml(item.linkLabel || 'Open link') + '</a></div>';
+            }
+            html += '</div>';
+        });
+        return html;
+    }
+
+    function renderImpactCell(item, currentCustomerId) {
+        let html = '';
+        (item.customerImpact || []).forEach(impact => {
+            const isCurrent = impact.customerId === currentCustomerId;
+            html += '<div class="activity-block' + (isCurrent ? ' activity-pill-highlight' : '') + '">';
+            html += '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">';
+            html += '<img class="activity-icon activity-icon-round" src="../icons/' + escapeHtml(impact.customer.icon) + '" onerror="this.onerror=null;this.src=\'../icons/customer.png\'">';
+            html += '<div><div style="font-weight:bold; color:' + (isCurrent ? '#1d4ed8' : '#111827') + '">' + escapeHtml(impact.customer.name) + ' <span class="activity-muted">(' + escapeHtml(impact.customerId) + ')</span></div></div>';
+            html += '</div>';
+            html += renderKpis(impact.customerKPIs || []);
+            html += renderKpis(impact.businessKPIs || []);
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No customer impact listed</span>';
+    }
+
+    function renderBrickCell(item) {
+        let html = '';
+        (item.productBricks || []).forEach(brick => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-bricks/icons/' + escapeHtml(brick.brick.icon) + '" onerror="this.onerror=null;this.src=\'../../product-bricks/icons/logo.png\'">';
+            html += '<div><div><b>' + escapeHtml(brick.brick.name) + '</b> <span class="activity-muted">(#' + escapeHtml(brick.brickId) + ')</span></div><div class="activity-muted">' + escapeHtml(brick.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No product bricks listed</span>';
+    }
+
+    function renderChannelCell(item) {
+        let html = '';
+        (item.deliveryChannels || []).forEach(channel => {
+            html += '<div class="activity-pill">';
+            html += '<img class="activity-icon" src="../../product-deployments/icons/' + escapeHtml(channel.channel.icon) + '" onerror="this.onerror=null;this.src=\'../../product-deployments/icons/product.png\'">';
+            html += '<div><div><b>' + escapeHtml(channel.channel.name) + '</b> <span class="activity-muted">(' + escapeHtml(channel.channelId) + ')</span></div><div class="activity-muted">' + escapeHtml(channel.change) + '</div></div>';
+            html += '</div>';
+        });
+        return html || '<span class="activity-muted">No delivery channels listed</span>';
+    }
+
+    function renderActivityTable(data, kind, currentCustomerId) {
+        const items = (data && data.items) ? data.items : [];
+        let html = '';
+        html += '<div class="activity-summary">';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.length + '</div><div class="activity-stat-label">' + kind + '</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.customerImpact || []).length > 0).length + '</div><div class="activity-stat-label">With customer impact</div></div>';
+        html += '<div class="activity-stat"><div class="activity-stat-value">' + items.filter(item => (item.productBricks || []).length > 0).length + '</div><div class="activity-stat-label">With bricks</div></div>';
+        html += '</div>';
+
+        if (!items.length) {
+            html += '<div class="group" style="margin-top:0">No related ' + kind.toLowerCase() + ' found for this customer.</div>';
+            return html;
+        }
+
+        html += '<table class="activity-table">';
+        html += '<tr><th>Date</th><th>Description</th><th>Customer Impact</th><th>Product Bricks</th><th>Delivery Channels</th></tr>';
+        items.forEach(item => {
+            html += '<tr>';
+            html += '<td style="white-space:nowrap">' + escapeHtml(formatDate(item.date)) + '</td>';
+            html += '<td><a class="activity-link" target="_blank" rel="noopener noreferrer" href="../../' + kind.toLowerCase() + '/landing_pages/' + item.landingPageIndex + '.html">' + escapeHtml(item.description || item.name || kind) + '</a></td>';
+            html += '<td>' + renderImpactCell(item, currentCustomerId) + '</td>';
+            html += '<td>' + renderBrickCell(item) + '</td>';
+            html += '<td>' + renderChannelCell(item) + '</td>';
+            html += '</tr>';
+        });
+        html += '</table>';
+        return html;
+    }
+
+    addHeader();
+    addHome();
+    addJBTD();
+    addJourneys();
+    addKPIs();
+    addProductVision();
+    addInsights();
+
+
+</script>
+
+<script>
+    const breadcrumbs_context = {
+  "breadcrumbs": [
+    {
+      "link": "../../start/index.html",
+      "label": "Payments and Revenue Infrastructure Home"
+    },
+    {
+      "link": "../index.html",
+      "label": "Customers"
+    },
+    {
+      "label": "Treasury and Finance Controller"
+    }
+  ]
+};
+    const divId = "breadcrumbs";
+
+    function renderBreadcrumbs() {
+        const container = document.getElementById(divId);
+        if (!container) {
+            console.log('Breadcrumbs container with id "' + divId + '" not found.');
+            return;
+        }
+        container.innerHTML = '';
+        let html = '';
+        html += '<div class="breadcrumbs-container">';
+        if (breadcrumbs_context && breadcrumbs_context.breadcrumbs && breadcrumbs_context.breadcrumbs.length) {
+            breadcrumbs_context.breadcrumbs.forEach((crumb, index) => {
+                html += '<div class="breadcrumb">';
+                let suffix = index < breadcrumbs_context.breadcrumbs.length - 1 ? '&nbsp;&nbsp;>&nbsp;&nbsp;' : '';
+                if (crumb.link) {
+                    html += '<a href="' + crumb.link + '">' + crumb.label + '</a>';
+                } else {
+                    html += '<span>' + crumb.label + '</span>';
+                }
+                html += '<span>' + suffix + '</span>';
+                html += '</div>';
+            });
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    renderBreadcrumbs();
+</script>
+
+</body>
+</html>

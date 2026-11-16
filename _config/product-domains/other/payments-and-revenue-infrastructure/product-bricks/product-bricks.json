@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Product Bricks",
-    "description": "Hierarchical product brick map for the payments-and-revenue-infrastructure domain.",
+    "description": "Logical responsibility model for Stripe-centered payments and revenue infrastructure, reviewed on 2026-11-15. Modules and delivery surfaces explain customer contracts; they are not a reconstruction of vendor internal services, databases or cloud topology. Investment statuses are modeling choices, not vendor roadmap commitments.",
     "rendering": {
       "rows": [
         {
@@ -46,7 +46,7 @@
               "name": "Hosted Checkout",
               "type": "full-stack",
               "status": "invest",
-              "description": "Hosted payment session experience optimized for fast launch and ongoing conversion improvements.",
+              "description": "Create checkout sessions tied to merchant order and payment intent, using eligible hosted and agent-commerce paths. Cart facts come from the merchant’s commerce systems; client completion alone does not confirm captured funds.",
               "layers": [
                 {
                   "layer": "ui",
@@ -80,6 +80,18 @@
                       "description": "Creates and manages buyer-facing hosted payment sessions."
                     }
                   ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical integration responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-agent-cart-adapter",
+                      "name": "Agent catalog and cart adapter",
+                      "type": "integration",
+                      "description": "Consume merchant offers and current cart/tax/fulfillment facts for supported agent-commerce integrations."
+                    }
+                  ]
                 }
               ],
               "brickDependencies": [
@@ -88,35 +100,89 @@
                   "moduleId": "module-method-eligibility-engine",
                   "sourceModuleId": "module-session-orchestration",
                   "type": "composition",
-                  "description": "Uses market-aware payment method selection."
+                  "description": "Select product- and market-eligible methods."
+                },
+                {
+                  "targetBrickId": "auth",
+                  "moduleId": "module-authorization-decision-optimizer",
+                  "sourceModuleId": "module-session-orchestration",
+                  "type": "composition",
+                  "description": "Create and observe the payment intent independently of the UI."
+                },
+                {
+                  "targetBrickId": "mand",
+                  "moduleId": "module-delegated-authority-policy",
+                  "sourceModuleId": "module-session-orchestration",
+                  "type": "composition",
+                  "description": "Validate delegated authority when the supported checkout channel requires it."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Merchant commerce and agent platforms",
+                  "type": "integration",
+                  "interface": "Order, offer and cart interfaces",
+                  "description": "Merchant systems own product availability, fulfillment and customer relationship.",
+                  "sourceModuleId": "module-session-orchestration"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
-                {
-                  "assetId": "identity-credential",
-                  "moduleIds": [
-                    "module-session-orchestration"
-                  ],
-                  "role": "read",
-                  "description": "Reads Identity Credential to support domain workflows."
-                },
                 {
                   "assetId": "session-token",
                   "moduleIds": [
                     "module-session-orchestration"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Session Token."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "access-policy",
+                  "assetId": "transaction",
                   "moduleIds": [
                     "module-session-orchestration"
                   ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Access Policy."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payment-instrument-reference",
+                  "moduleIds": [
+                    "module-session-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "consent-record",
+                  "moduleIds": [
+                    "module-session-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "merchant-responsibility",
+                  "moduleIds": [
+                    "module-session-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "delegated-authority",
+                  "moduleIds": [
+                    "module-session-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-session-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -124,19 +190,23 @@
                     "module-session-orchestration"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Agentic Commerce Suite",
+                      "link": "https://stripe.com/en-es/newsroom/news/agentic-commerce-suite",
+                      "description": "Stripe"
+                    },
+                    {
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -147,7 +217,7 @@
               "name": "Payment Elements",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Embeddable payment form components with centralized method logic and wallet support.",
+              "description": "Render embedded payment collection and method presentation while preserving session, intent and consent references. Eligibility differs from hosted Checkout and Managed Payments.",
               "layers": [
                 {
                   "layer": "ui",
@@ -189,27 +259,34 @@
                   "moduleId": "module-method-eligibility-engine",
                   "sourceModuleId": "module-payment-form-rendering",
                   "type": "composition",
-                  "description": "Uses payment method ranking and eligibility logic."
+                  "description": "Present eligible methods in a custom surface."
+                },
+                {
+                  "targetBrickId": "auth",
+                  "moduleId": "module-authorization-decision-optimizer",
+                  "sourceModuleId": "module-payment-form-rendering",
+                  "type": "composition",
+                  "description": "Submit and observe a payment intent."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "customer-contact-point",
+                  "assetId": "session-token",
                   "moduleIds": [
                     "module-payment-form-rendering"
                   ],
                   "role": "read",
-                  "description": "Reads Customer Contact Point to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "audit-log",
+                  "assetId": "transaction",
                   "moduleIds": [
                     "module-payment-form-rendering"
                   ],
-                  "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "payment-instrument-reference",
@@ -217,27 +294,34 @@
                     "module-payment-form-rendering"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "capability-policy",
                   "moduleIds": [
                     "module-payment-form-rendering"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-payment-form-rendering"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -248,16 +332,16 @@
               "name": "Payment Links",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Low-code payment collection surfaces for one-off and lightweight commerce flows.",
+              "description": "Create a reusable or limited payment-link record tied to a price/offer and checkout session. Merchant-of-record handling is an explicit supported arrangement, not an automatic property of every link.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-payment-link-management-ui",
                       "name": "Payment link management UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Dashboard workflow for link creation and monitoring.",
                       "dependencies": {
                         "modules": [
@@ -290,27 +374,43 @@
                   "moduleId": "module-session-orchestration",
                   "sourceModuleId": "module-hosted-link-generation",
                   "type": "composition",
-                  "description": "Reuses hosted payment session capabilities."
+                  "description": "Create a session from the link and its commercial offer."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "payment-links",
+                  "moduleIds": [
+                    "module-hosted-link-generation"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "price-contract",
                   "moduleIds": [
                     "module-hosted-link-generation"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "merchant-responsibility",
                   "moduleIds": [
                     "module-hosted-link-generation"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "session-token",
+                  "moduleIds": [
+                    "module-hosted-link-generation"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -318,27 +418,18 @@
                     "module-hosted-link-generation"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-links",
-                  "moduleIds": [
-                    "module-hosted-link-generation"
-                  ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Payment Links."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -349,16 +440,16 @@
               "name": "Payment Method Orchestration",
               "type": "full-stack",
               "status": "invest",
-              "description": "Selection, ordering, and eligibility logic for cards, wallets, and local payment methods.",
+              "description": "Select eligible payment methods by market, product, currency and customer context. Stablecoin acceptance has its own merchant eligibility and refund/finality behavior. Processor routing is a separate capability.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-method-configuration-ui",
                       "name": "Method configuration UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator controls for payment method availability and preferences.",
                       "dependencies": {
                         "modules": [
@@ -385,25 +476,41 @@
                   ]
                 }
               ],
-              "brickDependencies": [],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-method-eligibility-engine",
+                  "type": "composition",
+                  "description": "Read entity and product capability restrictions."
+                }
+              ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "capability-policy",
                   "moduleIds": [
                     "module-method-eligibility-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "transaction",
                   "moduleIds": [
                     "module-method-eligibility-engine"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payment-instrument-reference",
+                  "moduleIds": [
+                    "module-method-eligibility-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -411,27 +518,18 @@
                     "module-method-eligibility-engine"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-method-orchestration",
-                  "moduleIds": [
-                    "module-method-eligibility-engine"
-                  ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Payment Method Orchestration."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stablecoin payment acceptance",
+                      "link": "https://docs.stripe.com/payments/stablecoin-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -449,16 +547,16 @@
               "name": "Authorization Optimization",
               "type": "full-stack",
               "status": "invest",
-              "description": "Improves legitimate payment success through retries, tokens, and issuer-aware optimization.",
+              "description": "Manage payment intent execution, payment authentication, credential lifecycle, authorization attempts and capture/refund outcomes. Payment authorization is distinct from signing an operator into a dashboard.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-authorization-analytics-ui",
                       "name": "Authorization analytics UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Shows approval, decline, and recovery diagnostics.",
                       "dependencies": {
                         "modules": [
@@ -483,6 +581,18 @@
                       "description": "Tunes retries, network tokens, and confirmation paths."
                     }
                   ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical integration responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-issuer-rail-adapter",
+                      "name": "Authorization and credential adapter",
+                      "type": "integration",
+                      "description": "Exchange issuer/network authentication, token and authorization facts with external payment infrastructure."
+                    }
+                  ]
                 }
               ],
               "brickDependencies": [
@@ -490,36 +600,98 @@
                   "targetBrickId": "rada",
                   "moduleId": "module-risk-scoring-and-controls-engine",
                   "sourceModuleId": "module-authorization-decision-optimizer",
-                  "type": "context",
-                  "description": "Uses fraud and risk signals to preserve good approvals."
+                  "type": "composition",
+                  "description": "Apply risk and authentication controls."
+                },
+                {
+                  "targetBrickId": "ledg",
+                  "moduleId": "module-financial-event-ledger",
+                  "sourceModuleId": "module-authorization-decision-optimizer",
+                  "type": "composition",
+                  "description": "Record captured/refunded financial outcomes."
+                },
+                {
+                  "targetBrickId": "rout",
+                  "moduleId": "module-processor-route-policy",
+                  "sourceModuleId": "module-authorization-decision-optimizer",
+                  "type": "composition",
+                  "description": "Use explicit eligible processor routing only for supported integrations."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Card schemes, acquiring processors and issuers",
+                  "type": "integration",
+                  "interface": "Payment authorization, token and authentication contracts",
+                  "description": "External decisions and processor references constrain capture and recovery.",
+                  "sourceModuleId": "module-authorization-decision-optimizer"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "identity-credential",
+                  "assetId": "transaction",
+                  "moduleIds": [
+                    "module-authorization-decision-optimizer"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "authorization-attempt",
+                  "moduleIds": [
+                    "module-authorization-decision-optimizer"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "payment-instrument-reference",
+                  "moduleIds": [
+                    "module-authorization-decision-optimizer"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-authorization-decision-optimizer"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "risk-decision",
                   "moduleIds": [
                     "module-authorization-decision-optimizer"
                   ],
                   "role": "read",
-                  "description": "Reads Identity Credential to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "session-token",
+                  "assetId": "processor-route",
                   "moduleIds": [
                     "module-authorization-decision-optimizer"
                   ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Session Token."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "access-policy",
+                  "assetId": "delegated-authority",
                   "moduleIds": [
                     "module-authorization-decision-optimizer"
                   ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Access Policy."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-authorization-decision-optimizer"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -527,19 +699,40 @@
                     "module-authorization-decision-optimizer"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe payment lifecycle",
+                  "description": "Public integration contract; the capability and module decomposition remain logical modeling choices.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe payment intent lifecycle and checkout integration choices",
+                      "link": "https://docs.stripe.com/payments/payment-intents",
+                      "description": "Payment intent state, attempts and completion; Checkout Sessions are recommended for most integrations."
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Adyen Uplift modules",
+                      "link": "https://www.adyen.com/uplift",
+                      "description": "Adyen"
+                    }
+                  ]
+                },
+                {
+                  "group": "Adyen comparison update",
+                  "description": "Public availability evidence reviewed on 2026-11-15.",
+                  "links": [
+                    {
+                      "label": "Adyen comparison: Visa Payment Passkey through Authenticate: initial UK availability",
+                      "link": "https://www.adyen.com/press-and-media/adyen-visa-payment-passkey",
+                      "description": "Comparison evidence; does not establish Stripe product availability."
                     }
                   ]
                 }
@@ -550,16 +743,16 @@
               "name": "Terminal and Reader Operations",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Reader provisioning, card-present payment acceptance, and in-person operational control.",
+              "description": "Manage store/reader configuration and terminal integration, linking online and in-person activity to an order. Offline acceptance is provisional until later collection and reconciliation; eligibility depends on device, method and location.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-reader-operations-ui",
                       "name": "Reader operations UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for reader assignment and health.",
                       "dependencies": {
                         "modules": [
@@ -574,6 +767,18 @@
                   ]
                 },
                 {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-offline-collection-recovery",
+                      "name": "Offline collection recovery",
+                      "type": "message-consumer",
+                      "description": "Track delayed collection attempts and escalate aged terminal transactions."
+                    }
+                  ]
+                },
+                {
                   "layer": "service",
                   "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.",
                   "modules": [
@@ -584,35 +789,86 @@
                       "description": "Manages reader lifecycle, connectivity, and configuration."
                     }
                   ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical integration responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-terminal-protocol",
+                      "name": "Terminal protocol adapter",
+                      "type": "integration",
+                      "description": "Exchange reader/device payment state and preserve delayed offline collection references."
+                    }
+                  ]
                 }
               ],
               "brickDependencies": [
                 {
+                  "targetBrickId": "auth",
+                  "moduleId": "module-authorization-decision-optimizer",
+                  "sourceModuleId": "module-reader-fleet-management",
+                  "type": "composition",
+                  "description": "Link terminal authorization and later capture."
+                },
+                {
                   "targetBrickId": "ledg",
                   "moduleId": "module-financial-event-ledger",
                   "sourceModuleId": "module-reader-fleet-management",
-                  "type": "context",
-                  "description": "Uses shared money-state logic across online and in-person flows."
+                  "type": "composition",
+                  "description": "Record resulting payment obligations."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Merchant POS systems and payment readers",
+                  "type": "integration",
+                  "interface": "Terminal SDK / device protocol",
+                  "description": "Store/device state and supported offline behavior constrain the sale.",
+                  "sourceModuleId": "module-reader-fleet-management"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "reader-state",
                   "moduleIds": [
                     "module-reader-fleet-management"
                   ],
-                  "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "offline-collection",
+                  "moduleIds": [
+                    "module-reader-fleet-management"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "transaction",
                   "moduleIds": [
                     "module-reader-fleet-management"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-reader-fleet-management"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-reader-fleet-management"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -620,27 +876,153 @@
                     "module-reader-fleet-management"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "terminal-and-reader-operations",
-                  "moduleIds": [
-                    "module-reader-fleet-management"
-                  ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Terminal And Reader Operations."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe Terminal offline payments and reader limits",
+                      "link": "https://docs.stripe.com/terminal/features/operate-offline/overview?reader-type=internet",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Unified commerce",
+                      "link": "https://docs.adyen.com/unified-commerce",
+                      "description": "Adyen documentation"
+                    },
+                    {
+                      "label": "Offline payment behavior and exposure",
+                      "link": "https://docs.adyen.com/point-of-sale/offline-payment/",
+                      "description": "Adyen documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Processor choice",
+          "description": "Optional routing contracts distinct from payment-method choice.",
+          "subGroups": [],
+          "bricks": [
+            {
+              "id": "rout",
+              "name": "Processor Routing and Execution Contracts",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Select an eligible processor and retain execution references, idempotency and route outcomes. Stripe Orchestration is a private preview with product exclusions; third-party disputes and settlement remain the processor’s responsibility.",
+              "layers": [
+                {
+                  "layer": "service",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-processor-route-policy",
+                      "name": "Processor route policy",
+                      "type": "service",
+                      "description": "Own effective route eligibility, selection rules and the mapping from merchant intent to provider execution."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-provider-execution-adapter",
+                      "name": "Provider execution adapter",
+                      "type": "integration",
+                      "description": "Translate supported processor requests and responses without promising universal portability."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-processor-route-policy",
+                  "type": "composition",
+                  "description": "Constrain processor selection by entity and capability."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "processor-route",
+                  "moduleIds": [
+                    "module-processor-route-policy"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-processor-route-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "transaction",
+                  "moduleIds": [
+                    "module-processor-route-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payment-instrument-reference",
+                  "moduleIds": [
+                    "module-processor-route-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-processor-route-policy"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Supported third-party processors",
+                  "type": "integration",
+                  "interface": "Processor-specific execution and reporting",
+                  "description": "Separate processor contracts retain their fees, losses, settlement and dispute responsibilities.",
+                  "sourceModuleId": "module-processor-route-policy"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [],
+              "links": [
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Orchestration private preview and supported products",
+                      "link": "https://docs.stripe.com/payments/orchestration",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Multi pay-in pilot",
+                      "link": "https://docs.adyen.com/platforms/multi-pay-in",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -665,16 +1047,16 @@
               "name": "Subscription and Price Management",
               "type": "full-stack",
               "status": "invest",
-              "description": "Product, price, recurring lifecycle, and proration controls for recurring businesses.",
+              "description": "Own subscription and versioned commercial terms: recurring prices, hybrid usage, commitments and changes. Coordinate Billing and Metronome choices by documented compatibility rather than assuming a mandatory migration.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-billing-configuration-ui",
                       "name": "Billing configuration UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for price and subscription management.",
                       "dependencies": {
                         "modules": [
@@ -706,32 +1088,60 @@
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "transaction",
+                  "assetId": "subscription",
                   "moduleIds": [
                     "module-pricing-and-subscription-state-engine"
                   ],
-                  "role": "read",
-                  "description": "Reads Transaction to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "authorization-optimization",
+                  "assetId": "price-contract",
+                  "moduleIds": [
+                    "module-pricing-and-subscription-state-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "customer-profile",
                   "moduleIds": [
                     "module-pricing-and-subscription-state-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Authorization Optimization to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "credit-grant",
+                  "moduleIds": [
+                    "module-pricing-and-subscription-state-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-pricing-and-subscription-state-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Choose Metronome or basic usage-based billing",
+                      "link": "https://docs.stripe.com/billing/subscriptions/usage-based",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Why Adyen acquired Orb",
+                      "link": "https://www.adyen.com/knowledge-hub/why-adyen-acquired-orb",
+                      "description": "Adyen"
                     }
                   ]
                 }
@@ -742,16 +1152,16 @@
               "name": "Usage Metering and Rating",
               "type": "full-stack",
               "status": "invest",
-              "description": "Captures usage events, rating logic, and billable volume for hybrid pricing models.",
+              "description": "Ingest and deduplicate usage, apply a versioned rate/contract and consume credits with correction lineage. Metronome is the documented starting point for new usage integrations; existing Meters remains supported. Token billing is public preview.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-meter-definitions-ui",
                       "name": "Meter definitions UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator controls for meters and pricing rules.",
                       "dependencies": {
                         "modules": [
@@ -762,6 +1172,18 @@
                           }
                         ]
                       }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-usage-normalization",
+                      "name": "Usage normalization and correction",
+                      "type": "message-consumer",
+                      "description": "Validate event identity, deduplicate, apply late corrections and retain the rate version used."
                     }
                   ]
                 },
@@ -784,31 +1206,83 @@
                   "moduleId": "module-pricing-and-subscription-state-engine",
                   "sourceModuleId": "module-meter-ingestion-and-rating",
                   "type": "composition",
-                  "description": "Uses product and pricing metadata from the subscription model."
+                  "description": "Read the effective commercial price and subscription contract."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Merchant usage producers",
+                  "type": "integration",
+                  "interface": "Metered event ingestion",
+                  "description": "The merchant supplies event identity, customer, units and correction lineage.",
+                  "sourceModuleId": "module-meter-ingestion-and-rating"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "usage-metering-and-rating",
+                  "assetId": "usage-event",
                   "moduleIds": [
                     "module-meter-ingestion-and-rating"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Usage Metering And Rating."
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "rating-record",
+                  "moduleIds": [
+                    "module-meter-ingestion-and-rating"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "credit-grant",
+                  "moduleIds": [
+                    "module-meter-ingestion-and-rating"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "subscription",
+                  "moduleIds": [
+                    "module-meter-ingestion-and-rating"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "price-contract",
+                  "moduleIds": [
+                    "module-meter-ingestion-and-rating"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-meter-ingestion-and-rating"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Choose Metronome or basic usage-based billing",
+                      "link": "https://docs.stripe.com/billing/subscriptions/usage-based",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Bill for LLM tokens",
+                      "link": "https://docs.stripe.com/billing/token-billing",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -819,16 +1293,16 @@
               "name": "Invoicing and Collections",
               "type": "full-stack",
               "status": "invest",
-              "description": "Invoice generation, collection workflows, reminders, and dunning behavior.",
+              "description": "Generate invoices from accepted prices, usage and tax results; manage due dates, collection attempts, dunning, credit notes and corrections without double charging.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-invoice-operations-ui",
                       "name": "Invoice operations UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Dashboard for invoice review, reminders, and retries.",
                       "dependencies": {
                         "modules": [
@@ -839,6 +1313,18 @@
                           }
                         ]
                       }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-collection-retries",
+                      "name": "Invoice collection scheduler",
+                      "type": "daemon",
+                      "description": "Schedule eligible retries and dunning against invoice state and customer communication preferences."
                     }
                   ]
                 },
@@ -857,31 +1343,92 @@
               ],
               "brickDependencies": [
                 {
+                  "targetBrickId": "subs",
+                  "moduleId": "module-pricing-and-subscription-state-engine",
+                  "sourceModuleId": "module-invoice-lifecycle-orchestration",
+                  "type": "composition",
+                  "description": "Read subscription terms."
+                },
+                {
+                  "targetBrickId": "usag",
+                  "moduleId": "module-meter-ingestion-and-rating",
+                  "sourceModuleId": "module-invoice-lifecycle-orchestration",
+                  "type": "composition",
+                  "description": "Consume accepted usage and credit results."
+                },
+                {
+                  "targetBrickId": "taxx",
+                  "moduleId": "module-tax-rules-and-obligation-engine",
+                  "sourceModuleId": "module-invoice-lifecycle-orchestration",
+                  "type": "composition",
+                  "description": "Apply the responsible party’s tax result."
+                },
+                {
                   "targetBrickId": "auth",
                   "moduleId": "module-authorization-decision-optimizer",
                   "sourceModuleId": "module-invoice-lifecycle-orchestration",
                   "type": "composition",
-                  "description": "Uses payment success optimization during collection."
+                  "description": "Collect an invoice without duplicating payment."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "invoice",
+                  "moduleIds": [
+                    "module-invoice-lifecycle-orchestration"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "subscription",
                   "moduleIds": [
                     "module-invoice-lifecycle-orchestration"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "price-contract",
                   "moduleIds": [
                     "module-invoice-lifecycle-orchestration"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "rating-record",
+                  "moduleIds": [
+                    "module-invoice-lifecycle-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "credit-grant",
+                  "moduleIds": [
+                    "module-invoice-lifecycle-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "tax-determination-and-registration",
+                  "moduleIds": [
+                    "module-invoice-lifecycle-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-invoice-lifecycle-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -889,19 +1436,18 @@
                     "module-invoice-lifecycle-orchestration"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Choose Metronome or basic usage-based billing",
+                      "link": "https://docs.stripe.com/billing/subscriptions/usage-based",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -919,16 +1465,16 @@
               "name": "Tax Determination and Registration",
               "type": "full-stack",
               "status": "invest",
-              "description": "Tax obligation monitoring, calculation, and registration support across geographies.",
+              "description": "Determine indirect-tax treatment and track registration/filing ownership for the selected entity and product. Merchant-operated Tax and Managed Payments responsibilities must remain distinguishable.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-tax-dashboard",
                       "name": "Tax dashboard",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for registrations and tax monitoring.",
                       "dependencies": {
                         "modules": [
@@ -957,23 +1503,55 @@
               ],
               "brickDependencies": [
                 {
-                  "targetBrickId": "invo",
-                  "moduleId": "module-invoice-lifecycle-orchestration",
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
                   "sourceModuleId": "module-tax-rules-and-obligation-engine",
-                  "type": "context",
-                  "description": "Uses billing and transaction details for tax calculation."
+                  "type": "composition",
+                  "description": "Read legal entity and jurisdiction evidence."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Tax authorities and contracted filing services",
+                  "type": "integration",
+                  "interface": "Registration, return and remittance evidence",
+                  "description": "Responsibility depends on entity, tax product and merchant-of-record arrangement.",
+                  "sourceModuleId": "module-tax-rules-and-obligation-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "customer-contact-point",
+                  "assetId": "tax-determination-and-registration",
+                  "moduleIds": [
+                    "module-tax-rules-and-obligation-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "legal-entity",
                   "moduleIds": [
                     "module-tax-rules-and-obligation-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Customer Contact Point to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "merchant-responsibility",
+                  "moduleIds": [
+                    "module-tax-rules-and-obligation-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "transaction",
+                  "moduleIds": [
+                    "module-tax-rules-and-obligation-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -981,35 +1559,18 @@
                     "module-tax-rules-and-obligation-engine"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-instrument-reference",
-                  "moduleIds": [
-                    "module-tax-rules-and-obligation-engine"
-                  ],
-                  "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
-                },
-                {
-                  "assetId": "transaction",
-                  "moduleIds": [
-                    "module-tax-rules-and-obligation-engine"
-                  ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -1020,16 +1581,16 @@
               "name": "Revenue Recognition",
               "type": "full-stack",
               "status": "invest",
-              "description": "Automates revenue schedules and accounting treatment from Stripe event data.",
+              "description": "Create recognition schedules from commercial terms, invoice lines and adjustments, with controlled accounting exports. Recognition and cash receipt are separate events.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-revenue-reporting-ui",
                       "name": "Revenue reporting UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for revenue schedules and accounting review.",
                       "dependencies": {
                         "modules": [
@@ -1058,59 +1619,92 @@
               ],
               "brickDependencies": [
                 {
-                  "targetBrickId": "ledg",
-                  "moduleId": "module-financial-event-ledger",
+                  "targetBrickId": "invo",
+                  "moduleId": "module-invoice-lifecycle-orchestration",
                   "sourceModuleId": "module-recognition-rules-engine",
-                  "type": "data",
-                  "description": "Uses payment and settlement event history for accounting outputs."
+                  "type": "composition",
+                  "description": "Read invoice lines and adjustments."
+                },
+                {
+                  "targetBrickId": "subs",
+                  "moduleId": "module-pricing-and-subscription-state-engine",
+                  "sourceModuleId": "module-recognition-rules-engine",
+                  "type": "composition",
+                  "description": "Read contract obligations and effective changes."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Enterprise accounting systems",
+                  "type": "integration",
+                  "interface": "Controlled revenue schedule import/export",
+                  "description": "The controller accepts accounting treatment and close adjustments.",
+                  "sourceModuleId": "module-recognition-rules-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "customer-profile",
+                  "assetId": "revenue-recognition",
                   "moduleIds": [
                     "module-recognition-rules-engine"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Customer Profile."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "customer-contact-point",
-                  "moduleIds": [
-                    "module-recognition-rules-engine"
-                  ],
-                  "role": "write",
-                  "description": "Writes or updates Customer Contact Point during domain workflows."
-                },
-                {
-                  "assetId": "consent-record",
+                  "assetId": "invoice",
                   "moduleIds": [
                     "module-recognition-rules-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Consent Record to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "price-contract",
                   "moduleIds": [
                     "module-recognition-rules-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-recognition-rules-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-recognition-rules-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe Revenue Recognition",
+                      "link": "https://docs.stripe.com/revenue-recognition",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Stripe 2025 annual update",
+                      "link": "https://stripe.com/newsroom/news/stripe-2025-update",
+                      "description": "Stripe"
                     }
                   ]
                 }
@@ -1121,16 +1715,16 @@
               "name": "Reporting, Sigma, and Data Export",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Queryable reporting, exports, and operational analytics across Stripe workflows.",
+              "description": "Publish traceable payment, billing, balance and settlement reports or data exports. Preserve source references, version and close approval for finance consumers.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-reporting-ui",
                       "name": "Reporting UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator reporting and query workflows.",
                       "dependencies": {
                         "modules": [
@@ -1141,6 +1735,18 @@
                           }
                         ]
                       }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-finance-export-jobs",
+                      "name": "Finance export jobs",
+                      "type": "message-consumer",
+                      "description": "Create controlled exports and preserve source lineage and close approval."
                     }
                   ]
                 },
@@ -1162,40 +1768,258 @@
                   "targetBrickId": "ledg",
                   "moduleId": "module-financial-event-ledger",
                   "sourceModuleId": "module-reporting-and-export-engine",
-                  "type": "data",
-                  "description": "Uses shared financial event data across products."
+                  "type": "composition",
+                  "description": "Read financial journals."
+                },
+                {
+                  "targetBrickId": "reca",
+                  "moduleId": "module-reconciliation-exception-workflow",
+                  "sourceModuleId": "module-reporting-and-export-engine",
+                  "type": "composition",
+                  "description": "Publish matching and exception outcomes."
+                },
+                {
+                  "targetBrickId": "revn",
+                  "moduleId": "module-recognition-rules-engine",
+                  "sourceModuleId": "module-reporting-and-export-engine",
+                  "type": "composition",
+                  "description": "Export accepted recognition schedules."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Merchant warehouses and ERP systems",
+                  "type": "integration",
+                  "interface": "Export and report contracts",
+                  "description": "Consumers preserve source lineage and reconcile imported records.",
+                  "sourceModuleId": "module-reporting-and-export-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "transaction",
+                  "assetId": "finance-export",
                   "moduleIds": [
                     "module-reporting-and-export-engine"
                   ],
-                  "role": "read",
-                  "description": "Reads Transaction to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "authorization-optimization",
+                  "assetId": "invoice",
                   "moduleIds": [
                     "module-reporting-and-export-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Authorization Optimization to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "ledger-entry",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "revenue-recognition",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "settlement-batch",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "reconciliation-exception",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-reporting-and-export-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Webhook duplicate and ordering behavior",
+                      "link": "https://docs.stripe.com/webhooks",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Merchant-of-record operations",
+          "description": "Explicit seller responsibility for eligible digital products.",
+          "subGroups": [],
+          "bricks": [
+            {
+              "id": "morc",
+              "name": "Merchant-of-Record Responsibility and Support",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Track an eligible Managed Payments arrangement, seller scope, indirect-tax responsibility and transaction-support handoffs. This is a distinct offering with integration limits, including no Connect compatibility in the reviewed documentation.",
+              "layers": [
+                {
+                  "layer": "service",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-mor-responsibility-record",
+                      "name": "Merchant responsibility record",
+                      "type": "service",
+                      "description": "Own the accepted commercial arrangement and product/country eligibility evidence."
+                    }
+                  ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-mor-tax-support-handoff",
+                      "name": "Tax and buyer-support handoffs",
+                      "type": "integration",
+                      "description": "Connect transaction, refund, dispute and tax work to the responsible party without implying all seller obligations transfer."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "chck",
+                  "moduleId": "module-session-orchestration",
+                  "sourceModuleId": "module-mor-responsibility-record",
+                  "type": "composition",
+                  "description": "Use an eligible hosted purchase path."
+                },
+                {
+                  "targetBrickId": "taxx",
+                  "moduleId": "module-tax-rules-and-obligation-engine",
+                  "sourceModuleId": "module-mor-responsibility-record",
+                  "type": "composition",
+                  "description": "Record the arrangement’s indirect-tax ownership."
+                },
+                {
+                  "targetBrickId": "disp",
+                  "moduleId": "module-dispute-case-orchestration",
+                  "sourceModuleId": "module-mor-responsibility-record",
+                  "type": "composition",
+                  "description": "Hand off transaction disputes to the responsible party."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "merchant-responsibility",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "legal-entity",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "transaction",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "tax-determination-and-registration",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "dispute-case",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-mor-responsibility-record"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Buyer support and tax operations",
+                  "type": "integration",
+                  "interface": "Case, refund and tax responsibility handoffs",
+                  "description": "Retain the commercial arrangement and escalation owner.",
+                  "sourceModuleId": "module-mor-responsibility-record"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [],
+              "links": [
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Paddle for SaaS",
+                      "link": "https://developer.paddle.com/get-started/how-paddle-works/saas/",
+                      "description": "Paddle documentation"
                     }
                   ]
                 }
@@ -1220,16 +2044,16 @@
               "name": "Connected Account Lifecycle",
               "type": "full-stack",
               "status": "invest",
-              "description": "Account types, capability state, lifecycle transitions, and platform controls for counterparties.",
+              "description": "Own customer/legal-party and connected-account roles, capability lifecycle and responsibility configuration. Record funds ownership and negative-balance responsibility independently from API user identity; product/version compatibility applies.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-connected-account-ui",
                       "name": "Connected account UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflows for account lifecycle and status management.",
                       "dependencies": {
                         "modules": [
@@ -1262,7 +2086,7 @@
                   "moduleId": "module-verification-workflow-engine",
                   "sourceModuleId": "module-account-capability-orchestration",
                   "type": "composition",
-                  "description": "Uses verification requirements to decide account status."
+                  "description": "Apply required verification outcomes to capabilities."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
@@ -1274,35 +2098,87 @@
                     "module-account-capability-orchestration"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Customer Profile."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "customer-contact-point",
                   "moduleIds": [
                     "module-account-capability-orchestration"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Customer Contact Point during domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "legal-entity",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "connected-account",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "consent-record",
                   "moduleIds": [
                     "module-account-capability-orchestration"
                   ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "verification-case",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
                   "role": "read",
-                  "description": "Reads Consent Record to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "identity-evidence",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-account-capability-orchestration"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Connect Accounts v2",
+                      "link": "https://docs.stripe.com/connect/accounts-v2",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Platform account structure",
+                      "link": "https://docs.adyen.com/platforms/account-structure-resources",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -1313,7 +2189,7 @@
               "name": "KYC and KYB Verification",
               "type": "full-stack",
               "status": "invest",
-              "description": "Business and individual verification workflows required to activate and maintain accounts.",
+              "description": "Collect and review business and beneficial-owner evidence for required capabilities, including ongoing remediation and restricted states. KYC/KYB approval alone does not grant every financial product.",
               "layers": [
                 {
                   "layer": "ui",
@@ -1355,47 +2231,83 @@
                   "moduleId": "module-identity-evidence-verification",
                   "sourceModuleId": "module-verification-workflow-engine",
                   "type": "composition",
-                  "description": "Uses identity document checks for stronger assurance where needed."
+                  "description": "Consume appropriate identity evidence."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Business registries and verification providers",
+                  "type": "integration",
+                  "interface": "Evidence and review interfaces",
+                  "description": "Jurisdiction-specific evidence feeds capability decisions.",
+                  "sourceModuleId": "module-verification-workflow-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "customer-profile",
+                  "assetId": "beneficial-owner",
                   "moduleIds": [
                     "module-verification-workflow-engine"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Customer Profile."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "customer-contact-point",
+                  "assetId": "verification-case",
                   "moduleIds": [
                     "module-verification-workflow-engine"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Customer Contact Point during domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "consent-record",
+                  "assetId": "legal-entity",
                   "moduleIds": [
                     "module-verification-workflow-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Consent Record to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "identity-evidence",
+                  "moduleIds": [
+                    "module-verification-workflow-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-verification-workflow-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-verification-workflow-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Connect Accounts v2",
+                      "link": "https://docs.stripe.com/connect/accounts-v2",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Business accounts: development phase and eligibility",
+                      "link": "https://docs.adyen.com/business-accounts",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -1406,7 +2318,7 @@
               "name": "Identity Verification",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Document and identity verification workflows used in higher-assurance onboarding and fraud-sensitive scenarios.",
+              "description": "Handle reusable identity evidence and verification results under the appropriate consent and access constraints. This does not by itself verify beneficiary bank-account ownership or confer spending authority.",
               "layers": [
                 {
                   "layer": "ui",
@@ -1443,32 +2355,32 @@
                 }
               ],
               "brickDependencies": [],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Identity evidence providers",
+                  "type": "integration",
+                  "interface": "Document and identity verification interfaces",
+                  "description": "Verified identity is evidence, not a blanket financial permission.",
+                  "sourceModuleId": "module-identity-evidence-verification"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "identity-credential",
+                  "assetId": "identity-evidence",
+                  "moduleIds": [
+                    "module-identity-evidence-verification"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "consent-record",
                   "moduleIds": [
                     "module-identity-evidence-verification"
                   ],
                   "role": "read",
-                  "description": "Reads Identity Credential to support domain workflows."
-                },
-                {
-                  "assetId": "session-token",
-                  "moduleIds": [
-                    "module-identity-evidence-verification"
-                  ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Session Token."
-                },
-                {
-                  "assetId": "access-policy",
-                  "moduleIds": [
-                    "module-identity-evidence-verification"
-                  ],
-                  "role": "own",
-                  "description": "Acts as the primary owning brick for Access Policy."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -1476,19 +2388,29 @@
                     "module-identity-evidence-verification"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe Identity verification",
+                      "link": "https://docs.stripe.com/identity",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Business accounts: development phase and eligibility",
+                      "link": "https://docs.adyen.com/business-accounts",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -1506,16 +2428,16 @@
               "name": "Funds Routing and Split Settlement",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Moves money between platform and counterparties while applying fees, reserves, and settlement rules.",
+              "description": "Allocate payment, fee, reserve and refund obligations among identified parties and record transfers against the ledger. Route amounts only under the applicable account capabilities and liability arrangement.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-funds-flow-controls-ui",
                       "name": "Funds flow controls UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for platform fee and settlement settings.",
                       "dependencies": {
                         "modules": [
@@ -1544,43 +2466,89 @@
               ],
               "brickDependencies": [
                 {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-split-settlement-engine",
+                  "type": "composition",
+                  "description": "Check legal roles and capability state."
+                },
+                {
                   "targetBrickId": "ledg",
                   "moduleId": "module-financial-event-ledger",
                   "sourceModuleId": "module-split-settlement-engine",
-                  "type": "data",
-                  "description": "Uses shared money-state and balance bookkeeping."
+                  "type": "composition",
+                  "description": "Record party-specific obligations and transfers."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
+                  "assetId": "transfer",
+                  "moduleIds": [
+                    "module-split-settlement-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
                   "assetId": "transaction",
                   "moduleIds": [
                     "module-split-settlement-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Transaction to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "authorization-optimization",
+                  "assetId": "connected-account",
                   "moduleIds": [
                     "module-split-settlement-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Authorization Optimization to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "legal-entity",
+                  "moduleIds": [
+                    "module-split-settlement-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-split-settlement-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-split-settlement-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-split-settlement-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Adyen for Platforms",
+                      "link": "https://docs.adyen.com/platforms",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -1588,19 +2556,19 @@
             },
             {
               "id": "pyot",
-              "name": "Global Payouts and Treasury Workflows",
+              "name": "Payout Execution and Returns",
               "type": "full-stack",
               "status": "invest",
-              "description": "Outbound payouts, scheduling, rails management, and treasury-adjacent money movement workflows.",
+              "description": "Execute and reconcile payout instructions, beneficiary checks, failures and returns. Connect payouts and standalone Global Payouts have different funding, responsibility and eligibility; a request acknowledgement is not recipient funds availability.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-payout-operations-ui",
                       "name": "Payout operations UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for payout timing, failures, and status.",
                       "dependencies": {
                         "modules": [
@@ -1615,6 +2583,18 @@
                   ]
                 },
                 {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-payout-return-processing",
+                      "name": "Payout return processing",
+                      "type": "message-consumer",
+                      "description": "Reconcile failure/return notices before any approved reissue."
+                    }
+                  ]
+                },
+                {
                   "layer": "service",
                   "description": "Stateful services and domain service modules that own behavior, policy, workflow, data, or operations.",
                   "modules": [
@@ -1625,35 +2605,117 @@
                       "description": "Schedules and executes outbound money movement across payout rails."
                     }
                   ]
+                },
+                {
+                  "layer": "integration",
+                  "description": "Logical integration responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-payout-rail-adapter",
+                      "name": "Payout rail adapter",
+                      "type": "integration",
+                      "description": "Exchange beneficiary, route and transfer status with supported bank, card or wallet rails."
+                    }
+                  ]
                 }
               ],
               "brickDependencies": [
                 {
-                  "targetBrickId": "split",
-                  "moduleId": "module-split-settlement-engine",
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
                   "sourceModuleId": "module-payout-execution-engine",
                   "type": "composition",
-                  "description": "Uses routed balances and settlement outcomes to trigger payouts."
+                  "description": "Check recipient and responsibility configuration."
+                },
+                {
+                  "targetBrickId": "ledg",
+                  "moduleId": "module-financial-event-ledger",
+                  "sourceModuleId": "module-payout-execution-engine",
+                  "type": "composition",
+                  "description": "Check and post available-balance movements."
+                },
+                {
+                  "targetBrickId": "tres",
+                  "moduleId": "module-treasury-account-state",
+                  "sourceModuleId": "module-payout-execution-engine",
+                  "type": "composition",
+                  "description": "Use funding accounts for eligible standalone payouts."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Banks, card payout networks and supported wallet rails",
+                  "type": "integration",
+                  "interface": "Beneficiary verification and transfer status",
+                  "description": "Rail eligibility, cutoff, rejection and return semantics remain explicit.",
+                  "sourceModuleId": "module-payout-execution-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "payout-destination",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "payout",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "balance",
                   "moduleIds": [
                     "module-payout-execution-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "financial-account",
                   "moduleIds": [
                     "module-payout-execution-engine"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "connected-account",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "transfer",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-payout-execution-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -1661,19 +2723,18 @@
                     "module-payout-execution-engine"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Global Payouts: funding and sender availability",
+                      "link": "https://docs.stripe.com/global-payouts",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -1684,16 +2745,16 @@
               "name": "Issuing and Spend Controls",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Card issuing, spend controls, and programmatic card use cases for platforms and businesses.",
+              "description": "Manage eligible card programs, issued-card records and spending rules, consuming balances and authorization evidence. Issuing is a separate product from accepting a customer card.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-card-program-ui",
                       "name": "Card program UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for issuing programs and controls.",
                       "dependencies": {
                         "modules": [
@@ -1725,40 +2786,112 @@
                   "targetBrickId": "acct",
                   "moduleId": "module-account-capability-orchestration",
                   "sourceModuleId": "module-card-program-controls",
-                  "type": "context",
-                  "description": "Uses connected-account state and entitlements."
+                  "type": "composition",
+                  "description": "Check program/user eligibility."
+                },
+                {
+                  "targetBrickId": "ledg",
+                  "moduleId": "module-financial-event-ledger",
+                  "sourceModuleId": "module-card-program-controls",
+                  "type": "composition",
+                  "description": "Consume balance and card financial outcomes."
+                },
+                {
+                  "targetBrickId": "mand",
+                  "moduleId": "module-delegated-authority-policy",
+                  "sourceModuleId": "module-card-program-controls",
+                  "type": "composition",
+                  "description": "Apply any separately approved delegated spending mandate."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Card networks and issuing partners",
+                  "type": "integration",
+                  "interface": "Card authorization and settlement contracts",
+                  "description": "Program and region eligibility restrict issuing and spending.",
+                  "sourceModuleId": "module-card-program-controls"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "transaction",
+                  "assetId": "issued-card",
                   "moduleIds": [
                     "module-card-program-controls"
                   ],
-                  "role": "read",
-                  "description": "Reads Transaction to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "authorization-optimization",
+                  "assetId": "connected-account",
                   "moduleIds": [
                     "module-card-program-controls"
                   ],
                   "role": "read",
-                  "description": "Reads Authorization Optimization to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-card-program-controls"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "delegated-authority",
+                  "moduleIds": [
+                    "module-card-program-controls"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-card-program-controls"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-card-program-controls"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-card-program-controls"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe Issuing and product availability",
+                      "link": "https://docs.stripe.com/issuing",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Adyen Issuing",
+                      "link": "https://docs.adyen.com/issuing",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -1769,16 +2902,16 @@
               "name": "Capital and Financing Offers",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Financing and capital offer workflows tied to performance and money-movement history.",
+              "description": "Present eligible financing offers and retain voluntary acceptance, fee/repayment terms and repayment events. Eligibility and the funding arrangement are product- and jurisdiction-specific.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-capital-offer-ui",
                       "name": "Capital offer UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator and recipient workflow for financing visibility and acceptance.",
                       "dependencies": {
                         "modules": [
@@ -1807,43 +2940,280 @@
               ],
               "brickDependencies": [
                 {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-offer-and-repayment-engine",
+                  "type": "composition",
+                  "description": "Check eligible borrower roles."
+                },
+                {
                   "targetBrickId": "rpts",
                   "moduleId": "module-reporting-and-export-engine",
                   "sourceModuleId": "module-offer-and-repayment-engine",
-                  "type": "data",
-                  "description": "Uses historical transaction and payout data to assess eligibility."
+                  "type": "composition",
+                  "description": "Use permitted activity and repayment reporting."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Eligible financing providers",
+                  "type": "integration",
+                  "interface": "Offer and repayment contracts",
+                  "description": "The contract identifies provider, borrower, fees, recourse and repayment terms.",
+                  "sourceModuleId": "module-offer-and-repayment-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "transaction",
+                  "assetId": "financing-agreement",
                   "moduleIds": [
                     "module-offer-and-repayment-engine"
                   ],
-                  "role": "read",
-                  "description": "Reads Transaction to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
-                  "assetId": "authorization-optimization",
+                  "assetId": "repayment",
+                  "moduleIds": [
+                    "module-offer-and-repayment-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "legal-entity",
                   "moduleIds": [
                     "module-offer-and-repayment-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Authorization Optimization to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-offer-and-repayment-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "finance-export",
+                  "moduleIds": [
+                    "module-offer-and-repayment-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "transfer",
+                  "moduleIds": [
+                    "module-offer-and-repayment-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-offer-and-repayment-engine"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Stripe Capital for platforms",
+                      "link": "https://docs.stripe.com/capital/how-capital-for-platforms-works",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Adyen Capital",
+                      "link": "https://docs.adyen.com/capital",
+                      "description": "Adyen documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Business liquidity",
+          "description": "Business financial accounts are distinct from connected-account settlement.",
+          "subGroups": [],
+          "bricks": [
+            {
+              "id": "tres",
+              "name": "Financial Accounts and Business Liquidity",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Represent the contracting entity, account arrangement, available funds, funding and currency conversion. Treasury for a business and Treasury for platforms are different offerings; account type, jurisdiction and preview access constrain use. Treasury for platforms has its own sales-led public/private preview access and regional list; do not inherit business Treasury availability.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-financial-account-api",
+                      "name": "Financial account interface",
+                      "type": "api",
+                      "description": "Expose eligible account, funding and transfer controls."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-treasury-account-state",
+                      "name": "Financial account state",
+                      "type": "service",
+                      "description": "Own account relationships, funding state and conversion instructions; consume ledger balances."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-treasury-account-state",
+                  "type": "composition",
+                  "description": "Read legal party and financial capability state."
+                },
+                {
+                  "targetBrickId": "ledg",
+                  "moduleId": "module-financial-event-ledger",
+                  "sourceModuleId": "module-treasury-account-state",
+                  "type": "composition",
+                  "description": "Read and reconcile available funds."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "financial-account",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "fx-conversion",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "legal-entity",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payout",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-treasury-account-state"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Contracted banks and account providers",
+                  "type": "integration",
+                  "interface": "Financial account and funding interfaces",
+                  "description": "The account agreement identifies bank/financial institution and legal funds-holder arrangement.",
+                  "sourceModuleId": "module-treasury-account-state"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [],
+              "links": [
+                {
+                  "group": "Stripe integration contract",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Stripe Treasury for platforms",
+                      "link": "https://docs.stripe.com/treasury/connect",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                },
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Treasury financial accounts and account structures",
+                      "link": "https://docs.stripe.com/treasury",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Intelligent Money Movement",
+                      "link": "https://www.adyen.com/press-and-media/adyen-launches-intelligent-money-movement",
+                      "description": "Adyen"
+                    }
+                  ]
+                },
+                {
+                  "group": "Adyen comparison update",
+                  "description": "Public availability evidence reviewed on 2026-11-15.",
+                  "links": [
+                    {
+                      "label": "Adyen comparison: Sage embedded business accounts and cards: planned France implementation",
+                      "link": "https://www.adyen.com/press-and-media/adyen-sage-partnership",
+                      "description": "Comparison evidence; does not establish Stripe product availability."
                     }
                   ]
                 }
@@ -1868,16 +3238,16 @@
               "name": "Fraud Detection and Adaptive Risk Controls",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "AI-assisted fraud scoring, adaptive controls, and operator workflows across payment and platform activity.",
+              "description": "Apply fraud/risk policy to payment and account signals; preserve decisions, review state and loss feedback. Optimize conversion with explicit loss and manual-review guardrails.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-risk-review-ui",
                       "name": "Risk review UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Fraud operations workflow and rule configuration surface.",
                       "dependencies": {
                         "modules": [
@@ -1909,20 +3279,44 @@
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "risk-decision",
                   "moduleIds": [
                     "module-risk-scoring-and-controls-engine"
                   ],
-                  "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "transaction",
                   "moduleIds": [
                     "module-risk-scoring-and-controls-engine"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "authorization-attempt",
+                  "moduleIds": [
+                    "module-risk-scoring-and-controls-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "dispute-case",
+                  "moduleIds": [
+                    "module-risk-scoring-and-controls-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "delegated-authority",
+                  "moduleIds": [
+                    "module-risk-scoring-and-controls-engine"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -1930,27 +3324,18 @@
                     "module-risk-scoring-and-controls-engine"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-elements",
-                  "moduleIds": [
-                    "module-risk-scoring-and-controls-engine"
-                  ],
-                  "role": "query",
-                  "description": "Queries Payment Elements to support search, analytics, or decision flows."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Adyen Uplift modules",
+                      "link": "https://www.adyen.com/uplift",
+                      "description": "Adyen"
                     }
                   ]
                 }
@@ -1961,16 +3346,16 @@
               "name": "Disputes and Chargeback Operations",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Chargeback handling, evidence workflows, and loss management across payment products.",
+              "description": "Track dispute evidence, deadlines, decisions and financial adjustments against the original transaction. Responsibility varies by processor and merchant-of-record arrangement.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-dispute-operations-ui",
                       "name": "Dispute operations UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator workflow for dispute review and evidence management.",
                       "dependencies": {
                         "modules": [
@@ -1999,31 +3384,54 @@
               ],
               "brickDependencies": [
                 {
-                  "targetBrickId": "rada",
-                  "moduleId": "module-risk-scoring-and-controls-engine",
+                  "targetBrickId": "auth",
+                  "moduleId": "module-authorization-decision-optimizer",
                   "sourceModuleId": "module-dispute-case-orchestration",
-                  "type": "context",
-                  "description": "Uses risk context to support case handling and loss analysis."
+                  "type": "composition",
+                  "description": "Link the original transaction."
+                },
+                {
+                  "targetBrickId": "ledg",
+                  "moduleId": "module-financial-event-ledger",
+                  "sourceModuleId": "module-dispute-case-orchestration",
+                  "type": "composition",
+                  "description": "Post dispute and recovery adjustments."
                 }
               ],
               "externalSystemsThisBrickDependsOn": [],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "dispute-case",
                   "moduleIds": [
                     "module-dispute-case-orchestration"
                   ],
-                  "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "transaction",
                   "moduleIds": [
                     "module-dispute-case-orchestration"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-dispute-case-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "merchant-responsibility",
+                  "moduleIds": [
+                    "module-dispute-case-orchestration"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -2031,27 +3439,23 @@
                     "module-dispute-case-orchestration"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-elements",
-                  "moduleIds": [
-                    "module-dispute-case-orchestration"
-                  ],
-                  "role": "query",
-                  "description": "Queries Payment Elements to support search, analytics, or decision flows."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Orchestration private preview and supported products",
+                      "link": "https://docs.stripe.com/payments/orchestration",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Managed Payments and merchant-of-record responsibilities",
+                      "link": "https://docs.stripe.com/payments/managed-payments",
+                      "description": "Stripe documentation"
                     }
                   ]
                 }
@@ -2062,16 +3466,16 @@
               "name": "Balances and Internal Ledger",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Shared money-state ledger across charges, invoices, transfers, refunds, and payouts.",
+              "description": "Maintain a logical journal of monetary obligations and balances with entity, currency and original/provider references. Preserve corrections as linked entries; this is not a claim about Stripe’s internal ledger implementation.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-balance-state-ui",
                       "name": "Balance state UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Operator views into balances and money movement state.",
                       "dependencies": {
                         "modules": [
@@ -2103,20 +3507,60 @@
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "ledger-entry",
+                  "moduleIds": [
+                    "module-financial-event-ledger"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "balance",
+                  "moduleIds": [
+                    "module-financial-event-ledger"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "capture-refund",
                   "moduleIds": [
                     "module-financial-event-ledger"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "transfer",
                   "moduleIds": [
                     "module-financial-event-ledger"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payout",
+                  "moduleIds": [
+                    "module-financial-event-ledger"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "repayment",
+                  "moduleIds": [
+                    "module-financial-event-ledger"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "fx-conversion",
+                  "moduleIds": [
+                    "module-financial-event-ledger"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -2124,19 +3568,18 @@
                     "module-financial-event-ledger"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Platform account structure",
+                      "link": "https://docs.adyen.com/platforms/account-structure-resources",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -2147,16 +3590,16 @@
               "name": "Reconciliation and Balance Operations",
               "type": "full-stack",
               "status": "invest",
-              "description": "Exception handling, payout understanding, and finance-operations workflows built on Stripe's money-state model.",
+              "description": "Match transactions, fees, FX, transfers and returns to settlement batches and external account statements; assign and resolve differences before finance close.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-reconciliation-ui",
                       "name": "Reconciliation UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Finance and operations workflow for investigating balance and payout issues.",
                       "dependencies": {
                         "modules": [
@@ -2167,6 +3610,18 @@
                           }
                         ]
                       }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-settlement-import",
+                      "name": "Settlement and statement intake",
+                      "type": "message-consumer",
+                      "description": "Import provider batches and account statements for matching and exception ownership."
                     }
                   ]
                 },
@@ -2189,27 +3644,90 @@
                   "moduleId": "module-financial-event-ledger",
                   "sourceModuleId": "module-reconciliation-exception-workflow",
                   "type": "composition",
-                  "description": "Uses shared ledger events and balances as the basis for exception handling."
+                  "description": "Compare expected obligations and recorded balance changes."
+                },
+                {
+                  "targetBrickId": "webh",
+                  "moduleId": "module-event-dispatch-engine",
+                  "sourceModuleId": "module-reconciliation-exception-workflow",
+                  "type": "composition",
+                  "description": "Recover source event identity and processing state."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Processors, account providers and merchant ERP",
+                  "type": "integration",
+                  "interface": "Settlement batches, statements and accounting exports",
+                  "description": "External settlement evidence is reconciled to logical obligations.",
+                  "sourceModuleId": "module-reconciliation-exception-workflow"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "settlement-batch",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "reconciliation-exception",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "ledger-entry",
                   "moduleIds": [
                     "module-reconciliation-exception-workflow"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "balance",
                   "moduleIds": [
                     "module-reconciliation-exception-workflow"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capture-refund",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "payout",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "fx-conversion",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "event-delivery",
+                  "moduleIds": [
+                    "module-reconciliation-exception-workflow"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -2217,27 +3735,18 @@
                     "module-reconciliation-exception-workflow"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "terminal-and-reader-operations",
-                  "moduleIds": [
-                    "module-reconciliation-exception-workflow"
-                  ],
-                  "role": "read",
-                  "description": "Reads Terminal And Reader Operations to support domain workflows."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Handle webhook events",
+                      "link": "https://docs.adyen.com/development-resources/webhooks/handle-webhook-events",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -2255,16 +3764,16 @@
               "name": "Eventing and Webhooks",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Outbound event delivery and integration hooks for payment, billing, and platform workflows.",
+              "description": "Deliver and ingest signed events with durable receipt, deduplication, retry/replay and source-state reconciliation. Ordering and delivery multiplicity are explicit integration constraints.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-webhook-configuration-ui",
                       "name": "Webhook configuration UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Developer workflow for event subscriptions and endpoint management.",
                       "dependencies": {
                         "modules": [
@@ -2275,6 +3784,18 @@
                           }
                         ]
                       }
+                    }
+                  ]
+                },
+                {
+                  "layer": "worker",
+                  "description": "Logical worker responsibilities.",
+                  "modules": [
+                    {
+                      "id": "module-event-replay",
+                      "name": "Durable event intake and replay",
+                      "type": "message-consumer",
+                      "description": "Check authenticity, persist receipt, deduplicate, acknowledge and process with replayable outcome state."
                     }
                   ]
                 },
@@ -2296,28 +3817,44 @@
                   "targetBrickId": "devx",
                   "moduleId": "module-developer-platform-control-plane",
                   "sourceModuleId": "module-event-dispatch-engine",
-                  "type": "context",
-                  "description": "Uses shared developer authentication and environment controls."
+                  "type": "composition",
+                  "description": "Read endpoint credentials and integration policy."
                 }
               ],
-              "externalSystemsThisBrickDependsOn": [],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Merchant webhook endpoints and source event providers",
+                  "type": "integration",
+                  "interface": "Signed HTTP events",
+                  "description": "Delivery can repeat or arrive out of order; receivers persist and reconcile.",
+                  "sourceModuleId": "module-event-dispatch-engine"
+                }
+              ],
               "externalSystemsDependingOnThisBrick": [],
               "dataDependencies": [
                 {
-                  "assetId": "payment-instrument-reference",
+                  "assetId": "event-delivery",
+                  "moduleIds": [
+                    "module-event-dispatch-engine"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "access-policy",
                   "moduleIds": [
                     "module-event-dispatch-engine"
                   ],
                   "role": "read",
-                  "description": "Reads Payment Instrument Reference to support domain workflows."
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
-                  "assetId": "transaction",
+                  "assetId": "identity-credential",
                   "moduleIds": [
                     "module-event-dispatch-engine"
                   ],
-                  "role": "write",
-                  "description": "Writes or updates Transaction during domain workflows."
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 },
                 {
                   "assetId": "audit-log",
@@ -2325,27 +3862,23 @@
                     "module-event-dispatch-engine"
                   ],
                   "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
-                },
-                {
-                  "assetId": "payment-elements",
-                  "moduleIds": [
-                    "module-event-dispatch-engine"
-                  ],
-                  "role": "query",
-                  "description": "Queries Payment Elements to support search, analytics, or decision flows."
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Webhook duplicate and ordering behavior",
+                      "link": "https://docs.stripe.com/webhooks",
+                      "description": "Stripe documentation"
+                    },
+                    {
+                      "label": "Handle webhook events",
+                      "link": "https://docs.adyen.com/development-resources/webhooks/handle-webhook-events",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }
@@ -2356,16 +3889,16 @@
               "name": "Developer API and Dashboard Foundations",
               "type": "full-stack",
               "status": "sustaining",
-              "description": "Shared API credentials, dashboard foundations, environment controls, and operator experience.",
+              "description": "Provide API credentials, operator authorization, integration configuration and audit access. Separate human/API authentication from issuer payment authorization and delegated financial authority.",
               "layers": [
                 {
-                  "layer": "ui",
-                  "description": "User-facing web, mobile, backoffice, and operator experience modules.",
+                  "layer": "interfaces",
+                  "description": "Merchant, developer or operations console.",
                   "modules": [
                     {
                       "id": "module-dashboard-shell-and-developer-ui",
                       "name": "Dashboard shell and developer UI",
-                      "type": "web-component",
+                      "type": "backoffice-interface",
                       "description": "Shared developer and operator workspace foundation.",
                       "dependencies": {
                         "modules": [
@@ -2376,6 +3909,12 @@
                           }
                         ]
                       }
+                    },
+                    {
+                      "id": "module-merchant-api-contract",
+                      "name": "Merchant integration API contract",
+                      "type": "api",
+                      "description": "Define credential scope, request identity, versioning and recoverable error behavior."
                     }
                   ]
                 },
@@ -2401,16 +3940,8 @@
                   "moduleIds": [
                     "module-developer-platform-control-plane"
                   ],
-                  "role": "read",
-                  "description": "Reads Identity Credential to support domain workflows."
-                },
-                {
-                  "assetId": "session-token",
-                  "moduleIds": [
-                    "module-developer-platform-control-plane"
-                  ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Session Token."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "access-policy",
@@ -2418,27 +3949,176 @@
                     "module-developer-platform-control-plane"
                   ],
                   "role": "own",
-                  "description": "Acts as the primary owning brick for Access Policy."
+                  "description": "Own the logical lifecycle and integrity of this record."
                 },
                 {
                   "assetId": "audit-log",
                   "moduleIds": [
                     "module-developer-platform-control-plane"
                   ],
-                  "role": "publish",
-                  "description": "Publishes events or audit records related to Audit Log."
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-developer-platform-control-plane"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
                 }
               ],
               "links": [
                 {
-                  "group": "Evidence",
-                  "description": "Real-world evidence related to this product brick.",
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
                   "links": [
                     {
-                      "label": "Evidence Explorer",
-                      "link": "../../../../evidence-explorer/index.html",
-                      "description": "Search evidence — source repositories, cloud resources, and contacts. Refine with ?q=<query> to pre-filter for this product brick.",
-                      "embedLink": "../../../../evidence-explorer/index.html?embed=1"
+                      "label": "Webhook duplicate and ordering behavior",
+                      "link": "https://docs.stripe.com/webhooks",
+                      "description": "Stripe documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Delegated authority",
+          "description": "Optional agent-commerce and treasury controls.",
+          "subGroups": [],
+          "bricks": [
+            {
+              "id": "mand",
+              "name": "Delegated Authority and Approvals",
+              "type": "full-stack",
+              "status": "invest",
+              "description": "Represent the principal, delegated actor, purpose, budget, recipient constraints, expiry, approval and revocation. These logical controls support eligible agent integrations; they do not imply every proposed automated action is shipped or globally available.",
+              "layers": [
+                {
+                  "layer": "interfaces",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-delegated-approval-api",
+                      "name": "Approval and revocation interface",
+                      "type": "api",
+                      "description": "Present a bounded financial action for approval or revoke an existing mandate."
+                    }
+                  ]
+                },
+                {
+                  "layer": "service",
+                  "description": "Logical responsibility boundary.",
+                  "modules": [
+                    {
+                      "id": "module-delegated-authority-policy",
+                      "name": "Delegated authority policy",
+                      "type": "service",
+                      "description": "Evaluate a mandate at execution time and preserve the approval and outcome evidence."
+                    }
+                  ]
+                }
+              ],
+              "brickDependencies": [
+                {
+                  "targetBrickId": "devx",
+                  "moduleId": "module-developer-platform-control-plane",
+                  "sourceModuleId": "module-delegated-authority-policy",
+                  "type": "composition",
+                  "description": "Authenticate the requester separately from its mandate."
+                },
+                {
+                  "targetBrickId": "acct",
+                  "moduleId": "module-account-capability-orchestration",
+                  "sourceModuleId": "module-delegated-authority-policy",
+                  "type": "composition",
+                  "description": "Bind authority to the correct legal party and eligible product."
+                }
+              ],
+              "dataDependencies": [
+                {
+                  "assetId": "delegated-authority",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "approval-record",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "own",
+                  "description": "Own the logical lifecycle and integrity of this record."
+                },
+                {
+                  "assetId": "legal-entity",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "access-policy",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "identity-credential",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "capability-policy",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "read",
+                  "description": "Read the authoritative record for this capability’s decisions and financial evidence."
+                },
+                {
+                  "assetId": "audit-log",
+                  "moduleIds": [
+                    "module-delegated-authority-policy"
+                  ],
+                  "role": "publish",
+                  "description": "Publish an attributable action/result without unnecessary sensitive payloads."
+                }
+              ],
+              "externalSystemsThisBrickDependsOn": [
+                {
+                  "system": "Agent platforms and business approvers",
+                  "type": "integration",
+                  "interface": "Delegation and approval evidence",
+                  "description": "Authority must be bounded and revocable; protocol support is product-specific.",
+                  "sourceModuleId": "module-delegated-authority-policy"
+                }
+              ],
+              "externalSystemsDependingOnThisBrick": [],
+              "links": [
+                {
+                  "group": "Public contracts and comparison evidence",
+                  "description": "Primary sources reviewed on 2026-11-15; documentation dates reflect access, not launch.",
+                  "links": [
+                    {
+                      "label": "Treasury for agents",
+                      "link": "https://stripe.com/en-es/newsroom/news/treasury-for-agents",
+                      "description": "Stripe"
+                    },
+                    {
+                      "label": "Agentic integration paths",
+                      "link": "https://docs.adyen.com/online-payments/agentic-commerce",
+                      "description": "Adyen documentation"
                     }
                   ]
                 }

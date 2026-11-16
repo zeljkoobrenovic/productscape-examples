@@ -1,11 +1,11 @@
 {
   "metadata": {
     "title": "Payments and Revenue Infrastructure Residuality Stress Test",
-    "description": "Explore how payment and revenue systems would need to change when a banking partner leaves, money rules change, platforms carry new liability, software agents make purchases, payouts become instant, or merchants control routing.",
-    "modelVersion": "1.0",
+    "description": "Explore hypothetical changes in bank access, currency rules, liability, delegated spending, instant-transfer scope and processor choice. Current product and regulatory context is distinguished from scenario premises.",
+    "modelVersion": "2.0",
     "naiveArchitecture": "A merchant sends one payment request to one processor route. The platform authorizes and captures the charge, records a balance, pays the merchant, and exposes separate billing or platform APIs for recurring and connected-account use cases.",
-    "residualArchitecture": "Instead of tying merchant payment behavior to one provider route and one stable set of money rules, the adapted design separates the purchase intent, payer authority, payment method, legal roles, provider route, ledger obligation, currency rules, and payout instruction. Banking-partner and regulatory changes can then happen behind stable merchant contracts, while dated policies select valid routes and the ledger preserves what is owed.",
-    "note": "These are business-context facts, including ecosystem and legal changes; they are not processor outage drills and are not assigned likelihood.",
+    "residualArchitecture": "The revised logical model separates payment intent and attempt, legal entity and capability policy, balances and journals, transfer/payout instructions, processor references and delegated authority. Those responsibilities support analysis of change, but multi-provider failover, redenomination and new legal obligations still require scenario-specific design and validation.",
+    "note": "Scenario analysis reviewed 2026-11-15; no probability is assigned. Candidate means a proposed response needs further design or exercise. Integrated means the logical model contains named responsibilities and records, not that a vendor or production system has passed a stress test. No survived result is claimed without an actual exercise. Regulatory and product sources are curated in customer insights and links; the book below supplies the method only.",
     "source": {
       "title": "Residues: Time, Change, and Uncertainty in Software Architecture",
       "author": "Barry M. O'Reilly",
@@ -18,61 +18,61 @@
       "id": "exit",
       "name": "A banking partner exits a country and terminates local processing and settlement",
       "group": "Financial ecosystem",
-      "detection": "Partner notices, scheme and regulator communications, route acceptance changes, treasury forecasts, settlement exceptions, and merchant escalation.",
+      "detection": "Hypothetical scenario triggered by a specific bank/partner exit notice, contract change or loss of route eligibility; this model does not assert such an event occurred.",
       "attractor": "Merchant demand and balances remain, but the legal and operational route that authorized, held, converted, and settled funds is no longer available in that market.",
       "businessReaction": "Stop making unsupported promises, route new transactions through eligible partners, migrate settlement obligations, protect existing balances, and tell merchants exactly which capabilities and dates change.",
-      "residue": "Separate the merchant payment contract from provider execution. A capability and jurisdiction registry selects effective-dated authorization, acquiring, custody, conversion, and settlement routes; the internal ledger remains the source of obligations while provider references stay at the edge.",
-      "status": "integrated",
+      "residue": "Proposed extension: use acct capability-policy, rout processor-route, tres financial-account and ledg journal references to separate obligations from a provider. A replacement bank/rail and migration exercise are still required; modeled boundaries do not establish available failover.",
+      "status": "candidate",
       "impacts": [
         {
           "targetType": "vision",
           "targetId": "cg1-p1",
-          "effect": "Global growth depends on continuity of merchant intent and money records when a local partner changes."
+          "effect": "Scenario implication: Global growth depends on continuity of merchant intent and money records when a local partner changes."
         },
         {
           "targetType": "job",
           "targetId": "cg1-p1/jtbd-cg1-1",
-          "effect": "Accepting globally becomes a capability-routing problem rather than a promise tied to one banking relationship."
+          "effect": "Scenario implication: Accepting globally becomes a capability-routing problem rather than a promise tied to one banking relationship."
         },
         {
           "targetType": "journey",
           "targetId": "cg1-p1/jtbd-cg1-1/improve-payment-success-on-legitimate-demand",
-          "effect": "Optimization can move legitimate demand to an eligible route without changing the merchant's payment intent contract."
+          "effect": "Scenario implication: Optimization can move legitimate demand to an eligible route without changing the merchant's payment intent contract."
         },
         {
           "targetType": "kpi",
           "targetId": "cg1-p1/co-cg1-b1-c2",
-          "effect": "Local payment method coverage must include executable route and settlement capability by effective date."
+          "effect": "Scenario implication: Local payment method coverage must include executable route and settlement capability by effective date."
         },
         {
           "targetType": "product",
           "targetId": "p1",
-          "effect": "Presents stable payment behavior while making market capability changes and migration deadlines explicit."
+          "effect": "Scenario implication: Presents stable payment behavior while making market capability changes and migration deadlines explicit."
         },
         {
           "targetType": "brick",
           "targetId": "pmtd",
-          "effect": "Selects payment methods and routes from effective capabilities rather than hard-coded provider ownership."
+          "effect": "Scenario implication: Selects payment methods and routes from effective capabilities rather than hard-coded provider ownership."
         },
         {
           "targetType": "brick",
           "targetId": "ledg",
-          "effect": "Preserves merchant obligations independently of the provider that executes or settles them."
+          "effect": "Scenario implication: Preserves merchant obligations independently of the provider that executes or settles them."
         },
         {
           "targetType": "brick",
           "targetId": "reca",
-          "effect": "Reconciles old and replacement partners into the same internal obligation model during migration."
+          "effect": "Scenario implication: Reconciles old and replacement partners into the same internal obligation model during migration."
         },
         {
           "targetType": "competitor",
           "targetId": "adyen",
-          "effect": "Makes multi-route continuity and transparent local capability a direct enterprise benchmark."
+          "effect": "Scenario implication: Makes multi-route continuity and transparent local capability a direct enterprise benchmark."
         },
         {
           "targetType": "stream",
           "targetId": "accept-payments-globally",
-          "effect": "Keeps merchant payment intent stable while authorization, acquiring, custody, conversion, and settlement routes migrate."
+          "effect": "Scenario implication: Keeps merchant payment intent stable while authorization, acquiring, custody, conversion, and settlement routes migrate."
         }
       ],
       "media": [
@@ -80,7 +80,7 @@
           "type": "image",
           "src": "media/stressor-exit.jpg",
           "title": "Residuality stressor illustration: A banking partner exits a country and terminates local processing and settlement",
-          "alt": "Illustration of the residuality stressor 'A banking partner exits a country and terminates local processing and settlement', showing its signal, attractor, business response, and surviving residue."
+          "alt": "Illustration of the residuality stressor 'A banking partner exits a country and terminates local processing and settlement', showing its signal, attractor, business response, and proposed architectural response."
         }
       ]
     },
@@ -88,61 +88,61 @@
       "id": "curr",
       "name": "A country redenominates its currency while imposing new conversion and withdrawal controls",
       "group": "Monetary regime",
-      "detection": "Central-bank orders, scheme bulletins, tax guidance, treasury rates, merchant contracts, and mismatches in incoming amounts or settlement files.",
+      "detection": "Hypothetical country-specific redenomination or conversion-control change, requiring a dated authoritative notice and legal interpretation before implementation.",
       "attractor": "The same currency code no longer means one stable unit or freely convertible balance; prices, invoices, authorizations, refunds, reports, and historical books span different effective regimes.",
       "businessReaction": "Freeze ambiguous operations, preserve historical meaning, convert only under explicit legal rules, communicate cutovers, and let merchants reconcile old obligations against new settlement units.",
-      "residue": "Represent money with currency, scale, regime, legal entity, and effective time. Immutable ledger entries retain their original unit; explicit conversion events bridge regimes, while product prices, invoices, refunds, reporting, and payouts reference governed monetary definitions.",
-      "status": "integrated",
+      "residue": "The model preserves entity, currency, amount and original references in ledger-entry, price-contract, invoice and fx-conversion. A currency-regime version, legal conversion policy and replay/reconciliation exercise remain proposed work, so this scenario is not marked integrated.",
+      "status": "candidate",
       "impacts": [
         {
           "targetType": "vision",
           "targetId": "cg2-p1",
-          "effect": "Trusted revenue operations require historical and current monetary meaning to remain reconcilable through a regime cutover."
+          "effect": "Scenario implication: Trusted revenue operations require historical and current monetary meaning to remain reconcilable through a regime cutover."
         },
         {
           "targetType": "job",
           "targetId": "cg2-p1/jtbd-cg2-2",
-          "effect": "Month-end can close without rewriting historical invoices or silently mixing incompatible units."
+          "effect": "Scenario implication: Month-end can close without rewriting historical invoices or silently mixing incompatible units."
         },
         {
           "targetType": "journey",
           "targetId": "cg2-p1/jtbd-cg2-2/prove-compliance-and-accounting-correctness",
-          "effect": "Provides the monetary definition and conversion event behind every reported amount."
+          "effect": "Scenario implication: Provides the monetary definition and conversion event behind every reported amount."
         },
         {
           "targetType": "kpi",
           "targetId": "cg2-p1/bo-cg2-b2-c2",
-          "effect": "Revenue export accuracy must detect regime mixing and preserve original plus converted values."
+          "effect": "Scenario implication: Revenue export accuracy must detect regime mixing and preserve original plus converted values."
         },
         {
           "targetType": "product",
           "targetId": "p2",
-          "effect": "Prices, invoices, credits, and subscriptions carry effective monetary definitions through cutover."
+          "effect": "Scenario implication: Prices, invoices, credits, and subscriptions carry effective monetary definitions through cutover."
         },
         {
           "targetType": "brick",
           "targetId": "ledg",
-          "effect": "Keeps immutable entries in their original regime and records conversions as balanced events."
+          "effect": "Scenario implication: Keeps immutable entries in their original regime and records conversions as balanced events."
         },
         {
           "targetType": "brick",
           "targetId": "subs",
-          "effect": "Versions prices and migration rules instead of mutating the meaning of existing subscriptions."
+          "effect": "Scenario implication: Versions prices and migration rules instead of mutating the meaning of existing subscriptions."
         },
         {
           "targetType": "brick",
           "targetId": "rpts",
-          "effect": "Exports original, converted, and reporting values with their definitions and cutover evidence."
+          "effect": "Scenario implication: Exports original, converted, and reporting values with their definitions and cutover evidence."
         },
         {
           "targetType": "stream",
           "targetId": "automate-recurring-revenue",
-          "effect": "Carries versioned monetary definitions through prices, subscriptions, invoices, credits, revenue, and reporting."
+          "effect": "Scenario implication: Carries versioned monetary definitions through prices, subscriptions, invoices, credits, revenue, and reporting."
         },
         {
           "targetType": "competitor",
           "targetId": "stripe",
-          "effect": "Makes effective-dated currency-regime handling and historical reconciliation a global revenue-platform benchmark."
+          "effect": "Scenario implication: Makes effective-dated currency-regime handling and historical reconciliation a global revenue-platform benchmark."
         }
       ],
       "media": [
@@ -150,139 +150,142 @@
           "type": "image",
           "src": "media/stressor-curr.jpg",
           "title": "Residuality stressor illustration: A country redenominates its currency while imposing new conversion and withdrawal controls",
-          "alt": "Illustration of the residuality stressor 'A country redenominates its currency while imposing new conversion and withdrawal controls', showing its signal, attractor, business response, and surviving residue."
+          "alt": "Illustration of the residuality stressor 'A country redenominates its currency while imposing new conversion and withdrawal controls', showing its signal, attractor, business response, and proposed architectural response."
         }
       ]
     },
     {
       "id": "liab",
-      "name": "Platforms become directly liable for losses created by their connected accounts",
-      "group": "Platform regulation",
-      "detection": "New law and scheme rules, legal opinions, sponsor-bank requirements, reserve disputes, negative-balance trends, and platform contract reviews.",
+      "name": "A platform’s contracted loss exposure or liability allocation changes",
+      "group": "Platform responsibility",
+      "detection": "A specific contract, scheme rule, legal change or account configuration changes who bears a loss. The premise is not a claim that all platforms newly become liable under one law.",
       "attractor": "Fast counterparty onboarding and immediate payouts transfer unacceptable loss to the platform; identity verification alone is insufficient because exposure changes with behavior, balance, product, and time.",
       "businessReaction": "Let platforms choose governed account roles, reserve and payout policies, exposure limits, intervention paths, and evidence proportional to the liability they carry.",
-      "residue": "Separate API user, legal entity, service role, funds owner, loss bearer, beneficiary, and controller. An effective policy attaches verification, capability, reserve, delay, limit, and recourse decisions to each funds-flow leg and retains why they applied.",
+      "residue": "Integrated at the logical-model level: acct owns legal-entity, connected-account and capability-policy; kycb owns verification-case; split, ledg and pyot preserve party, reserve/available-balance and payout records. The operate-platform-money-movement flow includes restriction remediation, returns and negative-balance recourse. Contract review and operational exercises remain necessary.",
       "status": "integrated",
       "impacts": [
         {
           "targetType": "vision",
           "targetId": "cg3-p1",
-          "effect": "Safe platform scale depends on explicit legal and economic roles, not one generic connected account type."
+          "effect": "Scenario implication: Safe platform scale depends on explicit legal and economic roles, not one generic connected account type."
         },
         {
           "targetType": "job",
           "targetId": "cg3-p1/jtbd-cg3-2",
-          "effect": "Operating money movement includes controlling exposure before funds become unrecoverable."
+          "effect": "Scenario implication: Operating money movement includes controlling exposure before funds become unrecoverable."
         },
         {
           "targetType": "journey",
           "targetId": "cg3-p1/jtbd-cg3-2/protect-the-platform-from-fraud-and-compliance-failure",
-          "effect": "Combines identity, behavior, balance, reserve, payout, and recourse into one explainable control state."
+          "effect": "Scenario implication: Combines identity, behavior, balance, reserve, payout, and recourse into one explainable control state."
         },
         {
           "targetType": "kpi",
           "targetId": "cg3-p1/bo-cg3-b2-c2",
-          "effect": "Critical payout incidents are traced to the exact role, exposure, and policy decision in effect."
+          "effect": "Scenario implication: Critical payout incidents are traced to the exact role, exposure, and policy decision in effect."
         },
         {
           "targetType": "product",
           "targetId": "p3",
-          "effect": "Exposes legal roles, liability configuration, reserves, limits, payout state, and recourse to platform operators."
+          "effect": "Scenario implication: Exposes legal roles, liability configuration, reserves, limits, payout state, and recourse to platform operators."
         },
         {
           "targetType": "brick",
           "targetId": "acct",
-          "effect": "Models role and capability lifecycles independently from a single connected-account persona."
+          "effect": "Scenario implication: Models role and capability lifecycles independently from a single connected-account persona."
         },
         {
           "targetType": "brick",
           "targetId": "kycb",
-          "effect": "Supplies versioned entity evidence to control decisions without owning financial exposure policy."
+          "effect": "Scenario implication: Supplies versioned entity evidence to control decisions without owning financial exposure policy."
         },
         {
           "targetType": "brick",
           "targetId": "pyot",
-          "effect": "Executes holds, reserves, limits, and releases from explicit policy rather than implicit account type."
+          "effect": "Scenario implication: Executes holds, reserves, limits, and releases from explicit policy rather than implicit account type."
         },
         {
           "targetType": "competitor",
           "targetId": "paypal_braintree",
-          "effect": "Raises liability controls and explainable platform recourse as a competitive trust dimension."
+          "effect": "Scenario implication: Raises liability controls and explainable platform recourse as a competitive trust dimension."
         },
         {
           "targetType": "stream",
           "targetId": "operate-platform-money-movement",
-          "effect": "Applies legal roles, verification, reserves, limits, holds, payouts, recourse, and evidence to every funds-flow leg."
+          "effect": "Scenario implication: Applies legal roles, verification, reserves, limits, holds, payouts, recourse, and evidence to every funds-flow leg."
         }
       ],
-      "media": [
-        {
-          "type": "image",
-          "src": "media/stressor-liab.jpg",
-          "title": "Residuality stressor illustration: Platforms become directly liable for losses created by their connected accounts",
-          "alt": "Illustration of the residuality stressor 'Platforms become directly liable for losses created by their connected accounts', showing its signal, attractor, business response, and surviving residue."
-        }
-      ]
+      "media": []
     },
     {
       "id": "agnt",
       "name": "Autonomous agents begin purchasing within delegated corporate budgets",
       "group": "Buyer authority",
-      "detection": "Merchant integration requests, non-human credential use, high-frequency low-value purchase patterns, procurement pilots, and disputes about delegated actions.",
+      "detection": "Existing agent-commerce and permissioned treasury offerings motivate a scenario in which delegated business spending scales. Product/region restrictions and emerging protocol support remain explicit.",
       "attractor": "The actor presenting a payment is neither the cardholder nor a conventional employee; authority is bounded by purpose, budget, merchant category, time, and revocation rather than one checkout authentication event.",
       "businessReaction": "Accept agent-initiated commerce only with verifiable delegation, enforce purpose and spend controls, preserve human intervention, and provide an explanation that merchants, employers, and issuers can audit.",
-      "residue": "Introduce a signed delegated-authority object independent of payment method. It identifies principal, agent, purpose, constraints, evidence, expiry, revocation, and approval policy; authorization and risk decisions consume it and bind the result to the payment record.",
+      "residue": "mand owns delegated-authority and approval-record; execute-delegated-spending separates mandate creation, execution-time checks, payout, revocation and reconciliation. These are modeled controls. End-to-end abuse, expiry, replay and ambiguous-execution exercises are still needed before a survival claim.",
       "status": "candidate",
       "impacts": [
         {
           "targetType": "vision",
           "targetId": "cg1-p1",
-          "effect": "Conversion remains trusted when the buyer interaction is delegated to a bounded machine actor."
+          "effect": "Scenario implication: Conversion remains trusted when the buyer interaction is delegated to a bounded machine actor."
         },
         {
           "targetType": "job",
           "targetId": "cg1-p1/jtbd-cg1-1",
-          "effect": "Global acceptance gains a new authority model without weakening legitimate-demand optimization."
+          "effect": "Scenario implication: Global acceptance gains a new authority model without weakening legitimate-demand optimization."
         },
         {
           "targetType": "journey",
           "targetId": "cg1-p1/jtbd-cg1-1/launch-a-checkout-flow-that-buyers-trust",
-          "effect": "Checkout can request, display, and bind agent delegation evidence instead of forcing a fake human session."
+          "effect": "Scenario implication: Checkout can request, display, and bind agent delegation evidence instead of forcing a fake human session."
         },
         {
           "targetType": "kpi",
           "targetId": "cg1-p1/co-cg1-b1-c1",
-          "effect": "Checkout completion must distinguish valid delegated purchases from blocked or ambiguous agent attempts."
+          "effect": "Scenario implication: Checkout completion must distinguish valid delegated purchases from blocked or ambiguous agent attempts."
         },
         {
           "targetType": "product",
           "targetId": "p5",
-          "effect": "Adds authority verification, revocation, evidence, and cross-merchant agent controls to trust foundations."
+          "effect": "Scenario implication: Adds authority verification, revocation, evidence, and cross-merchant agent controls to trust foundations."
         },
         {
           "targetType": "brick",
           "targetId": "iden",
-          "effect": "Verifies the principal and agent while preserving their distinct identities and evidence."
+          "effect": "Scenario implication: Verifies the principal and agent while preserving their distinct identities and evidence."
         },
         {
           "targetType": "brick",
           "targetId": "auth",
-          "effect": "Evaluates instrument, delegated authority, purpose, budget, and issuer response as separate decision inputs."
+          "effect": "Scenario implication: Evaluates instrument, delegated authority, purpose, budget, and issuer response as separate decision inputs."
         },
         {
           "targetType": "brick",
           "targetId": "rada",
-          "effect": "Builds agent-specific behavior and abuse controls without classifying every non-human action as fraud."
+          "effect": "Scenario implication: Builds agent-specific behavior and abuse controls without classifying every non-human action as fraud."
         },
         {
           "targetType": "stream",
           "targetId": "accept-payments-globally",
-          "effect": "Carries delegated principal, agent, purpose, budget, payment, authorization, explanation, and revocation through acceptance."
+          "effect": "Scenario implication: Carries delegated principal, agent, purpose, budget, payment, authorization, explanation, and revocation through acceptance."
         },
         {
           "targetType": "competitor",
           "targetId": "paypal_braintree",
-          "effect": "Makes bounded machine-buyer authority a new digital-wallet and checkout trust benchmark."
+          "effect": "Scenario implication: Makes bounded machine-buyer authority a new digital-wallet and checkout trust benchmark."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "mand",
+          "effect": "Scenario implication: Own bounded authority and approval evidence without conflating it with identity verification."
+        },
+        {
+          "targetType": "stream",
+          "targetId": "execute-delegated-spending",
+          "effect": "Scenario implication: Expose execution-time checks, ambiguous outcomes and revocation as distinct steps."
         }
       ],
       "media": [
@@ -290,138 +293,135 @@
           "type": "image",
           "src": "media/stressor-agnt.jpg",
           "title": "Residuality stressor illustration: Autonomous agents begin purchasing within delegated corporate budgets",
-          "alt": "Illustration of the residuality stressor 'Autonomous agents begin purchasing within delegated corporate budgets', showing its signal, attractor, business response, and surviving residue."
+          "alt": "Illustration of the residuality stressor 'Autonomous agents begin purchasing within delegated corporate budgets', showing its signal, attractor, business response, and proposed architectural response."
         }
       ]
     },
     {
       "id": "vpvr",
-      "name": "A regulator mandates instant payouts with beneficiary verification",
+      "name": "An applicable instant-transfer and beneficiary-verification obligation changes payout operations",
       "group": "Payout regulation",
-      "detection": "Final regulation, network certification, sponsor-bank requirements, beneficiary mismatch events, and platform launch plans in affected markets.",
-      "attractor": "Platforms must release funds in near real time while proving that the destination belongs to the intended beneficiary and while retaining liability, reserve, and jurisdiction controls.",
-      "businessReaction": "Verify the beneficiary, select an eligible instant rail, apply the platform's exposure policy, disclose exceptions, and prove the complete instruction-to-settlement chain.",
-      "residue": "No new structural change is required: provider-independent routing supplies an eligible rail, explicit legal and funds-flow roles identify beneficiary and loss bearer, and the internal ledger plus effective policies preserve the verification, reserve, instruction, and settlement evidence.",
-      "status": "already-survived",
+      "detection": "Use the ECB Instant Payments Regulation overview to identify the institution, service, currency and implementation date in scope. This is not a blanket requirement that all merchant payouts be instant.",
+      "attractor": "An in-scope service must meet its transfer and beneficiary-verification requirements while managing mismatches, unavailable routes, fraud exposure and recipient communication.",
+      "businessReaction": "Confirm legal scope, record the beneficiary-check result, explain mismatch/unavailable outcomes, select an eligible rail and preserve approval, execution and reconciliation evidence.",
+      "residue": "pyot now owns payout-destination and beneficiary-check evidence plus payout/return state; acct owns capability-policy and ledg records funds. A complete mismatch/close-match/unavailable response policy, eligible rail and timed execution exercise are still required. The earlier already-survived label was unsupported.",
+      "status": "candidate",
       "reusesResidueIds": [
-        "exit",
         "liab"
       ],
       "impacts": [
         {
           "targetType": "job",
           "targetId": "cg3-p1/jtbd-cg3-2",
-          "effect": "Instant movement is another governed execution mode under the existing funds-flow and liability model."
+          "effect": "Scenario implication: Determine whether the institution and service are in scope before adding instant-transfer and beneficiary-check obligations to platform funds flows."
         },
         {
           "targetType": "journey",
           "targetId": "cg3-p1/jtbd-cg3-2/control-funds-fees-and-payout-timing",
-          "effect": "Adds an instant timing option with beneficiary and exposure prerequisites already expressed by policy."
+          "effect": "Scenario implication: Document applicable timing, name-check outcomes, mismatch handling and customer approvals; these policies still require design and testing."
         },
         {
           "targetType": "kpi",
           "targetId": "cg3-p1/bo-cg3-b1-c2",
-          "effect": "Payout attach can distinguish instant, verified, settled payouts from mere instruction creation."
+          "effect": "Scenario implication: Keep payout adoption separate from successful verification, execution timeliness and recipient funds availability; an instruction is not a completed payout."
         },
         {
           "targetType": "product",
           "targetId": "p3",
-          "effect": "Can expose instant-payout eligibility and evidence through the existing role and capability model."
+          "effect": "Scenario implication: Expose only the instant-transfer services and evidence available under the applicable entity, rail and contract."
         },
         {
           "targetType": "brick",
           "targetId": "pyot",
-          "effect": "Selects the instant rail and executes only after the effective verification and exposure decisions."
+          "effect": "Scenario implication: Preserve the provider beneficiary-check response, explicit approval and payout/return state; confirm applicable rail and timing requirements separately."
         },
         {
           "targetType": "brick",
-          "targetId": "iden",
-          "effect": "Binds reusable beneficiary evidence to the legal entity and destination instrument."
+          "targetId": "acct",
+          "effect": "Scenario implication: Bind the beneficiary and destination to the correct legal party and capability policy; identity verification alone is not a verification-of-payee result."
         },
         {
           "targetType": "competitor",
           "targetId": "block_square",
-          "effect": "Makes verified instant access to funds a comparable platform capability rather than a bespoke product."
+          "effect": "Scenario implication: Compare access-to-funds products by their actual rails, jurisdictions, fees and availability; instant payout branding alone does not establish regulatory equivalence."
         },
         {
           "targetType": "vision",
           "targetId": "cg3-p1",
-          "effect": "Platform growth includes instant funds access without losing beneficiary, liability, reserve, and settlement control."
+          "effect": "Scenario implication: Improve eligible funds access while preserving liability, reserve and settlement controls and explaining unavailable services."
         },
         {
           "targetType": "stream",
           "targetId": "operate-platform-money-movement",
-          "effect": "Reuses role, verification, route, reserve, instruction, ledger, and settlement controls for instant payout."
+          "effect": "Scenario implication: Reuse party, balance and payout records, then add the scoped beneficiary-check, mismatch and execution policies before exercising the complete flow."
         }
       ],
-      "media": [
-        {
-          "type": "image",
-          "src": "media/stressor-vpvr.jpg",
-          "title": "Residuality stressor illustration: A regulator mandates instant payouts with beneficiary verification",
-          "alt": "Illustration of the residuality stressor 'A regulator mandates instant payouts with beneficiary verification', showing its signal, attractor, business response, and surviving residue."
-        }
-      ]
+      "media": []
     },
     {
       "id": "orch",
       "name": "A strategic merchant makes every processor a replaceable route behind its own orchestrator",
       "group": "Merchant power",
-      "detection": "Enterprise architecture reviews, orchestration-platform headers, tender requirements, declining default-route share, and requests for portable tokens and event semantics.",
+      "detection": "A merchant procurement or integration decision introduces route choice. Stripe has a restricted orchestration private preview; Adyen multi pay-in is an inbound-funds pilot, not universal checkout failover.",
       "attractor": "The merchant, not the processor, owns routing and can move volume quickly; proprietary integration gravity weakens and value shifts to measurable route performance, finance automation, portability, and operational trust.",
       "businessReaction": "Compete as the best observable execution and money-operations component, support controlled portability, publish honest performance, and attach differentiated revenue, platform, risk, and reconciliation services.",
-      "residue": "Make payment intent, token reference, idempotency, event, reconciliation, and export contracts explicitly portable. Provider-specific optimization remains internal, while outcome telemetry and ledger evidence let merchants compare and combine routes without corrupting financial truth.",
+      "residue": "rout separates processor-route and execution references from method selection; auth, webh and reca preserve attempt, event and settlement evidence. Universal token portability, interchangeable settlement/dispute behavior and cross-provider recovery are not established by these modeled boundaries.",
       "status": "candidate",
       "impacts": [
         {
           "targetType": "vision",
           "targetId": "cg1-p1",
-          "effect": "Default-platform value must be earned through measurable outcomes and operational depth, not integration lock-in."
+          "effect": "Scenario implication: Default-platform value must be earned through measurable outcomes and operational depth, not integration lock-in."
         },
         {
           "targetType": "job",
           "targetId": "cg1-p1/jtbd-cg1-1",
-          "effect": "The merchant can optimize legitimate demand across multiple routes while retaining one operational truth."
+          "effect": "Scenario implication: The merchant can optimize legitimate demand across multiple routes while retaining one operational truth."
         },
         {
           "targetType": "journey",
           "targetId": "cg1-p1/jtbd-cg1-1/operate-payments-without-finance-chaos",
-          "effect": "Reconciles externally routed payments and internal financial products with explicit source and obligation semantics."
+          "effect": "Scenario implication: Reconciles externally routed payments and internal financial products with explicit source and obligation semantics."
         },
         {
           "targetType": "kpi",
           "targetId": "cg1-p1/bo-cg1-top",
-          "effect": "Retention becomes a measure of outcome and suite value under real routing choice."
+          "effect": "Scenario implication: Retention becomes a measure of outcome and suite value under real routing choice."
         },
         {
           "targetType": "product",
           "targetId": "p5",
-          "effect": "Provides portable events, reconciliation, reporting, and finance controls across mixed processor estates."
+          "effect": "Scenario implication: Provides portable events, reconciliation, reporting, and finance controls across mixed processor estates."
         },
         {
           "targetType": "brick",
           "targetId": "devx",
-          "effect": "Publishes stable portable semantics and migration tooling alongside Stripe-specific capabilities."
+          "effect": "Scenario implication: Publishes stable portable semantics and migration tooling alongside Stripe-specific capabilities."
         },
         {
           "targetType": "brick",
           "targetId": "webh",
-          "effect": "Makes event identity, ordering, replay, and source explicit for merchant-owned orchestration."
+          "effect": "Scenario implication: Makes event identity, ordering, replay, and source explicit for merchant-owned orchestration."
         },
         {
           "targetType": "brick",
           "targetId": "reca",
-          "effect": "Reconciles processor execution facts to merchant intent and internal obligations across routes."
+          "effect": "Scenario implication: Reconciles processor execution facts to merchant intent and internal obligations across routes."
         },
         {
           "targetType": "competitor",
           "targetId": "adyen",
-          "effect": "Shifts enterprise competition toward transparent performance, global control, and finance-operating depth."
+          "effect": "Scenario implication: Shifts enterprise competition toward transparent performance, global control, and finance-operating depth."
         },
         {
           "targetType": "stream",
           "targetId": "run-trust-and-finance-operations",
-          "effect": "Reconciles merchant-owned routing, provider events, balances, disputes, reports, and financial truth across processors."
+          "effect": "Scenario implication: Reconciles merchant-owned routing, provider events, balances, disputes, reports, and financial truth across processors."
+        },
+        {
+          "targetType": "brick",
+          "targetId": "rout",
+          "effect": "Scenario implication: Constrain processor routing to eligible contracts and keep external settlement/dispute responsibilities visible."
         }
       ],
       "media": [
@@ -429,7 +429,7 @@
           "type": "image",
           "src": "media/stressor-orch.jpg",
           "title": "Residuality stressor illustration: A strategic merchant makes every processor a replaceable route behind its own orchestrator",
-          "alt": "Illustration of the residuality stressor 'A strategic merchant makes every processor a replaceable route behind its own orchestrator', showing its signal, attractor, business response, and surviving residue."
+          "alt": "Illustration of the residuality stressor 'A strategic merchant makes every processor a replaceable route behind its own orchestrator', showing its signal, attractor, business response, and proposed architectural response."
         }
       ]
     }
